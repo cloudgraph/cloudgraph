@@ -102,7 +102,7 @@ For the CloudGraph RDB data store library use the following artefact.
 **Detailed Documentation**
 ==========================
 
-| [**CloudGraph Architecture Overview**](http://cloudgraph.github.io/cloudgraph/arch_overview/CloudGraph-Architecture-Overview) |
+| [**CloudGraph Architecture Overview**](http://terrameta.github.io/cloudgraph/arch_overview/CloudGraph-Architecture-Overview) |
 |------------------------------------------------------------------------------------------------------------------------------|
 | [**CloudGraph API DOCS**](http://terrameta.github.io/cloudgraph/apidocs/index.html)                                          |
 
