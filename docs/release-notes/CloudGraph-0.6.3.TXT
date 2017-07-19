@@ -1,0 +1,23 @@
+Release Notes
+
+CloudGraph 0.6.3 Release Notes
+
+CloudGraph 0.6.3 is an internal Beta release of CloudGraph.
+
+The full list of changes can be found in our issue management system github, and is reproduced below.
+See https://github.com/terrameta/cloudgraph/issues. 
+
+Major Changes
+[Issue #59] - Support Plasma Profile Versions For All Supported Modeling Platforms
+[Issue #60] - Support HBase 1.0.0 and Related Hadoop/Mapreduce Version(s)   
+
+Bugs
+
+Improvements
+[Issue #61] - HBase Connection Pooling for 1.0.0 Client API 
+ 
+New Features
+
+Tasks
+
+Wish

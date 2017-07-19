@@ -1,0 +1,27 @@
+Release Notes
+
+CloudGraph 0.5.7 Release Notes
+
+CloudGraph 0.5.7 is an internal Beta release of CloudGraph.
+
+The full list of changes can be found in our issue management system github, and is reproduced below.
+See https://github.com/terrameta/cloudgraph/issues. 
+
+Major Changes
+
+
+Bugs
+
+
+Improvements
+[Issue #37] - Simplify Data Converter Utilities 
+[Issue #37] - Remove All RDB and Pool Specific Dependencies 
+[Issue #38] - Disambiguate Multi-Key Targets Using Derivation Supplier 
+
+New Features
+
+
+Tasks
+
+Wish
+

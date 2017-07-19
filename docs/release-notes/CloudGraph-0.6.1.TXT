@@ -1,0 +1,22 @@
+Release Notes
+
+CloudGraph 0.6.1 Release Notes
+
+CloudGraph 0.6.1 is an internal Beta release of CloudGraph.
+
+The full list of changes can be found in our issue management system github, and is reproduced below.
+See https://github.com/terrameta/cloudgraph/issues. 
+
+Major Changes
+
+Bugs
+[Issue #50] - Validate the Type Name Used Within GraphConfig
+[Issue #49] - Validate the Namespace URI Used Within GraphConfig
+
+Improvements
+
+New Features
+
+Tasks
+
+Wish

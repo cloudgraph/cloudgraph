@@ -1,0 +1,22 @@
+Release Notes
+
+CloudGraph 0.5.9 Release Notes
+
+CloudGraph 0.5.9 is an internal Beta release of CloudGraph.
+
+The full list of changes can be found in our issue management system github, and is reproduced below.
+See https://github.com/terrameta/cloudgraph/issues. 
+
+Major Changes
+
+Bugs
+[Issue #44] - Empty Group Operators Causing Binary Expression Tree Error
+
+Improvements
+[Issue #32] - Scan Abort  
+
+New Features
+
+Tasks
+
+Wish

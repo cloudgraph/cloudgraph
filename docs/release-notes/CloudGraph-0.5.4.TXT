@@ -1,0 +1,29 @@
+Release Notes
+
+CloudGraph 0.5.4 Release Notes
+
+CloudGraph 0.5.4 is an internal Beta release of CloudGraph.
+
+The full list of changes can be found in our issue management system github, and is reproduced below.
+See https://github.com/terrameta/cloudgraph/issues. 
+
+Major Changes
+
+
+Bugs
+
+[Issue #26] - RDB Service Graph Dispatcher to Check for Configured SequenceGenerator on Create
+[Issue #25] - Local UUID used In External Graph
+[Issue #24] - Manually Link Read-Only Reference Properties in RDB Service Graph Assembler
+
+Improvements
+
+[Issue #11] - Automatically Add Row Key Fields to Query Results
+
+New Features
+
+
+Tasks
+
+Wish
+

@@ -1,0 +1,29 @@
+Release Notes
+
+CloudGraph 0.5.5 Release Notes
+
+CloudGraph 0.5.5 is an internal Beta release of CloudGraph.
+
+The full list of changes can be found in our issue management system github, and is reproduced below.
+See https://github.com/terrameta/cloudgraph/issues. 
+
+Major Changes
+
+[Issue #15] - Graph Slice Sub-Graphs
+
+Bugs
+
+[Issue #31] - Root Objects in Checks for Missing Container
+
+Improvements
+
+[Issue #28] - Add Option for Unique Row Checks During Graph Commit
+[Issue #27] - Multi-Graph Commit Optimization
+
+New Features
+
+
+Tasks
+
+Wish
+

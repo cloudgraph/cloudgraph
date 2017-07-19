@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:PlasmaSDOProfile="http:///schemas/PlasmaSDOProfile/_Ta1lIMTtEeSkYpwPkZ5I3w/0" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xsi:schemaLocation="http:///schemas/PlasmaSDOProfile/_Ta1lIMTtEeSkYpwPkZ5I3w/0 pathmap://PLASMA_PROFILES/PlasmaSDO.profile_v1_1.uml#_Ta1lIsTtEeSkYpwPkZ5I3w">
+  <uml:Model xmi:id="5b39f3cc-d1f5-48a4-9edf-7a8fc56f8d18" name="derived model">
+    <ownedComment xmi:type="uml:Comment" xmi:id="97a2c37c-3535-4345-a012-6a18d4a5e63e" annotatedElement="5b39f3cc-d1f5-48a4-9edf-7a8fc56f8d18">
+      <body>derived model</body>
+    </ownedComment>
+    <packagedElement xmi:type="uml:Package" xmi:id="689057e0-c830-4326-9482-79b72e7eea9b" name="story">
+      <packagedElement xmi:type="uml:Class" xmi:id="b0f49838-cd47-4e4d-9b16-ea0a2dc85171" name="StoryFeed">
+        <ownedComment xmi:type="uml:Comment" xmi:id="bc40786e-ff9a-4bee-8e59-cc9c1f784d88" annotatedElement="b0f49838-cd47-4e4d-9b16-ea0a2dc85171">
+          <body>A list of story nodes created and owned by an actor (person or group). Following an actor means subscribing to their story feed</body>
+        </ownedComment>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="c81b1eba-e2d5-4168-9614-e86c7b8ee39b" name="story" visibility="public" type="e176bbb6-62bd-4c99-8257-9169dc514246" association="247b83d3-b7b7-4227-a6e6-8f968e8d2f82">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="b157462c-cd97-4c86-b10b-7a2cdc11c877" value="1"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="67d87eef-c398-491d-9cb7-2996639f94d8" value="*"/>
+        </ownedAttribute>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="01f94c7c-8d77-4e8c-ab46-a03124daeff3" name="Blog">
+        <generalization xmi:type="uml:Generalization" xmi:id="fe1e50cc-bea6-4e07-a495-31a291362aaf" general="c6e91dc7-3796-4e62-8f83-d871f67d1a33"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="051b2e3f-801e-44ed-b646-2109c843b63b" name="actor" visibility="public" type="e0def27c-3dc2-4886-a493-11b7ad39ed3c" association="1663572a-e9db-4ec8-a3f5-4f3d630bceed">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="3496f768-7662-4a13-91d4-1acba2d9899f" value="1"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="29c9cb45-a95d-4dc2-b456-0378be98d99f" value="1"/>
+        </ownedAttribute>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="d0d84b7a-5eb5-4275-b64a-19e26db80035" name="topic" visibility="public" type="d26f6e3e-ffe6-48fa-9115-8b96f14a48c1" association="828a69b0-20fa-4675-89c9-c5f4bd90c21b">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="d50a1771-eee7-4b6a-acf9-7cb8a0bfcab2" value="1"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="467ed037-f7db-40c0-80e9-902c6d848e3d" value="*"/>
+        </ownedAttribute>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="e176bbb6-62bd-4c99-8257-9169dc514246" name="Story">
+        <ownedComment xmi:type="uml:Comment" xmi:id="85ad1d8b-0477-4d5a-b049-9a5745d6ed0c" annotatedElement="e176bbb6-62bd-4c99-8257-9169dc514246">
+          <body>A specialized  node that contains a snip of message, information, or news update created by an actor node. Stories are messages, information, and news updates that are exchanged amongst the nodes in a social network and propagate around through the graphs (edges) that connect the nodes. The directions to which stories travel are determined by the directional graphs (edges).</body>
+        </ownedComment>
+        <generalization xmi:type="uml:Generalization" xmi:id="a3f58721-2fba-4417-9dbb-2d86d4dca5a4" general="c6e91dc7-3796-4e62-8f83-d871f67d1a33"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="527d46f3-55c9-470d-b18e-5dbea0c368e6" name="storyFeed" visibility="public" type="b0f49838-cd47-4e4d-9b16-ea0a2dc85171" association="247b83d3-b7b7-4227-a6e6-8f968e8d2f82">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="e29f0e77-76f8-45dc-b062-f9cd0792cde9"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="3776086f-638a-4911-8499-3c06db3c373d" value="*"/>
+        </ownedAttribute>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="5b84aa9a-0fc4-426c-ad94-4450e8938b69" name="topic" visibility="public" type="d26f6e3e-ffe6-48fa-9115-8b96f14a48c1" association="83a06efd-5a83-498e-8546-91014affcf4b">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="0a463953-e550-4de7-abe6-9d33eeffdcf8" value="1"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="644bbceb-c86c-42a0-b625-b8a2505145bc" value="1"/>
+        </ownedAttribute>
+      </packagedElement>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Package" xmi:id="0f31ae17-34c3-4dba-b7f1-f6867697940b" name="social">
+      <packagedElement xmi:type="uml:Class" xmi:id="964f2464-ae77-43bb-babd-7581e7eeef3d" name="Edge" isAbstract="true">
+        <ownedComment xmi:type="uml:Comment" xmi:id="68e00f7d-3ba9-4c77-bce5-0b7551dd1e14" annotatedElement="964f2464-ae77-43bb-babd-7581e7eeef3d">
+          <body>A directed link between two nodes.</body>
+        </ownedComment>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="4367e0e8-0ddf-40ad-b275-4b279f1ff41d" name="source" visibility="public" type="c6e91dc7-3796-4e62-8f83-d871f67d1a33" association="8fa8f616-f775-45d7-859e-c8f03d736ad9">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="ac8bf083-e178-4bfb-89c8-a1787d499ff7" value="1"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="cc5cb8a8-8f65-4e22-baeb-3593173f6fdc" value="1"/>
+        </ownedAttribute>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="18b69427-862f-4164-9ae5-bf47daedba22" name="target" visibility="public" type="c6e91dc7-3796-4e62-8f83-d871f67d1a33" association="8c81b595-0b68-4334-90de-8eb4a46c88ee">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="59b0da89-11d7-4359-bf7a-7d309c388ebf" value="1"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="84f6ef0b-c2dc-43a5-810b-529155546f87" value="1"/>
+        </ownedAttribute>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="c6e91dc7-3796-4e62-8f83-d871f67d1a33" name="Node" isAbstract="true">
+        <ownedComment xmi:type="uml:Comment" xmi:id="56efe319-a0e8-4916-9b5f-6b3a99313c2b" annotatedElement="c6e91dc7-3796-4e62-8f83-d871f67d1a33">
+          <body>In a social network all entities such as people, groups, events, topics, images, stories, etc. are represented as nodes. Nodes have some common characteristics. For example: title, description, unique URL, and Geo-location information. All nodes can be tagged and commented on.</body>
+        </ownedComment>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="07abc283-c44e-48a8-8473-1da61536bf0f" name="sourceEdge" visibility="public" type="964f2464-ae77-43bb-babd-7581e7eeef3d" association="8fa8f616-f775-45d7-859e-c8f03d736ad9">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="98756e00-4492-4135-859b-d7181f759b06"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="e3e4301a-68c0-40be-8b23-c8750b849356" value="*"/>
+        </ownedAttribute>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="8e944c9e-5188-4ace-87e1-e2d6f990866f" name="targetEdge" visibility="public" type="964f2464-ae77-43bb-babd-7581e7eeef3d" association="8c81b595-0b68-4334-90de-8eb4a46c88ee">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="1f30047f-cf77-4aa2-ae60-e85ecbe807cc"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="514ccfde-7f3d-4c15-b3f5-a75d93a56704" value="*"/>
+        </ownedAttribute>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="d5f878de-1d81-4866-94c0-a3830ee2cdcc" name="name" visibility="public">
+          <type xmi:type="uml:DataType" href="pathmap://PLASMA_LIBRARIES/PlasmaSDODataTypes_v1_1.uml#plasma-sdo-profile-datatypes-String"/>
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="4fd440a5-42fb-4772-95bf-bf5168356c6f" value="1"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="b16f7fa8-bcdc-4527-92f9-145ecf45cf95" value="1"/>
+        </ownedAttribute>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="3c904d90-a778-45fe-a910-ecbb5ee2db02" name="description" visibility="public">
+          <type xmi:type="uml:DataType" href="pathmap://PLASMA_LIBRARIES/PlasmaSDODataTypes_v1_1.uml#plasma-sdo-profile-datatypes-String"/>
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="9757c808-7095-4ae0-aeab-a92a15852272" value="1"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="746a2743-c03e-4b3c-9e65-2d600ce4b4e9" value="1"/>
+        </ownedAttribute>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="ac8c8fce-dad5-4033-9d53-1c9bf211b7e7" name="createdDate" visibility="public">
+          <type xmi:type="uml:DataType" href="pathmap://PLASMA_LIBRARIES/PlasmaSDODataTypes_v1_1.uml#plasma-sdo-profile-datatypes-Date"/>
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="e0d6e23a-6718-4892-af7a-eb8742d59cd3" value="1"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="88cfd308-37fa-4544-8b83-28e52568b994" value="1"/>
+        </ownedAttribute>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="9e81d497-065a-4594-98c2-e398e166ed0e" name="modifiedDate" visibility="public">
+          <type xmi:type="uml:DataType" href="pathmap://PLASMA_LIBRARIES/PlasmaSDODataTypes_v1_1.uml#plasma-sdo-profile-datatypes-Date"/>
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="c8ed086f-19ec-448d-aa79-13e586115c75" value="1"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="4e7df0e3-e500-48e9-821c-3a7d66f200fb" value="1"/>
+        </ownedAttribute>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="559d9b05-de30-4e18-a930-811b53292dcb" name="Mutual">
+        <generalization xmi:type="uml:Generalization" xmi:id="14432162-2675-4bf6-85c8-34c5e707ab8e" general="964f2464-ae77-43bb-babd-7581e7eeef3d"/>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="d26f6e3e-ffe6-48fa-9115-8b96f14a48c1" name="Topic">
+        <generalization xmi:type="uml:Generalization" xmi:id="55a9efcc-bb80-4ce7-80eb-8a202a0f2b1d" general="c6e91dc7-3796-4e62-8f83-d871f67d1a33"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="8da40af7-9af6-44f3-b673-be00ff732831" name="parent" visibility="public" type="d26f6e3e-ffe6-48fa-9115-8b96f14a48c1" association="7c496ffc-a89e-4b52-be9a-2de8119e5bcb">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="45dfa173-3756-4c57-9b76-4f838ecd5c43" value="1"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="12e4557c-b402-45b3-8879-fea1d626e7cf" value="1"/>
+        </ownedAttribute>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="e68f5e3a-9221-4113-8901-869811251159" name="child" visibility="public" type="d26f6e3e-ffe6-48fa-9115-8b96f14a48c1" association="7c496ffc-a89e-4b52-be9a-2de8119e5bcb">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="4aa9fdec-a78f-4608-b39b-0b05d7809d12"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="51f6ec39-a63f-49fa-9ff9-a1d3b2597ab6" value="*"/>
+        </ownedAttribute>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="2ea2670f-3a9c-4967-a1bf-45346c8f51cb" name="story" visibility="public" type="e176bbb6-62bd-4c99-8257-9169dc514246" association="83a06efd-5a83-498e-8546-91014affcf4b">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="ff85d7f4-be2d-4b3d-98cf-7e431f05d340"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="85943d81-5f95-4884-808d-9f76a9cc6677" value="*"/>
+        </ownedAttribute>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="dab35ad8-0d5b-4fd6-8061-55b60bf1b9af" name="Lead">
+        <ownedComment xmi:type="uml:Comment" xmi:id="588e58fe-b015-431c-93f1-877e33614a0b" annotatedElement="dab35ad8-0d5b-4fd6-8061-55b60bf1b9af">
+          <body>A relationship (edge) between 2 nodes where the source is a leader and the target is a follower.</body>
+        </ownedComment>
+        <generalization xmi:type="uml:Generalization" xmi:id="7c13f0f6-24d2-403e-8304-35141c195fa7" general="964f2464-ae77-43bb-babd-7581e7eeef3d"/>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="d0a3a771-908e-451b-aacd-59e55474387c" name="Follow">
+        <ownedComment xmi:type="uml:Comment" xmi:id="26b1eaad-488e-4df6-94fe-21e9c34b00b5" annotatedElement="d0a3a771-908e-451b-aacd-59e55474387c">
+          <body>A relationship (edge) between 2 nodes where the source is a follower and the target is a leader.</body>
+        </ownedComment>
+        <generalization xmi:type="uml:Generalization" xmi:id="d40c1860-4702-4879-9fb3-141c758a1718" general="964f2464-ae77-43bb-babd-7581e7eeef3d"/>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="e83b5939-135d-4dc6-a354-b4d94862a233" name="Friendship">
+        <generalization xmi:type="uml:Generalization" xmi:id="6667ab06-542f-482e-a4d8-897ee3b399ba" general="559d9b05-de30-4e18-a930-811b53292dcb"/>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="d1afa756-6605-46a0-9040-71fac8fef52c" name="Photo">
+        <generalization xmi:type="uml:Generalization" xmi:id="325e86e0-cfc9-4791-ba32-796a8fda8522" general="f097b61b-1112-4fdc-a038-e6f9e57d684a"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="d15ec4b3-319a-4abe-8554-fb9047699007" name="content" visibility="public">
+          <type xmi:type="uml:DataType" href="pathmap://PLASMA_LIBRARIES/PlasmaSDODataTypes_v1_1.uml#plasma-sdo-profile-datatypes-Bytes"/>
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="7c3d5cd4-4f00-42c6-a2d5-f78f40b27f71" value="1"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="39e9d02e-6521-45db-857e-0d7d5eb79fd1" value="1"/>
+        </ownedAttribute>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="610b2f68-4605-4065-b168-fda957caa1af" name="actor" visibility="public" type="e0def27c-3dc2-4886-a493-11b7ad39ed3c" association="a00a2e24-2e63-4e16-b477-3177094b6ffa">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="18717757-6b22-4b5d-903e-60a6bf7dcd17"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="42982592-c8dd-4b20-ac78-3f717b1348cf" value="*"/>
+        </ownedAttribute>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="e0def27c-3dc2-4886-a493-11b7ad39ed3c" name="Actor">
+        <ownedComment xmi:type="uml:Comment" xmi:id="48d21572-34af-418c-b01e-78af67f27a6d" annotatedElement="e0def27c-3dc2-4886-a493-11b7ad39ed3c">
+          <body>Represents a person or a group of people. An actor node has stories to tell and therefore has a story feed. It has an identity (Avatar and Information). It often uses a collection of content creation social applications such as photos, discussions. Following an actor node results into subscribing to all the stories generated by that actor. A person actor node can also follow you back.</body>
+        </ownedComment>
+        <generalization xmi:type="uml:Generalization" xmi:id="9036d423-189f-4350-82e7-a24cd5800b80" general="c6e91dc7-3796-4e62-8f83-d871f67d1a33"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="b92399d7-673a-4950-9649-941602b58d5d" name="blog" visibility="public" type="01f94c7c-8d77-4e8c-ab46-a03124daeff3" association="1663572a-e9db-4ec8-a3f5-4f3d630bceed">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="5385ef23-3ee6-4712-ba2b-64e43e40d2e4"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="7bf9a8fa-fd07-4faa-884d-3a18dbaf1cba" value="*"/>
+        </ownedAttribute>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="2ed87a59-d755-4625-9129-3a420c81a3b4" name="photo" visibility="public" type="d1afa756-6605-46a0-9040-71fac8fef52c" association="a00a2e24-2e63-4e16-b477-3177094b6ffa">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="1c8f5f22-3330-4b80-9f3a-9fb67faa01cf"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="374ca457-67fd-4bdf-b9bc-c911c06db345" value="*"/>
+        </ownedAttribute>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="f097b61b-1112-4fdc-a038-e6f9e57d684a" name="Media">
+        <generalization xmi:type="uml:Generalization" xmi:id="565eebd9-832a-4bf3-8dff-1e202cffd414" general="c6e91dc7-3796-4e62-8f83-d871f67d1a33"/>
+      </packagedElement>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="8fa8f616-f775-45d7-859e-c8f03d736ad9" memberEnd="07abc283-c44e-48a8-8473-1da61536bf0f 4367e0e8-0ddf-40ad-b275-4b279f1ff41d"/>
+    <packagedElement xmi:type="uml:Association" xmi:id="8c81b595-0b68-4334-90de-8eb4a46c88ee" memberEnd="8e944c9e-5188-4ace-87e1-e2d6f990866f 18b69427-862f-4164-9ae5-bf47daedba22"/>
+    <packagedElement xmi:type="uml:Association" xmi:id="247b83d3-b7b7-4227-a6e6-8f968e8d2f82" memberEnd="527d46f3-55c9-470d-b18e-5dbea0c368e6 c81b1eba-e2d5-4168-9614-e86c7b8ee39b"/>
+    <packagedElement xmi:type="uml:Association" xmi:id="7c496ffc-a89e-4b52-be9a-2de8119e5bcb" memberEnd="e68f5e3a-9221-4113-8901-869811251159 8da40af7-9af6-44f3-b673-be00ff732831"/>
+    <packagedElement xmi:type="uml:Association" xmi:id="83a06efd-5a83-498e-8546-91014affcf4b" memberEnd="5b84aa9a-0fc4-426c-ad94-4450e8938b69 2ea2670f-3a9c-4967-a1bf-45346c8f51cb"/>
+    <packagedElement xmi:type="uml:Association" xmi:id="1663572a-e9db-4ec8-a3f5-4f3d630bceed" memberEnd="b92399d7-673a-4950-9649-941602b58d5d 051b2e3f-801e-44ed-b646-2109c843b63b"/>
+    <packagedElement xmi:type="uml:Association" xmi:id="828a69b0-20fa-4675-89c9-c5f4bd90c21b" memberEnd="c35052f8-521d-424e-843c-fafd87ad6e5c d0d84b7a-5eb5-4275-b64a-19e26db80035" navigableOwnedEnd="c35052f8-521d-424e-843c-fafd87ad6e5c">
+      <ownedEnd xmi:type="uml:Property" xmi:id="c35052f8-521d-424e-843c-fafd87ad6e5c" visibility="private" type="d26f6e3e-ffe6-48fa-9115-8b96f14a48c1" association="828a69b0-20fa-4675-89c9-c5f4bd90c21b">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="de01b70d-f716-4adb-815f-dc7fc9f7187f"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="aa456ceb-f2a5-4a1f-94f7-d94e1dc00b89" value="*"/>
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="a00a2e24-2e63-4e16-b477-3177094b6ffa" memberEnd="2ed87a59-d755-4625-9129-3a420c81a3b4 610b2f68-4605-4065-b168-fda957caa1af"/>
+    <profileApplication xmi:type="uml:ProfileApplication" xmi:id="b5148d17-ef9a-4ea7-aef6-3ac9df30876f">
+      <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="b77b5e2e-be21-4da9-96d0-08a803616d72" source="http://www.eclipse.org/uml2/5.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="pathmap://PLASMA_PROFILES/PlasmaSDO.profile_v1_1.uml#_Ta1lIsTtEeSkYpwPkZ5I3w"/>
+      </eAnnotations>
+      <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_OL_dYGNuEee99JE8pJICqw" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="pathmap://PLASMA_PROFILES/PlasmaSDO.profile_v1_1.uml#_Ta1lIsTtEeSkYpwPkZ5I3w"/>
+      </eAnnotations>
+      <appliedProfile xmi:type="uml:Profile" href="pathmap://PLASMA_PROFILES/PlasmaSDO.profile_v1_1.uml#_NlmngCJUEeSXvPZh3aumVA"/>
+    </profileApplication>
+  </uml:Model>
+  <PlasmaSDOProfile:SDONamespace xmi:id="82cfb07e-9c99-40f1-babd-c2c77c80d33b" base_Package="689057e0-c830-4326-9482-79b72e7eea9b" uri="http://cloudgraph.org/test/socialgraph/story"/>
+  <PlasmaSDOProfile:SDONamespace xmi:id="434ca0ad-baa0-4671-9227-e7332cf1db7a" base_Package="0f31ae17-34c3-4dba-b7f1-f6867697940b" uri="http://cloudgraph.org/test/socialgraph/actor"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="35e9e74b-a0ef-4de9-927c-1bfeefc85085" base_NamedElement="964f2464-ae77-43bb-babd-7581e7eeef3d" physicalName="EG"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="190c77d6-a99c-4462-a94d-4547bf830bd0" base_NamedElement="c6e91dc7-3796-4e62-8f83-d871f67d1a33" physicalName="ND"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="04f5ff56-d81a-4062-84d1-8b2ac370df0d" base_NamedElement="d5f878de-1d81-4866-94c0-a3830ee2cdcc" physicalName="NM"/>
+  <PlasmaSDOProfile:SDOValueConstraint xmi:id="ff021fb9-8545-4292-9379-969622a660a0" base_Property="d5f878de-1d81-4866-94c0-a3830ee2cdcc" maxLength="32"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="30782535-a50d-46b2-a52b-9d4e49449c06" base_NamedElement="3c904d90-a778-45fe-a910-ecbb5ee2db02" physicalName="DR"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="25d513a3-a900-4bcc-afc9-c6dfbca6efb0" base_NamedElement="ac8c8fce-dad5-4033-9d53-1c9bf211b7e7" physicalName="CD"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="31ececda-17d6-49fa-a4aa-d193c029f2b4" base_NamedElement="9e81d497-065a-4594-98c2-e398e166ed0e" physicalName="MD"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="4d886377-7fd9-4542-adee-4a6b9cb2bd24" base_NamedElement="b0f49838-cd47-4e4d-9b16-ea0a2dc85171" physicalName="SF"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="ea2cd5db-8add-4a23-992d-b1e8490cd450" base_NamedElement="559d9b05-de30-4e18-a930-811b53292dcb" physicalName="ML"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="b48dfcc4-4970-459c-b19f-0f4345d0672f" base_NamedElement="d26f6e3e-ffe6-48fa-9115-8b96f14a48c1" physicalName="TP"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="baad74c6-f1e9-4208-8ffd-6d9f59705e7e" base_NamedElement="dab35ad8-0d5b-4fd6-8061-55b60bf1b9af" physicalName="LD"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="fb62dd74-c52f-4aca-87d7-917559714ac8" base_NamedElement="d0a3a771-908e-451b-aacd-59e55474387c" physicalName="FW"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="d150c594-0af7-4fe2-a832-32c4a2d60850" base_NamedElement="e83b5939-135d-4dc6-a354-b4d94862a233" physicalName="FP"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="4d4fb89c-3820-4bc2-81d9-964f1a755f15" base_NamedElement="01f94c7c-8d77-4e8c-ab46-a03124daeff3" physicalName="BL"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="3adf3d67-9b7d-4ae2-a08a-4a56152702b6" base_NamedElement="d1afa756-6605-46a0-9040-71fac8fef52c" physicalName="PT"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="33fc48a2-5670-4d12-9260-6b3dd18d91f5" base_NamedElement="e0def27c-3dc2-4886-a493-11b7ad39ed3c" physicalName="AC"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="01ff1547-a817-42bf-b8d1-0147cbc92f1d" base_NamedElement="e176bbb6-62bd-4c99-8257-9169dc514246" physicalName="SY"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="88fe567f-9624-496d-8bc8-4345ab8cc837" base_NamedElement="f097b61b-1112-4fdc-a038-e6f9e57d684a" physicalName="MD"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_RSOScGQGEee99JE8pJICqw" base_NamedElement="689057e0-c830-4326-9482-79b72e7eea9b" physicalName="Y" businessName="Story"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_W3pC0GQGEee99JE8pJICqw" base_NamedElement="0f31ae17-34c3-4dba-b7f1-f6867697940b" physicalName="S" businessName="Social"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_Ckk80GQHEee99JE8pJICqw" base_NamedElement="051b2e3f-801e-44ed-b646-2109c843b63b" physicalName="ACT"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_Gj-KkGQHEee99JE8pJICqw" base_NamedElement="d0d84b7a-5eb5-4275-b64a-19e26db80035" physicalName="TPC"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_OO4AwGQHEee99JE8pJICqw" base_NamedElement="527d46f3-55c9-470d-b18e-5dbea0c368e6" physicalName="SF"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_Qa2wIGQHEee99JE8pJICqw" base_NamedElement="5b84aa9a-0fc4-426c-ad94-4450e8938b69" physicalName="TPC"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_TQwmQGQHEee99JE8pJICqw" base_NamedElement="4367e0e8-0ddf-40ad-b275-4b279f1ff41d" physicalName="SRC"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_U870MGQHEee99JE8pJICqw" base_NamedElement="18b69427-862f-4164-9ae5-bf47daedba22" physicalName="TGT"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_YF0QsGQHEee99JE8pJICqw" base_NamedElement="07abc283-c44e-48a8-8473-1da61536bf0f" physicalName="SE"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_adpDsGQHEee99JE8pJICqw" base_NamedElement="8e944c9e-5188-4ace-87e1-e2d6f990866f" physicalName="TE"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_ipUEoGQHEee99JE8pJICqw" base_NamedElement="8da40af7-9af6-44f3-b673-be00ff732831" physicalName="PNT"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_kPZRoGQHEee99JE8pJICqw" base_NamedElement="e68f5e3a-9221-4113-8901-869811251159" physicalName="CHD"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_l4rjoGQHEee99JE8pJICqw" base_NamedElement="2ea2670f-3a9c-4967-a1bf-45346c8f51cb" physicalName="STY"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_oyGAwGQHEee99JE8pJICqw" base_NamedElement="d15ec4b3-319a-4abe-8554-fb9047699007" physicalName="CNT"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_rA5aoGQHEee99JE8pJICqw" base_NamedElement="610b2f68-4605-4065-b168-fda957caa1af" physicalName="A"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_tAkzYGQHEee99JE8pJICqw" base_NamedElement="b92399d7-673a-4950-9649-941602b58d5d" physicalName="BLG"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_uqbtIGQHEee99JE8pJICqw" base_NamedElement="2ed87a59-d755-4625-9129-3a420c81a3b4" physicalName="PHT"/>
+</xmi:XMI>

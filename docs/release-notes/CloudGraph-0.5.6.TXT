@@ -1,0 +1,29 @@
+Release Notes
+
+CloudGraph 0.5.6 Release Notes
+
+CloudGraph 0.5.6 is an internal Beta release of CloudGraph.
+
+The full list of changes can be found in our issue management system github, and is reproduced below.
+See https://github.com/terrameta/cloudgraph/issues. 
+
+Major Changes
+
+
+Bugs
+
+[Issue #33] - Check for Null RS Value for Blob and Strings Datatypes in RDBDataConverter
+[Issue #35] - RDB Service Does Not Handle Multi-Level PK Association Properties
+[Issue #36] - Simplify RDBDataConverter Logic 
+
+
+Improvements
+
+
+New Features
+
+
+Tasks
+
+Wish
+

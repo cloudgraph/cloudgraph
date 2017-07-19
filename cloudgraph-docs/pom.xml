@@ -1,0 +1,165 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+      <groupId>org.cloudgraph</groupId>
+      <artifactId>cloudgraph</artifactId>
+      <version>1.0.0</version>
+  </parent>
+  <groupId>org.cloudgraph</groupId>
+  <artifactId>cloudgraph-docs</artifactId>
+  <version>1.0.0</version>
+  <packaging>jar</packaging>
+  <name>CloudGraph Docs</name>  
+  <description>CloudGraph(tm) is a suite of Service Data Object (SDO) 2.1 services designed for relational and big-table style "cloud" databases, such as HBase and others.</description>
+  <url>http://cloudgraph.org</url>
+  <licenses>
+      <license>
+          <name>Plasma License</name>
+          <url>https://github.com/terrameta/plasma/LICENSE</url>
+          <distribution>repo</distribution>
+      </license>
+  </licenses>
+  <scm>
+      <url>https://github.com/terrameta/plasma</url>
+      <connection></connection>
+  </scm>  
+  <developers>
+      <developer>
+          <id>scinnamond</id>
+          <name>Scott Cinnamond</name>
+          <email>scinnamond@gmail.com</email>
+      </developer>
+  </developers>
+  <properties>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      <yworks.uml.path>${basedir}/../doclets/yworks-uml-doclet-3.0_01-jdk1.5</yworks.uml.path>                                             
+  </properties>
+                                
+  
+  <dependencies>     
+        
+  </dependencies>
+	<build>
+		<finalName>cloudgraph-docs</finalName>
+		<plugins>
+            <plugin>                                                         
+              <artifactId>maven-antrun-plugin</artifactId>                   
+              <version>1.7</version>                                         
+              <executions>                                                   
+                <execution>    
+                  <id>create_javadocs</id>                                              
+                  <phase>generate-sources</phase>                
+                  <configuration>                                            
+                    <target>                                                 
+                      <property name="compile_classpath" refid="maven.compile.classpath"/>
+                      <property name="release_suffix" value="1.0.0"/>
+                      <path id="cp">                                                                                                                                                                                                                             
+                         <pathelement path="${compile_classpath}"/>                                                                                                                                                                                                  
+                      </path>	                                                                                                                                                                                                                                       
+			          <javadoc destdir="${basedir}/target/apidocs"
+			            author="true"
+			            version="true"
+			            use="true"
+			            nonavbar="false"
+			            windowtitle="CloudGraph ${release_suffix}"
+			        	additionalparam="-breakiterator"
+			            doclet="ydoc.doclets.YStandard"
+			            docletpath="${yworks.uml.path}/lib/ydoc.jar;${yworks.uml.path}/resources">
+			            <packageset dir="${basedir}/../cloudgraph-common/src/main/java" defaultexcludes="yes">
+			                <include name="org/cloudgraph/**"/>
+			            </packageset>			             
+			            <packageset dir="${basedir}/../cloudgraph-store/src/main/java" defaultexcludes="yes">
+			                <include name="org/cloudgraph/**"/>
+			            </packageset>			             
+			            <packageset dir="${basedir}/../cloudgraph-store/target/generated-sources/java" defaultexcludes="yes">
+			                <include name="org/cloudgraph/**"/>
+			            </packageset>
+			            <packageset dir="${basedir}/../cloudgraph-core/src/main/java" defaultexcludes="yes">
+			                <include name="org/cloudgraph/**"/>
+			            </packageset>
+			            <packageset dir="${basedir}/../cloudgraph-mapreduce/src/main/java" defaultexcludes="yes">
+			                <include name="org/cloudgraph/**"/>
+			            </packageset>
+			            <packageset dir="${basedir}/../cloudgraph-hbase/src/main/java" defaultexcludes="yes">
+			                <include name="org/cloudgraph/**"/>
+			            </packageset>
+                        <packageset dir="${basedir}/../cloudgraph-rdb/src/main/java" defaultexcludes="yes">
+                            <include name="org/cloudgraph/**"/>
+                        </packageset>
+			             
+			            <doclet
+			                name="ydoc.doclets.YStandard"
+			                path="${yworks.uml.path}/lib/ydoc.jar${ps}${yworks.uml.path}/resources${ps}${yworks.uml.path}/doc">
+			                <param name="-author"/>
+			                <param name="-generic"/>
+			                <param name="-umlautogen"/>
+			                <param name="-filterpath" value="${yworks.uml.path}/lib/ydoc.jar"/>
+			                <param name="-filter"     value="ydoc.filters.ExcludeFilter"/>
+			                <param name="-tag" value="y.precondition"/>
+			                <param name="-tag" value="y.postcondition"/>
+			                <param name="-tag" value="y.complexity"/>
+			                <param name="-tag" value="param"/>
+			                <param name="-tag" value="return"/>
+			                <param name="-tag" value="see"/>
+			                <param name="-tag" value="y.uml"/>
+			            </doclet>
+			
+			            <doctitle><![CDATA[<h1>CloudGraph ${release_suffix}</h1>]]></doctitle>
+			            <bottom><![CDATA[<i>CloudGraph&#174; is a registered trademark of TerraMeta Software, Inc. Copyright &#169; 2014 - All Rights Reserved.</i>]]></bottom>
+			            <tag name="todo" scope="all" description="To do:"/>
+			            <group title="CloudGraph Packages" packages="org.cloudgraph.*"/>
+			            <classpath refid="cp"/>
+			          </javadoc>
+			          
+ 	                  <copy overwrite="yes" file="${basedir}/src/main/resources//stylesheet.css" toFile="${basedir}/target/apidocs/stylesheet.css" />
+			    	  <jar destfile="${basedir}/target/cloudgraph-apidocs.jar"
+			    	      basedir="${basedir}/target/apidocs">
+			    	  </jar>			          
+                    </target>                                                
+                  </configuration>                                           
+                  <goals>                                                    
+                    <goal>run</goal>                                         
+                  </goals>                                                   
+                </execution>                                                 
+
+              </executions>                                                  
+            </plugin>
+		</plugins>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.apache.maven.plugins
+										</groupId>
+										<artifactId>
+											maven-antrun-plugin
+										</artifactId>
+										<versionRange>
+											[1.7,)
+										</versionRange>
+										<goals>
+											<goal>run</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+</project>

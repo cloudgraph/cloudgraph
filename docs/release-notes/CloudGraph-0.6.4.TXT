@@ -1,0 +1,23 @@
+Release Notes
+
+CloudGraph 0.6.4 Release Notes
+
+CloudGraph 0.6.4 is an internal Beta release of CloudGraph.
+
+The full list of changes can be found in our issue management system github, and is reproduced below.
+See https://github.com/terrameta/cloudgraph/issues. 
+
+Major Changes
+[Issue #55] - Move Any HBase Test Resources Out Of Main Resources
+
+Bugs
+
+Improvements
+
+ 
+New Features
+[Issue #57] - Support Apache Spark Jobs
+
+Tasks
+
+Wish

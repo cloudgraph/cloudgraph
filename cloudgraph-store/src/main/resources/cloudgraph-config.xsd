@@ -1,0 +1,555 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://www.cloudgraph.org/config"
+    xmlns:cloudgraph="http://www.cloudgraph.org/config"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+ 
+    <xsd:complexType name="CloudGraphConfiguration">
+        <xsd:annotation>
+            <xsd:documentation>
+Top level configuration settings
+            </xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:complexContent>
+            <xsd:extension base="cloudgraph:Configuration">
+                <xsd:sequence>
+                <xsd:element name="Table" type="cloudgraph:Table" minOccurs="1" maxOccurs="unbounded">
+                <xsd:annotation>
+                <xsd:documentation></xsd:documentation>
+                </xsd:annotation>
+                </xsd:element>
+                </xsd:sequence>
+                <xsd:attribute name="uniqueChecks" type="xsd:boolean" use="optional" default="true">
+                    <xsd:annotation>
+                    <xsd:documentation>Whether to first check for an existing matching row key before creating/inserting new rows</xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute> 
+                <xsd:attribute name="tombstoneRows" type="xsd:boolean" use="optional" default="true">
+                    <xsd:annotation>
+                    <xsd:documentation> Whether to create a tombstone rows when deleting a graph roots. Warning setting this property to false could cause dangling references for models with "one way" associations navigating to the concerned root which are non-navigable from the root.</xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute> 
+                <xsd:attribute name="tombstoneRowsOverwriteable" type="xsd:boolean" use="optional" default="false">
+                    <xsd:annotation>
+                    <xsd:documentation>Whether to ignore and overwrite tombstone rows when creating new graph roots</xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="maprdbTablePathPrefix" type="xsd:string" use="optional" >
+                    <xsd:annotation>
+                    <xsd:documentation>The path to prepend to all MAPRD-DB (M7) table names for tables found within a configuration. Used for only MAPR-DB (M7) tables. To fully qualify Apache HBase tables, use table namespaces.</xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+            </xsd:extension>
+        </xsd:complexContent>
+         
+    </xsd:complexType>
+
+    <xsd:element name="CloudGraphConfiguration" type="cloudgraph:CloudGraphConfiguration">
+        <xsd:annotation>
+            <xsd:documentation></xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    
+    <xsd:complexType name="Table">
+        <xsd:annotation>
+            <xsd:documentation>
+Configuration settings for a table.
+            </xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:complexContent>
+            <xsd:extension base="cloudgraph:Configuration">
+                <xsd:sequence>
+	                <xsd:element name="HashAlgorithm" type="cloudgraph:HashAlgorithm" minOccurs="0" maxOccurs="1">
+	                <xsd:annotation>
+	                <xsd:documentation>The non-cryptographic hash algorithm settings used within the context of this HTable</xsd:documentation>
+	                </xsd:annotation>
+	                </xsd:element>
+	                <xsd:element name="DataGraph" type="cloudgraph:DataGraph" minOccurs="1" maxOccurs="unbounded">
+	                <xsd:annotation>
+	                <xsd:documentation></xsd:documentation>
+	                </xsd:annotation>
+	                </xsd:element>
+                </xsd:sequence>
+                <xsd:attribute name="name" type="xsd:string" use="required">
+	                <xsd:annotation>
+	                <xsd:documentation>The table name</xsd:documentation>
+	                </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="namespace" type="xsd:string" use="optional">
+	                <xsd:annotation>
+	                <xsd:documentation>The table namespace</xsd:documentation>
+	                </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="dataColumnFamilyName" type="xsd:string" use="required">
+                    <xsd:annotation>
+                    <xsd:documentation>The name of the column family used for data</xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute> 
+                <xsd:attribute name="uniqueChecks" type="xsd:boolean" use="optional" default="true">
+                    <xsd:annotation>
+                    <xsd:documentation>Whether to first check for an existing matching row key before creating/inserting new rows</xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute> 
+                <xsd:attribute name="tombstoneRows" type="xsd:boolean" use="optional" default="true">
+                    <xsd:annotation>
+                    <xsd:documentation> Whether to create a tombstone rows when deleting a graph roots. Warning setting this property to false could cause dangling references for models with "one way" associations navigating to the concerned root which are non-navigable from the root.</xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute> 
+                <xsd:attribute name="tombstoneRowsOverwriteable" type="xsd:boolean" use="optional" default="false">
+                    <xsd:annotation>
+                    <xsd:documentation>Whether to ignore and overwrite tombstone rows when creating new graph roots</xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="maprdbTablePathPrefix" type="xsd:string" use="optional" >
+                    <xsd:annotation>
+                    <xsd:documentation>The path to prepend to all MAPRD-DB (M7) table names for tables found within a configuration. Used for only MAPR-DB (M7) tables. To fully qualify Apache HBase tables, use table namespaces.</xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+               
+            </xsd:extension>
+        </xsd:complexContent>
+         
+    </xsd:complexType>
+
+    <xsd:element name="Table" type="cloudgraph:Table">
+        <xsd:annotation>
+            <xsd:documentation></xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+ 
+    <xsd:complexType name="DataGraph">
+        <xsd:annotation>
+            <xsd:documentation>Configuration settings for an SDO Data Graph</xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:complexContent>
+            <xsd:extension base="cloudgraph:Configuration">
+                <xsd:sequence>
+                    <xsd:element name="RowKeyModel" type="cloudgraph:RowKeyModel" minOccurs="1" maxOccurs="1">
+                    <xsd:annotation>
+                    <xsd:documentation>The composite row-key model settings for this cloudgraph.</xsd:documentation>
+                    </xsd:annotation>
+                    </xsd:element>  
+                    <xsd:element name="ColumnKeyModel" type="cloudgraph:ColumnKeyModel" minOccurs="1" maxOccurs="1">
+                    <xsd:annotation>
+                    <xsd:documentation>The composite column-key model settings for this cloudgraph.</xsd:documentation>
+                    </xsd:annotation>
+                    </xsd:element>  
+                </xsd:sequence>
+              <xsd:attribute name="uri" type="xsd:string" use="required">
+                  <xsd:annotation>
+                  <xsd:documentation>The SDO namespace URI for a specific Data Graph stored within this table.</xsd:documentation>
+                  </xsd:annotation>
+              </xsd:attribute>
+              <xsd:attribute name="type" type="xsd:string" use="required">
+                  <xsd:annotation>
+                  <xsd:documentation>
+The (root) SDO Type for a specific Data Graph stored within this
+table. Multiple cloudgraph configurations with the same root type
+may be used within the same table configuration, but the URI must
+differ. The SDO specification requires the URI/Type-Name combination
+to be unique.
+                  </xsd:documentation>
+                  </xsd:annotation>
+              </xsd:attribute>
+            </xsd:extension>
+        </xsd:complexContent>         
+    </xsd:complexType>
+
+    <xsd:element name="DataGraph" type="cloudgraph:DataGraph">
+        <xsd:annotation>
+            <xsd:documentation></xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+
+    <xsd:complexType name="HashAlgorithm">
+        <xsd:annotation>
+            <xsd:documentation>Configuration settings for the non-cryptographic hash algorithm used within the given context</xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:attribute name="name" type="cloudgraph:HashAlgorithmName" use="required">
+            <xsd:annotation>
+                <xsd:documentation>The name of the non-cryptographic hash algorithm.</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+
+    <xsd:element name="HashAlgorithm" type="cloudgraph:HashAlgorithm">
+        <xsd:annotation>
+            <xsd:documentation></xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+
+    <xsd:complexType name="RowKeyModel">
+        <xsd:annotation>
+            <xsd:documentation>
+Specifies the composite row-key generation characteristics for a
+specific data graph. The characteristics for each pre-defined
+field may be specified and any number of user-defined fields
+may also be added to the row key. Each user defined field maps
+a property within the data graph to a position
+within the composite row key, adding another "dimension" to the
+key. For HBase, this user defined composite row-key approach enables the partial key-scan functionality
+which greatly improves query performance. 
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="RowKeyField" type="cloudgraph:RowKeyField" minOccurs="0" maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:documentation>The settings for a pre-defined field within this row-key model.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute name="fieldDelimiter" type="xsd:string" use="optional" default="|">
+            <xsd:annotation>
+                <xsd:documentation>The delimiter used to seperate fields within the row keys</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+                
+    </xsd:complexType>
+
+    <xsd:element name="RowKeyModel" type="cloudgraph:RowKeyModel">
+        <xsd:annotation>
+            <xsd:documentation></xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+
+    <xsd:complexType name="RowKeyField">
+        <xsd:annotation>
+            <xsd:documentation>The settings for a row key field within a composite row-key.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:choice>
+            <xsd:element name="PredefinedField" type="cloudgraph:PredefinedField"/>
+            <xsd:element name="UserDefinedField" type="cloudgraph:UserDefinedField"/>
+        </xsd:choice> 
+    </xsd:complexType>
+
+    <xsd:element name="RowKeyField" type="cloudgraph:RowKeyField">
+        <xsd:annotation>
+            <xsd:documentation></xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+
+
+    <xsd:complexType name="KeyField" abstract="true">
+        <xsd:annotation>
+            <xsd:documentation>The settings for one field within a composite row or column key.</xsd:documentation>
+        </xsd:annotation>
+        <!--
+        Note: Applying a hash function can introuduce negative numbers into the
+        composite key which seems to invalidate lexicographic comparisons
+        for the composite key as a whole. 
+        -->
+        <xsd:attribute name="hash" type="xsd:boolean" use="optional" default="false">
+            <xsd:annotation>
+                <xsd:documentation>Whether to apply the specified non-cryptographic hash algorithm to this field</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+
+    <xsd:element name="KeyField" type="cloudgraph:KeyField">
+        <xsd:annotation>
+            <xsd:documentation></xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    
+    <xsd:complexType name="PredefinedField">
+        <xsd:annotation>
+            <xsd:documentation>The settings for one pre-defined field within a composite row-key.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="cloudgraph:KeyField">
+		        <xsd:attribute name="name" type="cloudgraph:PreDefinedFieldName" use="required">
+		            <xsd:annotation>
+		                <xsd:documentation></xsd:documentation>
+		            </xsd:annotation>
+		        </xsd:attribute>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="PredefinedField" type="cloudgraph:PredefinedField">
+        <xsd:annotation>
+            <xsd:documentation></xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    
+    <xsd:complexType name="UserDefinedField">
+        <xsd:annotation>
+            <xsd:documentation>
+The settings for one user-defined field within a
+composite row-key. Each user defined field maps
+a property within the data graph to a position
+within the composite row key, adding another "dimension" to the
+key. In HBase for example, this user defined composite row-key approach 
+enables the HBase partial row-key scan functionality
+which greatly improves query performance. 
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="cloudgraph:KeyField">
+		        <xsd:attribute name="path" type="xsd:string" use="required">
+		            <xsd:annotation>
+		                <xsd:documentation>
+An SDO XPath expression which identifies an
+SDO property, the value of which to be used as a composite
+row-key element or field. The XPath expression may traverse any
+number of nodes within the data graph and may contain any number of
+predicates.
+		                </xsd:documentation>
+		            </xsd:annotation>
+		        </xsd:attribute>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="UserDefinedField" type="cloudgraph:UserDefinedField">
+        <xsd:annotation>
+            <xsd:documentation></xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+
+    <xsd:complexType name="ColumnKeyModel">
+        <xsd:annotation>
+            <xsd:documentation>
+Specifies the composite column-key generation characteristics for a
+specific data graph (cloudgraph). The characteristics for each pre-defined
+column field may be specified.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="ColumnKeyField" type="cloudgraph:ColumnKeyField" minOccurs="1" maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:documentation>The settings for a pre-defined field within this column-key model.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute name="fieldDelimiter" type="xsd:string" use="optional" default="|">
+            <xsd:annotation>
+                <xsd:documentation>The delimiter used to seperate metadata fields within composite column keys</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="sequenceDelimiter" type="xsd:string" use="optional" default="@">
+            <xsd:annotation>
+                <xsd:documentation>The delimiter used to seperate metadata fields from fields qualifed by (or following) the sequence number within a composite column key</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="referenceMetadataDelimiter" type="xsd:string" use="optional" default="#">
+            <xsd:annotation>
+                <xsd:documentation>The delimiter used to seperate reference column metadata or state fields qualifed by (or following) the sequence number within a composite column key</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+                
+    </xsd:complexType>
+
+    <xsd:element name="ColumnKeyModel" type="cloudgraph:ColumnKeyModel">
+        <xsd:annotation>
+            <xsd:documentation></xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+
+    <xsd:complexType name="ColumnKeyField">
+        <xsd:annotation>
+            <xsd:documentation>The settings for one pre-defined field within a composite column-key.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="cloudgraph:PredefinedField">
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="ColumnKeyField" type="cloudgraph:ColumnKeyField">
+        <xsd:annotation>
+            <xsd:documentation></xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    
+    <!-- complex types used in extensions -->
+    <xsd:complexType name="Configuration">
+        <xsd:annotation>
+            <xsd:documentation>A base configuration used an an extension for most configuration elements</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="Property" type="cloudgraph:Property" minOccurs="0" maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:documentation></xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+     
+    <xsd:element name="Configuration" type="cloudgraph:Configuration">
+        <xsd:annotation>
+            <xsd:documentation></xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+
+    <xsd:complexType name="Property">
+        <xsd:annotation><xsd:documentation>Defines a property element with both content and attributes</xsd:documentation></xsd:annotation>
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:string">
+                <xsd:attribute name="name" type="xsd:string" use="required"/>
+            </xsd:extension>    
+        </xsd:simpleContent>
+    </xsd:complexType>
+
+    <xsd:element name="Property" type="cloudgraph:Property">
+        <xsd:annotation>
+            <xsd:documentation></xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+
+    <xsd:simpleType name="HashAlgorithmName">
+        <xsd:annotation>
+            <xsd:documentation>Supported non-cryptographic hash algorithms</xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="murmur" />
+            <xsd:enumeration value="jenkins" />
+        </xsd:restriction>
+    </xsd:simpleType>
+      
+    <xsd:simpleType name="PreDefinedFieldName">
+        <xsd:annotation>
+            <xsd:documentation>Composite pre-defined row key field names</xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="pkg">
+                <xsd:annotation><xsd:documentation>The package pre-defined field name</xsd:documentation></xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="uri">
+                <xsd:annotation><xsd:documentation>The universal resource identifier pre-defined field name</xsd:documentation></xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="type">
+                <xsd:annotation><xsd:documentation>The SDO Type name pre-defined field name</xsd:documentation></xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="uuid">
+                <xsd:annotation><xsd:documentation>The universal unique ID pre-defined field name</xsd:documentation></xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="property">
+                <xsd:annotation><xsd:documentation>The SDO Property name</xsd:documentation></xsd:annotation>
+            </xsd:enumeration>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="ConfigurationProperty">
+        <xsd:annotation>
+            <xsd:documentation>A property that can be used in a JVM command line or within various 
+            elements within a configuration. System properties take precedence 
+            over all other configuration property instances and lower level (e.g. field level, query level) 
+            configuration properties take precedence over higher level (e.g. graph level, table level) configuration 
+            properties.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="cloudgraph.unique.checks">
+                <xsd:annotation>
+                    <xsd:documentation>Whether to first check for an existing matching row 
+                    key before creating/inserting new rows.
+                    &lt;ul&gt;
+                    &lt;li&gt;Name: cloudgraph.unique.checks&lt;/li&gt;
+                    &lt;li&gt;Data Type: boolean&lt;/li&gt;
+                    &lt;li&gt;Expected Values: true,false&lt;/li&gt;
+                    &lt;li&gt;Default: false&lt;/li&gt;
+                    &lt;/ul&gt;
+                    </xsd:documentation> 
+                </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="cloudgraph.query.fetchtype">
+               <xsd:annotation>
+                    <xsd:documentation>The type of fetch used when executing queries.
+                    &lt;li&gt;Name: cloudgraph.query.fetchtype&lt;/li&gt;
+                    &lt;li&gt;Data Type: string&lt;/li&gt;
+                    &lt;li&gt;Expected Values: serial,parallel&lt;/li&gt;
+                    &lt;li&gt;Default: serial&lt;/li&gt;
+                    @see QueryFetchType
+                    </xsd:documentation> 
+                </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="cloudgraph.query.threadpool.size.min">
+               <xsd:annotation>
+                    <xsd:documentation>The minimum or core size of the query thread pool when using 'parallel' for the value of the 
+                    &lt;b&gt;cloudgraph.query.fetchtype&lt;/b&gt; configuration property. Ignored if the &lt;b&gt;cloudgraph.query.fetchtype&lt;/b&gt; 
+                    configuration property is not set. If set equal to &lt;b&gt;cloudgraph.query.threadpool.size.max&lt;/b&gt; a fixed
+                    sized thread pool will be allocated.     
+                    &lt;li&gt;Name: cloudgraph.query.threadpool.size.min&lt;/li&gt;
+                    &lt;li&gt;Data Type: int&lt;/li&gt;
+                    &lt;li&gt;Default: 10&lt;/li&gt;
+                    </xsd:documentation> 
+                </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="cloudgraph.query.threadpool.size.max">
+               <xsd:annotation>
+                    <xsd:documentation>The maximum size of the query thread pool when using 'parallel' for the value of the 
+                    &lt;b&gt;cloudgraph.query.fetchtype&lt;/b&gt; configuration property. Ignored if the &lt;b&gt;cloudgraph.query.fetchtype&lt;/b&gt; 
+                    configuration property is not set.
+                    &lt;li&gt;Name: cloudgraph.query.threadpool.size.max&lt;/li&gt;
+                    &lt;li&gt;Data Type: int&lt;/li&gt;
+                    &lt;li&gt;Default: 20&lt;/li&gt;
+                    </xsd:documentation> 
+                </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="cloudgraph.query.thread.depth.max">
+               <xsd:annotation>
+                    <xsd:documentation>The maximum graph traversal depth below which new query threads may be allocated when using 'parallel' for the value of the 
+                    &lt;b&gt;cloudgraph.query.fetchtype&lt;/b&gt; configuration property. Ignored if the &lt;b&gt;cloudgraph.query.fetchtype&lt;/b&gt; 
+                    configuration property is not set.
+                    &lt;li&gt;Name: cloudgraph.query.thread.depth.max&lt;/li&gt;
+                    &lt;li&gt;Data Type: int&lt;/li&gt;
+                    &lt;li&gt;Default: 7&lt;/li&gt;
+                    </xsd:documentation> 
+                </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="cloudgraph.tombstone.rows">
+                <xsd:annotation>
+                    <xsd:documentation>Whether to create a tombstone rows when deleting a graph roots. Warning setting this property to false could cause dangling references for models with "one way" associations navigating to the concerned root which are non-navigable from the root. 
+                    &lt;ul&gt;
+                    &lt;li&gt;Name: cloudgraph.tombstone.rows&lt;/li&gt;
+                    &lt;li&gt;Data Type: boolean&lt;/li&gt;
+                    &lt;li&gt;Expected Values: true,false&lt;/li&gt;
+                    &lt;li&gt;Default: true&lt;/li&gt;
+                    &lt;/ul&gt;
+                    </xsd:documentation> 
+                </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="cloudgraph.tombstone.rows.overwriteable">
+                <xsd:annotation>
+                    <xsd:documentation>Whether to ignore and overwrite tombstone rows when creating new graph roots.  
+                    &lt;ul&gt;
+                    &lt;li&gt;Name: cloudgraph.tombstone.rows.overwriteable&lt;/li&gt;
+                    &lt;li&gt;Data Type: boolean&lt;/li&gt;
+                    &lt;li&gt;Expected Values: true,false&lt;/li&gt;
+                    &lt;li&gt;Default: false&lt;/li&gt;
+                    &lt;/ul&gt;
+                    </xsd:documentation> 
+                </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="cloudgraph.maprdb.table.path.prefix">
+                <xsd:annotation>
+                    <xsd:documentation>The path to prepend to all MAPRD-DB (M7) table names for tables found within a configuration. Used for only MAPR-DB (M7) tables. To fully qualify Apache HBase tables, use table namespaces.  
+                    &lt;ul&gt;
+                    &lt;li&gt;Name: cloudgraph.tombstone.rows.overwriteable&lt;/li&gt;
+                    &lt;li&gt;Data Type: string&lt;/li&gt;
+                    &lt;li&gt;Default: null&lt;/li&gt;
+                    &lt;/ul&gt;
+                    </xsd:documentation> 
+                </xsd:annotation>
+            </xsd:enumeration>
+        </xsd:restriction>
+    </xsd:simpleType>
+            
+    <xsd:simpleType name="QueryFetchType">
+        <xsd:annotation>
+            <xsd:documentation>Holds the expected values for the &lt;b&gt;cloudgraph.query.fetchtype&lt;b&gt; configuration property.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="serial">
+                <xsd:annotation><xsd:documentation>Use serial or synchronous fetching during query processing such as when assembling data graphs</xsd:documentation></xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="parallel">
+                <xsd:annotation><xsd:documentation>Use parallel or asynchronous fetching during query processing such as when assembling data graphs</xsd:documentation></xsd:annotation>
+            </xsd:enumeration>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+</xsd:schema>

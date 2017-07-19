@@ -1,0 +1,23 @@
+Release Notes
+
+CloudGraph 0.6.6 Release Notes
+
+CloudGraph 0.6.6 is an internal Beta release of CloudGraph.
+
+The full list of changes can be found in our issue management system github, and is reproduced below.
+See https://github.com/terrameta/cloudgraph/issues. 
+
+
+Major Changes
+
+Bugs
+[Issue #70] - POM Fixes for MAPRDB 5 #70
+
+Improvements
+
+ 
+New Features
+
+Tasks
+
+Wish

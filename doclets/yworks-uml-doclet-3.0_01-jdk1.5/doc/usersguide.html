@@ -1,0 +1,3132 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>yWorks UML Doclet 3.0_01 User's Guide</title>
+<style type="text/css">
+        <!--
+        body {
+          font-family:Verdana, sans-serif; 
+          margin-left:12px;
+          margin-right:12px;
+          margin-top:12px;
+          margin-bottom:12px;
+        }
+
+        h1 { 
+          padding-left:8px;
+          padding-top:8px;
+          padding-bottom:8px;
+          background-color:#d0d0d0;
+          color:#4079ea;
+          font-size:18px;
+          margin-bottom:5px;
+        }
+
+        p {   
+          padding-bottom:0px;
+          padding-top:0px;
+          margin-top:3px;
+          margin-bottom:0px;
+          margin-left:8px;
+          font-size:12px;
+          color:#000000;
+        }
+
+        h2 { 
+          font-size:14px; 
+          color:#4079ea; 
+          margin-top:10px; 
+          margin-bottom:0px; 
+        }
+
+        h3 { 
+          font-size:13px; 
+          margin-left:8px;
+          margin-top:8px; 
+          margin-bottom:2px; 
+        }
+
+        h4 { 
+          font-size:13px; 
+          margin-left:8px;
+          margin-top:8px; 
+          margin-bottom:2px; 
+        }
+
+        table {
+          margin-left: 8px;
+          margin-top: 8px;
+          padding-top: 5px;
+          padding-bottom: 5px;
+          border: 1px solid white;
+          vertical-align: baseline;
+          border-collapse: collapse;
+        }
+
+        td { 
+          font-size:12px;
+          background-color: #E3EEFE;
+          vertical-align:top;
+          border: 1px solid white;
+          vertical-align: baseline;
+          padding: 5px;
+        }
+
+        th {
+          font-size:12px; 
+          background-color:#a4b9ea;
+          text-align: left;
+        }
+
+        a {
+          color: #AA5522; font-weight:bold;
+        }
+        a:link {
+          text-decoration:none;
+        }
+        a:visited {
+          text-decoration:none; color:#772200;
+        }
+        a:active, 
+        a:focus, 
+        a:hover {
+          text-decoration: underline;
+        }
+
+        div.li1 {
+          font-size:12px;
+          margin-top:8px; 
+          margin-bottom:0px; 
+          margin-left:10px; 
+        }
+        div.li2 { 
+          margin-left:20px;
+          margin-top:2px; 
+          margin-bottom:2px; 
+          font-weight:bold;
+          font-size:12px; 
+        }
+
+        dl { 
+          font-size:12px;
+          margin-top:2px;
+          margin-bottom:2px;
+          margin-left:15px;
+        }
+        dt { 
+          font-weight:bold;
+          margin-top:4px;
+          color:#333366;
+        }
+        dd { 
+          margin-left:15px;
+        }
+
+        li { 
+          font-size:12px;
+        }
+
+        caption {
+          font-size:12px;
+        }
+
+        .copyright { 
+          font-size: 10px;
+          font-style:italic;
+          text-align:right;
+          margin-top:20px;
+        }
+
+        code, tt { 
+          font-family:monospace;
+          font-size:12px;
+          color:#0000C0;
+        }
+
+        ul {
+        	list-style:disc;
+        }
+
+        ol {
+        	list-style:decimal;
+        }
+
+        td.plain {
+          background-color: #FFFFFF;
+        }
+
+        dt.plain { 
+          font-weight:normal;
+          color:#000000;
+        }
+
+        div.back {
+          margin-top: 5px;
+          text-align: center;
+        }
+
+        .path {
+        	color: Black;
+        	font-family: "Courier New", Courier, monospace;
+        	font-weight: bold;
+            font-size: 11px;
+        }
+
+        .variable {
+        	color: Black;
+        	font-family: "Courier New", Courier, monospace;
+        	font-weight: bold;
+            font-size: 11px;
+        }
+
+        .elem {
+        	color: Blue;
+        	font-family: "Courier New", Courier, monospace;
+            font-size: 11px;
+        }
+
+        .attr {
+        	color: Blue;
+        	font-family: "Courier New", Courier, monospace;
+            font-size: 11px;
+        }
+        //-->
+                    </style>
+</head>
+<body>
+<table width="825" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="plain">
+<h1>yWorks UML Doclet 3.0_01 User's Guide</h1>
+<h2>
+<a name="contents"></a>Contents</h2>
+<ol>
+<li>
+<a href="#intro">Introduction</a>
+<ul></ul>
+</li>
+<li>
+<a href="#sys-req">System Requirements</a>
+<ul></ul>
+</li>
+<li>
+<a href="#install">Installing yDoc</a>
+<ul></ul>
+</li>
+<li>
+<a href="#run-ydoc">Running yDoc</a>
+<ul>
+<li>
+<a href="#run-ydoclet">Using the yDoc doclet</a>
+</li>
+<li>
+<a href="#run-ydoclet-ide">Using the yDoc doclet from within a Java IDE</a>
+</li>
+<li>
+<a href="#quick-ydoclet">yDoc Quick Start</a>
+</li>
+</ul>
+</li>
+<li>
+<a href="#features">yDoc Features</a>
+<ul>
+<li>
+<a href="#uml">Generating UML class diagrams</a>
+</li>
+<li>
+<a href="#layout-uml">General Layout of UML class diagrams</a>
+</li>
+<li>
+<a href="#filters">Using filters</a>
+</li>
+<li>
+<a href="#xml">Using the XML driven taglet factory</a>
+</li>
+<li>
+<a href="#options">Custom command line options</a>
+</li>
+</ul>
+</li>
+<li>
+<a href="#configuring">Configuring yDoc</a>
+<ul>
+<li>
+<a href="#ydoc-cfg">resources/ydoc.cfg</a>
+</li>
+<li>
+<a href="#styles">UML Styles</a>
+</li>
+</ul>
+</li>
+<li>
+<a href="#limits">Limitations</a>
+<ul></ul>
+</li>
+<li>
+<a href="#ack">Acknowledgments</a>
+<ul></ul>
+</li>
+</ol>
+<h2>1. <a name="intro"></a>Introduction</h2>
+        
+<p>
+            
+                Welcome to the <em>yWorks UML Doclet User's Guide</em>.
+                <br>
+                This guide explains how to use <em>yWorks UML Doclet</em> or
+                <b><em>yDoc</em></b> for short, a javadoc extension (more
+                specifically a doclet/taglet bundle) that provides
+            
+        </p>
+        
+            
+<ul>
+<li>
+                    functionality to auto-generate, customize, and include UML
+                    diagrams in the API documentation of your Java products
+                </li>
+<li>
+                    a filter interface which allows for custom suppression of
+                    class, field, or method documentation
+                </li>
+<li>
+                    an easy to use mechanism for defining simple custom tags
+                    via XML
+                </li>
+</ul>
+        
+        
+<p>
+            
+                Although, yDoc is designed in such a way that it allows user's
+                to continue using all the features they know from standard
+                javadoc, some basic knowledge about javadoc usage in general and
+                doclet usage specifically is required to successfully use yDoc.
+            
+        </p>
+        
+<p>
+            
+                Detailed information on javadoc is available at
+                <a href="http://java.sun.com/j2se/javadoc/">http://java.sun.com/j2se/javadoc/</a>.
+                <br>
+                Detailed information on doclets is available at
+                <a href="http://java.sun.com/j2se/1.5.0/docs/guide/javadoc/doclet/overview.html">http://java.sun.com/j2se/1.5.0/docs/guide/javadoc/doclet/overview.html</a>.
+            
+        </p>
+        
+<div class="back">
+<font size="-2">Back to <a href="#contents">Contents</a></font>
+</div>
+<h2>2. <a name="sys-req"></a>System Requirements</h2>
+        
+<p>
+            
+                yDoc 3.0_01 requires JDK 1.5.0 or JDK 1.6.0 installed on your system.
+                <br>
+                To view UML class diagrams in SVG or SVGZ format, you either
+                need a browser with native SVG support or a SVG plug-in. For
+                Microsoft Internet Explorer, you can download one such plug-in
+                from the
+                <a href="http://www.adobe.com/svg">Adobe SVG</a>
+                website.
+                To view UML class diagrams in SWF format, you need a browser
+                with a Flash Player plug-in. Flash Player plug-ins are available
+                from <a href="http://www.adobe.com/">Adobe</a>,
+                too.
+                <br>
+                If you want to run yDoc under Unix/Linux operating systems, you
+                need to have an X server installed and running, since yDoc
+                makes use of the java awt and/or swing packages (for UML
+                generation only).
+            
+        </p>
+        
+<div class="back">
+<font size="-2">Back to <a href="#contents">Contents</a></font>
+</div>
+<h2>3. <a name="install"></a>Installing yDoc</h2>
+        
+<p>
+            
+                Unzip the yDoc archive (ydoc-3.0_01-jdk1.4.zip or
+                ydoc-3.0_01-jdk1.5.zip respectively) into a directory of your
+                choice. It will create a lib/, a doc/, and a resources/
+                subdirectory.
+                <br>
+                The lib directory contains the java classes you need to run the
+                ydoc expansion as jar libraries.
+                <br>
+                The doc directory contains the yDoc User's Guide in HTML and
+                PDF format, the DocFilter and PathResolver API Documentation in
+                HTML format, and several usage samples.
+                <br>
+                The resources directory contains various configuration files
+                which you can use to customize the behaviour of the yDoc
+                expansion. See
+                <a href="#configuring">Configuring yDoc</a> and
+                <a href="#xml">Using the XML driven taglet factory</a>
+                for more details.
+            
+        </p>
+        
+<div class="back">
+<font size="-2">Back to <a href="#contents">Contents</a></font>
+</div>
+<h2>4. <a name="run-ydoc"></a>Running yDoc</h2>
+        
+<p>
+            
+                Basically you run javadoc. The only difference is, that you
+                tell javadoc to use the facilities provided by yDoc as a
+                plug-in.
+                <br>
+                Read on for detailed information on how to do that. You can
+                skip this part, if you are already familiar with using custom
+                doclets for javadoc.
+            
+        </p>
+        
+<h3>
+<a name="run-ydoclet"></a>Using the yDoc doclet</h3>
+        
+<p>
+            
+                We recommend running javadoc either using a build tool such as
+                <a href="http://ant.apache.org/">ANT</a>
+                (version 1.5.2 or better) or directly from commandline.
+                Before running javadoc from commandline, put your commandline
+                options into a file called "options" and run javadoc by
+                invoking
+                <br>
+                &nbsp;&nbsp;&nbsp;
+                <code>javadoc @options @packages</code>
+                
+<br>
+                where "packages" is the filename of a file containing the java
+                packages you want to be documented.
+            
+        </p>
+        
+<p>
+            
+                See
+                <a href="#quick-ydoclet">yDoc Quick Start</a>
+                for simple examples on how to use yDoc.
+            
+        </p>
+        
+<p>
+            
+                For detailed documentation on the javadoc options, see the
+                javadoc tool homepage at
+                <a href="http://java.sun.com/j2se/javadoc/index.html">http://java.sun.com/j2se/javadoc/index.html</a>.
+            
+        </p>
+        
+<p>
+            
+               To use the yDoc expansion the following options are especially
+               important:
+            
+            <ul>
+<li>
+                    
+<b><code>-docletpath</code></b> <i>docletpathlist</i>
+                    
+<br>
+                    This option tells javadoc where to look for the yDoc
+                    expansion.
+                    <br>
+                    The <i>docletpathlist</i> must contain the path to the
+                    library ydoc.jar
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <span class="path">&lt;ydoc_install_dir&gt;/lib/ydoc.jar</span>
+                    
+<br>
+                    and the resources directory
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <span class="path">&lt;ydoc_install_dir&gt;/resources</span>
+                    
+<br>
+                    
+<b>Important:</b>
+                    
+<br>
+                    If you want to use the yDoc UML generation,
+                    <i>docletpathlist</i> must also contain the path
+                    to your <em>compiled</em>, <em>unobfuscated</em> Java
+                    class files (*.class), for which you want to
+                    generate the API documentation, and to all libraries
+                    needed to compile your Java source files.
+                </li>
+<li>
+                    
+<b><code>-doclet ydoc.doclets.YStandard</code></b>
+                    
+<br>
+                    The <code>-doclet ydoc.doclets.YStandard</code> option
+                    finally tells javadoc to actually use the YStandard doclet,
+                    which is the core class of the ydoc expansion.
+                </li>
+</ul>
+        
+</p>
+        
+<p>
+            
+                See
+                <a href="#features">yDoc Features</a>
+                for information on (custom) commandline options and on how to
+                use the specific capabilites of yDoc.
+            
+        </p>
+        
+<p>
+            
+                A sample options file on a Win32 operating system could look
+                like this:
+            
+            <pre>
+  -d &lt;destination directory&gt;
+  -sourcepath &lt;source directory&gt;
+  -breakiterator
+  -generic
+  -umlautogen
+  -author
+  -docletpath &lt;YID&gt;/lib/ydoc.jar;&lt;YID&gt;/resources;&lt;some path&gt;/myapp.jar
+  -doclet ydoc.doclets.YStandard
+  -filterpath &lt;YID&gt;/lib/ydoc.jar
+  -filter ydoc.filters.ExcludeFilter
+  -tagletpath &lt;YID&gt;/lib/ydoc.jar
+  -tag param
+  -tag return
+  -tag see
+  -ytag y.uml
+            </pre>
+        
+</p>
+        
+<p>
+            
+                where
+                <span class="variable">&lt;YID&gt;</span>
+                denotes the
+                <span class="variable">&lt;ydoc_install_dir&gt;</span>.
+                <br>
+                On Unix/Linux operating systems, you will have to use "
+                <span class="path">:</span>
+                " as a path separator instead of "
+                <span class="path">;</span>
+                ".
+            
+        </p>
+        
+        
+<h3>
+<a name="run-ydoclet-ide"></a>Using the yDoc doclet from within a Java IDE</h3>
+        
+<h4>
+<a name="run-ydoclet-eclipse"></a>Running yDoc from within Eclipse 3</h4>
+        
+<table border="0" cellspacing="0" cellpadding="0">
+            
+            
+            
+                
+<tr>
+                    
+<td valign="top">&nbsp;&nbsp;1.&nbsp;&nbsp;&nbsp;</td>
+                    <td valign="top">Select <em>Export</em> from the
+                        <em>File</em> menu.</td>
+                
+</tr>
+                
+                
+<tr>
+                    
+<td valign="top">&nbsp;&nbsp;2.&nbsp;&nbsp;&nbsp;</td>
+                    <td valign="top">Choose <em>Javadoc</em> from <em>Select an
+                        export destination</em>.
+                        <br>
+                        Go to the next tab.</td>
+                
+</tr>
+                
+                
+<tr>
+                    
+<td valign="top">&nbsp;&nbsp;3.&nbsp;&nbsp;&nbsp;</td>
+                    <td valign="top">
+                        
+<p>
+                            Select <em>Use Custom Doclet</em> then
+                            specify <em>Doclet name</em> and
+                            <em>Doclet class path</em>.
+                        </p>
+                        
+<p>
+                            Name has to be <code>ydoc.doclets.YStandard</code>
+                            and path has to be
+                            <span class="path">&lt;yid&gt;/lib/ydoc.jar</span>.
+                            <br>
+                            
+<span class="path">&lt;yid&gt;</span> denotes the absolute path
+                            to the yDoc directory.
+                        </p>
+                        
+<p>
+                            Go to the next tab.
+                        </p>
+                    
+</td>
+                
+</tr>
+                
+                
+<tr>
+                    
+<td valign="top">&nbsp;&nbsp;4.&nbsp;&nbsp;&nbsp;</td>
+                    <td valign="top">
+                        
+<p>
+                            Add in <em>Extra Javadoc options</em>
+                            
+<br>
+                            
+<code>-docletpath</code>
+                            <span class="path">&lt;yid&gt;/resources</span>
+                            
+<br>
+                        
+</p>
+                        
+<p>
+                            If your sources depend on additional libraries, you
+                            also need to append the path to these libraries to
+                            the above line.
+                        </p>
+                        
+<p>
+                            Any other options you want to use, e.g.
+                            <code>-d</code> <span class="path">&lt;destination&gt;</span> or
+                            <code>-umlautogen</code>, need to be specified in
+                            this input area, too.
+                        </p>
+                    
+</td>
+                
+</tr>
+                
+                
+<tr>
+                    
+<td valign="top">&nbsp;&nbsp;5.&nbsp;&nbsp;&nbsp;</td>
+                    <td valign="top">Optionally, add <code>-J-Xmx1024m</code> in
+                        <em>VM options</em>.
+                        <br>
+                        You may want to play with the numerical value
+                        depending on available RAM and project size.</td>
+                
+</tr>
+            
+        
+</table>
+        
+        
+<h4>
+<a name="run-ydoclet-idea"></a>Running yDoc from within IntelliJ Idea 6</h4>
+        
+<table border="0" cellspacing="0" cellpadding="0">
+            
+            
+            
+                
+<tr>
+                    
+<td valign="top">&nbsp;&nbsp;1.&nbsp;&nbsp;&nbsp;</td>
+                    <td valign="top">Select <em>Generate JavaDoc ...</em> from
+                        the <em>Tools</em> menu.</td>
+                
+</tr>
+                
+                
+<tr>
+                    
+<td valign="top">&nbsp;&nbsp;2.&nbsp;&nbsp;&nbsp;</td>
+                    <td valign="top">
+                    
+<p>
+                        Add in <em>Other command line arguments</em>
+                        
+<br>
+                        
+<code>-docletpath</code>
+                        <span class="path">"&lt;yid&gt;/lib/ydoc.jar"</span>
+                        <code>-doclet</code>
+                        <span class="path">ydoc.doclets.YStandard</span>
+                        <code>-resourcepath</code>
+                        <span class="path">"&lt;yid&gt;/resources"</span>
+                        
+<br>
+                        
+<span class="path">&lt;yid&gt;</span> denotes the absolute path to
+                        the yDoc directory.
+                    </p>
+                    
+<p>
+                        If your sources depend on additional libraries, you
+                        also need to append the path to these libraries to
+                        the <code>-docletpath</code> option.
+                    </p>
+                    
+<p>
+                        Any other options you want to use, e.g.
+                        <code>-d</code> <span class="path">&lt;destination&gt;</span> or
+                        <code>-umlautogen</code>, need to be specified in
+                        this input field, too.
+                    </p>
+                    
+</td>
+                
+</tr>
+                
+                
+<tr>
+                    
+<td valign="top">&nbsp;&nbsp;3.&nbsp;&nbsp;&nbsp;</td>
+                    <td valign="top">Click <em>Start</em>.</td>
+                
+</tr>
+            
+        
+</table>
+        
+        
+<h4>
+<a name="run-ydoclet-netbeans"></a>Running yDoc from within Netbeans 5.5</h4>
+        
+<table border="0" cellspacing="0" cellpadding="0">
+            
+            
+            
+                
+<tr>
+                    
+<td valign="top">&nbsp;&nbsp;1.&nbsp;&nbsp;&nbsp;</td>
+                    <td valign="top">Switch to <em>Projects</em> view.</td>
+                
+</tr>
+                
+                
+<tr>
+                    
+<td valign="top">&nbsp;&nbsp;2.&nbsp;&nbsp;&nbsp;</td>
+                    <td valign="top">Open context menu for <em>Source
+                        Packages</em> (by right clicking).
+                        <br>
+                        Choose <em>Properties</em>.</td>
+                
+</tr>
+                
+                
+<tr>
+                    
+<td valign="top">&nbsp;&nbsp;3.&nbsp;&nbsp;&nbsp;</td>
+                    <td valign="top">Expand <em>Build</em>.
+                        <br>
+                        Choose <em>Documenting</em>.</td>
+                
+</tr>
+                
+                
+<tr>
+                    
+<td valign="top">&nbsp;&nbsp;4.&nbsp;&nbsp;&nbsp;</td>
+                    <td valign="top">
+                        
+<p>
+                            Add in <em>Additional Javadoc Options</em>
+                            
+<br>
+                            
+<code>-docletpath</code>
+                            <span class="path">"&lt;yid&gt;/lib/ydoc.jar"</span>
+                            <code>-doclet</code>
+                            <span class="path">ydoc.doclets.YStandard</span>
+                            <code>-resourcepath</code>
+                            <span class="path">"&lt;yid&gt;/resources"</span>
+                            
+<br>
+                            
+<span class="path">&lt;yid&gt;</span> denotes the absolute path
+                            to the yDoc directory.
+                        </p>
+                        
+<p>
+                            If your sources depend on additional libraries, you
+                            also need to append the path to these libraries to
+                            the <code>-docletpath</code> option.
+                        </p>
+                        
+<p>
+                            Any other options you want to use, e.g.
+                            <code>-d</code> <span class="path">&lt;destination&gt;</span> or
+                            <code>-umlautogen</code>, need to be specified in
+                            this input field, too.
+                        </p>
+                    
+</td>
+                
+</tr>
+                
+                
+<tr>
+                    
+<td valign="top">&nbsp;&nbsp;5.&nbsp;&nbsp;&nbsp;</td>
+                    <td valign="top">Choose <em>Generate Javadoc for
+                      "&lt;project name&gt;"</em> from the <em>Build</em>
+                      menu.</td>
+                
+</tr>
+            
+        
+</table>
+        
+        
+        
+<h3>
+<a name="quick-ydoclet"></a>yDoc Quick Start</h3>
+        
+<p>
+            This section demonstrates how to use yDoc to generate a Javadoc page
+            of a sample class that will automatically include an UML diagram
+            depicting that class.
+        </p>
+        
+<ul>
+<li>
+                
+<p>
+<b>yDoc from commandline</b>
+</p>
+                
+<p>
+                    Look in
+                    <span class="path">&lt;YID&gt;/doc/examples</span>
+                    for sample options files and sample Java sources to test
+                    yDoc.
+                    <br>
+                    All you need to do is invoking javadoc in
+                    <span class="variable">&lt;ydoc_install_dir&gt;</span>
+                    with either
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <code>javadoc @doc/examples/options.sample.linux</code>
+                    
+<br>
+                    or
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <code>javadoc @doc/examples/options.sample.win32</code>
+                    
+<br>
+                    depending on your operating system.
+                </p>
+            
+</li>
+<li>
+                
+<p>
+<b>yDoc in ANT</b>
+</p>
+                
+<p>
+                    Using ANT 1.5.2 or better, you can use ANT's javadoc task to
+                    run yDoc.
+                </p>
+                
+<p>
+                    Look in <span class="path">&lt;YID&gt;/doc/examples</span> for a sample
+                    ANT build file and sample Java sources to test yDoc.
+                    <br>
+                    All you need to do is invoking ant in
+                    <span class="variable">&lt;ydoc_install_dir&gt;</span> with
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <code>ant -buildfile doc/examples/build-sample.xml
+                    test-ydoc</code>
+                
+</p>
+            
+</li>
+</ul>
+        
+<p>
+            The generated API pages can now be found in
+            <span class="path">&lt;ydoc_install_dir&gt;/doc/api/examples</span>.
+        </p>
+        
+<p>
+            Note that the generated UML diagrams are in PNG format. If you want
+            to generate the uml diagrams in a different format (SVG, SVGZ, SWF,
+            GIF, JPG) simply change the value of
+            <b><code>formats.fileformat</code></b> in the yDoc configuration
+            file <span class="path">&lt;ydoc_install_dir&gt;/resources/ydoc.cfg</span>
+            accordingly.
+        </p>
+        
+<p>
+            The next tutorial step would be to look in
+            <span class="path">&lt;ydoc_install_dir&gt;/doc/examples</span>
+            for the sample option/build files and sample Java sources which have
+            been used in this example. Once you understand the options and tags,
+            you are ready to use yDoc in your own project.
+        </p>
+        
+        
+<div class="back">
+<font size="-2">Back to <a href="#contents">Contents</a></font>
+</div>
+<h2>5. <a name="features"></a>yDoc Features</h2>
+        
+<h3>
+<a name="uml"></a>Generating UML class diagrams</h3>
+        
+            
+<p>
+                yDoc will generate UML diagrams, if one or more of the
+                following commandline options are used:
+            </p>
+        
+        
+            
+<ul>
+<li>
+                    
+<b><code>-umlgen</code></b>
+                
+</li>
+<li>
+                    
+<b><code>-umltypegen</code></b>
+                
+</li>
+<li>
+                    
+<b><code>-umlpackagegen</code></b>
+                
+</li>
+<li>
+                    
+<b><code>-umloverviewgen</code></b>
+                
+</li>
+<li>
+                    
+<b><code>-umlautogen</code></b>
+                
+</li>
+</ul>
+        
+        
+            
+<p>
+                All UML diagrams
+                feature hyperlinks for the displayed packages, types, and type
+                members, which allow direct access to the corresponding
+                documentation.
+            </p>
+        
+        
+            
+<p>
+                
+                    See
+                    <a href="#options">Custom command line options</a>
+                    for additional details.
+                
+            </p>
+            
+<p>
+                
+                    yDoc supports several output formats for UML diagrams,
+                    including SVG, SWF, and PNG and will automatically
+                    integrate the diagrams into the generated HTML API
+                    documentation.
+                    <br>
+                    Moreover, yDoc provides many settings which allow to
+                    customize the generated UML diagrams in great detail.
+                
+            </p>
+            
+<p>
+                
+                    See
+                    <a href="#configuring">Configuring yDoc</a>
+                    for details.
+                
+            </p>
+            
+<p>
+                
+                    
+<b>Important:</b>
+                    
+<br>
+                    yDoc uses the Java Reflection API to generate the class
+                    diagrams, therefore you need to specify the path to your
+                    <em>compiled, unobfuscated</em> Java class files (*.class)
+                    and to all libraries needed to compile your Java source
+                    files in the <code>-docletpath</code> option. Your class
+                    files may be located in a jar file.
+                
+            </p>
+            
+<p>
+                
+                    Alternatively, yDoc can embed predefined diagrams instead of
+                    generating them. Predefined diagrams have to be available
+                    in GraphML. GraphML is a generic graph interchange file
+                    format. Diagrams in this format can, e.g., be created using
+                    <a href="http://www.yworks.com/products/yed">yEd</a>,
+                    yWorks' free graph editor.
+                
+            </p>
+            
+<p>
+                
+                    For yDoc to be able to find and read such diagrams, a
+                    diagram locator has to be specified.
+                
+            </p>
+            
+<p>
+                
+                    The distribution comes with one predefined diagram locator.
+                    For this default locator to work successfully, predefined
+                    diagram files have to meet the following criteria:
+                    <ul>
+<li>
+                            Overview diagrams must be in the same directory
+                            as your overview.html.
+                            The diagram files have to be named
+                            <span class="path">overview</span><span class="variable">&lt;id&gt;</span><span class="path">.graphml</span>,
+                            where <span class="variable">&lt;id&gt;</span> denotes the
+                            diagram ID (see also
+                            <a href="#configuring">Configuring yDoc</a>).
+                        </li>
+<li>
+                            Package diagrams must be in the same directory
+                            as your package.html.
+                            The diagram files have to be named
+                            <span class="path">package</span><span class="variable">&lt;id&gt;</span><span class="path">.graphml</span>,
+                            where <span class="variable">&lt;id&gt;</span> denotes the
+                            diagram ID (see also
+                            <a href="#configuring">Configuring yDoc</a>).
+                        </li>
+<li>
+                            Type diagrams must be in the same directory
+                            as the corresponding source file.
+                            The diagram files have to follow the same naming
+                            convention as the Java source file except for the
+                            <span class="path">.graphml</span> file extension.
+                        </li>
+</ul>
+                
+            
+</p>
+            
+<p>
+                
+                    To use this default diagram locator, you need to specify the
+                    following two commandline options:
+                    <br>
+                    &nbsp;&nbsp;&nbsp;
+                    <code>-diagramlocatorpath</code>
+                    <span class="path">&lt;ydoc_install_dir&gt;/lib/ydoc.jar</span>
+                    
+<br>
+                    &nbsp;&nbsp;&nbsp;
+                    <code>-diagramlocator ydoc.resolvers.DefaultDiagramLocator</code>
+                
+            
+</p>
+            
+<p>
+                
+                    To create and use your own diagram locators, all you have to
+                    do is implementing the
+                    <code>ydoc.resolvers.PathResolver</code> interface and
+                    register the locator similar to the above example.
+                    The mechanism to register locators works similar to the one
+                    used for doclets.
+                
+            </p>
+        
+        
+<h4>
+<a name="pathresolver-api"></a><a href="PathResolver.html">PathResolver API</a>
+</h4>
+        
+<p>
+            
+                Documentation for the <code>ydoc.resolvers.PathResolver</code>
+                interface, which comprises the PathResolver API.
+            
+        </p>
+        
+        
+        
+<h3>
+<a name="layout-uml"></a>General Layout of UML class diagrams</h3>
+        
+            
+<table border="0" cellspacing="0" cellpadding="0">
+                
+                
+                    
+<tr>
+                        
+<td class="plain"><img src="UML.jpg" alt=""></td>
+                    
+</tr>
+                    
+<tr>
+                        
+<td class="plain" padding-top="25px"></td>
+                    
+</tr>
+                
+            
+</table>
+            
+<table border="0" cellspacing="0" cellpadding="0">
+                
+                
+                
+                
+                
+                    
+<tr>
+                        
+                        
+<td valign="top" padding-top="0.5em"><img src="1.gif" alt=""></td>
+                        
+                        <td>
+                            
+<dl>
+                                
+<dt>
+                                    
+<b>Associations</b>
+                                
+</dt>
+                                
+<dd>
+                                    structural relationships between a whole and
+                                    its parts, i.e. <em>has a</em> or
+                                    <em>instantiates</em>
+                                
+</dd>
+                                
+<dt class="plain">
+                                    Every declared field constitutes an
+                                    association.
+                                </dt>
+                            
+</dl>
+                        
+</td>
+                    
+</tr>
+                    
+<tr>
+                        
+                        
+<td valign="top" padding-top="0.5em"><img src="2.gif" alt=""></td>
+                        
+                        <td>
+                            
+<dl>
+                                
+<dt>
+                                    
+<b>Dependencies</b>
+                                
+</dt>
+                                
+<dd>
+                                    semantic relationships in which a change to
+                                    one thing may effect the semantics of the
+                                    other thing
+                                </dd>
+                                
+<dt class="plain">
+                                    There are several heuristics as to what
+                                    constitues a dependency. See
+                                    <a href="#configuring">Configuring yDoc</a>.
+                                </dt>
+                            
+</dl>
+                        
+</td>
+                    
+</tr>
+                    
+<tr>
+                        
+                        
+<td valign="top" padding-top="0.5em"><img src="3.gif" alt=""></td>
+                        
+                        <td>
+                            
+<dl>
+                                
+<dt>
+                                    
+<b>Generalizations</b>
+                                
+</dt>
+                                
+<dd>
+                                    specialization/generalization relationships,
+                                    i.e. <em>is a</em> or
+                                    <em>subclass/superclass</em>
+                                
+</dd>
+                                
+<dt class="plain">
+                                    For interfaces there may be more than one
+                                    generalization relationship.
+                                </dt>
+                            
+</dl>
+                        
+</td>
+                    
+</tr>
+                    
+<tr>
+                        
+                        
+<td valign="top" padding-top="0.5em"><img src="4.gif" alt=""></td>
+                        
+                        <td>
+                            
+<dl>
+                                
+<dt>
+                                    
+<b>Realizations</b>
+                                
+</dt>
+                                
+<dd>
+                                    semantic relationships between classifiers,
+                                    i.e. <em>interface/implementing class</em>
+                                
+</dd>
+                                
+<dt class="plain">
+                                    For interfaces there are no realization
+                                    relationships.
+                                </dt>
+                            
+</dl>
+                        
+</td>
+                    
+</tr>
+                
+             
+</table>
+        
+        
+        
+<h3>
+<a name="filters"></a>Using filters</h3>
+        
+<p>
+            yDoc provides a sophisticated filter framework, which lets you
+            exclude parts of your API from documentation using customizable
+            filter criteria.
+        </p>
+        
+<p>
+            
+                The distribution comes with one predefined filter, which
+                lets you exclude classes/interfaces, fields, and/or methods
+                from documentation, if their documentation comment contains an
+                <b><code>@y.exclude</code></b> tag.
+                <br>
+                To use this filter, you need to specify the following two
+                commandline options:
+                <br>
+                &nbsp;&nbsp;&nbsp;
+                <code>-filterpath</code>
+                <span class="path">&lt;ydoc_install_dir&gt;/lib/ydoc.jar</span>
+                
+<br>
+                &nbsp;&nbsp;&nbsp;
+                <code>-filter ydoc.filters.ExcludeFilter</code>
+            
+        
+</p>
+        
+<p>
+            
+                To create and use your own filters, all you have to do is
+                implement the <code>ydoc.filters.DocFilter</code> interface
+                and register the filter similar to the above example.
+                The mechanism to register filters works similar to the one used
+                for doclets.
+            
+        </p>
+        
+<h4>
+<a name="filter-api"></a><a href="DocFilter.html">DocFilter API</a>
+</h4>
+        
+<p>
+            
+                Documentation for the <code>ydoc.filters.DocFilter</code>
+                interface, which comprises the DocFilter API.
+            
+        </p>
+        
+        
+        
+<h3>
+<a name="xml"></a>Using the XML driven taglet factory</h3>
+        
+<p>
+            
+                By specifying the <code>-generic</code>
+                option, you can tell yDoc to register simple taglets, which are
+                more powerful than the ones created by the standard
+                <code>-tag</code> option and are defined in the
+                <span class="path">resources/taglet_definitions.xml</span> and
+                <span class="path">resources/taglet_templates.xml</span> files.
+                <br>
+                By adding more definitions to those files, you can use/register
+                more simple taglets.
+            
+        </p>
+        
+<p>
+           The basic idea is to have template definitions that define
+           taglet behaviour and taglet definitions that define scope, name,
+           and which template to use.
+        </p>
+        
+<p>
+           For examples on how to define taglets, see the two mentioned xml
+           files.
+        </p>
+        
+<h4>Taglet Definitions</h4>
+        
+<p>
+           The following XML elements are used to define taglets:
+        </p>
+        
+            
+<ul>
+<li>
+                    
+<span class="elem">&lt;taglet&gt;</span>
+                    
+<br>
+                    Each of these elements results in the registration of one
+                    particular taglet.
+                    <br>
+                    The value of the <span class="attr">name</span> attribute specifies the
+                    javadoc tag for the taglet. The value of the attribute
+                    <span class="attr">allowMultipleTags</span> specifies if more than one
+                    appearance of the javadoc tag per doc element is allowed.
+                    If not, all but the first tag will be ignored.
+                </li>
+<li>
+                    
+<span class="elem">&lt;usage&gt;</span>
+                    
+<br>
+                    Required element that specifies the taglet scope as per the
+                    taglet API.
+                </li>
+<li>
+                    
+<span class="elem">&lt;headline&gt;</span>
+                    
+<br>
+                    Required root element for <span class="elem">&lt;singular&gt;</span>
+                    and <span class="elem">&lt;plural&gt;</span>.
+                </li>
+<li>
+                    
+<span class="elem">&lt;singular&gt;</span>
+                    
+<br>
+                    Required element that specifies the headline for the tag
+                    comment if only one javadoc tag or no
+                    <span class="elem">&lt;plural&gt;</span> element is present.
+                </li>
+<li>
+                    
+<span class="elem">&lt;plural&gt;</span>
+                    
+<br>
+                    Optional element that specifies the headline for the tag
+                    comment if multiple javadoc tags are allowed and present.
+                </li>
+</ul>
+        
+        
+<p>
+           In general, it is a good idea to use at least one '.' character
+           in the name of custom tags to avoid potential conflicts/overrides.
+        </p>
+        
+        
+<h4>Template Definitions</h4>
+        
+<p>
+           The following XML elements are used to define templates:
+        </p>
+        
+            
+<ul>
+<li>
+                    
+<span class="elem">&lt;template&gt;</span>
+                    
+<br>
+                    Each of these elements results in the creation of one
+                    particular template.
+                    <br>
+                    The value of the <span class="attr">name</span> attribute has to be
+                    unique among all templates. It is used to reference the
+                    template in the taglet definition.
+                </li>
+<li>
+                    
+<span class="elem">&lt;headline&gt;</span>
+                    
+<br>
+                    Required element that specifies the HTML code for the
+                    headline of the tag comment.
+                    <br>
+                    You may specify one parameter sign, i.e.
+                    <code>#0</code>.
+                    <br>
+                    You may use a single parameter multiple times, e.g.
+                    <span class="elem">&lt;headline&gt;</span>
+                    <span class="elem">&lt;![CDATA[bla #0 bla#0bla]]&gt;</span>
+                    <span class="elem">&lt;/headline&gt;</span>
+                    
+<br>
+                    The element should contain unparsed character data, i.e.
+                    <span class="elem">&lt;![CDATA[....]]&gt;</span>
+                
+</li>
+<li>
+                    
+<span class="elem">&lt;content&gt;</span>
+                    
+<br>
+                    Required element that specifies the HTML formatting for the
+                    tag comment.
+                    <br>
+                    The value of the <span class="attr">separator</span> attribute specifies
+                    if and how to break down the comment into parameters.
+                    <br>
+                    Possible values are:
+                    <table border="0" cellspacing="0" cellpadding="0">
+                        
+                        
+                        
+                        
+                        
+                            
+<tr>
+                                
+<td>-&nbsp;&nbsp;</td>
+                                <td>any single character</td>
+                                <td>&nbsp;&nbsp;&nbsp;</td>
+                                <td>breaks the comment at each occurance of the
+                                    specified character</td>
+                            
+</tr>
+                            
+<tr>
+                                
+<td>-&nbsp;&nbsp;</td>
+                                <td>the token "first-whitespace"</td>
+                                <td>&nbsp;&nbsp;&nbsp;</td>
+                                <td>breaks the comment at the first occurance
+                                    of a whitespace</td>
+                            
+</tr>
+                            
+<tr>
+                                
+<td>-&nbsp;&nbsp;</td>
+                                <td>the token "whitespace"</td>
+                                <td>&nbsp;&nbsp;&nbsp;</td>
+                                <td>breaks the comment at each occurance of a
+                                    whitespace</td>
+                            
+</tr>
+                            
+<tr>
+                                
+<td>-&nbsp;&nbsp;</td>
+                                <td>the token "none" (default)</td>
+                                <td>&nbsp;&nbsp;&nbsp;</td>
+                                <td>results in one token only, namely the whole
+                                    comment</td>
+                            
+</tr>
+                        
+                    
+</table>
+                
+</li>
+<li>
+                    
+<span class="elem">&lt;content-item&gt;</span>
+                    
+<br>
+                    Required element that specifies the HTML code to wrap the
+                    tag comment in. If multiple javadoc tag are present for a
+                    particular doc element, then one content item is created
+                    for each tag comment.
+                    <br>
+                    You may specify up to ten parameter signs, i.e.
+                    <code>#x</code>, where
+                    <code>-1 &lt; x &lt; 10</code>.
+                    <br>
+                    You may use a single parameter multiple times.
+                    <br>
+                    The element should contain unparsed character data.
+                </li>
+<li>
+                    
+<span class="elem">&lt;content-sep&gt;</span>
+                    
+<br>
+                    Optional element that defaults to "".
+                    <br>
+                    Its value will be inserted between content items.
+                    <br>
+                    The element should contain unparsed character data.
+                </li>
+<li>
+                    
+<span class="elem">&lt;content-start&gt;</span>
+                    
+<br>
+                    Optional element that defaults to "".
+                    <br>
+                    Its value will be inserted directly after the headline,
+                    before the first content item.
+                    <br>
+                    The element should contain unparsed character data.
+                </li>
+<li>
+                    
+<span class="elem">&lt;content-end&gt;</span>
+                    
+<br>
+                    Optional element that defaults to "".
+                    <br>
+                    Its value will be inserted directly after the the last
+                    content item.
+                    <br>
+                    The element should contain unparsed character data.
+                </li>
+</ul>
+        
+        
+<p>
+            
+                In general, it is a good idea to use the
+                <span class="elem">&lt;DT&gt;</span>
+                tag for headlines and the
+                <span class="elem">&lt;DD&gt;</span>
+                tag for content, since all output generated by javadoc taglets
+                appears in definition lists.
+            
+        </p>
+        
+        
+        
+<h3>
+<a name="options"></a>Custom command line options</h3>
+        
+<p>
+            yDoc provides several custom command line options:
+        </p>
+
+        
+            
+<ul>
+<li>
+                    
+<b><code>-diagramlocator</code></b> <i>class</i>
+                    
+<br>
+                    Specifies the class file for the diagram locator to be used.
+                    Use the fully-qualified name for <i>class</i>. Use the
+                    <code>-diagramlocatorpath</code> option to specify the path
+                    to the diagram locator.
+                </li>
+<li>
+                    
+<b><code>-diagramlocatorpath</code></b> <i>-diagramlocatorpathlist</i>
+                    
+<br>
+                    Specifies the search paths for finding diagram locator class
+                    files (*.class). The <i>diagramlocatorpathlist</i> can
+                    contain multiple paths separated by the system-dependant
+                    path-separator.
+                </li>
+<li>
+                    
+<b><code>-filter</code></b> <i>class</i>
+                    
+<br>
+                    Specifies the class file for the filter to be applied. Use
+                    the fully-qualified name for <i>class</i>. Use the
+                    <code>-filterpath</code> option to specify the path to the
+                    filter.
+                </li>
+<li>
+                    
+<b><code>-filterpath</code></b> <i>filterpathlist</i>
+                    
+<br>
+                    Specifies the search paths for finding filter class files
+                    (*.class). The <i>filterpathlist</i> can contain multiple
+                    paths separated by the system-dependant path-separator.
+                </li>
+<li>
+                    
+<b><code>-generic</code></b>
+                    
+<br>
+                    The taglet definitions in
+                    <span class="path">resources/taglet_definitions.xml</span>
+                    and
+                    <span class="path">resources/taglet_templates.xml</span>
+                    are used to create and register simple taglets.
+                </li>
+<li>
+                    
+<b><code>-license</code></b> <i>file</i>
+                    
+<br>
+                    Specifies the path to the license file.
+                </li>
+<li>
+                    
+<b><code>-resourcepath</code></b> <i>resourcepathlist</i>
+                    
+<br>
+                    Specifies the search paths for finding resource files
+                    (i.e. taglet definition files, ydoc configuration file,
+                    ydoc license file).
+                    The <i>resourcepathlist</i> can contain multiple
+                    paths separated by the system-dependant path-separator.
+                </li>
+<li>
+                    
+<b><code>-umlautogen</code></b>
+                    
+<br>
+                    Same as using
+                    <code>-umltypegen</code>,
+                    <code>-umlpackagegen</code>, and
+                    <code>-umloverviewgen</code>
+                    in combination
+                </li>
+<li>
+                    
+<b><code>-umlfileformat</code></b> <i>formatname</i>
+                    
+<br>
+                    Overrides the <code>uml_file_format</code>
+                    property in <span class="path">resources/ydoc.cfg</span>
+                    
+<br>
+                    See the section about
+                    <a href="#uml-format">UML file formats</a>
+                    for a list of supported formats.
+                </li>
+<li>
+                    
+<b><code>-umlgen</code></b>
+                    
+<br>
+                    UML diagrams will be created and embedded for all
+                    documented files with an <b><code>@y.uml</code></b> tag.
+                    <br>
+                    
+<b><code>@y.uml</code></b> may be used in type, package,
+                    and overview documentation.
+                </li>
+<li>
+                    
+<b><code>-umloverviewgen</code></b>
+                    
+<br>
+                    An UML overview diagram will be created and
+                    embedded, even if there is no <b><code>@y.uml</code></b>
+                    tag in overview.html.
+                </li>
+<li>
+                    
+<b><code>-umlpackagegen</code></b>
+                    
+<br>
+                    UML diagrams
+                    will be created and embedded for all documented packages,
+                    not only for those with an <b><code>@y.uml</code></b> tag.
+                </li>
+<li>
+                    
+<b><code>-umltypegen</code></b>
+                    
+<br>
+                    UML diagrams
+                    will be created and embedded for all documented classes and
+                    interfaces, not only for those with an
+                    <b><code>@y.uml</code></b> tag.
+                </li>
+<li>
+                    
+<b><code>-ytag</code></b>
+                    
+<br>
+                    Allows to specify the position of custom yDoc tags
+                    (i.e. @y.uml or tags defined via the taglet factory)
+                    in relation to standard tags.
+                </li>
+</ul>
+        
+        
+        
+<div class="back">
+<font size="-2">Back to <a href="#contents">Contents</a></font>
+</div>
+<h2>6. <a name="configuring"></a>Configuring yDoc</h2>
+        
+<h3>
+<a name="ydoc-cfg"></a>resources/ydoc.cfg</h3>
+        
+        
+<p>
+            
+<span class="path">resources/ydoc.cfg</span> is yDoc's main configuration file.
+            <br>
+            It uses a simple XML format consisting of nested <code>group</code>
+            and <code>property</code> elements.
+        </p>
+        
+<p>
+            Following is the complete list of recognized <code>group</code>
+            and <code>property</code> declarations.
+        </p>
+        
+        
+            
+<table border="0" cellspacing="0" cellpadding="0">
+                
+                
+        
+<tr>
+<td>
+<p>Group <b>diagrams</b>
+</p>
+        
+<p>
+            Encapsulates settings that determine all aspects of yDoc's UML
+            generating mechanism. These settings are grouped into the categories
+            <em>overview</em>, <em>package</em>, and <em>type</em> in
+            correspondance to the available diagram types.
+            <br>
+            You may have multiple <em>diagram</em> subgroups in each of the
+            above mentioned three categories. For each <em>diagram</em>
+            group, one UML diagram will be generated and embedded into the
+            corresponding HTML file.
+        </p>
+        
+</td>
+</tr>
+        
+        
+<tr>
+<td>
+<p>Group <b>diagrams.overview.diagram</b>
+</p>
+        
+<ul>
+<li>Property <code>style</code> accepts an arbitrary text value
+                interpreted as a file name.
+                <br>
+                This property specifies the path to a yDoc style definition
+                file, which determines the visual properties of the generated
+                UML diagram, such as line colors or font sizes.
+                <br>
+                See <a href="#styles">UML Styles</a> for more
+                information.
+            </li>
+<li>
+                Property <code>type</code> accepts one of the
+                following values:
+                
+                
+                <ul>
+<li>
+<code>dependency</code>
+                        
+<br>
+                        Dependency diagrams depict package-level dependencies
+                        in your project.
+                    </li>
+<li>
+<code>inheritance</code>
+                        
+<br>
+                        Inheritance diagrams depict project-wide inheritance
+                        trees.
+                    </li>
+</ul>
+                
+                
+                This property specifies the overview diagram type.
+                
+            </li>
+<li>Property <code>id</code> accepts an arbitrary text value.
+                <br>
+                This property specifies a diagram ID, which is used to
+                distinguish between multiple overview diagrams.
+                <br>
+                The value of this property has to be unique among all
+                <code>diagrams.overview.diagram</code> ID values.
+            </li>
+</ul>
+        
+</td>
+</tr>
+        
+        
+<tr>
+<td>
+<p>Group <b>diagrams.overview.diagram.include</b>
+</p>
+        
+<ul>
+<li>
+                Property <code>dependencies</code> accepts one of the
+                following values:
+                
+                
+                <ul>
+<li>
+<code>all</code>
+                        
+<br>
+                        All package dependencies are displayed.
+                    </li>
+<li>
+<code>reduced</code>
+                        
+<br>
+                        No transitive dependencies are displayed.
+                    </li>
+</ul>
+                
+                
+                This property specifies whether transitive dependencies should
+                be displayed.
+                <br>
+                This property is only respected for overview diagrams of type
+                <code>dependency</code>.
+                
+            </li>
+<li>Property <code>groups</code> accepts values
+                <code>true</code> and <code>false</code>.
+                <br>
+                This property specifies whether package nodes should be grouped
+                according to the -group options. If no -group option is used,
+                this property is ignored.
+            </li>
+<li>Property <code>packages</code> accepts values
+                <code>true</code> and <code>false</code>.
+                <br>
+                This property specifies whether type nodes should be grouped
+                according to their containing packages.
+                <br>
+                This property is only respected for overview diagrams of type
+                <code>inheritance</code>.
+            </li>
+</ul>
+        
+</td>
+</tr>
+        
+        
+<tr>
+<td>
+<p>Group <b>diagrams.overview.diagram.insets</b>
+</p>
+        
+<ul>
+<li>Property <code>group</code> accepts non-negative integer values.
+                <br>
+                This property specifies the distance from a group node's border
+                to the package nodes contained in the group node.
+            </li>
+<li>Property <code>package</code> accepts non-negative integer
+                values.
+                <br>
+                This property specifies the distance from a package node's
+                border to the type nodes contained in the package node.
+            </li>
+</ul>
+        
+</td>
+</tr>
+        
+        
+<tr>
+<td>
+<p>Group <b>diagrams.overview.diagram.layout</b>
+</p>
+        
+<ul>
+<li>Property <code>BUS_ROUTING</code> accepts values
+                <code>true</code> and <code>false</code>.
+                <br>
+                This property specifies whether multiple relations (e.g. in the
+                case of a class having multiple subclasses) should be routed in
+                a bus style manner.
+            </li>
+<li>
+                Property <code>CYCLE_LAYERING_POLICY</code> accepts one of the
+                following values:
+                
+                <ul>
+<li>
+<code>DEFAULT_POLICY</code>
+                        
+<br>
+                        All backwards relation edges as determined by a
+                        depth-first-search on the diagram nodes are temporarily
+                        removed for layering.
+                    </li>
+<li>
+<code>ASSIGN_CYCLES_TO_SAME_LAYER_POLICY</code>
+                        
+<br>
+                        Diagram nodes with cyclic dependencies are put into
+                        the same layer.
+                    </li>
+<li>
+<code>BREAK_CYCLES_BY_WEIGHT_POLICY</code>
+                        
+<br>
+                        Cyclic dependencies are resolved by temporarily
+                        removing the least significant relation edges for
+                        layering.
+                    </li>
+</ul>
+                
+                This property specifies the layering policy for cyclic
+                dependencies.
+                
+            </li>
+<li>Property <code>GROUP_COMPACTION</code> accepts values
+                <code>true</code> and <code>false</code>.
+                <br>
+                This property specifies whether package and group digram nodes
+                should be kept as small as possible.
+            </li>
+<li>
+                Property <code>ORIENTATION</code> accepts one of the
+                following values:
+                
+                <ul>
+<li>
+<code>TOP_TO_BOTTOM</code>
+</li>
+<li>
+<code>LEFT_TO_RIGHT</code>
+</li>
+<li>
+<code>RIGHT_TO_LEFT</code>
+</li>
+<li>
+<code>BOTTOM_TO_TOP</code>
+</li>
+</ul>
+                
+                This property specifies the layout orientation.
+                
+            </li>
+<li>Property <code>RECURSIVE_GROUP_LAYERING</code> accepts values
+                <code>true</code> and <code>false</code>.
+                <br>
+                This property specifies whether layering should be performed
+                locally on a per group basis or globally for the whole diagram.
+                <br>
+                This property is ignored, if the diagram does not contain
+                node groups.
+            </li>
+<li>Property <code>REVERSE_EDGES</code> accepts values
+                <code>true</code> and <code>false</code>.
+                <br>
+                This property specifies whether the direction of relation edges
+                should be reversed during layout calculation. Reversing the
+                edge directions does e.g. affect the alignment of the diagram
+                nodes.
+            </li>
+<li>Property <code>ROUTE_ORTHOGONAL</code> accepts values
+                <code>true</code> and <code>false</code>.
+                <br>
+                This property specifies whether relation edges should be routed
+                orthogonally or polyline-style.
+            </li>
+</ul>
+        
+</td>
+</tr>
+        
+        
+<tr>
+<td>
+<p>Group <b>diagrams.package.diagram</b>
+</p>
+        
+<ul>
+<li>Property <code>style</code> accepts an arbitrary text value
+                interpreted as a file name.
+                <br>
+                This property specifies the path to a yDoc style definition
+                file, which determines the visual properties of the generated
+                UML diagram, such as line colors or font sizes.
+                <br>
+                See <a href="#styles">UML Styles</a> for more
+                information.
+            </li>
+</ul>
+        
+</td>
+</tr>
+        
+        
+<tr>
+<td>
+<p>Group <b>diagrams.package.diagram.include</b>
+</p>
+        
+<ul>
+<li>Property <code>packages</code> accepts values
+                <code>true</code> and <code>false</code>.
+                <br>
+                This property specifies whether type nodes should be grouped
+                according to their containing package.
+            </li>
+</ul>
+        
+</td>
+</tr>
+        
+        
+<tr>
+<td>
+<p>Group <b>diagrams.package.diagram.insets</b>
+</p>
+        
+<ul>
+<li>Property <code>group</code> accepts non-negative integer values.
+                <br>
+                This property specifies the distance from a group node's border
+                to the package nodes contained in the group node.
+            </li>
+<li>Property <code>package</code> accepts non-negative integer
+                values.
+                <br>
+                This property specifies the distance from a package node's
+                border to the type nodes contained in the package node.
+            </li>
+</ul>
+        
+</td>
+</tr>
+        
+        
+<tr>
+<td>
+<p>Group <b>diagrams.package.diagram.layout</b>
+</p>
+        
+<ul>
+<li>Property <code>BUS_ROUTING</code> accepts values
+                <code>true</code> and <code>false</code>.
+                <br>
+                This property specifies whether multiple relations (e.g. in the
+                case of a class having multiple subclasses) should be routed in
+                a bus style manner.
+            </li>
+<li>
+                Property <code>ORIENTATION</code> accepts one of the
+                following values:
+                
+                <ul>
+<li>
+<code>TOP_TO_BOTTOM</code>
+</li>
+<li>
+<code>LEFT_TO_RIGHT</code>
+</li>
+<li>
+<code>RIGHT_TO_LEFT</code>
+</li>
+<li>
+<code>BOTTOM_TO_TOP</code>
+</li>
+</ul>
+                
+                This property specifies the layout orientation.
+                
+            </li>
+<li>Property <code>REVERSE_EDGES</code> accepts values
+                <code>true</code> and <code>false</code>.
+                <br>
+                This property specifies whether the direction of relation edges
+                should be reversed during layout calculation. Reversing the
+                edge directions does e.g. affect the alignment of the diagram
+                nodes.
+            </li>
+<li>Property <code>ROUTE_ORTHOGONAL</code> accepts values
+                <code>true</code> and <code>false</code>.
+                <br>
+                This property specifies whether relation edges should be routed
+                orthogonally or polyline-style.
+            </li>
+</ul>
+        
+</td>
+</tr>
+        
+        
+<tr>
+<td>
+<p>Group <b>diagrams.type.diagram</b>
+</p>
+        
+<ul>
+<li>Property <code>style</code> accepts an arbitrary text value
+                interpreted as a file name.
+                <br>
+                This property specifies the path to a yDoc style definition
+                file, which determines the visual properties of the generated
+                UML diagram, such as line colors or font sizes.
+                <br>
+                See <a href="#styles">UML Styles</a> for more
+                information.
+            </li>
+</ul>
+        
+</td>
+</tr>
+        
+        
+<tr>
+<td>
+<p>Group <b>diagrams.type.diagram.exclude.pattern</b>
+</p>
+        
+            
+<ul>
+<li>Property <code>associations</code> accepts a pattern text
+                    value.
+                    <br>
+                    Type names matching the pattern text will not be displayed
+                    among the diagram's association types.
+                </li>
+<li>Property <code>dependencies</code> accepts a pattern text
+                    value.
+                    <br>
+                    Type names matching the pattern text will not be displayed
+                    among the diagram's dependency types.
+                </li>
+<li>Property <code>generalizations</code> accepts a pattern text
+                    value.
+                    <br>
+                    Type names matching the pattern text will not be displayed
+                    among the diagram's generalization types.
+                </li>
+<li>Property <code>realizations</code> accepts a pattern text
+                    value.
+                    <br>
+                    Type names matching the pattern text will not be displayed
+                    among the diagram's realization types.
+                </li>
+</ul>
+        
+        
+            
+<p>
+                Pattern text values are a comma-separated list of full-qualified
+                typename patterns where the '?' character denotes a wildcard of
+                length one and the '*' character denotes a wildcard of arbitrary
+                length.
+            </p>
+        
+        
+</td>
+</tr>
+        
+        
+<tr>
+<td>
+<p>Group <b>diagrams.type.diagram.include</b>
+</p>
+        
+<ul>
+<li>Property <code>associations</code> accepts values
+                <code>true</code> and <code>false</code>.
+                <br>
+                This property specifies whether association nodes should be
+                displayed.
+            </li>
+<li>
+                Property <code>dependencies</code> accepts one of the
+                following values:
+                
+                <ul>
+<li>
+<code>all</code>
+                        
+<br>
+                        Any non-primitive type referenced in a type's byte code
+                        is considered a dependency.
+                    </li>
+<li>
+<code>none</code>
+                        
+<br>
+                        No dependency information is calculated.
+                    </li>
+<li>
+<code>parameters</code>
+                        
+<br>
+                        Any non-primitive parameter types of constructor and
+                        method signatures are considered dependencies.
+                    </li>
+<li>
+<code>parameters-returntype</code>
+                        
+<br>
+                        Any non-primitive parameter types of constructor and
+                        method signatures as well as all non-primitive method
+                        return types are considered dependencies.
+                    </li>
+</ul>
+                
+                This property specifies the heuristic approach as to what
+                constitutes a dependency. Note, that types which are
+                associations will not appear as dependencies no matter which
+                heuristic is chosen.
+                
+            </li>
+<li>Property <code>packages</code> accepts values
+                <code>true</code> and <code>false</code>.
+                <br>
+                This property specifies whether type nodes should be grouped
+                according to their containing package.
+            </li>
+<li>Property <code>paramters</code> accepts values
+                <code>true</code> and <code>false</code>.
+                <br>
+                This property specifies whether parameter types should be
+                displayed in constructor and method signatures.
+            </li>
+</ul>
+        
+</td>
+</tr>
+        
+        
+<tr>
+<td>
+<p>Group <b>diagrams.type.diagram.insets</b>
+</p>
+        
+<ul>
+<li>Property <code>package</code> accepts non-negative integer
+                values.
+                <br>
+                This property specifies the distance from a package node's
+                border to the type nodes contained in the package node.
+            </li>
+</ul>
+        
+</td>
+</tr>
+        
+        
+<tr>
+<td>
+<p>Group <b>diagrams.type.diagram.order</b>
+</p>
+        
+            
+<ul>
+<li>Property <code>fields</code> accepts one of the
+                    ordering enumeration values.
+                    <br>
+                    This property specifies the order of fields in type
+                    diagrams.
+                </li>
+<li>Property <code>constructors</code> accepts one of the
+                    ordering enumeration values.
+                    <br>
+                    This property specifies the order of constructors in type
+                    diagrams.
+                </li>
+<li>Property <code>methods</code> accepts one of the
+                    ordering enumeration values.
+                    <br>
+                    This property specifies the order of methods in type
+                    diagrams.
+                </li>
+</ul>
+        
+        
+            
+<p>
+            The following ordering enumeration values are available:
+            </p>
+        
+                    
+            
+<ul>
+<li>
+<code>lex</code>
+                    
+<br>
+                    Members are sorted according to their qualified names
+                    (and signatures in case of constructors and methods).
+                </li>
+<li>
+<code>lex-ic</code>
+                    
+<br>
+                    Same as <em>lex</em>, but case insensitive.
+                </li>
+<li>
+<code>mod-lex</code>
+                    
+<br>
+                    Members are sorted according to their modifiers.
+                    Modifiers are considered to imply the following order:
+                    <br>
+                    &nbsp;&nbsp;
+                    <code>
+                    static public &lt; public &lt;
+                    static protected &lt; protected &lt;
+                    static package-private &lt; package-private &lt;
+                    static private &lt; private
+                    </code>
+                    
+<br>
+                    If two (or more) members are equal according to this
+                    ordering, they are sorted according to their qualified names
+                    (and signatures in case of constructors and methods).
+                </li>
+<li>
+<code>mod-lex-ic</code>
+                    
+<br>
+                    Same as <em>mod-lex</em>, but case insensitive.
+                </li>
+</ul>
+        
+        
+</td>
+</tr>
+        
+        
+<tr>
+<td>
+<p>Group <b>diagrams.type.diagram.layout</b>
+</p>
+            
+<ul>
+<li>Property <code>PACKAGE_DISTANCE</code> accepts values
+                    non-negative decimal values.
+                    <br>
+                    This property specifies the distance between adjacent
+                    package nodes.
+                </li>
+<li>Property <code>RELATION_BUS_ROUTING</code> accepts values
+                    <code>true</code> and <code>false</code>.
+                    <br>
+                    This property specifies whether multiple generalization or
+                    realization edges should be routed in a bus-style manner.
+                </li>
+<li>Property <code>RELATION_DISTANCE</code> accepts values
+                    non-negative decimal values.
+                    <br>
+                    This property specifies the distance between the detailed
+                    type node and related type nodes.
+                </li>
+<li>
+                    Property <code>RELATION_TYPE_ALIGNMENT</code> accepts one
+                    of the following values:
+                    
+                    <ul>
+<li>
+<code>LEFT</code>
+</li>
+<li>
+<code>CENTER</code>
+</li>
+<li>
+<code>RIGHT</code>
+</li>
+<li>
+<code>SHORTEST_DISTANCE</code>
+                            
+<br>
+                            Association nodes will be right aligned, dependency
+                            nodes left aligned.
+                        </li>
+<li>
+<code>LONGEST_DISTANCE</code>
+                            
+<br>
+                            Association nodes will be left aligned, dependency
+                            nodes right aligned.
+                        </li>
+</ul>
+                    
+                    This property specifies specifies the alignment policy for
+                    association and dependency type nodes. If package nodes are
+                    displayed, alignment calculation is done on a per relation
+                    package basis.
+                    
+                </li>
+<li>Property <code>RELATION_TYPE_DISTANCE</code> accepts values
+                    non-negative decimal values.
+                    <br>
+                    This property specifies the distance between adjacent
+                    relation type nodes.
+                </li>
+<li>
+                    Property <code>RELATION_LABEL_LAYOUT_POLICY</code> accepts
+                    one of the following values:
+                    
+                    <ul>
+<li>
+<code>AS_IS</code>
+                            
+<br>
+                            No new label position is calculated.
+                        </li>
+<li>
+<code>OUTWARDS</code>
+                            
+<br>
+                            For labels outside of a type node a new label
+                            position is calculated.
+                            For labels belonging to generalization or
+                            realization types, the new position is above the
+                            node, for labels belonging to association types the
+                            new position is to the left of the node, and for
+                            labels belonging to dependency types, it is to the
+                            right of the node.
+                        </li>
+</ul>
+                    
+                    This property specifies the label layout policy for labels
+                    of relation type nodes.
+                    
+                </li>
+</ul>
+            
+</td>
+</tr>
+        
+        
+<tr>
+<td>
+<p>Group <b>formats</b>
+</p>
+        
+            
+<p>
+               Settings related to file formats of the generated UML diagrams
+               and the way they are embedded into the HTML API documentation.
+            </p>
+        
+        
+            
+<ul>
+<li>
+                    Property <code>fileformat</code> accepts one of the
+                    following values:
+                    
+                    
+                    <ul>
+<li>
+<code>GIF</code>
+                            
+<br>
+                            Well-known image format.
+                        </li>
+<li>
+<code>JPG</code>
+                            
+<br>
+                            Well-known image format.
+                        </li>
+<li>
+<code>PNG</code>
+                            
+<br>
+                            Well-known image format, the default.
+                        </li>
+<li>
+<code>SVG</code>
+                            
+<br>
+                            
+<em>Scalable Vector Graphics</em>,
+                            a XML-based vector graphics format.
+                        </li>
+<li>
+<code>SVGZ</code>
+                            
+<br>
+                            Compressed <em>SVG</em>.
+                        </li>
+<li>
+<code>SWF</code>
+                            
+<br>
+                            
+<em>Shockwave Flash</em>,
+                            a popular binary vector graphics format.
+                        </li>
+</ul>
+                    
+                    
+                    This property specifies the file format for the generated
+                    UML diagrams.
+                    
+                </li>
+</ul>
+        
+        
+</td>
+</tr>
+        
+        
+<tr>
+<td>
+<p>Group <b>formats.vectorgraphics.display</b>
+</p>
+        
+<ul>
+<li>
+                Property <code>scaling</code> accepts one of the following
+                values:
+                
+                
+                <ul>
+<li>
+<code>FIXED_SIZE</code>
+                        
+<br>
+                        The diagram will be displayed in a fixed size canvas
+                        (specified by properties <code>width</code> and
+                        <code>height</code>).
+                    </li>
+<li>
+<code>ACTUAL_SIZE</code>
+                        
+<br>
+                        The diagram will be displayed in a canvas sized to the
+                        diagram's actual size.
+                        <br>
+                        This mode ignores properties <code>width</code> and
+                        <code>height</code>.
+                    </li>
+<li>
+<code>ACTUAL_SIZE_MAX_WIDTH</code>
+                        
+<br>
+                        The diagram will be displayed in a canvas sized to the
+                        diagram's actual size up to a fixed canvas width
+                        specified by property <code>width</code>).
+                        <br>
+                        This mode ignores property <code>height</code>.
+                    </li>
+<li>
+<code>ACTUAL_SIZE_MAX_HEIGHT</code>
+                        
+<br>
+                        The diagram will be displayed in a canvas sized to the
+                        diagram's actual size up to a fixed canvas height
+                        (specified by property <code>height</code>).
+                        <br>
+                        This mode ignores property <code>width</code>.
+                    </li>
+<li>
+<code>ACTUAL_SIZE_MAX_WIDTH_MAX_HEIGHT</code>
+                        
+<br>
+                        The diagram will be displayed in a canvas sized to the
+                        diagram's actual size up to a fixed canvas size
+                        (specified by properties <code>width</code> and
+                        <code>height</code>).
+                    </li>
+<li>
+<code>FIT_TO_SIZE</code>
+                        
+<br>
+                        The diagram will be scaled to fit into a canvas with
+                        fixed width and fixed height (specified by properties
+                        <code>width</code> and <code>height</code>).
+                    </li>
+<li>
+<code>FIT_TO_SIZE_BY_WIDTH</code>
+                        
+<br>
+                        The diagram will be scaled to fit into a canvas with
+                        fixed width (specified by property <code>width</code>).
+                        <br>
+                        This mode ignores property <code>height</code>
+                    
+</li>
+<li>
+<code>FIT_TO_SIZE_BY_HEIGHT</code>
+                        
+<br>
+                        The diagram will be scaled to fit into a canvas with
+                        fixed height (specified by property
+                        <code>height</code>).
+                        <br>
+                        This mode ignores property <code>width</code>.
+                    </li>
+<li>
+<code>SHRINK_TO_SIZE</code>
+                        
+<br>
+                        The diagram will be scaled to fit into a canvas with
+                        fixed width and fixed height (specified by properties
+                        <code>width</code> and <code>height</code>), unless it
+                        already fits.
+                    </li>
+<li>
+<code>SHRINK_TO_SIZE_BY_WIDTH</code>
+                        
+<br>
+                        The diagram will be scaled to fit into a canvas with
+                        fixed width (specified by property <code>width</code>),
+                        unless it already fits.
+                        <br>
+                        This mode ignores property <code>height</code>.
+                    </li>
+<li>
+<code>SHRINK_TO_SIZE_BY_HEIGHT</code>
+                        
+<br>
+                        The diagram will be scaled to fit into a canvas with
+                        fixed height (specified by property
+                        <code>height</code>), unless it already fits.
+                        <br>
+                        This mode ignores <code>width</code>.
+                    </li>
+</ul>
+                
+                
+                This property specifies the display scaling policy for UML
+                diagrams.
+                All policies will retain the diagram's original aspect ratio.
+                
+            </li>
+<li>Property <code>width</code> accepts positive integer values.
+                <br>
+                This property specifies the canvas width for the generated UML
+                diagram.
+            </li>
+<li>Property <code>height</code> accepts positive integer values.
+                <br>
+                This property specifies the canvas height for the generated UML
+                diagram.
+            </li>
+<li>Property <code>reserveMinimum</code> accepts values
+                <code>true</code> and <code>false</code>.
+                <br>
+                This property specifies whether yDoc should reserve a canvas at
+                least the size of <code>width</code> and <code>height</code>
+                when embedding UML diagrams into HTML API documentation.
+            </li>
+</ul>
+        
+</td>
+</tr>
+        
+        
+<tr>
+<td>
+<p>Group <b>formats.vectorgraphics.svg</b>
+</p>
+        
+<ul>
+<li>Property <code>workaround</code> accepts values
+                <code>true</code> and <code>false</code>.
+                <br>
+                This property specifies whether yDoc should use alternative
+                HTML code for SVG embedding.
+                <br>
+                Due to changes in the plug-ins API in the gecko code base,
+                the current version of the Adobe SVG Plugin 3.0 crashes browsers
+                of the gecko family (Mozilla, Netscape 6+7, ...) when displaying
+                HTML with embedded SVG images.
+                <br>
+                There is an experimental workaround by wrapping the
+                &lt;EMBED&gt; tag(s) in &lt;IFRAME&gt; tags, albeit with
+                a significant disadvantage:
+                It is no longer possible to use javascript based hyperlinks in
+                SVG, which are  neccessary to make URI fragments work properly.
+            </li>
+</ul>
+        
+</td>
+</tr>
+        
+        
+<tr>
+<td>
+<p>Group <b>formats.image</b>
+</p>
+        
+<ul>
+<li>Property <code>quality</code> accepts values ranging from 0.0 to
+                1.0.
+                <br>
+                This property specifies the compression quality for image
+                formats that support compression (e.g. PNG, JPG).
+                <br>
+                A compression quality setting of 0.0 is most generically
+                interpreted as <em>high compression is important</em>, while a
+                setting of 1.0 is most generically interpreted as
+                <em>high image quality is important</em>.
+            </li>
+<li>Property <code>antialiasing</code> accepts values
+                <code>true</code> and <code>false</code>.
+                <br>
+                This property specifies whether anti aliasing should be used
+                in UML diagram image files.
+            </li>
+<li>Property <code>progressive</code> accepts values
+                <code>true</code> and <code>false</code>.
+                <br>
+                This property specifies whether UML diagram image files should
+                be encoded in progressive mode for image formats that support
+                progressive encoding.
+                <br>
+                Progressive encoding will result in image streams containing a
+                series of scans of increasing quality.
+            </li>
+</ul>
+        
+</td>
+</tr>
+        
+        
+<tr>
+<td>
+<p>Group <b>formats.image.tiling</b>
+</p>
+        
+<ul>
+<li>Property <code>enabled</code> accepts values
+                <code>true</code> and <code>false</code>.
+                <br>
+                This property specifies whether UML diagrams should be written
+                to multiple small image files instead of a single large one,
+                if the image's width or height exceeds the corresponding
+                maximum.
+            </li>
+<li>Property <code>width</code> accepts non-negative integer
+                values.
+                <br>
+                This property specifies the maximum width for UML diagram image
+                tiles.
+            </li>
+<li>Property <code>height</code> accepts non-negative integer
+                values.
+                <br>
+                This property specifies the maximum height for UML diagram image
+                tiles.
+            </li>
+</ul>
+        
+</td>
+</tr>
+        
+        
+<tr>
+<td>
+<p>Group <b>misc</b>
+</p>
+        
+<ul>
+<li>Property <code>warnings</code> accepts values
+                <code>true</code> and <code>false</code>.
+                <br>
+                This property specifies whether yDoc should emit warnings
+                each time an explicit link (i.e. the result of @see or @link)
+                to a documentation member, which was not accepted by the
+                registered filters, is suppressed.
+            </li>
+</ul>
+        
+</td>
+</tr>
+        
+        
+<tr>
+<td>
+<p>Group <b>misc.gc</b>
+</p>
+        
+<ul>
+<li>Property <code>frequency</code> accepts non-negative integer
+                values.
+                <br>
+                This property specifies the number of UML diagrams to be
+                generated between explicit calls to the Java garbage collector.
+                A value of 10, for example, would result in a call to the
+                garbage collector after every tenth diagram, whereas a value
+                of 1 will call garbage collection after each diagram.
+                <br>
+                A value of 0 will prevent yDoc from explicitly calling
+                the Java garbage collector.
+            </li>
+</ul>
+        
+</td>
+</tr>
+                
+            
+</table>
+        
+        
+        
+<h3>
+<a name="styles"></a>UML Styles</h3>
+        
+<p>
+            A style set defines the visual features of UML diagrams and is
+            specified in a XML file which conforms to the yDoc
+            <a href="http://www.yworks.com/xml/schema/ydoc/1.0/ydocstyle.xsd">style definition schema</a>.
+            <br>
+            The yDoc distribution comes with several predefined style files,
+            see <span class="path">resources/styles</span>.
+            <br>
+            You can customize colors (main, border, text), fonts, shapes, and
+            lines by either modifying an existing style file or creating a new
+            one.
+            <br>
+            The yDoc 3.0_01 distribution includes StyleEd, a GUI-based style
+            editor, that greatly simplifies customization. The editor is
+            completely written in Java and will run on any Java 1.4.x or
+            higher platform.
+            All files needed to run StyleEd are contained in the executable JAR
+            file <span class="path">lib/styleed.jar</span>, i.e. double-clicking the file or
+            invoking
+            <br>
+            
+<code>java -jar &lt;YID&gt;/lib/styleed.jar</code>
+            
+<br>
+            will start StyleEd.
+            <br>
+            Aside from style file editing, StyleEd also allows users to
+            experiment with layout settings for the various diagram types.
+        </p>
+        
+        
+<div class="back">
+<font size="-2">Back to <a href="#contents">Contents</a></font>
+</div>
+<h2>7. <a name="limits"></a>Limitations</h2>
+        
+<ul>
+<li>
+                The yDoc Evaluation version will only document ten classes.
+                <br>
+                If one or more of those are excluded from documentation via the
+                <code>@y.exclude</code>
+                tag, they still count against that limit.
+            </li>
+<li>
+                In UML class diagrams generated by the yDoc Evaluation version,
+                the associations list and the dependencies list will only
+                display the ten above mentioned classes.
+            </li>
+</ul>
+        
+<div class="back">
+<font size="-2">Back to <a href="#contents">Contents</a></font>
+</div>
+<h2>8. <a name="ack"></a>Acknowledgments</h2>
+        
+<p>
+            
+                This product includes software developed by the Apache Software
+                Foundation
+                (<a href="http://www.apache.org/">http://www.apache.org/</a>).
+                <br>
+                yDoc uses Batik to generate SVG files. Batik is distributed
+                under the Apache Software License, Version 2.0:
+            
+            <pre>
+
+                               Apache License
+                        Version 2.0, January 2004
+                     <a href="http://www.apache.org/licenses/">http://www.apache.org/licenses/</a>
+
+TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+
+1. Definitions.
+
+   "License" shall mean the terms and conditions for use, reproduction,
+   and distribution as defined by Sections 1 through 9 of this document.
+
+   "Licensor" shall mean the copyright owner or entity authorized by
+   the copyright owner that is granting the License.
+
+   "Legal Entity" shall mean the union of the acting entity and all
+   other entities that control, are controlled by, or are under common
+   control with that entity. For the purposes of this definition,
+   "control" means (i) the power, direct or indirect, to cause the
+   direction or management of such entity, whether by contract or
+   otherwise, or (ii) ownership of fifty percent (50%) or more of the
+   outstanding shares, or (iii) beneficial ownership of such entity.
+
+   "You" (or "Your") shall mean an individual or Legal Entity
+   exercising permissions granted by this License.
+
+   "Source" form shall mean the preferred form for making modifications,
+   including but not limited to software source code, documentation
+   source, and configuration files.
+
+   "Object" form shall mean any form resulting from mechanical
+   transformation or translation of a Source form, including but
+   not limited to compiled object code, generated documentation,
+   and conversions to other media types.
+
+   "Work" shall mean the work of authorship, whether in Source or
+   Object form, made available under the License, as indicated by a
+   copyright notice that is included in or attached to the work
+   (an example is provided in the Appendix below).
+
+   "Derivative Works" shall mean any work, whether in Source or Object
+   form, that is based on (or derived from) the Work and for which the
+   editorial revisions, annotations, elaborations, or other modifications
+   represent, as a whole, an original work of authorship. For the purposes
+   of this License, Derivative Works shall not include works that remain
+   separable from, or merely link (or bind by name) to the interfaces of,
+   the Work and Derivative Works thereof.
+
+   "Contribution" shall mean any work of authorship, including
+   the original version of the Work and any modifications or additions
+   to that Work or Derivative Works thereof, that is intentionally
+   submitted to Licensor for inclusion in the Work by the copyright owner
+   or by an individual or Legal Entity authorized to submit on behalf of
+   the copyright owner. For the purposes of this definition, "submitted"
+   means any form of electronic, verbal, or written communication sent
+   to the Licensor or its representatives, including but not limited to
+   communication on electronic mailing lists, source code control systems,
+   and issue tracking systems that are managed by, or on behalf of, the
+   Licensor for the purpose of discussing and improving the Work, but
+   excluding communication that is conspicuously marked or otherwise
+   designated in writing by the copyright owner as "Not a Contribution."
+
+   "Contributor" shall mean Licensor and any individual or Legal Entity
+   on behalf of whom a Contribution has been received by Licensor and
+   subsequently incorporated within the Work.
+
+2. Grant of Copyright License. Subject to the terms and conditions of
+   this License, each Contributor hereby grants to You a perpetual,
+   worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+   copyright license to reproduce, prepare Derivative Works of,
+   publicly display, publicly perform, sublicense, and distribute the
+   Work and such Derivative Works in Source or Object form.
+
+3. Grant of Patent License. Subject to the terms and conditions of
+   this License, each Contributor hereby grants to You a perpetual,
+   worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+   (except as stated in this section) patent license to make, have made,
+   use, offer to sell, sell, import, and otherwise transfer the Work,
+   where such license applies only to those patent claims licensable
+   by such Contributor that are necessarily infringed by their
+   Contribution(s) alone or by combination of their Contribution(s)
+   with the Work to which such Contribution(s) was submitted. If You
+   institute patent litigation against any entity (including a
+   cross-claim or counterclaim in a lawsuit) alleging that the Work
+   or a Contribution incorporated within the Work constitutes direct
+   or contributory patent infringement, then any patent licenses
+   granted to You under this License for that Work shall terminate
+   as of the date such litigation is filed.
+
+4. Redistribution. You may reproduce and distribute copies of the
+   Work or Derivative Works thereof in any medium, with or without
+   modifications, and in Source or Object form, provided that You
+   meet the following conditions:
+
+   (a) You must give any other recipients of the Work or
+       Derivative Works a copy of this License; and
+
+   (b) You must cause any modified files to carry prominent notices
+       stating that You changed the files; and
+
+   (c) You must retain, in the Source form of any Derivative Works
+       that You distribute, all copyright, patent, trademark, and
+       attribution notices from the Source form of the Work,
+       excluding those notices that do not pertain to any part of
+       the Derivative Works; and
+
+   (d) If the Work includes a "NOTICE" text file as part of its
+       distribution, then any Derivative Works that You distribute must
+       include a readable copy of the attribution notices contained
+       within such NOTICE file, excluding those notices that do not
+       pertain to any part of the Derivative Works, in at least one
+       of the following places: within a NOTICE text file distributed
+       as part of the Derivative Works; within the Source form or
+       documentation, if provided along with the Derivative Works; or,
+       within a display generated by the Derivative Works, if and
+       wherever such third-party notices normally appear. The contents
+       of the NOTICE file are for informational purposes only and
+       do not modify the License. You may add Your own attribution
+       notices within Derivative Works that You distribute, alongside
+       or as an addendum to the NOTICE text from the Work, provided
+       that such additional attribution notices cannot be construed
+       as modifying the License.
+
+   You may add Your own copyright statement to Your modifications and
+   may provide additional or different license terms and conditions
+   for use, reproduction, or distribution of Your modifications, or
+   for any such Derivative Works as a whole, provided Your use,
+   reproduction, and distribution of the Work otherwise complies with
+   the conditions stated in this License.
+
+5. Submission of Contributions. Unless You explicitly state otherwise,
+   any Contribution intentionally submitted for inclusion in the Work
+   by You to the Licensor shall be under the terms and conditions of
+   this License, without any additional terms or conditions.
+   Notwithstanding the above, nothing herein shall supersede or modify
+   the terms of any separate license agreement you may have executed
+   with Licensor regarding such Contributions.
+
+6. Trademarks. This License does not grant permission to use the trade
+   names, trademarks, service marks, or product names of the Licensor,
+   except as required for reasonable and customary use in describing the
+   origin of the Work and reproducing the content of the NOTICE file.
+
+7. Disclaimer of Warranty. Unless required by applicable law or
+   agreed to in writing, Licensor provides the Work (and each
+   Contributor provides its Contributions) on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+   implied, including, without limitation, any warranties or conditions
+   of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
+   PARTICULAR PURPOSE. You are solely responsible for determining the
+   appropriateness of using or redistributing the Work and assume any
+   risks associated with Your exercise of permissions under this License.
+
+8. Limitation of Liability. In no event and under no legal theory,
+   whether in tort (including negligence), contract, or otherwise,
+   unless required by applicable law (such as deliberate and grossly
+   negligent acts) or agreed to in writing, shall any Contributor be
+   liable to You for damages, including any direct, indirect, special,
+   incidental, or consequential damages of any character arising as a
+   result of this License or out of the use or inability to use the
+   Work (including but not limited to damages for loss of goodwill,
+   work stoppage, computer failure or malfunction, or any and all
+   other commercial damages or losses), even if such Contributor
+   has been advised of the possibility of such damages.
+
+9. Accepting Warranty or Additional Liability. While redistributing
+   the Work or Derivative Works thereof, You may choose to offer,
+   and charge a fee for, acceptance of support, warranty, indemnity,
+   or other liability obligations and/or rights consistent with this
+   License. However, in accepting such obligations, You may act only
+   on Your own behalf and on Your sole responsibility, not on behalf
+   of any other Contributor, and only if You agree to indemnify,
+   defend, and hold each Contributor harmless for any liability
+   incurred by, or claims asserted against, such Contributor by reason
+   of your accepting any such warranty or additional liability.
+
+END OF TERMS AND CONDITIONS
+
+APPENDIX: How to apply the Apache License to your work.
+
+   To apply the Apache License to your work, attach the following
+   boilerplate notice, with the fields enclosed by brackets "[]"
+   replaced with your own identifying information. (Don't include
+   the brackets!)  The text should be enclosed in the appropriate
+   comment syntax for the file format. We also recommend that a
+   file or class name and description of purpose be included on the
+   same "printed page" as the copyright notice for easier
+   identification within third-party archives.
+
+Copyright [yyyy] [name of copyright owner]
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   <a href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a>
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+            </pre>
+        
+</p>
+        
+<div align="center">
+            
+                Copyright &copy; 2002-2011 yWorks GmbH.
+                All Rights Reserved.
+                <br>
+                Send comments and questions to
+                <a href="mailto:ydoc@yWorks.de?subject=yWorks UML Doclet 3.0_01">ydoc@yWorks.com</a>
+            
+        
+</div>
+        
+<div class="back">
+<font size="-2">Back to <a href="#contents">Contents</a></font>
+</div>
+</td>
+</tr>
+</table>
+</body>
+</html>

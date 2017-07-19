@@ -1,0 +1,24 @@
+Release Notes
+
+CloudGraph 0.6.0 Release Notes
+
+CloudGraph 0.6.0 is an internal Beta release of CloudGraph.
+
+The full list of changes can be found in our issue management system github, and is reproduced below.
+See https://github.com/terrameta/cloudgraph/issues. 
+
+Major Changes
+
+Bugs
+
+Improvements
+[Issue #48] - Create GraphOutputFormat and Related #48
+[Issue #47] - Create MapReduce Maven Sub project #47
+[Issue #46] - Promote Relevant MapReduce Extension Classes #46
+[Issue #45] - Upgrade to Plasma 1.2.0
+
+New Features
+
+Tasks
+
+Wish

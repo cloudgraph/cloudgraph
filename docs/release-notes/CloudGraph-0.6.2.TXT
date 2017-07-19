@@ -1,0 +1,21 @@
+Release Notes
+
+CloudGraph 0.6.2 Release Notes
+
+CloudGraph 0.6.2 is an internal Beta release of CloudGraph.
+
+The full list of changes can be found in our issue management system github, and is reproduced below.
+See https://github.com/terrameta/cloudgraph/issues. 
+
+Major Changes
+
+Bugs
+
+Improvements
+
+New Features
+[Issue #58] - Add Query Threadpool Max Depth Config Property
+[Issue #56] - Parallel Graph Assembly
+Tasks
+
+Wish

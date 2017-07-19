@@ -1,0 +1,24 @@
+<html>
+<head></head>
+<body>
+Analyzes the characteristics of a query and assembles composite start and stop row keys, 
+in order to leverage the important HBase partial row-key scan
+capability for every possible query predicate expression.
+<p>
+For each set of query predicates forming the basis for an HBase 
+scan, a set of context rich, data "flavor" specific structures are
+constructed to abstract the complexities involved in assembling the various segments and fields of
+composite (scan start/stop) row keys under various relational and logical operator and
+various configurable composite key-field hashing, formatting, padding 
+and other features. If an HBase partial row-key scan is possible
+based on the literal set, a 
+{@link PartialRowKeyScanAssembler} is 
+invoked using the current scan context resulting in a pair 
+of composite start/stop row keys. These are then used in the HBase 
+client <a target="#" href="http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/client/Scan.html">scan</a> API
+start and stop row.
+</p>
+<p>
+</p>
+</body>
+</html>

@@ -1,0 +1,25 @@
+Release Notes
+
+CloudGraph 0.5.8 Release Notes
+
+CloudGraph 0.5.8 is an internal Beta release of CloudGraph.
+
+The full list of changes can be found in our issue management system github, and is reproduced below.
+See https://github.com/terrameta/cloudgraph/issues. 
+
+Major Changes
+
+Bugs
+
+[Issue #41] - Equals Start/Stop Bytes for Partial Key Scan String Literal Needs Pad Character
+
+Improvements
+[Issue #42] - Partial Key Scan For Limited Wildcards 
+[Issue #39] - Recognizer Specific Query Expression Syntax Tree Visitor
+
+New Features
+HBase Mapreduce infrastructure - see org.cloudgraph.hbase.mapreduce package
+
+Tasks
+
+Wish

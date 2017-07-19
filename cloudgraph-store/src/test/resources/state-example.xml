@@ -1,0 +1,35 @@
+<ns2:StateModel xmlns:ns2="http://www.cloudgraph.org/state">
+    <Root>464932c5-3ac7-4a4f-b2a5-8326c2fb7b9f</Root>
+    <URI name="S">
+        <Type hashCode="1212250473" seq="22" name="A"/>
+        <Type hashCode="1268540286" seq="12" name="B"/>
+        <Type hashCode="1168671046" seq="23" name="F"/>
+        <Type hashCode="1327206062" seq="34" name="P"/>
+        <Type hashCode="1330650547" seq="45" name="T"/>
+    </URI>
+<!--     <URI uri="http://cloudgraph.org/test/social" physicalName="S"> -->
+<!--         <Type hashCode="1212250473" seq="22" name="Actor" physicalName="A"/> -->
+<!--         <Type hashCode="1268540286" seq="12" name="Blog"  physicalName="B"/> -->
+<!--         <Type hashCode="1168671046" seq="23" name="Friendship" physicalName="F"/> -->
+<!--         <Type hashCode="1327206062" seq="34" name="Photo" physicalName="P"/> -->
+<!--         <Type hashCode="1330650547" seq="45" name="Topic" physicalName="T"/> -->
+<!--     </URI> -->
+    <!-- 
+    <UUID typeId="1" id="1">4ca5011c-6da7-402c-be32-b00941598522</UUID>
+    <UUID typeId="1" id="2">be9fc3c1-07dc-426d-829a-a10424296fe4</UUID>
+    <UUID typeId="2" id="1">9bce1d3c-3a67-423f-a9c4-19031a0b557f</UUID>
+    <UUID typeId="2" id="2">8d25a34a-798c-4073-ab34-750473fc8f68</UUID>
+    <UUID typeId="3" id="1">e5e90b1e-8ad3-4ca6-848d-db91ae523ec6</UUID>
+    <UUID typeId="4" id="1">464932c5-3ac7-4a4f-b2a5-8326c2fb7b9f</UUID>
+    <UUID typeId="4" id="2">10811384-61d9-425a-ae60-0c2da82b902f</UUID>
+    <UUID typeId="5" id="1">631c12ec-5121-4fff-8756-fde84ed53426</UUID>
+    <UUID typeId="5" id="2">ccb3db2f-abca-4d12-a579-e5c45461a2ac</UUID>
+    <UUID typeId="5" id="3">b72dbe07-ec5a-465d-b320-6662a1da2b13</UUID>
+    <RowKey table="MEDIA" uuid="464932c5-3ac7-4a4f-b2a5-8326c2fb7b9f">1913830487:PHOTO:sandy1:464932c5-3ac7-4a4f-b2a5-8326c2fb7b9f</RowKey>
+    <RowKey table="TOPIC" uuid="b72dbe07-ec5a-465d-b320-6662a1da2b13">1913830487:TOPIC:Atlantic Storms:b72dbe07-ec5a-465d-b320-6662a1da2b13</RowKey>
+    <RowKey table="ACTOR" uuid="4ca5011c-6da7-402c-be32-b00941598522">1913830487:ACTOR:social1353688087649_example.com</RowKey>
+    <RowKey table="MEDIA" uuid="10811384-61d9-425a-ae60-0c2da82b902f">1913830487:PHOTO:sandy2:10811384-61d9-425a-ae60-0c2da82b902f</RowKey>
+    <RowKey table="TOPIC" uuid="631c12ec-5121-4fff-8756-fde84ed53426">1913830487:TOPIC:Politics:631c12ec-5121-4fff-8756-fde84ed53426</RowKey>
+    <RowKey table="TOPIC" uuid="ccb3db2f-abca-4d12-a579-e5c45461a2ac">1913830487:TOPIC:Weather:ccb3db2f-abca-4d12-a579-e5c45461a2ac</RowKey>
+    -->
+</ns2:StateModel>

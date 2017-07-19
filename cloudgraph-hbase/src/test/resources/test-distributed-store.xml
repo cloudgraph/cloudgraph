@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cloudgraph:CloudGraphConfiguration  
+    xmlns:cloudgraph="http://www.cloudgraph.org/config">
+    <Property name="hbase.zookeeper.quorum">u16677374.onlinehome-server.com:2181,u16551142.onlinehome-server.com:2181,u16548889.onlinehome-server.com:2181</Property>
+    <Property name="hbase.zookeeper.property.clientPort">2181</Property>     
+     
+
+    <Property name="org.plasma.sdo.access.provider.hbase.ConnectionPoolMinSize">1</Property>    
+    <Property name="org.plasma.sdo.access.provider.hbase.ConnectionPoolMaxSize">80</Property>    
+ 
+         
+    <Table name="TEST_ACTOR" dataColumnFamilyName="f1">
+        <HashAlgorithm name="murmur"/>
+        <DataGraph uri="http://cloudgraph.org/test/socialgraph/actor" type="Actor">
+            <RowKeyModel>
+                <RowKeyField>
+                    <PredefinedField name="type" hash="false"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <UserDefinedField path="name"/>
+                </RowKeyField>
+            </RowKeyModel>
+            
+            <ColumnKeyModel>
+                <ColumnKeyField name="pkg"/>
+                <ColumnKeyField name="type"/>
+                <ColumnKeyField name="property"/>
+            </ColumnKeyModel>
+        </DataGraph>
+    </Table>  
+    <Table name="TEST_STORY" dataColumnFamilyName="f1">
+        <HashAlgorithm name="murmur"/>
+        <DataGraph uri="http://cloudgraph.org/test/socialgraph/story" type="Blog">
+            <RowKeyModel>
+                <RowKeyField>
+                    <PredefinedField name="type" hash="false"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <UserDefinedField path="name"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <PredefinedField name="uuid" hash="false"/>
+                </RowKeyField>
+            </RowKeyModel>
+            
+            <ColumnKeyModel>
+                <ColumnKeyField name="pkg"/>
+                <ColumnKeyField name="type"/>
+                <ColumnKeyField name="property"/>
+            </ColumnKeyModel>
+        </DataGraph>
+    </Table>  
+    <Table name="TEST_MEDIA" dataColumnFamilyName="f1">
+        <HashAlgorithm name="murmur"/>
+        <DataGraph uri="http://cloudgraph.org/test/socialgraph/actor" type="Photo">
+            <RowKeyModel>
+                <RowKeyField>
+                    <PredefinedField name="type" hash="false"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <UserDefinedField path="name"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <PredefinedField name="uuid"/>
+                </RowKeyField>
+            </RowKeyModel>
+            
+            <ColumnKeyModel>
+                <ColumnKeyField name="pkg"/>
+                <ColumnKeyField name="type"/>
+                <ColumnKeyField name="property"/>
+            </ColumnKeyModel>
+        </DataGraph>
+
+    </Table>  
+
+    <Table name="TEST_TOPIC" dataColumnFamilyName="f1">
+        <HashAlgorithm name="murmur"/>
+        <DataGraph uri="http://cloudgraph.org/test/socialgraph/actor" type="Topic">
+            <RowKeyModel>
+                <RowKeyField>
+                    <PredefinedField name="type" hash="false"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <UserDefinedField path="name"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <PredefinedField name="uuid"/>
+                </RowKeyField>
+            </RowKeyModel>
+            
+            <ColumnKeyModel>
+                <ColumnKeyField name="pkg"/>
+                <ColumnKeyField name="type"/>
+                <ColumnKeyField name="property"/>
+            </ColumnKeyModel>
+        </DataGraph>
+
+    </Table>  
+ 
+    <Table name="TEST_PARTIAL_KEY_TEMPORAL" dataColumnFamilyName="f1">
+        <HashAlgorithm name="murmur"/>
+         
+        <DataGraph uri="http://cloudgraph.org/test/datatypes" type="DateTimeNode">
+            <RowKeyModel>
+                <RowKeyField>
+                    <PredefinedField name="uri" hash="true"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <PredefinedField name="type" hash="false"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <UserDefinedField path="dateTimeField"/>
+                </RowKeyField>
+            </RowKeyModel>
+            
+            <ColumnKeyModel>
+                <ColumnKeyField name="pkg"/>
+                <ColumnKeyField name="type"/>
+                <ColumnKeyField name="property"/>
+            </ColumnKeyModel>
+        </DataGraph>
+        
+        <DataGraph uri="http://cloudgraph.org/test/datatypes" type="DateNode">
+            <RowKeyModel>
+                <RowKeyField>
+                    <PredefinedField name="uri" hash="true"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <PredefinedField name="type" hash="false"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <UserDefinedField path="dateField" />
+                </RowKeyField>
+            </RowKeyModel>
+            
+            <ColumnKeyModel>
+                <ColumnKeyField name="pkg"/>
+                <ColumnKeyField name="type"/>
+                <ColumnKeyField name="property"/>
+            </ColumnKeyModel>
+        </DataGraph>
+    </Table>  
+    
+</cloudgraph:CloudGraphConfiguration>

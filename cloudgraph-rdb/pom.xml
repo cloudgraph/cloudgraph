@@ -1,0 +1,112 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.cloudgraph</groupId>
+        <artifactId>cloudgraph</artifactId>
+        <version>1.0.0</version>
+    </parent>
+	<groupId>org.cloudgraph</groupId>
+	<artifactId>cloudgraph-rdb</artifactId>
+	<packaging>jar</packaging>
+	<name>CloudGraph Relational Database Service</name>
+    <description>CloudGraph(tm) is a suite of Service Data Object (SDO) 2.1 services designed for relational and big-table style "cloud" databases, such as HBase and others.</description>
+	<properties>
+		<cloudgraph.version>1.0.0</cloudgraph.version>
+		<plasma.version>1.2.9</plasma.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <slf4j.version>1.6.1</slf4j.version>
+ 	</properties>
+    <url>http://cloudgraph.org</url>
+	<dependencies>
+        <dependency>                                 
+            <groupId>commons-beanutils</groupId>          
+            <artifactId>commons-beanutils</artifactId>    
+            <version>1.8.3</version>                   
+        </dependency>                                
+		<dependency>
+			<groupId>org.cloudgraph</groupId>
+			<artifactId>cloudgraph-common</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.cloudgraph</groupId>
+			<artifactId>cloudgraph-store</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.cloudgraph</groupId>
+			<artifactId>cloudgraph-mapreduce</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		
+		<!-- Plasma Dependencies -->
+		<dependency>
+			<groupId>org.terrameta</groupId>
+			<artifactId>plasma-common</artifactId>
+			<version>1.2.9</version>
+		</dependency>
+        <dependency>
+            <groupId>org.terrameta</groupId>
+            <artifactId>plasma-sdo</artifactId>
+            <version>1.2.9</version>
+        </dependency>
+        <dependency>
+            <groupId>org.terrameta</groupId>
+            <artifactId>plasma-sdo-jdbc</artifactId>
+            <version>1.2.9</version>
+        </dependency>
+		
+	    <dependency>                                 
+	        <groupId>commons-io</groupId>          
+	        <artifactId>commons-io</artifactId>    
+	        <version>2.4</version>                   
+        </dependency>     
+        <!-- don't include this  --> 
+        <!--                            
+        <dependency>                                 
+            <groupId>com.oracle</groupId>          
+            <artifactId>ojdbc6</artifactId>    
+            <version>11.2.0.4</version>                   
+        </dependency>  
+        -->                              
+        <!--
+        Note: for Oracle JDBC driver use e.g. : 
+        mvn install:install-file -DgroupId=com.oracle -DartifactId=ojdbc5 -Dversion=11.2.0.4 -Dpackaging=jar -Dfile=E:\download\jdbc\ojdbc5.jar -DgeneratePom=true
+        mvn install:install-file -DgroupId=com.oracle -DartifactId=ojdbc6 -Dversion=11.2.0.4 -Dpackaging=jar -Dfile=E:\download\jdbc\ojdbc6.jar -DgeneratePom=true 
+        -->
+	</dependencies>
+	<build>
+		<finalName>cloudgraph-rdb</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.3</version>
+				<!-- <configuration> <webXml>target/web.xml</webXml> </configuration> -->
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-source-plugin</artifactId>
+              <executions>
+                  <execution>
+                      <id>attach-sources</id>
+                      <goals>
+                          <goal>jar</goal>
+                      </goals>
+                  </execution>
+              </executions>
+            </plugin>
+        </plugins>
+	</build>
+</project>

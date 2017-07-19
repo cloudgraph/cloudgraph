@@ -1,0 +1,26 @@
+Release Notes
+
+CloudGraph 0.6.5 Release Notes
+
+CloudGraph 0.6.5 is an internal Beta release of CloudGraph.
+
+The full list of changes can be found in our issue management system github, and is reproduced below.
+See https://github.com/terrameta/cloudgraph/issues. 
+
+
+Major Changes
+
+Bugs
+[Issue #66] - Main Javadoc Plugin Failing on doclint bug
+[Issue #65] - Update Jaxb Plugin in Config Module bug
+
+Improvements
+
+ 
+New Features
+[Issue #68] - Support Table Namespaces In Config enhancement
+[Issue #67] - Add Dynamic Config Capability enhancement
+
+Tasks
+
+Wish

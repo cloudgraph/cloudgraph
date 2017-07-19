@@ -1,0 +1,22 @@
+Release Notes
+
+CloudGraph 0.6.7 Release Notes
+
+CloudGraph 0.6.7 is an internal Beta release of CloudGraph.
+
+The full list of changes can be found in our issue management system github, and is reproduced below.
+See https://github.com/terrameta/cloudgraph/issues. 
+
+
+Major Changes
+
+Bugs
+
+Improvements
+[Issue #63] - Cloud Graph config has properties that are better moved to a properties file
+ 
+New Features
+
+Tasks
+
+Wish
