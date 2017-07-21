@@ -84,7 +84,7 @@
 	            </execution>
 	        </executions>
 	      </plugin>
-	      <!--       
+	               
           <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-javadoc-plugin</artifactId>
@@ -101,7 +101,7 @@
                 </execution>
               </executions>
           </plugin>
-            -->       
+                      
  	         
 	      <!-- Produce ZIP with dependencies and samples. -->
 	      <!--
@@ -125,7 +125,7 @@
 	      </plugin>
 	      -->
           <!-- Sign Artifacts -->
-          <!--            
+                       
 	      <plugin>
 	        <groupId>org.apache.maven.plugins</groupId>
 	        <artifactId>maven-gpg-plugin</artifactId>
@@ -140,7 +140,7 @@
 	          </execution>
 	        </executions>
 	      </plugin>
-	        -->    
+	             
 	       
 	      <!--
 	          Release Plugin (Update version in POM before/after release, create
