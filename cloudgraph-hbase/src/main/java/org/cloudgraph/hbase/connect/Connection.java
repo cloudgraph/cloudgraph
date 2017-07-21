@@ -19,6 +19,7 @@
  * appendix) or view the online documentation at 
  * <http://cloudgraph.org/licenses/>. 
  */
+
 package org.cloudgraph.hbase.connect;
 
 import java.io.IOException;
@@ -57,7 +58,6 @@ public class Connection {
 	private static Log log = LogFactory.getLog(Connection.class);
 	private org.apache.hadoop.hbase.client.Connection con;
 	private ObjectPool<Connection> pool;
-	//private Map<TableName, Table> tableMap = new HashMap<>();
 	private LoadingCache<TableName, Table> tableCache;
 
 	public Connection(org.apache.hadoop.hbase.client.Connection conection, ObjectPool<Connection> pool) {
