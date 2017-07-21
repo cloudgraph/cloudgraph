@@ -73,6 +73,7 @@ public class PooledConnectionFactory extends BasePooledObjectFactory<Connection>
         throws Exception  {
 		if (log.isDebugEnabled())
 			log.debug("destroying connection" + p.getObject());
+		p.getObject().destroy();
 		super.destroyObject(p);
     	
     }
@@ -96,6 +97,6 @@ public class PooledConnectionFactory extends BasePooledObjectFactory<Connection>
         throws Exception {
 		if (log.isDebugEnabled())
 			log.debug("passivate connection" + p.getObject());
-		super.activateObject(p);
+		super.passivateObject(p);
     }
 }

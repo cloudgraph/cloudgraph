@@ -22,7 +22,11 @@
 package org.cloudgraph.hbase.connect;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,6 +39,10 @@ import org.apache.hadoop.hbase.client.BufferedMutatorParams;
 import org.apache.hadoop.hbase.client.RegionLocator;
 import org.apache.hadoop.hbase.client.Table;
 import org.cloudgraph.store.service.GraphServiceException;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 /**
  * Connection wrapper. 
@@ -49,11 +57,22 @@ public class Connection {
 	private static Log log = LogFactory.getLog(Connection.class);
 	private org.apache.hadoop.hbase.client.Connection con;
 	private ObjectPool<Connection> pool;
+	//private Map<TableName, Table> tableMap = new HashMap<>();
+	private LoadingCache<TableName, Table> tableCache;
 
-	public Connection(org.apache.hadoop.hbase.client.Connection con, ObjectPool<Connection> pool) {
+	public Connection(org.apache.hadoop.hbase.client.Connection conection, ObjectPool<Connection> pool) {
 		super();
-		this.con = con;
-		this.pool = pool;
+		this.con = conection;
+		this.pool = pool;		
+		this.tableCache = CacheBuilder.newBuilder()
+	        .maximumSize(10)  
+	    	.expireAfterAccess(30, TimeUnit.SECONDS)  
+	    	.build(new CacheLoader<TableName, Table>(){  	    	            
+               @Override
+               public Table load(TableName tableName) throws Exception {
+                  return con.getTable(tableName);
+               } 
+            });
 	}
 
 	public void close() throws IOException {
@@ -65,7 +84,11 @@ public class Connection {
 			throw new GraphServiceException(e);
 		} 
 	}
-
+	
+	public void destroy() throws IOException {
+		for (Table table : this.tableCache.asMap().values())
+			table.close();
+	}
 	public boolean isClosed() {
 		return con.isClosed();
 	}
@@ -83,18 +106,42 @@ public class Connection {
 	}
 
 	public boolean tableExists(TableName tableName) throws IOException {
-		boolean exists = getAdmin().tableExists(tableName);;
+		boolean exists = false;
+		Table table = this.tableCache.getIfPresent(tableName);
+		if (table != null) {
+		    exists = true;	
+		}
+		else {
+			exists = getAdmin().tableExists(tableName);
+			if (exists) {
+				try {
+					this.tableCache.get(tableName);
+				} catch (ExecutionException e) {
+					log.error(e.getMessage(), e);
+				}
+			}
+		}
 		return exists;
 	}
 
 	public Table getTable(TableName tableName) throws IOException {
-		Table result = con.getTable(tableName);
+		Table result = null;
+		try {
+			result = this.tableCache.get(tableName);
+		} catch (ExecutionException e) {
+			log.error(e.getMessage(), e);
+		}
 		return result;
 	}
 
 	public Table getTable(TableName tableName, ExecutorService pool)
 			throws IOException {
-		Table result = con.getTable(tableName, pool);
+		Table result = null;
+		try {
+			result = this.tableCache.get(tableName);
+		} catch (ExecutionException e) {
+			log.error(e.getMessage(), e);
+		}
 		return result;
 	}
 

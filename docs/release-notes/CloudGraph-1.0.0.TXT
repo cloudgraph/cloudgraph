@@ -1,0 +1,21 @@
+Release Notes
+
+CloudGraph 1.0.0 Release Notes
+
+CloudGraph 1.0.0 is an internal Beta release of CloudGraph.
+
+The full list of changes can be found in our issue management system github, and is reproduced below.
+See https://github.com/cloudgraph/cloudgraph/issues. 
+
+
+Major Changes
+
+Bugs
+
+Improvements
+ 
+New Features
+
+Tasks
+
+Wish

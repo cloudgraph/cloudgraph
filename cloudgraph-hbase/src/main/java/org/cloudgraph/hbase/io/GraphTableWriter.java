@@ -164,8 +164,8 @@ public class GraphTableWriter extends GraphTable
 	@Override
 	public void close() throws IOException {
 		try {
-			if (this.table != null)
-		        this.table.close();
+			// don't close table here, let the connection
+			// deal with resources it controls
 			if (this.connection != null)
 		        this.connection.close();
 		}
