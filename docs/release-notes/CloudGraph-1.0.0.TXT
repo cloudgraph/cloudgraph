@@ -7,8 +7,12 @@ CloudGraph 1.0.0 is an internal Beta release of CloudGraph.
 The full list of changes can be found in our issue management system github, and is reproduced below.
 See https://github.com/cloudgraph/cloudgraph/issues. 
 
+For issues created during beta testing see:
+See https://github.com/terrameta/cloudgraph/issues. 
+
 
 Major Changes
+[Issue #1] - Entity Local Graph State
 
 Bugs
 
