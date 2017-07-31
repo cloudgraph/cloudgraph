@@ -46,12 +46,12 @@ import org.plasma.sdo.access.DataGraphAssembler;
  * @since 0.5.1
  */
 public interface HBaseGraphAssembler extends DataGraphAssembler {
-	/**
-	 * Re-constitutes a data graph from the given HBase client result (row).
-	 * 
-	 * @param resultRow
-	 *            the HBase client result (row).
-	 */
-	public void assemble(Result resultRow);
+  /**
+   * Re-constitutes a data graph from the given HBase client result (row).
+   * 
+   * @param resultRow
+   *          the HBase client result (row).
+   */
+  public void assemble(Result resultRow);
 
 }

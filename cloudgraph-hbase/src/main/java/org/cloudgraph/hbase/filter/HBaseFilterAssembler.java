@@ -43,11 +43,11 @@ import org.cloudgraph.common.Assembler;
  */
 public interface HBaseFilterAssembler extends Assembler {
 
-	/**
-	 * Returns the assembled filter, filter list or filter hierarchy root.
-	 * 
-	 * @return the assembled filter, filter list or or filter hierarchy root.
-	 */
-	public Filter getFilter();
+  /**
+   * Returns the assembled filter, filter list or filter hierarchy root.
+   * 
+   * @return the assembled filter, filter list or or filter hierarchy root.
+   */
+  public Filter getFilter();
 
 }

@@ -49,29 +49,30 @@ import commonj.sdo.Type;
  */
 public interface GraphRowKeyExpressionFactory {
 
-	/**
-	 * Generates a regular expression matching a row key based on the given list
-	 * of token value pairs.
-	 * 
-	 * @param values
-	 *            the token value list
-	 * @return the row key expression
-	 */
-	public String createRowKeyExpr(List<KeyValue> values);
-	public byte[] createRowKeyExprBytes(List<KeyValue> values);
+  /**
+   * Generates a regular expression matching a row key based on the given list
+   * of token value pairs.
+   * 
+   * @param values
+   *          the token value list
+   * @return the row key expression
+   */
+  public String createRowKeyExpr(List<KeyValue> values);
 
-	/**
-	 * Returns true if the data graph configured for the given
-	 * {@link commonj.sdo.Type type} has a user defined token which maps to the
-	 * given property path.
-	 * 
-	 * @param type
-	 *            the SDO type
-	 * @param path
-	 *            the property path
-	 * @return true if the data graph configured for the given
-	 *         {@link commonj.sdo.Type type} has a user defined token which maps
-	 *         to the given property path.
-	 */
-	public boolean hasUserDefinedRowKeyToken(Type type, String path);
+  public byte[] createRowKeyExprBytes(List<KeyValue> values);
+
+  /**
+   * Returns true if the data graph configured for the given
+   * {@link commonj.sdo.Type type} has a user defined token which maps to the
+   * given property path.
+   * 
+   * @param type
+   *          the SDO type
+   * @param path
+   *          the property path
+   * @return true if the data graph configured for the given
+   *         {@link commonj.sdo.Type type} has a user defined token which maps
+   *         to the given property path.
+   */
+  public boolean hasUserDefinedRowKeyToken(Type type, String path);
 }

@@ -36,60 +36,63 @@ import org.plasma.sdo.PlasmaProperty;
  * @since 0.6.2
  */
 public class Traversal {
-	private PlasmaDataObject subroot;
-	private long subrootSequence;
-	private EdgeReader collection;
-	private PlasmaDataObject source;
-	private PlasmaProperty sourceProperty;
-	private RowReader rowReader;
-	private int level;
-	private boolean concurrent;
+  private PlasmaDataObject subroot;
+  private long subrootSequence;
+  private EdgeReader collection;
+  private PlasmaDataObject source;
+  private PlasmaProperty sourceProperty;
+  private RowReader rowReader;
+  private int level;
+  private boolean concurrent;
 
-	@SuppressWarnings("unused")
-	private Traversal() {
-	}
+  @SuppressWarnings("unused")
+  private Traversal() {
+  }
 
-	public Traversal(PlasmaDataObject subroot, long subrootSequence,
-			EdgeReader collection, PlasmaDataObject source,
-			PlasmaProperty sourceProperty, RowReader rowReader,
-			boolean concurrent, int level) {
-		super();
-		this.subroot = subroot;
-		this.subrootSequence = subrootSequence;
-		this.collection = collection;
-		this.source = source;
-		this.sourceProperty = sourceProperty;
-		this.rowReader = rowReader;
-		this.concurrent = concurrent;
-		this.level = level;
-	}
-	public PlasmaDataObject getSubroot() {
-		return subroot;
-	}
+  public Traversal(PlasmaDataObject subroot, long subrootSequence, EdgeReader collection,
+      PlasmaDataObject source, PlasmaProperty sourceProperty, RowReader rowReader,
+      boolean concurrent, int level) {
+    super();
+    this.subroot = subroot;
+    this.subrootSequence = subrootSequence;
+    this.collection = collection;
+    this.source = source;
+    this.sourceProperty = sourceProperty;
+    this.rowReader = rowReader;
+    this.concurrent = concurrent;
+    this.level = level;
+  }
 
-	public long getSubrootSequence() {
-		return subrootSequence;
-	}
+  public PlasmaDataObject getSubroot() {
+    return subroot;
+  }
 
-	public EdgeReader getCollection() {
-		return collection;
-	}
+  public long getSubrootSequence() {
+    return subrootSequence;
+  }
 
-	public PlasmaDataObject getSource() {
-		return source;
-	}
-	public PlasmaProperty getSourceProperty() {
-		return sourceProperty;
-	}
-	public RowReader getRowReader() {
-		return rowReader;
-	}
-	public int getLevel() {
-		return level;
-	}
+  public EdgeReader getCollection() {
+    return collection;
+  }
 
-	public boolean isConcurrent() {
-		return concurrent;
-	}
+  public PlasmaDataObject getSource() {
+    return source;
+  }
+
+  public PlasmaProperty getSourceProperty() {
+    return sourceProperty;
+  }
+
+  public RowReader getRowReader() {
+    return rowReader;
+  }
+
+  public int getLevel() {
+    return level;
+  }
+
+  public boolean isConcurrent() {
+    return concurrent;
+  }
 
 }

@@ -61,71 +61,68 @@ import org.xml.sax.SAXException;
  * @author Scott Cinnamond
  * @since 0.5
  */
-public class PredicateRowFilterAssembler extends RowPredicateVisitor
-		implements
-			PredicateFilterAssembler {
-	private static Log log = LogFactory
-			.getLog(PredicateRowFilterAssembler.class);
+public class PredicateRowFilterAssembler extends RowPredicateVisitor implements
+    PredicateFilterAssembler {
+  private static Log log = LogFactory.getLog(PredicateRowFilterAssembler.class);
 
-	/**
-	 * Constructor sets up a {@link CompositeRowKeyExpressionFactory} for the
-	 * given root type.
-	 * 
-	 * @param rootType
-	 *            the root type
-	 * @see CompositeRowKeyExpressionFactory
-	 */
-	public PredicateRowFilterAssembler(PlasmaType rootType) {
-		super(rootType);
-		this.rowKeyFac = new CompositeRowKeyExpressionFactory(rootType);
-	}
+  /**
+   * Constructor sets up a {@link CompositeRowKeyExpressionFactory} for the
+   * given root type.
+   * 
+   * @param rootType
+   *          the root type
+   * @see CompositeRowKeyExpressionFactory
+   */
+  public PredicateRowFilterAssembler(PlasmaType rootType) {
+    super(rootType);
+    this.rowKeyFac = new CompositeRowKeyExpressionFactory(rootType);
+  }
 
-	/**
-	 * Takes a {@link org.plasma.query.model.Query query} where clause
-	 * containing any number of predicates and traverses these as a
-	 * {org.plasma.query.visitor.QueryVisitor visitor} only processing various
-	 * traversal events as needed against the root type.
-	 * 
-	 * @param where
-	 *            the where clause
-	 * @param contextType
-	 *            the context type
-	 * @see org.plasma.query.visitor.QueryVisitor
-	 * @see org.plasma.query.model.Query
-	 */
-	@Override
-	public void assemble(Where where, PlasmaType contextType) {
-		for (int i = 0; i < where.getParameters().size(); i++)
-			params.add(where.getParameters().get(i).getValue());
+  /**
+   * Takes a {@link org.plasma.query.model.Query query} where clause containing
+   * any number of predicates and traverses these as a
+   * {org.plasma.query.visitor.QueryVisitor visitor} only processing various
+   * traversal events as needed against the root type.
+   * 
+   * @param where
+   *          the where clause
+   * @param contextType
+   *          the context type
+   * @see org.plasma.query.visitor.QueryVisitor
+   * @see org.plasma.query.model.Query
+   */
+  @Override
+  public void assemble(Where where, PlasmaType contextType) {
+    for (int i = 0; i < where.getParameters().size(); i++)
+      params.add(where.getParameters().get(i).getValue());
 
-		if (log.isDebugEnabled())
-			this.log(where);
+    if (log.isDebugEnabled())
+      this.log(where);
 
-		if (log.isDebugEnabled())
-			log.debug("begin traverse");
+    if (log.isDebugEnabled())
+      log.debug("begin traverse");
 
-		where.accept(this); // traverse
+    where.accept(this); // traverse
 
-		if (log.isDebugEnabled())
-			log.debug("end traverse");
-	}
+    if (log.isDebugEnabled())
+      log.debug("end traverse");
+  }
 
-	public void clear() {
-		super.clear();
-	}
+  public void clear() {
+    super.clear();
+  }
 
-	protected void log(Where root) {
-		String xml = "";
-		PlasmaQueryDataBinding binding;
-		try {
-			binding = new PlasmaQueryDataBinding(
-					new DefaultValidationEventHandler());
-			xml = binding.marshal(root);
-		} catch (JAXBException e) {
-			log.debug(e);
-		} catch (SAXException e) {
-			log.debug(e);
-		}
-		log.debug("query: " + xml);
-	}
+  protected void log(Where root) {
+    String xml = "";
+    PlasmaQueryDataBinding binding;
+    try {
+      binding = new PlasmaQueryDataBinding(new DefaultValidationEventHandler());
+      xml = binding.marshal(root);
+    } catch (JAXBException e) {
+      log.debug(e);
+    } catch (SAXException e) {
+      log.debug(e);
+    }
+    log.debug("query: " + xml);
+  }
 }

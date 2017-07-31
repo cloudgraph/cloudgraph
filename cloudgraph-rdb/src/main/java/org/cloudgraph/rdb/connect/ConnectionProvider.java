@@ -9,12 +9,12 @@ import java.sql.SQLException;
  */
 public interface ConnectionProvider {
 
-	/**
-	 * Returns a connection from an underlying pool or data source. Connections
-	 * should always be closed after use.
-	 * 
-	 * @return the connection
-	 * @throws SQLException
-	 */
-	public Connection getConnection() throws SQLException;
+  /**
+   * Returns a connection from an underlying pool or data source. Connections
+   * should always be closed after use.
+   * 
+   * @return the connection
+   * @throws SQLException
+   */
+  public Connection getConnection() throws SQLException;
 }

@@ -41,22 +41,22 @@ import commonj.sdo.ChangeSummary.Setting;
  * </pre>
  */
 public class SettingCollector<T> {
-	HashSet<T> collect(PlasmaProperty property, List<Setting> settings) {
-		HashSet<T> result = new HashSet<T>();
-		for (Setting setting : settings) {
-			if (!setting.getProperty().equals(property))
-				continue;
-			Object oldValue = setting.getValue();
-			if (!NullValue.class.isAssignableFrom(oldValue.getClass())) {
-				if (List.class.isAssignableFrom(oldValue.getClass())) {
-					List<T> oldValuesList = (List<T>) oldValue;
-					for (T object : oldValuesList)
-						result.add(object);
-				} else {
-					result.add((T) oldValue);
-				}
-			}
-		}
-		return result;
-	}
+  HashSet<T> collect(PlasmaProperty property, List<Setting> settings) {
+    HashSet<T> result = new HashSet<T>();
+    for (Setting setting : settings) {
+      if (!setting.getProperty().equals(property))
+        continue;
+      Object oldValue = setting.getValue();
+      if (!NullValue.class.isAssignableFrom(oldValue.getClass())) {
+        if (List.class.isAssignableFrom(oldValue.getClass())) {
+          List<T> oldValuesList = (List<T>) oldValue;
+          for (T object : oldValuesList)
+            result.add(object);
+        } else {
+          result.add((T) oldValue);
+        }
+      }
+    }
+    return result;
+  }
 }

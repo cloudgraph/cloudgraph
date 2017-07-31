@@ -39,27 +39,23 @@ import commonj.sdo.Property;
  */
 public interface StatementExecutor {
 
-	public abstract List<List<PropertyPair>> fetch(PlasmaType type,
-			StringBuilder sql);
+  public abstract List<List<PropertyPair>> fetch(PlasmaType type, StringBuilder sql);
 
-	public abstract List<List<PropertyPair>> fetch(PlasmaType type,
-			StringBuilder sql, Set<Property> props);
+  public abstract List<List<PropertyPair>> fetch(PlasmaType type, StringBuilder sql,
+      Set<Property> props);
 
-	public abstract List<List<PropertyPair>> fetch(PlasmaType type,
-			StringBuilder sql, Set<Property> props, Object[] params);
+  public abstract List<List<PropertyPair>> fetch(PlasmaType type, StringBuilder sql,
+      Set<Property> props, Object[] params);
 
-	public abstract Map<String, PropertyPair> fetchRowMap(PlasmaType type,
-			StringBuilder sql);
+  public abstract Map<String, PropertyPair> fetchRowMap(PlasmaType type, StringBuilder sql);
 
-	public abstract List<PropertyPair> fetchRow(PlasmaType type,
-			StringBuilder sql);
+  public abstract List<PropertyPair> fetchRow(PlasmaType type, StringBuilder sql);
 
-	public abstract void execute(PlasmaType type, StringBuilder sql,
-			Map<String, PropertyPair> values);
+  public abstract void execute(PlasmaType type, StringBuilder sql, Map<String, PropertyPair> values);
 
-	public abstract void executeInsert(PlasmaType type, StringBuilder sql,
-			Map<String, PropertyPair> values);
+  public abstract void executeInsert(PlasmaType type, StringBuilder sql,
+      Map<String, PropertyPair> values);
 
-	public List<PropertyPair> executeInsertWithGeneratedKeys(PlasmaType type,
-			StringBuilder sql, Map<String, PropertyPair> values);
+  public List<PropertyPair> executeInsertWithGeneratedKeys(PlasmaType type, StringBuilder sql,
+      Map<String, PropertyPair> values);
 }

@@ -33,9 +33,13 @@ package org.cloudgraph.store.key;
  * @since 1.0.0
  */
 public interface MetaKey {
-	public String asString();
-	public String code();
-	public byte[] codeAsBytes();
-	public String name();
-	public String description();
+  public String asString();
+
+  public String code();
+
+  public byte[] codeAsBytes();
+
+  public String name();
+
+  public String description();
 }

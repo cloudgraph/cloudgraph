@@ -47,96 +47,91 @@ import commonj.sdo.DataGraph;
 import commonj.sdo.Property;
 
 public class Delete extends DefaultMutation implements Collector {
-	private static Log log = LogFactory.getLog(Delete.class);
-	public Delete(ServiceContext context, SnapshotMap snapshotMap,
-			String username) {
-		super(context, snapshotMap, username);
-	}
+  private static Log log = LogFactory.getLog(Delete.class);
 
-	@Override
-	public void collect(DataGraph dataGraph, PlasmaDataObject dataObject,
-			DistributedWriter graphWriter, TableWriter context,
-			RowWriter rowWriter) throws IOException, IllegalAccessException {
-		PlasmaType type = (PlasmaType) dataObject.getType();
+  public Delete(ServiceContext context, SnapshotMap snapshotMap, String username) {
+    super(context, snapshotMap, username);
+  }
 
-		CoreNode coreNode = ((CoreNode) dataObject);
-		// FIXME: get rid of cast - define instance properties in 'base type'
-		Timestamp snapshotDate = (Timestamp) coreNode
-				.getValue(CoreConstants.PROPERTY_NAME_SNAPSHOT_TIMESTAMP);
-		if (snapshotDate == null)
-			throw new RequiredPropertyException("instance property '"
-					+ CoreConstants.PROPERTY_NAME_SNAPSHOT_TIMESTAMP
-					+ "' is required to update data object, " + dataObject);
-		if (log.isDebugEnabled())
-			log.debug(dataObject + " timestamp: "
-					+ String.valueOf(snapshotDate));
+  @Override
+  public void collect(DataGraph dataGraph, PlasmaDataObject dataObject,
+      DistributedWriter graphWriter, TableWriter context, RowWriter rowWriter) throws IOException,
+      IllegalAccessException {
+    PlasmaType type = (PlasmaType) dataObject.getType();
 
-		Long sequence = (Long) coreNode.getValue(CloudGraphConstants.SEQUENCE);
-		if (sequence == null)
-			throw new RequiredPropertyException("instance property '"
-					+ CloudGraphConstants.SEQUENCE
-					+ "' is required to delete data object, " + dataObject);
-		if (log.isDebugEnabled())
-			log.debug(dataObject + " (seq: " + sequence + ")");
+    CoreNode coreNode = ((CoreNode) dataObject);
+    // FIXME: get rid of cast - define instance properties in 'base type'
+    Timestamp snapshotDate = (Timestamp) coreNode
+        .getValue(CoreConstants.PROPERTY_NAME_SNAPSHOT_TIMESTAMP);
+    if (snapshotDate == null)
+      throw new RequiredPropertyException("instance property '"
+          + CoreConstants.PROPERTY_NAME_SNAPSHOT_TIMESTAMP
+          + "' is required to update data object, " + dataObject);
+    if (log.isDebugEnabled())
+      log.debug(dataObject + " timestamp: " + String.valueOf(snapshotDate));
 
-		this.checkLock(dataObject, type, snapshotDate);
-		this.checkOptimistic(dataObject, type, snapshotDate);
+    Long sequence = (Long) coreNode.getValue(CloudGraphConstants.SEQUENCE);
+    if (sequence == null)
+      throw new RequiredPropertyException("instance property '" + CloudGraphConstants.SEQUENCE
+          + "' is required to delete data object, " + dataObject);
+    if (log.isDebugEnabled())
+      log.debug(dataObject + " (seq: " + sequence + ")");
 
-		PlasmaProperty concurrencyUserProperty = (PlasmaProperty) type
-				.findProperty(ConcurrencyType.optimistic,
-						ConcurrentDataFlavor.user);
-		if (concurrencyUserProperty == null) {
-			if (log.isDebugEnabled())
-				log.debug("could not find optimistic concurrency (username) property for type, "
-						+ type.getURI() + "#" + type.getName());
-		}
+    this.checkLock(dataObject, type, snapshotDate);
+    this.checkOptimistic(dataObject, type, snapshotDate);
 
-		PlasmaProperty concurrencyTimestampProperty = (PlasmaProperty) type
-				.findProperty(ConcurrencyType.optimistic,
-						ConcurrentDataFlavor.time);
-		if (concurrencyTimestampProperty == null) {
-			if (log.isDebugEnabled())
-				log.debug("could not find optimistic concurrency timestamp property for type, "
-						+ type.getURI() + "#" + type.getName());
-		}
+    PlasmaProperty concurrencyUserProperty = (PlasmaProperty) type.findProperty(
+        ConcurrencyType.optimistic, ConcurrentDataFlavor.user);
+    if (concurrencyUserProperty == null) {
+      if (log.isDebugEnabled())
+        log.debug("could not find optimistic concurrency (username) property for type, "
+            + type.getURI() + "#" + type.getName());
+    }
 
-		// If no tombstones, and if the root of the row is deleted if this
-		// object is the root, delete it, else if
-		// the given data object is part of the row, just return.
-		// No need to delete its individual properties, as the row is going away
-		// anyway.
-		if (!context.getTableConfig().tombstoneRows()) {
-			if (rowWriter.isRootDeleted()) {
-				if (rowWriter.getRootDataObject().equals(dataObject)) {
-					rowWriter.deleteRow();
-					if (log.isDebugEnabled())
-						log.debug("deleting root, " + dataObject);
-					return;
-				} else if (rowWriter.contains(dataObject)) {
-					return;
-				}
-			}
-		}
+    PlasmaProperty concurrencyTimestampProperty = (PlasmaProperty) type.findProperty(
+        ConcurrencyType.optimistic, ConcurrentDataFlavor.time);
+    if (concurrencyTimestampProperty == null) {
+      if (log.isDebugEnabled())
+        log.debug("could not find optimistic concurrency timestamp property for type, "
+            + type.getURI() + "#" + type.getName());
+    }
 
-		// For tombstone rows, we want to delete app columns (and leave a
-		// tombstone column
-		// which is not done here).
-		// So delete all columns associated with the entity
-		rowWriter.deleteRowEntityMetaData(dataObject, sequence);
+    // If no tombstones, and if the root of the row is deleted if this
+    // object is the root, delete it, else if
+    // the given data object is part of the row, just return.
+    // No need to delete its individual properties, as the row is going away
+    // anyway.
+    if (!context.getTableConfig().tombstoneRows()) {
+      if (rowWriter.isRootDeleted()) {
+        if (rowWriter.getRootDataObject().equals(dataObject)) {
+          rowWriter.deleteRow();
+          if (log.isDebugEnabled())
+            log.debug("deleting root, " + dataObject);
+          return;
+        } else if (rowWriter.contains(dataObject)) {
+          return;
+        }
+      }
+    }
 
-		List<Property> properties = type.getProperties();
-		for (Property p : properties) {
-			PlasmaProperty property = (PlasmaProperty) p;
-			if (property.getType().isDataType()) {
-				rowWriter.deleteRowData(dataObject, sequence, property);
-				// this.deleteDataCell(rowWriter, dataObject, sequence,
-				// property);
-			} else {
-				EdgeWriter edgeWriter = rowWriter.getEdgeWriter(dataObject,
-						property, sequence);
-				edgeWriter.delete();
-			}
-		}
-	}
+    // For tombstone rows, we want to delete app columns (and leave a
+    // tombstone column
+    // which is not done here).
+    // So delete all columns associated with the entity
+    rowWriter.deleteRowEntityMetaData(dataObject, sequence);
+
+    List<Property> properties = type.getProperties();
+    for (Property p : properties) {
+      PlasmaProperty property = (PlasmaProperty) p;
+      if (property.getType().isDataType()) {
+        rowWriter.deleteRowData(dataObject, sequence, property);
+        // this.deleteDataCell(rowWriter, dataObject, sequence,
+        // property);
+      } else {
+        EdgeWriter edgeWriter = rowWriter.getEdgeWriter(dataObject, property, sequence);
+        edgeWriter.delete();
+      }
+    }
+  }
 
 }

@@ -32,9 +32,9 @@ import org.cloudgraph.common.CommonTest;
  * @since 0.5.2
  */
 public abstract class StateTestCase extends CommonTest {
-	private static Log log = LogFactory.getLog(StateTestCase.class);
+  private static Log log = LogFactory.getLog(StateTestCase.class);
 
-	public void setUp() throws Exception {
-	}
+  public void setUp() throws Exception {
+  }
 
 }

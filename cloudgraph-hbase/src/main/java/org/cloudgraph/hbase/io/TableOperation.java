@@ -33,38 +33,37 @@ import org.cloudgraph.state.TableState;
  */
 public interface TableOperation extends TableState {
 
-	/**
-	 * Returns the HBase table pooled connection for this context.
-	 * 
-	 * @return the HBase table pooled connection for this context.
-	 */
-	public Table getTable();
+  /**
+   * Returns the HBase table pooled connection for this context.
+   * 
+   * @return the HBase table pooled connection for this context.
+   */
+  public Table getTable();
 
-	/**
-	 * Returns whether there is an active HBase table pooled connection for this
-	 * context.
-	 * 
-	 * @return whether there is an active HBase table pooled connection for this
-	 *         context.
-	 */
-	public boolean hasConnection();
+  /**
+   * Returns whether there is an active HBase table pooled connection for this
+   * context.
+   * 
+   * @return whether there is an active HBase table pooled connection for this
+   *         context.
+   */
+  public boolean hasConnection();
 
-	/**
-	 * Returns the distributed context associated with this table operation
-	 * context.
-	 * 
-	 * @return the distributed context associated with this table operation
-	 *         context.
-	 */
-	public DistributedOperation getDistributedOperation();
+  /**
+   * Returns the distributed context associated with this table operation
+   * context.
+   * 
+   * @return the distributed context associated with this table operation
+   *         context.
+   */
+  public DistributedOperation getDistributedOperation();
 
-	/**
-	 * Sets the distributed context associated with this table operation
-	 * context.
-	 * 
-	 * @param distributedOperation
-	 *            the operation
-	 */
-	// public void setDistributedOperation(DistributedOperation
-	// distributedOperation);
+  /**
+   * Sets the distributed context associated with this table operation context.
+   * 
+   * @param distributedOperation
+   *          the operation
+   */
+  // public void setDistributedOperation(DistributedOperation
+  // distributedOperation);
 }

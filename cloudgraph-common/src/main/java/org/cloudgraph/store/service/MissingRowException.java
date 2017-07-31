@@ -40,26 +40,22 @@ package org.cloudgraph.store.service;
  * @since 0.5.1
  */
 public class MissingRowException extends GraphServiceException {
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param table
-	 *            the name of the table for the expected row
-	 * @param rowKey
-	 *            the row key
-	 */
-	public MissingRowException(String table, String rowKey) {
-		super(
-				"expected row for key '"
-						+ rowKey
-						+ "' for table '"
-						+ table
-						+ "' - note: if the composite row key includes a UUID "
-						+ "and a copied data object was used (CopyHelper creates a new UUID), "
-						+ "the row will not be found - use DataObject.detach(), then add "
-						+ "the existing detached data object");
-	}
+  /**
+   * Constructor.
+   * 
+   * @param table
+   *          the name of the table for the expected row
+   * @param rowKey
+   *          the row key
+   */
+  public MissingRowException(String table, String rowKey) {
+    super("expected row for key '" + rowKey + "' for table '" + table
+        + "' - note: if the composite row key includes a UUID "
+        + "and a copied data object was used (CopyHelper creates a new UUID), "
+        + "the row will not be found - use DataObject.detach(), then add "
+        + "the existing detached data object");
+  }
 
 }

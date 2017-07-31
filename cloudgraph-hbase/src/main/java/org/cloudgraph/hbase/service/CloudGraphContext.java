@@ -47,57 +47,52 @@ import org.plasma.config.PlasmaConfig;
  * @since 0.5
  */
 public class CloudGraphContext {
-	private static final Log log = LogFactory.getLog(CloudGraphContext.class);
-	private static volatile CloudGraphContext instance;
-	private Configuration config;
+  private static final Log log = LogFactory.getLog(CloudGraphContext.class);
+  private static volatile CloudGraphContext instance;
+  private Configuration config;
 
-	private CloudGraphContext() {
+  private CloudGraphContext() {
 
-		String oldFactory = System
-				.getProperty("javax.xml.parsers.DocumentBuilderFactory");
-		System.setProperty("javax.xml.parsers.DocumentBuilderFactory",
-				"com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
+    String oldFactory = System.getProperty("javax.xml.parsers.DocumentBuilderFactory");
+    System.setProperty("javax.xml.parsers.DocumentBuilderFactory",
+        "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
 
-		if (log.isDebugEnabled())
-			log.debug("creating config...");
-		try {
-			config = HBaseConfiguration.create();
-			config.clear();
-			// set DAS properties
-			for (org.plasma.config.Property property : PlasmaConfig
-					.getInstance()
-					.getDataAccessProvider(DataAccessProviderName.HBASE)
-					.getProperties()) {
-				config.set(property.getName(), property.getValue());
-			}
-			// override plasma DAS properties where matches exits
-			for (org.cloudgraph.config.Property property : CloudGraphConfig
-					.getInstance().getProperties()) {
-				config.set(property.getName(), property.getValue());
-			}
+    if (log.isDebugEnabled())
+      log.debug("creating config...");
+    try {
+      config = HBaseConfiguration.create();
+      config.clear();
+      // set DAS properties
+      for (org.plasma.config.Property property : PlasmaConfig.getInstance()
+          .getDataAccessProvider(DataAccessProviderName.HBASE).getProperties()) {
+        config.set(property.getName(), property.getValue());
+      }
+      // override plasma DAS properties where matches exits
+      for (org.cloudgraph.config.Property property : CloudGraphConfig.getInstance().getProperties()) {
+        config.set(property.getName(), property.getValue());
+      }
 
-		} catch (Exception e) {
-			log.error("Error when attempting to connect to DB ", e);
-		} finally {
-			if (oldFactory != null)
-				System.setProperty("javax.xml.parsers.DocumentBuilderFactory",
-						oldFactory);
-		}
-	}
+    } catch (Exception e) {
+      log.error("Error when attempting to connect to DB ", e);
+    } finally {
+      if (oldFactory != null)
+        System.setProperty("javax.xml.parsers.DocumentBuilderFactory", oldFactory);
+    }
+  }
 
-	public static CloudGraphContext instance() {
-		if (instance == null)
-			initInstance();
-		return instance;
-	}
+  public static CloudGraphContext instance() {
+    if (instance == null)
+      initInstance();
+    return instance;
+  }
 
-	private static synchronized void initInstance() {
-		if (instance == null)
-			instance = new CloudGraphContext();
-	}
+  private static synchronized void initInstance() {
+    if (instance == null)
+      instance = new CloudGraphContext();
+  }
 
-	public Configuration getConfig() {
-		return config;
-	}
+  public Configuration getConfig() {
+    return config;
+  }
 
 }

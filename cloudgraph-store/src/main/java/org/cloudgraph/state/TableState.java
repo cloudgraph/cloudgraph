@@ -33,11 +33,11 @@ import org.cloudgraph.config.TableConfig;
  */
 public interface TableState {
 
-	/**
-	 * Returns the table configuration for this context.
-	 * 
-	 * @return the table configuration for this context.
-	 */
-	public TableConfig getTableConfig();
+  /**
+   * Returns the table configuration for this context.
+   * 
+   * @return the table configuration for this context.
+   */
+  public TableConfig getTableConfig();
 
 }

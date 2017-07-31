@@ -49,7 +49,9 @@ import org.plasma.sdo.PlasmaType;
  * @since 0.5
  */
 public interface ConfigurableKeyFactory {
-	public TableConfig getTable();
-	public DataGraphConfig getGraph();
-	public PlasmaType getRootType();
+  public TableConfig getTable();
+
+  public DataGraphConfig getGraph();
+
+  public PlasmaType getRootType();
 }

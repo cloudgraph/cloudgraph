@@ -32,53 +32,54 @@ import org.plasma.sdo.PlasmaProperty;
  * @since 0.5
  */
 public class KeyValue {
-	private PlasmaProperty prop;
-	private String propertyPath;
-	private Object value;
-	private boolean isWildcard = false;
-	private String wildcard = QueryConstants.WILDCARD;
+  private PlasmaProperty prop;
+  private String propertyPath;
+  private Object value;
+  private boolean isWildcard = false;
+  private String wildcard = QueryConstants.WILDCARD;
 
-	@SuppressWarnings("unused")
-	private KeyValue() {
-	}
-	public KeyValue(PlasmaProperty prop, Object value) {
-		this.prop = prop;
-		this.value = value;
-	}
+  @SuppressWarnings("unused")
+  private KeyValue() {
+  }
 
-	public PlasmaProperty getProp() {
-		return prop;
-	}
+  public KeyValue(PlasmaProperty prop, Object value) {
+    this.prop = prop;
+    this.value = value;
+  }
 
-	public Object getValue() {
-		return value;
-	}
+  public PlasmaProperty getProp() {
+    return prop;
+  }
 
-	public String getPropertyPath() {
-		return propertyPath;
-	}
+  public Object getValue() {
+    return value;
+  }
 
-	public void setPropertyPath(String propertyPath) {
-		this.propertyPath = propertyPath;
-	}
+  public String getPropertyPath() {
+    return propertyPath;
+  }
 
-	public boolean isWildcard() {
-		return isWildcard;
-	}
+  public void setPropertyPath(String propertyPath) {
+    this.propertyPath = propertyPath;
+  }
 
-	public void setIsWildcard(boolean isWildcard) {
-		this.isWildcard = isWildcard;
-	}
+  public boolean isWildcard() {
+    return isWildcard;
+  }
 
-	public String getWildcard() {
-		return wildcard;
-	}
+  public void setIsWildcard(boolean isWildcard) {
+    this.isWildcard = isWildcard;
+  }
 
-	public void setWildcard(String wildcard) {
-		this.wildcard = wildcard;
-	}
+  public String getWildcard() {
+    return wildcard;
+  }
 
-	public String toString() {
-		return this.prop.getName() + "/" + String.valueOf(this.value);
-	}
+  public void setWildcard(String wildcard) {
+    this.wildcard = wildcard;
+  }
+
+  public String toString() {
+    return this.prop.getName() + "/" + String.valueOf(this.value);
+  }
 }

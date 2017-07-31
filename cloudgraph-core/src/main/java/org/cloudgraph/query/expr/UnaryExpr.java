@@ -28,10 +28,10 @@ package org.cloudgraph.query.expr;
  * @since 0.5.2
  */
 public interface UnaryExpr extends Expr {
-	/**
-	 * Returns the single child node for the expression.
-	 * 
-	 * @return the single child node for the expression.
-	 */
-	public Term getTerm();
+  /**
+   * Returns the single child node for the expression.
+   * 
+   * @return the single child node for the expression.
+   */
+  public Term getTerm();
 }

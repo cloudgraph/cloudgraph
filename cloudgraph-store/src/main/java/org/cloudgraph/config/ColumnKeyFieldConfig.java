@@ -29,11 +29,10 @@ package org.cloudgraph.config;
  */
 public class ColumnKeyFieldConfig extends PreDefinedKeyFieldConfig {
 
-	private ColumnKeyField columnKeyField;
+  private ColumnKeyField columnKeyField;
 
-	public ColumnKeyFieldConfig(ColumnKeyField field, int seqNum,
-			int totalFields) {
-		super(field, seqNum, totalFields);
-		this.columnKeyField = field;
-	}
+  public ColumnKeyFieldConfig(ColumnKeyField field, int seqNum, int totalFields) {
+    super(field, seqNum, totalFields);
+    this.columnKeyField = field;
+  }
 }

@@ -58,99 +58,98 @@ import org.xml.sax.SAXException;
  * @author Scott Cinnamond
  * @since 0.5
  */
-public abstract class FilterHierarchyAssembler extends ExpresionVisitorSupport
-		implements
-			HBaseFilterAssembler {
-	private static Log log = LogFactory.getLog(FilterHierarchyAssembler.class);
+public abstract class FilterHierarchyAssembler extends ExpresionVisitorSupport implements
+    HBaseFilterAssembler {
+  private static Log log = LogFactory.getLog(FilterHierarchyAssembler.class);
 
-	protected List<Object> params = new ArrayList<Object>();
-	protected FilterList rootFilter;
-	protected Stack<FilterList> filterStack = new Stack<FilterList>();
-	protected PlasmaType rootType;
+  protected List<Object> params = new ArrayList<Object>();
+  protected FilterList rootFilter;
+  protected Stack<FilterList> filterStack = new Stack<FilterList>();
+  protected PlasmaType rootType;
 
-	@SuppressWarnings("unused")
-	private FilterHierarchyAssembler() {
-	}
-	protected FilterHierarchyAssembler(PlasmaType rootType) {
-		this.rootType = rootType;
-	}
+  @SuppressWarnings("unused")
+  private FilterHierarchyAssembler() {
+  }
 
-	public void clear() {
-		if (this.params != null)
-			params.clear();
-		this.filterStack.clear();
-	}
+  protected FilterHierarchyAssembler(PlasmaType rootType) {
+    this.rootType = rootType;
+  }
 
-	/**
-	 * Returns the assembled filter, filter list or filter hierarchy root.
-	 * 
-	 * @return the assembled filter, filter list or or filter hierarchy root.
-	 */
-	public Filter getFilter() {
-		return this.rootFilter;
-	}
+  public void clear() {
+    if (this.params != null)
+      params.clear();
+    this.filterStack.clear();
+  }
 
-	public Object[] getParams() {
-		Object[] result = new Object[params.size()];
-		Iterator<Object> iter = params.iterator();
-		for (int i = 0; iter.hasNext(); i++) {
-			Object param = iter.next();
-			if (!(param instanceof NullLiteral))
-				result[i] = param;
-			else
-				result[i] = null;
-		}
-		return result;
-	}
+  /**
+   * Returns the assembled filter, filter list or filter hierarchy root.
+   * 
+   * @return the assembled filter, filter list or or filter hierarchy root.
+   */
+  public Filter getFilter() {
+    return this.rootFilter;
+  }
 
-	protected void pushFilter() {
-		pushFilter(FilterList.Operator.MUST_PASS_ALL);
-	}
+  public Object[] getParams() {
+    Object[] result = new Object[params.size()];
+    Iterator<Object> iter = params.iterator();
+    for (int i = 0; iter.hasNext(); i++) {
+      Object param = iter.next();
+      if (!(param instanceof NullLiteral))
+        result[i] = param;
+      else
+        result[i] = null;
+    }
+    return result;
+  }
 
-	protected void pushFilter(FilterList.Operator oper) {
-		FilterList filter = new FilterList(oper);
-		FilterList top = null;
-		if (this.filterStack.size() > 0) {
-			top = this.filterStack.peek();
-			top.addFilter(filter);
-		} else
-			this.rootFilter = filter;
-		this.filterStack.push(filter);
-	}
+  protected void pushFilter() {
+    pushFilter(FilterList.Operator.MUST_PASS_ALL);
+  }
 
-	protected void popFilter() {
-		this.filterStack.pop();
-	}
+  protected void pushFilter(FilterList.Operator oper) {
+    FilterList filter = new FilterList(oper);
+    FilterList top = null;
+    if (this.filterStack.size() > 0) {
+      top = this.filterStack.peek();
+      top.addFilter(filter);
+    } else
+      this.rootFilter = filter;
+    this.filterStack.push(filter);
+  }
 
-	// String.split() can cause empty tokens under some circumstances
-	protected String[] filterTokens(String[] tokens) {
-		int count = 0;
-		for (int i = 0; i < tokens.length; i++)
-			if (tokens[i].length() > 0)
-				count++;
-		String[] result = new String[count];
-		int j = 0;
-		for (int i = 0; i < tokens.length; i++)
-			if (tokens[i].length() > 0) {
-				result[j] = tokens[i];
-				j++;
-			}
-		return result;
-	}
+  protected void popFilter() {
+    this.filterStack.pop();
+  }
 
-	protected void log(Where root) {
-		String xml = "";
-		PlasmaQueryDataBinding binding;
-		try {
-			binding = new PlasmaQueryDataBinding(
-					new DefaultValidationEventHandler());
-			xml = binding.marshal(root);
-		} catch (JAXBException e) {
-			log.debug(e);
-		} catch (SAXException e) {
-			log.debug(e);
-		}
-		log.debug("query: " + xml);
-	}
+  // String.split() can cause empty tokens under some circumstances
+  protected String[] filterTokens(String[] tokens) {
+    int count = 0;
+    for (int i = 0; i < tokens.length; i++)
+      if (tokens[i].length() > 0)
+        count++;
+    String[] result = new String[count];
+    int j = 0;
+    for (int i = 0; i < tokens.length; i++)
+      if (tokens[i].length() > 0) {
+        result[j] = tokens[i];
+        j++;
+      }
+    return result;
+  }
+
+  protected void log(Where root) {
+    String xml = "";
+    PlasmaQueryDataBinding binding;
+    try {
+      binding = new PlasmaQueryDataBinding(new DefaultValidationEventHandler());
+      xml = binding.marshal(root);
+    } catch (JAXBException e) {
+      log.debug(e);
+    } catch (SAXException e) {
+      log.debug(e);
+    }
+    log.debug("query: " + xml);
+  }
 
 }

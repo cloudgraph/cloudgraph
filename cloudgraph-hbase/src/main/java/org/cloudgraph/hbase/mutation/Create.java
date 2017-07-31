@@ -46,83 +46,78 @@ import commonj.sdo.DataGraph;
 import commonj.sdo.Property;
 
 public class Create extends DefaultMutation implements Collector {
-	private static Log log = LogFactory.getLog(Create.class);
+  private static Log log = LogFactory.getLog(Create.class);
 
-	public Create(ServiceContext context, SnapshotMap snapshotMap,
-			String username) {
-		super(context, snapshotMap, username);
-	}
+  public Create(ServiceContext context, SnapshotMap snapshotMap, String username) {
+    super(context, snapshotMap, username);
+  }
 
-	/**
-	 * Iterates over every property in the data object and pulls its value, as
-	 * for 'create' operations, change summary does not register which
-	 * properties are changed, only that the object is created.
-	 */
-	@Override
-	public void collect(DataGraph dataGraph, PlasmaDataObject dataObject,
-			DistributedWriter graphWriter, TableWriter tableWriter,
-			RowWriter rowWriter) throws IOException, IllegalAccessException {
-		PlasmaType type = (PlasmaType) dataObject.getType();
-		PlasmaNode dataNode = (PlasmaNode) dataObject;
-		CoreNode coreNode = ((CoreNode) dataObject);
-		boolean typeBound = CloudGraphConfig.getInstance().findTable(
-				type.getQualifiedName()) != null;
+  /**
+   * Iterates over every property in the data object and pulls its value, as for
+   * 'create' operations, change summary does not register which properties are
+   * changed, only that the object is created.
+   */
+  @Override
+  public void collect(DataGraph dataGraph, PlasmaDataObject dataObject,
+      DistributedWriter graphWriter, TableWriter tableWriter, RowWriter rowWriter)
+      throws IOException, IllegalAccessException {
+    PlasmaType type = (PlasmaType) dataObject.getType();
+    PlasmaNode dataNode = (PlasmaNode) dataObject;
+    CoreNode coreNode = ((CoreNode) dataObject);
+    boolean typeBound = CloudGraphConfig.getInstance().findTable(type.getQualifiedName()) != null;
 
-		long sequence = CloudGraphConstants.ROOT_SEQUENCE;
-		// if were not creating a root in this or another graph
-		if (!dataObject.equals(dataGraph.getRootObject()) && !typeBound) {
-			if (rowWriter.containsSequence(dataObject)) {
-				sequence = rowWriter.getSequence(dataObject);
-			} else {
-				sequence = rowWriter.newSequence(dataObject);
-				rowWriter.addSequence(dataObject, sequence);
-			}
-		}
-		coreNode.setValue(CloudGraphConstants.SEQUENCE, sequence);
-		rowWriter.writeRowEntityMetaData(dataObject, sequence);
+    long sequence = CloudGraphConstants.ROOT_SEQUENCE;
+    // if were not creating a root in this or another graph
+    if (!dataObject.equals(dataGraph.getRootObject()) && !typeBound) {
+      if (rowWriter.containsSequence(dataObject)) {
+        sequence = rowWriter.getSequence(dataObject);
+      } else {
+        sequence = rowWriter.newSequence(dataObject);
+        rowWriter.addSequence(dataObject, sequence);
+      }
+    }
+    coreNode.setValue(CloudGraphConstants.SEQUENCE, sequence);
+    rowWriter.writeRowEntityMetaData(dataObject, sequence);
 
-		// this.updateKeys(dataObject, type, rowWriter);
-		this.updateOrigination(dataObject, sequence, type, rowWriter); // FIXME
-																		// refactor
-		this.updateOptimistic(dataObject, sequence, type, rowWriter); // FIXME
-																		// refactor
+    // this.updateKeys(dataObject, type, rowWriter);
+    this.updateOrigination(dataObject, sequence, type, rowWriter); // FIXME
+    // refactor
+    this.updateOptimistic(dataObject, sequence, type, rowWriter); // FIXME
+    // refactor
 
-		// Set<EdgeWriter> edgeWriters = null;
-		// For 'create' change summary has no changed property specifics
-		List<Property> properties = type.getProperties();
-		for (Property p : properties) {
-			PlasmaProperty property = (PlasmaProperty) p;
-			// if (property.isKey(KeyType.primary) &&
-			// property.getType().isDataType())
-			// continue; // processed above
+    // Set<EdgeWriter> edgeWriters = null;
+    // For 'create' change summary has no changed property specifics
+    List<Property> properties = type.getProperties();
+    for (Property p : properties) {
+      PlasmaProperty property = (PlasmaProperty) p;
+      // if (property.isKey(KeyType.primary) &&
+      // property.getType().isDataType())
+      // continue; // processed above
 
-			if (property.getConcurrent() != null)
-				continue; // processed above
+      if (property.getConcurrent() != null)
+        continue; // processed above
 
-			Object dataValue = dataObject.get(property);
-			if (dataValue == null)
-				continue; // nothing to create
+      Object dataValue = dataObject.get(property);
+      if (dataValue == null)
+        continue; // nothing to create
 
-			byte[] valueBytes = null;
-			if (!property.getType().isDataType()) {
-				List<PlasmaEdge> edges = dataNode.getEdges(property);
+      byte[] valueBytes = null;
+      if (!property.getType().isDataType()) {
+        List<PlasmaEdge> edges = dataNode.getEdges(property);
 
-				List<PlasmaEdge> ownedEdges = this.findOwnedEdges(dataNode,
-						property, edges, graphWriter, rowWriter);
-				if (ownedEdges.size() > 0) {
-					// write local owned edges
-					EdgeWriter edgeWriter = rowWriter.getEdgeWriter(dataObject,
-							property, sequence);
-					edgeWriter.addAll(dataNode, ownedEdges);
-					edgeWriter.write();
-				}
-			} else {
-				valueBytes = HBaseDataConverter.INSTANCE.toBytes(property,
-						dataValue);
-				rowWriter.writeRowData(dataObject, sequence, property,
-						valueBytes);
-			}
-		}
-	}
+        List<PlasmaEdge> ownedEdges = this.findOwnedEdges(dataNode, property, edges, graphWriter,
+            rowWriter);
+        if (ownedEdges.size() > 0) {
+          // write local owned edges
+          EdgeWriter edgeWriter = rowWriter.getEdgeWriter(dataObject, property, sequence);
+          edgeWriter.addAll(dataNode, ownedEdges);
+          edgeWriter.write();
+        }
+      } else {
+        valueBytes = HBaseDataConverter.INSTANCE.toBytes(property, dataValue);
+        rowWriter.writeRowData(dataObject, sequence, property, valueBytes);
+      }
+    }
+  }
 
 }

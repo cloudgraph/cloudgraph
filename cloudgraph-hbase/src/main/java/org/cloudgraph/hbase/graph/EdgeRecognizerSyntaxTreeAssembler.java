@@ -74,58 +74,50 @@ import org.plasma.sdo.PlasmaType;
  * @see EdgeRecognizerWildcardBinaryExpr
  * @see ExprAssembler
  */
-public class EdgeRecognizerSyntaxTreeAssembler
-		extends
-			PathPredicateBinaryExprTreeAssembler {
-	protected DataGraphConfig graphConfig;
+public class EdgeRecognizerSyntaxTreeAssembler extends PathPredicateBinaryExprTreeAssembler {
+  protected DataGraphConfig graphConfig;
 
-	/**
-	 * Constructs an assembler based on the given predicate and graph edge type.
-	 * 
-	 * @param predicate
-	 *            the predicate
-	 * @param edgeType
-	 *            the graph edge type which is the type for the reference
-	 *            property within the graph which represents an edge
-	 * @param rootType
-	 *            the graph root type
-	 * @param graphConfig
-	 *            the graph config
-	 */
-	public EdgeRecognizerSyntaxTreeAssembler(Where predicate,
-			DataGraphConfig graphConfig, PlasmaType edgeType,
-			PlasmaType rootType) {
-		super(predicate, edgeType, rootType);
-		this.graphConfig = graphConfig;
-	}
+  /**
+   * Constructs an assembler based on the given predicate and graph edge type.
+   * 
+   * @param predicate
+   *          the predicate
+   * @param edgeType
+   *          the graph edge type which is the type for the reference property
+   *          within the graph which represents an edge
+   * @param rootType
+   *          the graph root type
+   * @param graphConfig
+   *          the graph config
+   */
+  public EdgeRecognizerSyntaxTreeAssembler(Where predicate, DataGraphConfig graphConfig,
+      PlasmaType edgeType, PlasmaType rootType) {
+    super(predicate, edgeType, rootType);
+    this.graphConfig = graphConfig;
+  }
 
-	@Override
-	public RelationalBinaryExpr createRelationalBinaryExpr(Property property,
-			Literal literal, RelationalOperator operator) {
+  @Override
+  public RelationalBinaryExpr createRelationalBinaryExpr(Property property, Literal literal,
+      RelationalOperator operator) {
 
-		String qual = Bytes.toString(this.contextQueryProperty
-				.getPhysicalNameBytes());
-		String delim = this.graphConfig.getColumnKeySequenceDelimiter();
-		String qualPrefix = qual + delim;
-		return new EdgeRecognizerRelationalBinaryExpr(property, qualPrefix,
-				literal, operator);
-	}
+    String qual = Bytes.toString(this.contextQueryProperty.getPhysicalNameBytes());
+    String delim = this.graphConfig.getColumnKeySequenceDelimiter();
+    String qualPrefix = qual + delim;
+    return new EdgeRecognizerRelationalBinaryExpr(property, qualPrefix, literal, operator);
+  }
 
-	@Override
-	public WildcardBinaryExpr createWildcardBinaryExpr(Property property,
-			Literal literal, WildcardOperator operator) {
-		String qual = Bytes.toString(this.contextQueryProperty
-				.getPhysicalNameBytes());
-		String delim = this.graphConfig.getColumnKeySequenceDelimiter();
-		String qualPrefix = qual + delim;
-		return new EdgeRecognizerWildcardBinaryExpr(property, qualPrefix,
-				literal, operator);
-	}
+  @Override
+  public WildcardBinaryExpr createWildcardBinaryExpr(Property property, Literal literal,
+      WildcardOperator operator) {
+    String qual = Bytes.toString(this.contextQueryProperty.getPhysicalNameBytes());
+    String delim = this.graphConfig.getColumnKeySequenceDelimiter();
+    String qualPrefix = qual + delim;
+    return new EdgeRecognizerWildcardBinaryExpr(property, qualPrefix, literal, operator);
+  }
 
-	@Override
-	public LogicalBinaryExpr createLogicalBinaryExpr(Expr left, Expr right,
-			LogicalOperator operator) {
-		return new DefaultLogicalBinaryExpr(left, right, operator);
-	}
+  @Override
+  public LogicalBinaryExpr createLogicalBinaryExpr(Expr left, Expr right, LogicalOperator operator) {
+    return new DefaultLogicalBinaryExpr(left, right, operator);
+  }
 
 }

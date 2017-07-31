@@ -35,17 +35,17 @@ import java.util.Collection;
  *
  */
 public class QueryResults {
-	private Collection collection;
+  private Collection collection;
 
-	private QueryResults() {
-	}
+  private QueryResults() {
+  }
 
-	public QueryResults(Collection collection) {
-		this.collection = collection;
-	}
+  public QueryResults(Collection collection) {
+    this.collection = collection;
+  }
 
-	public Collection getResults() {
-		return collection;
-	}
+  public Collection getResults() {
+    return collection;
+  }
 
 }

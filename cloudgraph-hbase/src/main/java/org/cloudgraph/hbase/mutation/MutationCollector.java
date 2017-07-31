@@ -49,12 +49,12 @@ import commonj.sdo.DataGraph;
  */
 public interface MutationCollector {
 
-	public Map<TableWriter, List<Row>> collectChanges(DataGraph dataGraph)
-			throws IOException, IllegalAccessException;
+  public Map<TableWriter, List<Row>> collectChanges(DataGraph dataGraph) throws IOException,
+      IllegalAccessException;
 
-	public Map<TableWriter, List<Row>> collectChanges(DataGraph[] dataGraphs)
-			throws IOException, IllegalAccessException;
+  public Map<TableWriter, List<Row>> collectChanges(DataGraph[] dataGraphs) throws IOException,
+      IllegalAccessException;
 
-	public void close();
+  public void close();
 
 }

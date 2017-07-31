@@ -46,50 +46,43 @@ import org.apache.hadoop.util.ReflectionUtils;
  * @author Scott Cinnamond
  * @since 0.6.0
  */
-public class GraphXmlOutputFormat
-		extends
-			FileOutputFormat<LongWritable, GraphWritable>
-		implements
-			Configurable,
-			GraphXml {
+public class GraphXmlOutputFormat extends FileOutputFormat<LongWritable, GraphWritable> implements
+    Configurable, GraphXml {
 
-	/** The configuration. */
-	private Configuration conf = null;
+  /** The configuration. */
+  private Configuration conf = null;
 
-	@Override
-	public Configuration getConf() {
-		return this.conf;
-	}
+  @Override
+  public Configuration getConf() {
+    return this.conf;
+  }
 
-	@Override
-	public void setConf(Configuration configuration) {
-		this.conf = configuration;
-	}
+  @Override
+  public void setConf(Configuration configuration) {
+    this.conf = configuration;
+  }
 
-	@Override
-	public RecordWriter<LongWritable, GraphWritable> getRecordWriter(
-			TaskAttemptContext job) throws IOException, InterruptedException {
-		Configuration conf = job.getConfiguration();
-		boolean isCompressed = getCompressOutput(job);
-		CompressionCodec codec = null;
-		String extension = "";
-		if (isCompressed) {
-			Class<? extends CompressionCodec> codecClass = getOutputCompressorClass(
-					job, GzipCodec.class);
-			codec = (CompressionCodec) ReflectionUtils.newInstance(codecClass,
-					conf);
-			extension = codec.getDefaultExtension();
-		}
-		Path file = getDefaultWorkFile(job, extension);
-		FileSystem fs = file.getFileSystem(conf);
-		if (!isCompressed) {
-			FSDataOutputStream fileOut = fs.create(file, false);
-			return new GraphXmlRecordWriter(fileOut, job);
-		} else {
-			FSDataOutputStream fileOut = fs.create(file, false);
-			return new GraphXmlRecordWriter(new DataOutputStream(
-					codec.createOutputStream(fileOut)), job);
-		}
-	}
+  @Override
+  public RecordWriter<LongWritable, GraphWritable> getRecordWriter(TaskAttemptContext job)
+      throws IOException, InterruptedException {
+    Configuration conf = job.getConfiguration();
+    boolean isCompressed = getCompressOutput(job);
+    CompressionCodec codec = null;
+    String extension = "";
+    if (isCompressed) {
+      Class<? extends CompressionCodec> codecClass = getOutputCompressorClass(job, GzipCodec.class);
+      codec = (CompressionCodec) ReflectionUtils.newInstance(codecClass, conf);
+      extension = codec.getDefaultExtension();
+    }
+    Path file = getDefaultWorkFile(job, extension);
+    FileSystem fs = file.getFileSystem(conf);
+    if (!isCompressed) {
+      FSDataOutputStream fileOut = fs.create(file, false);
+      return new GraphXmlRecordWriter(fileOut, job);
+    } else {
+      FSDataOutputStream fileOut = fs.create(file, false);
+      return new GraphXmlRecordWriter(new DataOutputStream(codec.createOutputStream(fileOut)), job);
+    }
+  }
 
 }

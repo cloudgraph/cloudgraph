@@ -41,20 +41,20 @@ import org.plasma.sdo.PlasmaDataGraph;
  */
 public class GraphRecognizerContext implements EvaluationContext {
 
-	private PlasmaDataGraph graph;
+  private PlasmaDataGraph graph;
 
-	/**
-	 * Constructs an empty context.
-	 */
-	public GraphRecognizerContext() {
-	}
+  /**
+   * Constructs an empty context.
+   */
+  public GraphRecognizerContext() {
+  }
 
-	public PlasmaDataGraph getGraph() {
-		return graph;
-	}
+  public PlasmaDataGraph getGraph() {
+    return graph;
+  }
 
-	public void setGraph(PlasmaDataGraph graph) {
-		this.graph = graph;
-	}
+  public void setGraph(PlasmaDataGraph graph) {
+    this.graph = graph;
+  }
 
 }

@@ -38,35 +38,35 @@ import org.cloudgraph.state.StateMarshalingContext;
  * @since 0.6.3
  */
 public class LazyServiceContext implements ServiceContext {
-	private static Log log = LogFactory.getLog(LazyServiceContext.class);
-	private StateMarshalingContext marshallingContext;
-	private PooledStateManager pool;
+  private static Log log = LogFactory.getLog(LazyServiceContext.class);
+  private StateMarshalingContext marshallingContext;
+  private PooledStateManager pool;
 
-	@SuppressWarnings("unused")
-	private LazyServiceContext() {
-	}
-	public LazyServiceContext(PooledStateManager pooledMarshallingContext) {
-		this.pool = pooledMarshallingContext;
-	}
+  @SuppressWarnings("unused")
+  private LazyServiceContext() {
+  }
 
-	@Override
-	public StateMarshalingContext getMarshallingContext() {
-		if (this.marshallingContext == null) {
-			if (log.isDebugEnabled())
-				log.debug("getting marshalling context from pool");
-			this.marshallingContext = new SimpleStateMarshallingContext(
-					this.pool.getBinding());
-		}
-		return this.marshallingContext;
-	}
+  public LazyServiceContext(PooledStateManager pooledMarshallingContext) {
+    this.pool = pooledMarshallingContext;
+  }
 
-	@Override
-	public void close() {
-		if (this.marshallingContext != null) {
-			if (log.isDebugEnabled())
-				log.debug("returning marshalling context to pool");
-			this.pool.returnBinding(this.marshallingContext.getBinding());
-			this.marshallingContext = null;
-		}
-	}
+  @Override
+  public StateMarshalingContext getMarshallingContext() {
+    if (this.marshallingContext == null) {
+      if (log.isDebugEnabled())
+        log.debug("getting marshalling context from pool");
+      this.marshallingContext = new SimpleStateMarshallingContext(this.pool.getBinding());
+    }
+    return this.marshallingContext;
+  }
+
+  @Override
+  public void close() {
+    if (this.marshallingContext != null) {
+      if (log.isDebugEnabled())
+        log.debug("returning marshalling context to pool");
+      this.pool.returnBinding(this.marshallingContext.getBinding());
+      this.marshallingContext = null;
+    }
+  }
 }

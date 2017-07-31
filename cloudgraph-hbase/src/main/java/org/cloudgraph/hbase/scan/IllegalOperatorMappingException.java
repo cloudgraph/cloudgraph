@@ -26,18 +26,18 @@ package org.cloudgraph.hbase.scan;
  * @since 0.5.3
  */
 public class IllegalOperatorMappingException extends ScanException {
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	public IllegalOperatorMappingException() {
-		super();
-	}
+  public IllegalOperatorMappingException() {
+    super();
+  }
 
-	public IllegalOperatorMappingException(String msg) {
-		super(msg);
-	}
+  public IllegalOperatorMappingException(String msg) {
+    super(msg);
+  }
 
-	public IllegalOperatorMappingException(Throwable t) {
-		super(t);
-	}
+  public IllegalOperatorMappingException(Throwable t) {
+    super(t);
+  }
 
 }

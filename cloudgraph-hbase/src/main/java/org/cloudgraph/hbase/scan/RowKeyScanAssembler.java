@@ -33,29 +33,29 @@ import org.plasma.sdo.PlasmaType;
  * @since 0.5
  */
 public interface RowKeyScanAssembler {
-	/**
-	 * Assemble row key scan information based on one or more given query
-	 * predicates.
-	 * 
-	 * @param where
-	 *            the where predicate hierarchy
-	 * @param contextType
-	 *            the context type which may be the root type or another type
-	 *            linked by one or more relations to the root
-	 */
-	public void assemble(Where where, PlasmaType contextType);
+  /**
+   * Assemble row key scan information based on one or more given query
+   * predicates.
+   * 
+   * @param where
+   *          the where predicate hierarchy
+   * @param contextType
+   *          the context type which may be the root type or another type linked
+   *          by one or more relations to the root
+   */
+  public void assemble(Where where, PlasmaType contextType);
 
-	/**
-	 * Assemble row key scan information based only on the data graph root type
-	 * information such as the URI and type logical or physical name.
-	 */
-	public void assemble();
+  /**
+   * Assemble row key scan information based only on the data graph root type
+   * information such as the URI and type logical or physical name.
+   */
+  public void assemble();
 
-	/**
-	 * Assemble row key scan information based on the given scan literals.
-	 * 
-	 * @param literals
-	 *            the scan literals
-	 */
-	public void assemble(ScanLiterals literals);
+  /**
+   * Assemble row key scan information based on the given scan literals.
+   * 
+   * @param literals
+   *          the scan literals
+   */
+  public void assemble(ScanLiterals literals);
 }

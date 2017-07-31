@@ -30,18 +30,18 @@ package org.cloudgraph.config;
  */
 public class RowKeyModelConfig {
 
-	private RowKeyModel rowKeyModel;
+  private RowKeyModel rowKeyModel;
 
-	@SuppressWarnings("unused")
-	private RowKeyModelConfig() {
-	}
+  @SuppressWarnings("unused")
+  private RowKeyModelConfig() {
+  }
 
-	public RowKeyModelConfig(RowKeyModel rowKeyModel) {
-		super();
-		this.rowKeyModel = rowKeyModel;
-	}
+  public RowKeyModelConfig(RowKeyModel rowKeyModel) {
+    super();
+    this.rowKeyModel = rowKeyModel;
+  }
 
-	public int getRowKeyFieldCount() {
-		return rowKeyModel.rowKeyFields.size();
-	}
+  public int getRowKeyFieldCount() {
+    return rowKeyModel.rowKeyFields.size();
+  }
 }

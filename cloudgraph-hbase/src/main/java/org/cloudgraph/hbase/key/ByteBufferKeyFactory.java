@@ -62,72 +62,71 @@ import org.plasma.sdo.PlasmaType;
  * @since 0.5
  */
 public abstract class ByteBufferKeyFactory implements ConfigurableKeyFactory {
-	protected int bufsize = 4000;
-	protected ByteBuffer buf = ByteBuffer.allocate(bufsize);
+  protected int bufsize = 4000;
+  protected ByteBuffer buf = ByteBuffer.allocate(bufsize);
 
-	protected Charset charset;
-	protected KeySupport keySupport = new KeySupport();
-	protected Hashing hashing;
-	protected TableConfig table;
-	protected DataGraphConfig graph;
-	protected PlasmaType rootType;
+  protected Charset charset;
+  protected KeySupport keySupport = new KeySupport();
+  protected Hashing hashing;
+  protected TableConfig table;
+  protected DataGraphConfig graph;
+  protected PlasmaType rootType;
 
-	@SuppressWarnings("unused")
-	private ByteBufferKeyFactory() {
-	}
+  @SuppressWarnings("unused")
+  private ByteBufferKeyFactory() {
+  }
 
-	/**
-	 * Constructor for read/write operations where we have already found or are
-	 * creating the underlying row. Not for query operations where we have
-	 * nothing but metadata.
-	 * 
-	 * @param graphRow
-	 */
-	protected ByteBufferKeyFactory(RowState graphRow) {
-		this.table = graphRow.getDataGraph().getTable();
-		this.charset = table.getCharset();
-		Hash hash = this.keySupport.getHashAlgorithm(table);
-		this.hashing = new Hashing(hash, this.charset);
-		this.graph = graphRow.getDataGraph();
-	}
+  /**
+   * Constructor for read/write operations where we have already found or are
+   * creating the underlying row. Not for query operations where we have nothing
+   * but metadata.
+   * 
+   * @param graphRow
+   */
+  protected ByteBufferKeyFactory(RowState graphRow) {
+    this.table = graphRow.getDataGraph().getTable();
+    this.charset = table.getCharset();
+    Hash hash = this.keySupport.getHashAlgorithm(table);
+    this.hashing = new Hashing(hash, this.charset);
+    this.graph = graphRow.getDataGraph();
+  }
 
-	/**
-	 * Constructor given pure metadata without any operational state, which
-	 * looks up table and data graph specific configuration information for the
-	 * given SDO type.
-	 * 
-	 * @param rootType
-	 *            the SDO type
-	 */
-	protected ByteBufferKeyFactory(PlasmaType rootType) {
-		this.rootType = rootType;
-		// FIXME: should be table context delegate?
-		QName rootTypeQname = this.rootType.getQualifiedName();
-		Config config = CloudGraphConfig.getInstance();
-		if (config.findTable(rootTypeQname) == null)
-			throw new IllegalArgumentException(
-					"given type is not a bound (graph root) type, " + rootType);
-		this.table = config.getTable(rootTypeQname);
-		this.graph = config.getDataGraph(rootTypeQname);
-		this.charset = config.getCharset();
-		Hash hash = this.keySupport.getHashAlgorithm(this.table);
-		this.hashing = new Hashing(hash, this.charset);
-	}
+  /**
+   * Constructor given pure metadata without any operational state, which looks
+   * up table and data graph specific configuration information for the given
+   * SDO type.
+   * 
+   * @param rootType
+   *          the SDO type
+   */
+  protected ByteBufferKeyFactory(PlasmaType rootType) {
+    this.rootType = rootType;
+    // FIXME: should be table context delegate?
+    QName rootTypeQname = this.rootType.getQualifiedName();
+    Config config = CloudGraphConfig.getInstance();
+    if (config.findTable(rootTypeQname) == null)
+      throw new IllegalArgumentException("given type is not a bound (graph root) type, " + rootType);
+    this.table = config.getTable(rootTypeQname);
+    this.graph = config.getDataGraph(rootTypeQname);
+    this.charset = config.getCharset();
+    Hash hash = this.keySupport.getHashAlgorithm(this.table);
+    this.hashing = new Hashing(hash, this.charset);
+  }
 
-	public TableConfig getTable() {
-		return this.table;
-	}
+  public TableConfig getTable() {
+    return this.table;
+  }
 
-	public DataGraphConfig getGraph() {
-		return this.graph;
-	}
+  public DataGraphConfig getGraph() {
+    return this.graph;
+  }
 
-	public ByteBuffer getBuf() {
-		return buf;
-	}
+  public ByteBuffer getBuf() {
+    return buf;
+  }
 
-	public PlasmaType getRootType() {
-		return this.rootType;
-	}
+  public PlasmaType getRootType() {
+    return this.rootType;
+  }
 
 }

@@ -43,19 +43,23 @@ import org.plasma.sdo.PlasmaType;
  * @since 0.5.1
  */
 public interface RowReader extends RowOperation {
-	public ColumnMap getRow();
-	public TableReader getTableReader();
-	public EdgeReader getEdgeReader(PlasmaType type, PlasmaProperty property,
-			long sequence) throws IOException;
-	public boolean edgeExists(PlasmaType type, PlasmaProperty property,
-			long sequence) throws IOException;
-	// public PlasmaType decodeRootType(byte[] bytes);
+  public ColumnMap getRow();
 
-	/**
-	 * Frees resources associated with this.
-	 */
-	public void clear();
+  public TableReader getTableReader();
 
-	public PlasmaType decodeType(byte[] typeBytes);
+  public EdgeReader getEdgeReader(PlasmaType type, PlasmaProperty property, long sequence)
+      throws IOException;
+
+  public boolean edgeExists(PlasmaType type, PlasmaProperty property, long sequence)
+      throws IOException;
+
+  // public PlasmaType decodeRootType(byte[] bytes);
+
+  /**
+   * Frees resources associated with this.
+   */
+  public void clear();
+
+  public PlasmaType decodeType(byte[] typeBytes);
 
 }

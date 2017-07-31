@@ -40,5 +40,5 @@ import commonj.sdo.DataGraph;
  * @see GraphMutator
  */
 public interface GraphAccessor {
-	public DataGraph[] find(Query query, JobContext context) throws IOException;
+  public DataGraph[] find(Query query, JobContext context) throws IOException;
 }

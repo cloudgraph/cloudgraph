@@ -40,93 +40,86 @@ import org.plasma.sdo.core.CoreConstants;
  */
 public enum EdgeMetaKey implements MetaKey {
 
-	/**
-	 * The timestamp for an edge/collection indicating the last modified date
-	 * for the edge, the value being a string representation of a long integer.
-	 */
-	TIMESTAMP(
-			"_TS_",
-			"timestamp for an edge/collection indicating the last modified date for the edge"),
+  /**
+   * The timestamp for an edge/collection indicating the last modified date for
+   * the edge, the value being a string representation of a long integer.
+   */
+  TIMESTAMP("_TS_",
+      "timestamp for an edge/collection indicating the last modified date for the edge"),
 
-	/**
-	 * This field specifies the base entity type for the (abstract) base class
-	 * for the reference collection. The value associated with this field is a
-	 * qualified type identifier.
-	 */
-	BASETYPE(
-			"_BT_",
-			"specifies the base entity type for the (abstract) base class for the reference collection"),
+  /**
+   * This field specifies the base entity type for the (abstract) base class for
+   * the reference collection. The value associated with this field is a
+   * qualified type identifier.
+   */
+  BASETYPE("_BT_",
+      "specifies the base entity type for the (abstract) base class for the reference collection"),
 
-	/**
-	 * The default entity subtype for elements within an edge or reference
-	 * collection. The default sybtype is only created if the actual entity type
-	 * differs from the base entity type. If valued it does not require all
-	 * future entities within the collection to be instances of the sybtype.
-	 */
-	SUBTYPE("_ST_",
-			"default entity subtype for elements within an edge or reference collection"),
+  /**
+   * The default entity subtype for elements within an edge or reference
+   * collection. The default sybtype is only created if the actual entity type
+   * differs from the base entity type. If valued it does not require all future
+   * entities within the collection to be instances of the sybtype.
+   */
+  SUBTYPE("_ST_", "default entity subtype for elements within an edge or reference collection"),
 
-	/**
-	 * This field specifies the path to the collection within a remote graph.
-	 * This path is used to locate target entities anywhere within a non-local
-	 * target graph and is essential for reference cleanup during delete
-	 * operations. The value associated with this field is a path composed of
-	 * physical property names from the graph root to the target collection.
-	 */
-	PATH("_PH_", "specifies the path to the collection within a remote graph"),
+  /**
+   * This field specifies the path to the collection within a remote graph. This
+   * path is used to locate target entities anywhere within a non-local target
+   * graph and is essential for reference cleanup during delete operations. The
+   * value associated with this field is a path composed of physical property
+   * names from the graph root to the target collection.
+   */
+  PATH("_PH_", "specifies the path to the collection within a remote graph"),
 
-	/**
-	 * This field specifies the count of entities associated with the
-	 * collection.
-	 */
-	COUNT("_CT_",
-			"specifies the count of entities associated with the collection"),
+  /**
+   * This field specifies the count of entities associated with the collection.
+   */
+  COUNT("_CT_", "specifies the count of entities associated with the collection"),
 
-	/**
-	 * This field specifies the entity sequence numbers for the target entities
-	 * contained in the target collection. The sequence numbers within the value
-	 * for this field are added during insert operations and removed during
-	 * delete operations. All such reference metadata mutations must be
-	 * associated and kept in sync with mutations on the actual target entities.
-	 */
-	SEQUENCES(
-			"_SQ_",
-			"entity sequence numbers for the target entities contained in the target collection"),
+  /**
+   * This field specifies the entity sequence numbers for the target entities
+   * contained in the target collection. The sequence numbers within the value
+   * for this field are added during insert operations and removed during delete
+   * operations. All such reference metadata mutations must be associated and
+   * kept in sync with mutations on the actual target entities.
+   */
+  SEQUENCES("_SQ_",
+      "entity sequence numbers for the target entities contained in the target collection"),
 
-	/**
-	 * This field specifies the row keys associated with the target entities for
-	 * the reference collection, where the targets are not part of the local
-	 * graph, but are found in another row or table.
-	 */
-	ROWKEYS("_RK_",
-			"row keys associated with the target entities for the reference collection");
+  /**
+   * This field specifies the row keys associated with the target entities for
+   * the reference collection, where the targets are not part of the local
+   * graph, but are found in another row or table.
+   */
+  ROWKEYS("_RK_", "row keys associated with the target entities for the reference collection");
 
-	private String code;
-	private String description;
-	byte[] codeBytes;
-	private EdgeMetaKey(String code, String description) {
-		this.code = code;
-		this.description = description;
-		this.codeBytes = this.code.getBytes(Charset
-				.forName(CoreConstants.UTF8_ENCODING));
-	}
+  private String code;
+  private String description;
+  byte[] codeBytes;
 
-	public byte[] codeAsBytes() {
-		return this.codeBytes;
-	}
+  private EdgeMetaKey(String code, String description) {
+    this.code = code;
+    this.description = description;
+    this.codeBytes = this.code.getBytes(Charset.forName(CoreConstants.UTF8_ENCODING));
+  }
 
-	@Override
-	public String code() {
-		return this.code;
-	}
+  public byte[] codeAsBytes() {
+    return this.codeBytes;
+  }
 
-	@Override
-	public String description() {
-		return this.description;
-	}
+  @Override
+  public String code() {
+    return this.code;
+  }
 
-	@Override
-	public String asString() {
-		return this.name() + " (" + this.code + ")";
-	}
+  @Override
+  public String description() {
+    return this.description;
+  }
+
+  @Override
+  public String asString() {
+    return this.name() + " (" + this.code + ")";
+  }
 }

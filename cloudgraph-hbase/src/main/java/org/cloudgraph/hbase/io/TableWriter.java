@@ -44,38 +44,39 @@ import java.util.UUID;
  */
 public interface TableWriter extends TableOperation {
 
-	public DistributedWriter getDistributedWriter();
-	@Deprecated
-	public void setDistributedWriter(
-			DistributedGraphWriter distributedGraphWriter);
-	/**
-	 * Returns the row writer context for the given UUID
-	 * 
-	 * @param uuid
-	 *            the UUID string
-	 * @return the row writer context for the given UUID
-	 */
-	public RowWriter getRowWriter(UUID uuid);
+  public DistributedWriter getDistributedWriter();
 
-	/**
-	 * Adds the given row writer context mapping it to the given UUID.
-	 * 
-	 * @param uuid
-	 *            the UUID
-	 * @param rowContext
-	 *            the row writer context
-	 */
-	public void addRowWriter(UUID uuid, RowWriter rowContext);
+  @Deprecated
+  public void setDistributedWriter(DistributedGraphWriter distributedGraphWriter);
 
-	/**
-	 * Returns all row writer context values for this table context.
-	 * 
-	 * @return all row writer context values for this table context.
-	 */
-	public List<RowWriter> getAllRowWriters();
+  /**
+   * Returns the row writer context for the given UUID
+   * 
+   * @param uuid
+   *          the UUID string
+   * @return the row writer context for the given UUID
+   */
+  public RowWriter getRowWriter(UUID uuid);
 
-	/**
-	 * Closes tables and connections.
-	 */
-	public void close() throws IOException;
+  /**
+   * Adds the given row writer context mapping it to the given UUID.
+   * 
+   * @param uuid
+   *          the UUID
+   * @param rowContext
+   *          the row writer context
+   */
+  public void addRowWriter(UUID uuid, RowWriter rowContext);
+
+  /**
+   * Returns all row writer context values for this table context.
+   * 
+   * @return all row writer context values for this table context.
+   */
+  public List<RowWriter> getAllRowWriters();
+
+  /**
+   * Closes tables and connections.
+   */
+  public void close() throws IOException;
 }

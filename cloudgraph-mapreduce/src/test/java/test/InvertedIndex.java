@@ -28,84 +28,78 @@ import org.apache.hadoop.util.GenericOptionsParser;
  */
 public class InvertedIndex {
 
-	public static class InvertedIndexMapper
-			extends
-				Mapper<LongWritable, Text, Text, Text> {
-		private Text id = new Text();
-		private Text outkey = new Text();
+  public static class InvertedIndexMapper extends Mapper<LongWritable, Text, Text, Text> {
+    private Text id = new Text();
+    private Text outkey = new Text();
 
-		public void map(LongWritable key, Text value, Context context)
-				throws IOException, InterruptedException {
-			String[] values = value.toString().split("\\s+");
-			id.set(values[0]);
-			for (int i = 1; i < values.length; i++) {
-				outkey.set(values[i]);
-				context.write(outkey, id);
-			}
-		}
-	}
+    public void map(LongWritable key, Text value, Context context) throws IOException,
+        InterruptedException {
+      String[] values = value.toString().split("\\s+");
+      id.set(values[0]);
+      for (int i = 1; i < values.length; i++) {
+        outkey.set(values[i]);
+        context.write(outkey, id);
+      }
+    }
+  }
 
-	public static class InvertedIndexReducer
-			extends
-				Reducer<Text, Text, Text, Text> {
-		private Text result = new Text();
+  public static class InvertedIndexReducer extends Reducer<Text, Text, Text, Text> {
+    private Text result = new Text();
 
-		public void reduce(Text key, Iterable<Text> values, Context context)
-				throws IOException, InterruptedException {
-			StringBuilder sb = new StringBuilder();
-			boolean first = true;
-			for (Text id : values) {
-				if (first) {
-					first = false;
-				} else {
-					sb.append(" ");
-				}
-				sb.append(id.toString());
-			}
-			result.set(sb.toString());
-			context.write(key, result);
-		}
-	}
+    public void reduce(Text key, Iterable<Text> values, Context context) throws IOException,
+        InterruptedException {
+      StringBuilder sb = new StringBuilder();
+      boolean first = true;
+      for (Text id : values) {
+        if (first) {
+          first = false;
+        } else {
+          sb.append(" ");
+        }
+        sb.append(id.toString());
+      }
+      result.set(sb.toString());
+      context.write(key, result);
+    }
+  }
 
-	public static void runJob(Configuration conf, String[] args)
-			throws IOException {
-		Job job = new Job(conf);
-		job.setMapOutputKeyClass(Text.class);
-		job.setMapOutputValueClass(Text.class);
-		job.setOutputKeyClass(Text.class);
-		job.setOutputValueClass(Text.class);
-		MultipleInputs.addInputPath(job, new Path(args[0]),
-				TextInputFormat.class, InvertedIndexMapper.class);
-		job.setReducerClass(InvertedIndexReducer.class);
-		job.setNumReduceTasks(1);
-		Path outPath = new Path("/tmp/test");
-		FileOutputFormat.setOutputPath(job, outPath);
-		FileSystem dfs = FileSystem.get(outPath.toUri(), conf);
-		if (dfs.exists(outPath)) {
-			dfs.delete(outPath, true);
-		}
+  public static void runJob(Configuration conf, String[] args) throws IOException {
+    Job job = new Job(conf);
+    job.setMapOutputKeyClass(Text.class);
+    job.setMapOutputValueClass(Text.class);
+    job.setOutputKeyClass(Text.class);
+    job.setOutputValueClass(Text.class);
+    MultipleInputs.addInputPath(job, new Path(args[0]), TextInputFormat.class,
+        InvertedIndexMapper.class);
+    job.setReducerClass(InvertedIndexReducer.class);
+    job.setNumReduceTasks(1);
+    Path outPath = new Path("/tmp/test");
+    FileOutputFormat.setOutputPath(job, outPath);
+    FileSystem dfs = FileSystem.get(outPath.toUri(), conf);
+    if (dfs.exists(outPath)) {
+      dfs.delete(outPath, true);
+    }
 
-		try {
-			job.waitForCompletion(true);
-		} catch (InterruptedException ex) {
-			ex.printStackTrace();
-		} catch (ClassNotFoundException ex) {
-			ex.printStackTrace();
-		}
-	}
+    try {
+      job.waitForCompletion(true);
+    } catch (InterruptedException ex) {
+      ex.printStackTrace();
+    } catch (ClassNotFoundException ex) {
+      ex.printStackTrace();
+    }
+  }
 
-	public static void main(String[] args) throws IOException {
-		Configuration conf = new Configuration();
-		String[] otherArgs = new GenericOptionsParser(conf, args)
-				.getRemainingArgs();
-		if (otherArgs.length != 1) {
-			System.out.println("Wrong number of parameters: " + args.length);
-			System.exit(-1);
-		}
-		try {
-			runJob(conf, otherArgs);
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-	}
+  public static void main(String[] args) throws IOException {
+    Configuration conf = new Configuration();
+    String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
+    if (otherArgs.length != 1) {
+      System.out.println("Wrong number of parameters: " + args.length);
+      System.exit(-1);
+    }
+    try {
+      runJob(conf, otherArgs);
+    } catch (IOException ex) {
+      ex.printStackTrace();
+    }
+  }
 }

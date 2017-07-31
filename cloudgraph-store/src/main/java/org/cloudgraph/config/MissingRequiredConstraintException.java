@@ -28,17 +28,15 @@ package org.cloudgraph.config;
  * @author Scott Cinnamond
  * @since 0.5.3
  */
-public class MissingRequiredConstraintException
-		extends
-			CloudGraphConfigurationException {
+public class MissingRequiredConstraintException extends CloudGraphConfigurationException {
 
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	public MissingRequiredConstraintException(String message) {
-		super(message);
-	}
+  public MissingRequiredConstraintException(String message) {
+    super(message);
+  }
 
-	public MissingRequiredConstraintException(Throwable t) {
-		super(t);
-	}
+  public MissingRequiredConstraintException(Throwable t) {
+    super(t);
+  }
 }

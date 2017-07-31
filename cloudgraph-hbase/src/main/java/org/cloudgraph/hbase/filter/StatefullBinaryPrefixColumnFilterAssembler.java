@@ -62,49 +62,43 @@ import commonj.sdo.Property;
  * @author Scott Cinnamond
  * @since 0.5
  */
-public class StatefullBinaryPrefixColumnFilterAssembler
-		extends
-			FilterListAssembler {
-	private static Log log = LogFactory
-			.getLog(StatefullBinaryPrefixColumnFilterAssembler.class);
-	private GraphStatefullColumnKeyFactory columnKeyFac;
-	private EdgeReader edgeReader;
+public class StatefullBinaryPrefixColumnFilterAssembler extends FilterListAssembler {
+  private static Log log = LogFactory.getLog(StatefullBinaryPrefixColumnFilterAssembler.class);
+  private GraphStatefullColumnKeyFactory columnKeyFac;
+  private EdgeReader edgeReader;
 
-	public StatefullBinaryPrefixColumnFilterAssembler(PlasmaType rootType,
-			EdgeReader edgeReader) {
-		super(rootType);
-		this.edgeReader = edgeReader;
-		this.rootFilter = new FilterList(FilterList.Operator.MUST_PASS_ONE);
+  public StatefullBinaryPrefixColumnFilterAssembler(PlasmaType rootType, EdgeReader edgeReader) {
+    super(rootType);
+    this.edgeReader = edgeReader;
+    this.rootFilter = new FilterList(FilterList.Operator.MUST_PASS_ONE);
 
-		this.columnKeyFac = new StatefullColumnKeyFactory(rootType);
-	}
+    this.columnKeyFac = new StatefullColumnKeyFactory(rootType);
+  }
 
-	public void assemble(Set<Property> properies, Set<Long> sequences,
-			PlasmaType contextType) {
-		byte[] colKey = null;
-		QualifierFilter qualFilter = null;
-		PlasmaType subType = edgeReader.getSubType();
-		if (subType == null)
-			subType = edgeReader.getBaseType();
+  public void assemble(Set<Property> properies, Set<Long> sequences, PlasmaType contextType) {
+    byte[] colKey = null;
+    QualifierFilter qualFilter = null;
+    PlasmaType subType = edgeReader.getSubType();
+    if (subType == null)
+      subType = edgeReader.getBaseType();
 
-		for (Long seq : sequences) {
-			// adds entity level meta data qualifier prefixes for ALL sequences
-			// in the selection
-			for (EntityMetaKey metaField : EntityMetaKey.values()) {
-				colKey = this.columnKeyFac.createColumnKey(subType, seq,
-						metaField);
-				qualFilter = new QualifierFilter(CompareFilter.CompareOp.EQUAL,
-						new BinaryPrefixComparator(colKey));
-				this.rootFilter.addFilter(qualFilter);
-			}
+    for (Long seq : sequences) {
+      // adds entity level meta data qualifier prefixes for ALL sequences
+      // in the selection
+      for (EntityMetaKey metaField : EntityMetaKey.values()) {
+        colKey = this.columnKeyFac.createColumnKey(subType, seq, metaField);
+        qualFilter = new QualifierFilter(CompareFilter.CompareOp.EQUAL, new BinaryPrefixComparator(
+            colKey));
+        this.rootFilter.addFilter(qualFilter);
+      }
 
-			for (Property p : properies) {
-				PlasmaProperty prop = (PlasmaProperty) p;
-				colKey = this.columnKeyFac.createColumnKey(subType, seq, prop);
-				qualFilter = new QualifierFilter(CompareFilter.CompareOp.EQUAL,
-						new BinaryPrefixComparator(colKey));
-				this.rootFilter.addFilter(qualFilter);
-			}
-		}
-	}
+      for (Property p : properies) {
+        PlasmaProperty prop = (PlasmaProperty) p;
+        colKey = this.columnKeyFac.createColumnKey(subType, seq, prop);
+        qualFilter = new QualifierFilter(CompareFilter.CompareOp.EQUAL, new BinaryPrefixComparator(
+            colKey));
+        this.rootFilter.addFilter(qualFilter);
+      }
+    }
+  }
 }

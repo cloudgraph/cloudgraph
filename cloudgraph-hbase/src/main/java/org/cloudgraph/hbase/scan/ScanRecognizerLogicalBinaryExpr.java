@@ -36,24 +36,22 @@ import org.plasma.query.model.LogicalOperator;
  * @see ExprVisitor
  * @see EvaluationContext
  */
-public class ScanRecognizerLogicalBinaryExpr extends DefaultLogicalBinaryExpr
-		implements
-			LogicalBinaryExpr {
-	/**
-	 * Constructs a composite expression based on the given terms and <a href=
-	 * "http://docs.plasma-sdo.org/api/org/plasma/query/model/LogicalOperator.html"
-	 * >logical</a> operator.
-	 * 
-	 * @param left
-	 *            the "left" expression term
-	 * @param right
-	 *            the "right" expression term
-	 * @param oper
-	 *            the logical operator
-	 */
-	public ScanRecognizerLogicalBinaryExpr(Expr left, Expr right,
-			LogicalOperator oper) {
-		super(left, right, oper);
-	}
+public class ScanRecognizerLogicalBinaryExpr extends DefaultLogicalBinaryExpr implements
+    LogicalBinaryExpr {
+  /**
+   * Constructs a composite expression based on the given terms and <a href=
+   * "http://docs.plasma-sdo.org/api/org/plasma/query/model/LogicalOperator.html"
+   * >logical</a> operator.
+   * 
+   * @param left
+   *          the "left" expression term
+   * @param right
+   *          the "right" expression term
+   * @param oper
+   *          the logical operator
+   */
+  public ScanRecognizerLogicalBinaryExpr(Expr left, Expr right, LogicalOperator oper) {
+    super(left, right, oper);
+  }
 
 }

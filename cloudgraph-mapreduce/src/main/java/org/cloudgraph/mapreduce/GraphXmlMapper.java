@@ -44,19 +44,16 @@ import org.apache.hadoop.mapreduce.Mapper;
  * <p>
  *
  * <pre>
- * public class PageGraphImporter
- * 		extends
- * 			GraphXmlMapper&lt;LongWritable, GraphWritable&gt; {
- * 	&#064;Override
- * 	public void map(LongWritable offset, GraphWritable graph, Context context)
- * 			throws IOException {
+ * public class PageGraphImporter extends GraphXmlMapper&lt;LongWritable, GraphWritable&gt; {
+ *   &#064;Override
+ *   public void map(LongWritable offset, GraphWritable graph, Context context) throws IOException {
  * 
- * 		Page page = (Page) graph.getDataGraph().getRootObject();
- * 		page.setPageTitle(&quot;New Page1&quot;);
+ *     Page page = (Page) graph.getDataGraph().getRootObject();
+ *     page.setPageTitle(&quot;New Page1&quot;);
  * 
- * 		// commit above changes
- * 		super.commit(row, graph, context);
- * 	}
+ *     // commit above changes
+ *     super.commit(row, graph, context);
+ *   }
  * }
  * </pre>
  *
@@ -77,9 +74,9 @@ import org.apache.hadoop.mapreduce.Mapper;
  * </p>
  * 
  * @param <KEYOUT>
- *            the output key type
+ *          the output key type
  * @param <VALUEOUT>
- *            the output value type
+ *          the output value type
  * 
  * @see org.cloudgraph.mapreduce.GraphWritable
  * @see org.cloudgraph.mapreduce.GraphXmlRecordReader
@@ -88,19 +85,17 @@ import org.apache.hadoop.mapreduce.Mapper;
  * @author Scott Cinnamond
  * @since 0.5.8
  */
-public class GraphXmlMapper<KEYOUT, VALUEOUT>
-		extends
-			Mapper<LongWritable, GraphWritable, KEYOUT, VALUEOUT> {
+public class GraphXmlMapper<KEYOUT, VALUEOUT> extends
+    Mapper<LongWritable, GraphWritable, KEYOUT, VALUEOUT> {
 
-	private static Log log = LogFactory.getLog(GraphXmlMapper.class);
+  private static Log log = LogFactory.getLog(GraphXmlMapper.class);
 
-	public GraphXmlMapper() {
-	}
+  public GraphXmlMapper() {
+  }
 
-	@Override
-	public void map(LongWritable row, GraphWritable graph, Context context)
-			throws IOException {
-		// no behavior
-	}
+  @Override
+  public void map(LongWritable row, GraphWritable graph, Context context) throws IOException {
+    // no behavior
+  }
 
 }

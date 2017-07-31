@@ -48,23 +48,21 @@ import commonj.sdo.DataGraph;
  * <p>
  *
  * <pre>
- * public class PageGraphModifier
- * 		extends
- * 			GraphXmlMapper&lt;ImmutableBytesWritable, GraphWritable&gt; {
- * 	public void map(ImmutableBytesWritable offset, GraphWritable graph,
- * 			Context context) throws IOException {
+ * public class PageGraphModifier extends GraphXmlMapper&lt;ImmutableBytesWritable, GraphWritable&gt; {
+ *   public void map(ImmutableBytesWritable offset, GraphWritable graph, Context context)
+ *       throws IOException {
  * 
- * 		// track changes
- * 		graph.getDataGraph().getChangeSummary().beginLogging();
+ *     // track changes
+ *     graph.getDataGraph().getChangeSummary().beginLogging();
  * 
- * 		Page page = (Page) graph.getDataGraph().getRootObject();
- * 		Categorylinks link = page.createCategorylinks();
- * 		link.setClTo(&quot;Some Category Page&quot;);
- * 		link.setClTimestamp((new Date()).toString());
+ *     Page page = (Page) graph.getDataGraph().getRootObject();
+ *     Categorylinks link = page.createCategorylinks();
+ *     link.setClTo(&quot;Some Category Page&quot;);
+ *     link.setClTimestamp((new Date()).toString());
  * 
- * 		// commit above changes
- * 		super.commit(row, graph, context);
- * 	}
+ *     // commit above changes
+ *     super.commit(row, graph, context);
+ *   }
  * }
  * </pre>
  *
@@ -88,9 +86,9 @@ import commonj.sdo.DataGraph;
  * </p>
  * 
  * @param <KEYOUT>
- *            the output key type
+ *          the output key type
  * @param <VALUEOUT>
- *            the output value type
+ *          the output value type
  * 
  * @see org.cloudgraph.mapreduce.GraphWritable
  * @see org.cloudgraph.hbase.mapreduce.GraphRecordReader
@@ -99,50 +97,45 @@ import commonj.sdo.DataGraph;
  * @author Scott Cinnamond
  * @since 0.5.8
  */
-public class GraphMapper<KEYOUT, VALUEOUT>
-		extends
-			Mapper<ImmutableBytesWritable, GraphWritable, KEYOUT, VALUEOUT>
-		implements
-			GraphMutator {
+public class GraphMapper<KEYOUT, VALUEOUT> extends
+    Mapper<ImmutableBytesWritable, GraphWritable, KEYOUT, VALUEOUT> implements GraphMutator {
 
-	private static Log log = LogFactory.getLog(GraphMapper.class);
-	private GraphServiceDelegate serviceDelegate;
+  private static Log log = LogFactory.getLog(GraphMapper.class);
+  private GraphServiceDelegate serviceDelegate;
 
-	/**
-	 * Default constructor
-	 */
-	public GraphMapper() {
-		this.serviceDelegate = new GraphServiceDelegate();
-	}
+  /**
+   * Default constructor
+   */
+  public GraphMapper() {
+    this.serviceDelegate = new GraphServiceDelegate();
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.apache.hadoop.mapreduce.Mapper#map(KEYIN, VALUEIN,
-	 * org.apache.hadoop.mapreduce.Mapper.Context)
-	 */
-	@Override
-	public void map(ImmutableBytesWritable row, GraphWritable graph,
-			Context context) throws IOException {
-		// no behavior
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.apache.hadoop.mapreduce.Mapper#map(KEYIN, VALUEIN,
+   * org.apache.hadoop.mapreduce.Mapper.Context)
+   */
+  @Override
+  public void map(ImmutableBytesWritable row, GraphWritable graph, Context context)
+      throws IOException {
+    // no behavior
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.cloudgraph.hbase.mapreduce.GraphMutator#commit(commonj.sdo.DataGraph,
-	 * org.apache.hadoop.mapreduce.JobContext)
-	 */
-	@Override
-	public void commit(DataGraph graph, JobContext jobContext)
-			throws IOException {
-		this.serviceDelegate.commit(graph, jobContext);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.cloudgraph.hbase.mapreduce.GraphMutator#commit(commonj.sdo.DataGraph,
+   * org.apache.hadoop.mapreduce.JobContext)
+   */
+  @Override
+  public void commit(DataGraph graph, JobContext jobContext) throws IOException {
+    this.serviceDelegate.commit(graph, jobContext);
+  }
 
-	@Override
-	public void commit(DataGraph[] graphs, JobContext jobContext)
-			throws IOException {
-		this.serviceDelegate.commit(graphs, jobContext);
-	}
+  @Override
+  public void commit(DataGraph[] graphs, JobContext jobContext) throws IOException {
+    this.serviceDelegate.commit(graphs, jobContext);
+  }
 }

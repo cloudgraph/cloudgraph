@@ -49,72 +49,70 @@ import org.plasma.sdo.PlasmaType;
  */
 public interface GraphStatefullColumnKeyFactory extends GraphColumnKeyFactory {
 
-	/**
-	 * Generates and returns a column key based on the given arguments as well
-	 * as the configured CloudGraph column key
-	 * {@link org.cloudgraph.config.ColumnKeyModel model} for a specific table
-	 * {@link org.cloudgraph.config.Table configuration}.
-	 * 
-	 * @param dataObject
-	 *            the data object
-	 * @param sequenceNum
-	 *            the graph row specific sequence number for the type associated
-	 *            with the given data object
-	 * @param property
-	 *            the property
-	 * @return the column key bytes
-	 */
-	public byte[] createColumnKey(PlasmaDataObject dataObject,
-			long sequenceNum, PlasmaProperty property);
+  /**
+   * Generates and returns a column key based on the given arguments as well as
+   * the configured CloudGraph column key
+   * {@link org.cloudgraph.config.ColumnKeyModel model} for a specific table
+   * {@link org.cloudgraph.config.Table configuration}.
+   * 
+   * @param dataObject
+   *          the data object
+   * @param sequenceNum
+   *          the graph row specific sequence number for the type associated
+   *          with the given data object
+   * @param property
+   *          the property
+   * @return the column key bytes
+   */
+  public byte[] createColumnKey(PlasmaDataObject dataObject, long sequenceNum,
+      PlasmaProperty property);
 
-	/**
-	 * Generates and returns a column key based on the given arguments as well
-	 * as the configured CloudGraph column key
-	 * {@link org.cloudgraph.config.ColumnKeyModel model} for a specific table
-	 * {@link org.cloudgraph.config.Table configuration}.
-	 * 
-	 * @param dataObject
-	 *            the data object
-	 * @param sequenceNum
-	 *            the graph row specific sequence number for the type associated
-	 *            with the given data object
-	 * @param property
-	 *            the property
-	 * @param metaField
-	 *            the meta field
-	 * @return the column key bytes
-	 */
-	public byte[] createColumnKey(PlasmaDataObject dataObject,
-			long sequenceNum, PlasmaProperty property, EdgeMetaKey metaField);
+  /**
+   * Generates and returns a column key based on the given arguments as well as
+   * the configured CloudGraph column key
+   * {@link org.cloudgraph.config.ColumnKeyModel model} for a specific table
+   * {@link org.cloudgraph.config.Table configuration}.
+   * 
+   * @param dataObject
+   *          the data object
+   * @param sequenceNum
+   *          the graph row specific sequence number for the type associated
+   *          with the given data object
+   * @param property
+   *          the property
+   * @param metaField
+   *          the meta field
+   * @return the column key bytes
+   */
+  public byte[] createColumnKey(PlasmaDataObject dataObject, long sequenceNum,
+      PlasmaProperty property, EdgeMetaKey metaField);
 
-	public byte[] createColumnKey(PlasmaType type, long sequenceNum,
-			PlasmaProperty property, EntityMetaKey metaField);
+  public byte[] createColumnKey(PlasmaType type, long sequenceNum, PlasmaProperty property,
+      EntityMetaKey metaField);
 
-	public byte[] createColumnKey(PlasmaType type, long sequenceNum,
-			PlasmaProperty property, EdgeMetaKey metaField);
+  public byte[] createColumnKey(PlasmaType type, long sequenceNum, PlasmaProperty property,
+      EdgeMetaKey metaField);
 
-	public byte[] createColumnKey(PlasmaType type, long sequenceNum,
-			EntityMetaKey metaField);
-	public byte[] createColumnKey(PlasmaType type, long sequenceNum,
-			EdgeMetaKey metaField);
+  public byte[] createColumnKey(PlasmaType type, long sequenceNum, EntityMetaKey metaField);
 
-	/**
-	 * Generates and returns a column key based on data graph specific sequence
-	 * number for a given data object, and using the given metadata property as
-	 * well as the configured CloudGraph column key
-	 * {@link org.cloudgraph.config.ColumnKeyModel model} for a specific table
-	 * {@link org.cloudgraph.config.Table configuration}.
-	 * 
-	 * @param type
-	 *            the metadata type
-	 * @param sequenceNum
-	 *            the graph row specific sequence number for the given type for
-	 *            a data object
-	 * @param property
-	 *            the property
-	 * @return the column key bytes
-	 */
-	public byte[] createColumnKey(PlasmaType type, long sequenceNum,
-			PlasmaProperty property);
+  public byte[] createColumnKey(PlasmaType type, long sequenceNum, EdgeMetaKey metaField);
+
+  /**
+   * Generates and returns a column key based on data graph specific sequence
+   * number for a given data object, and using the given metadata property as
+   * well as the configured CloudGraph column key
+   * {@link org.cloudgraph.config.ColumnKeyModel model} for a specific table
+   * {@link org.cloudgraph.config.Table configuration}.
+   * 
+   * @param type
+   *          the metadata type
+   * @param sequenceNum
+   *          the graph row specific sequence number for the given type for a
+   *          data object
+   * @param property
+   *          the property
+   * @return the column key bytes
+   */
+  public byte[] createColumnKey(PlasmaType type, long sequenceNum, PlasmaProperty property);
 
 }

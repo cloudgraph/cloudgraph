@@ -38,69 +38,66 @@ import org.plasma.query.model.WildcardOperator;
  * @see Expr
  */
 public interface ExprAssembler {
-	/**
-	 * Creates and returns a relational binary expression based on the given
-	 * terms and <a href=
-	 * "http://docs.plasma-sdo.org/api/org/plasma/query/model/RelationalOperator.html"
-	 * >relational</a> operator.
-	 * 
-	 * @param property
-	 *            the property term
-	 * @param literal
-	 *            the literal term
-	 * @param operator
-	 *            the <a href=
-	 *            "http://docs.plasma-sdo.org/api/org/plasma/query/model/RelationalOperator.html"
-	 *            >relational</a> operator
-	 * @return a relational binary expression based on the given terms and <a
-	 *         href=
-	 *         "http://docs.plasma-sdo.org/api/org/plasma/query/model/RelationalOperator.html"
-	 *         >relational</a> operator.
-	 */
-	public RelationalBinaryExpr createRelationalBinaryExpr(Property property,
-			Literal literal, RelationalOperator operator);
+  /**
+   * Creates and returns a relational binary expression based on the given terms
+   * and <a href=
+   * "http://docs.plasma-sdo.org/api/org/plasma/query/model/RelationalOperator.html"
+   * >relational</a> operator.
+   * 
+   * @param property
+   *          the property term
+   * @param literal
+   *          the literal term
+   * @param operator
+   *          the <a href=
+   *          "http://docs.plasma-sdo.org/api/org/plasma/query/model/RelationalOperator.html"
+   *          >relational</a> operator
+   * @return a relational binary expression based on the given terms and <a
+   *         href=
+   *         "http://docs.plasma-sdo.org/api/org/plasma/query/model/RelationalOperator.html"
+   *         >relational</a> operator.
+   */
+  public RelationalBinaryExpr createRelationalBinaryExpr(Property property, Literal literal,
+      RelationalOperator operator);
 
-	/**
-	 * Creates and returns a wildcard binary expression based on the given terms
-	 * and <a href=
-	 * "http://docs.plasma-sdo.org/api/org/plasma/query/model/WildcardOperator.html"
-	 * >wildcard</a> operator.
-	 * 
-	 * @param property
-	 *            the property term
-	 * @param literal
-	 *            the literal term
-	 * @param operator
-	 *            the <a href=
-	 *            "http://docs.plasma-sdo.org/api/org/plasma/query/model/WildcardOperator.html"
-	 *            >wildcard</a> operator
-	 * @return a wildcard binary expression based on the given terms and <a
-	 *         href=
-	 *         "http://docs.plasma-sdo.org/api/org/plasma/query/model/WildcardOperator.html"
-	 *         >wildcard</a> operator.
-	 */
-	public WildcardBinaryExpr createWildcardBinaryExpr(Property property,
-			Literal literal, WildcardOperator operator);
+  /**
+   * Creates and returns a wildcard binary expression based on the given terms
+   * and <a href=
+   * "http://docs.plasma-sdo.org/api/org/plasma/query/model/WildcardOperator.html"
+   * >wildcard</a> operator.
+   * 
+   * @param property
+   *          the property term
+   * @param literal
+   *          the literal term
+   * @param operator
+   *          the <a href=
+   *          "http://docs.plasma-sdo.org/api/org/plasma/query/model/WildcardOperator.html"
+   *          >wildcard</a> operator
+   * @return a wildcard binary expression based on the given terms and <a href=
+   *         "http://docs.plasma-sdo.org/api/org/plasma/query/model/WildcardOperator.html"
+   *         >wildcard</a> operator.
+   */
+  public WildcardBinaryExpr createWildcardBinaryExpr(Property property, Literal literal,
+      WildcardOperator operator);
 
-	/**
-	 * Creates and returns a logical binary expression based on the given terms
-	 * and <a href=
-	 * "http://docs.plasma-sdo.org/api/org/plasma/query/model/LogicalOperator.html"
-	 * >logical</a> operator.
-	 * 
-	 * @param property
-	 *            the property term
-	 * @param literal
-	 *            the literal term
-	 * @param operator
-	 *            the <a href=
-	 *            "http://docs.plasma-sdo.org/api/org/plasma/query/model/LogicalOperator.html"
-	 *            >logical</a> operator
-	 * @return a wildcard binary expression based on the given terms and <a
-	 *         href=
-	 *         "http://docs.plasma-sdo.org/api/org/plasma/query/model/LogicalOperator.html"
-	 *         >logical</a> operator.
-	 */
-	public LogicalBinaryExpr createLogicalBinaryExpr(Expr left, Expr right,
-			LogicalOperator operator);
+  /**
+   * Creates and returns a logical binary expression based on the given terms
+   * and <a href=
+   * "http://docs.plasma-sdo.org/api/org/plasma/query/model/LogicalOperator.html"
+   * >logical</a> operator.
+   * 
+   * @param property
+   *          the property term
+   * @param literal
+   *          the literal term
+   * @param operator
+   *          the <a href=
+   *          "http://docs.plasma-sdo.org/api/org/plasma/query/model/LogicalOperator.html"
+   *          >logical</a> operator
+   * @return a wildcard binary expression based on the given terms and <a href=
+   *         "http://docs.plasma-sdo.org/api/org/plasma/query/model/LogicalOperator.html"
+   *         >logical</a> operator.
+   */
+  public LogicalBinaryExpr createLogicalBinaryExpr(Expr left, Expr right, LogicalOperator operator);
 }

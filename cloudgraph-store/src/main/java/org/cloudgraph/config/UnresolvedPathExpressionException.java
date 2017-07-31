@@ -27,17 +27,15 @@ package org.cloudgraph.config;
  * @author Scott Cinnamond
  * @since 0.5
  */
-public class UnresolvedPathExpressionException
-		extends
-			CloudGraphConfigurationException {
+public class UnresolvedPathExpressionException extends CloudGraphConfigurationException {
 
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	public UnresolvedPathExpressionException(String message) {
-		super(message);
-	}
+  public UnresolvedPathExpressionException(String message) {
+    super(message);
+  }
 
-	public UnresolvedPathExpressionException(Throwable t) {
-		super(t);
-	}
+  public UnresolvedPathExpressionException(Throwable t) {
+    super(t);
+  }
 }

@@ -32,21 +32,21 @@ import org.cloudgraph.config.TableConfig;
  * @since 0.5.1
  */
 public abstract class GraphTable implements TableState {
-	protected TableConfig tableConfig;
+  protected TableConfig tableConfig;
 
-	@SuppressWarnings("unused")
-	private GraphTable() {
-	}
-	public GraphTable(TableConfig table) {
-		if (table == null)
-			throw new IllegalArgumentException(
-					"unexpected null value for 'table'");
-		this.tableConfig = table;
-	}
+  @SuppressWarnings("unused")
+  private GraphTable() {
+  }
 
-	@Override
-	public TableConfig getTableConfig() {
-		return this.tableConfig;
-	}
+  public GraphTable(TableConfig table) {
+    if (table == null)
+      throw new IllegalArgumentException("unexpected null value for 'table'");
+    this.tableConfig = table;
+  }
+
+  @Override
+  public TableConfig getTableConfig() {
+    return this.tableConfig;
+  }
 
 }

@@ -55,36 +55,31 @@ import org.plasma.sdo.PlasmaType;
  * @see ExprAssembler
  * @see DefaultBinaryExprTreeAssembler
  */
-public class GraphRecognizerSyntaxTreeAssembler
-		extends
-			DefaultBinaryExprTreeAssembler {
-	protected DataGraphConfig graphConfig;
+public class GraphRecognizerSyntaxTreeAssembler extends DefaultBinaryExprTreeAssembler {
+  protected DataGraphConfig graphConfig;
 
-	/**
-	 * Constructs an assembler based on the given predicate data graph
-	 * configuration and graph root type.
-	 * 
-	 * @param predicate
-	 *            the predicate
-	 * @param rootType
-	 *            the graph root type
-	 */
-	public GraphRecognizerSyntaxTreeAssembler(Where predicate,
-			PlasmaType rootType) {
-		super(predicate, rootType);
-	}
+  /**
+   * Constructs an assembler based on the given predicate data graph
+   * configuration and graph root type.
+   * 
+   * @param predicate
+   *          the predicate
+   * @param rootType
+   *          the graph root type
+   */
+  public GraphRecognizerSyntaxTreeAssembler(Where predicate, PlasmaType rootType) {
+    super(predicate, rootType);
+  }
 
-	@Override
-	public RelationalBinaryExpr createRelationalBinaryExpr(Property property,
-			Literal literal, RelationalOperator operator) {
-		return new GraphRecognizerRelationalBinaryExpr(property, literal,
-				operator);
-	}
+  @Override
+  public RelationalBinaryExpr createRelationalBinaryExpr(Property property, Literal literal,
+      RelationalOperator operator) {
+    return new GraphRecognizerRelationalBinaryExpr(property, literal, operator);
+  }
 
-	@Override
-	public WildcardBinaryExpr createWildcardBinaryExpr(Property property,
-			Literal literal, WildcardOperator operator) {
-		return new GraphRecognizerWildcardBinaryExpr(property, literal,
-				operator);
-	}
+  @Override
+  public WildcardBinaryExpr createWildcardBinaryExpr(Property property, Literal literal,
+      WildcardOperator operator) {
+    return new GraphRecognizerWildcardBinaryExpr(property, literal, operator);
+  }
 }

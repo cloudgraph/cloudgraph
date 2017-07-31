@@ -36,140 +36,133 @@ import commonj.sdo.helper.XMLDocument;
  * @see GraphRecognizerContext
  */
 public class SlidingResultsAssembler implements ResultsAssembler {
-	private static final Log log = LogFactory
-			.getLog(SlidingResultsAssembler.class);
-	private Set<PlasmaDataGraph> graphs = new HashSet<PlasmaDataGraph>();
+  private static final Log log = LogFactory.getLog(SlidingResultsAssembler.class);
+  private Set<PlasmaDataGraph> graphs = new HashSet<PlasmaDataGraph>();
 
-	private Expr graphRecognizerRootExpr;
-	private GraphRecognizerContext recognizerContext;
-	private Comparator<PlasmaDataGraph> orderingComparator;
-	private TableReader rootTableReader;
-	private HBaseGraphAssembler graphAssembler;
-	private Integer startRange;
-	private Integer endRange;
-	private boolean resultEndRangeReached = false;
-	private int unrecognizedRsults;
-	private int ignoredResults;
-	private int ignoredResultsPreceedingRange;
-	private int range;
+  private Expr graphRecognizerRootExpr;
+  private GraphRecognizerContext recognizerContext;
+  private Comparator<PlasmaDataGraph> orderingComparator;
+  private TableReader rootTableReader;
+  private HBaseGraphAssembler graphAssembler;
+  private Integer startRange;
+  private Integer endRange;
+  private boolean resultEndRangeReached = false;
+  private int unrecognizedRsults;
+  private int ignoredResults;
+  private int ignoredResultsPreceedingRange;
+  private int range;
 
-	private SlidingResultsAssembler() {
-	}
+  private SlidingResultsAssembler() {
+  }
 
-	public SlidingResultsAssembler(Expr graphRecognizerRootExpr,
-			Comparator<PlasmaDataGraph> orderingComparator,
-			TableReader rootTableReader, HBaseGraphAssembler graphAssembler,
-			Integer startRange, Integer endRange) {
-		this();
-		this.graphRecognizerRootExpr = graphRecognizerRootExpr;
-		this.orderingComparator = orderingComparator;
-		this.rootTableReader = rootTableReader;
-		this.graphAssembler = graphAssembler;
-		this.startRange = startRange;
-		this.endRange = endRange;
-		if (startRange != null && endRange != null) {
-			range = endRange.intValue() - startRange.intValue();
-			range++; // inclusive
-		}
-	}
+  public SlidingResultsAssembler(Expr graphRecognizerRootExpr,
+      Comparator<PlasmaDataGraph> orderingComparator, TableReader rootTableReader,
+      HBaseGraphAssembler graphAssembler, Integer startRange, Integer endRange) {
+    this();
+    this.graphRecognizerRootExpr = graphRecognizerRootExpr;
+    this.orderingComparator = orderingComparator;
+    this.rootTableReader = rootTableReader;
+    this.graphAssembler = graphAssembler;
+    this.startRange = startRange;
+    this.endRange = endRange;
+    if (startRange != null && endRange != null) {
+      range = endRange.intValue() - startRange.intValue();
+      range++; // inclusive
+    }
+  }
 
-	public boolean collect(Result resultRow) throws IOException {
-		if (resultRow.containsColumn(rootTableReader.getTableConfig()
-				.getDataColumnFamilyNameBytes(), GraphMetaKey.TOMBSTONE
-				.codeAsBytes())) {
-			return false; // ignore toumbstone roots
-		}
+  public boolean collect(Result resultRow) throws IOException {
+    if (resultRow.containsColumn(rootTableReader.getTableConfig().getDataColumnFamilyNameBytes(),
+        GraphMetaKey.TOMBSTONE.codeAsBytes())) {
+      return false; // ignore toumbstone roots
+    }
 
-		if (canIgnoreResults()) {
-			if (startRange != null && endRange != null) {
-				int current = ignoredResultsPreceedingRange + 1;
-				if (current < startRange.intValue()) {
-					ignoredResultsPreceedingRange++;
-					ignoredResults++;
-					return false;
-				}
+    if (canIgnoreResults()) {
+      if (startRange != null && endRange != null) {
+        int current = ignoredResultsPreceedingRange + 1;
+        if (current < startRange.intValue()) {
+          ignoredResultsPreceedingRange++;
+          ignoredResults++;
+          return false;
+        }
 
-				current = this.graphs.size() + 1;
-				if (current > range) {
-					ignoredResults++;
-					this.resultEndRangeReached = true;
-					return false;
-				}
-			}
-		}
+        current = this.graphs.size() + 1;
+        if (current > range) {
+          ignoredResults++;
+          this.resultEndRangeReached = true;
+          return false;
+        }
+      }
+    }
 
-		this.graphAssembler.assemble(resultRow);
-		PlasmaDataGraph graph = this.graphAssembler.getDataGraph();
-		this.graphAssembler.clear();
+    this.graphAssembler.assemble(resultRow);
+    PlasmaDataGraph graph = this.graphAssembler.getDataGraph();
+    this.graphAssembler.clear();
 
-		if (this.graphRecognizerRootExpr != null) {
-			if (this.recognizerContext == null)
-				this.recognizerContext = new GraphRecognizerContext();
-			this.recognizerContext.setGraph(graph);
-			if (!this.graphRecognizerRootExpr.evaluate(this.recognizerContext)) {
-				if (log.isDebugEnabled())
-					log.debug("recognizer excluded: "
-							+ Bytes.toString(resultRow.getRow()));
-				if (log.isDebugEnabled())
-					log.debug(serializeGraph(graph));
-				this.unrecognizedRsults++;
-				return false;
-			}
-		}
-		this.graphs.add(graph);
+    if (this.graphRecognizerRootExpr != null) {
+      if (this.recognizerContext == null)
+        this.recognizerContext = new GraphRecognizerContext();
+      this.recognizerContext.setGraph(graph);
+      if (!this.graphRecognizerRootExpr.evaluate(this.recognizerContext)) {
+        if (log.isDebugEnabled())
+          log.debug("recognizer excluded: " + Bytes.toString(resultRow.getRow()));
+        if (log.isDebugEnabled())
+          log.debug(serializeGraph(graph));
+        this.unrecognizedRsults++;
+        return false;
+      }
+    }
+    this.graphs.add(graph);
 
-		return true;
-	}
+    return true;
+  }
 
-	@Override
-	public int getUnrecognizedResults() {
-		return unrecognizedRsults;
-	}
+  @Override
+  public int getUnrecognizedResults() {
+    return unrecognizedRsults;
+  }
 
-	@Override
-	public int getIgnoredResults() {
-		return ignoredResults;
-	}
+  @Override
+  public int getIgnoredResults() {
+    return ignoredResults;
+  }
 
-	@Override
-	public boolean isResultEndRangeReached() {
-		return resultEndRangeReached;
-	}
+  @Override
+  public boolean isResultEndRangeReached() {
+    return resultEndRangeReached;
+  }
 
-	@Override
-	public PlasmaDataGraph[] getResults() {
-		PlasmaDataGraph[] array = new PlasmaDataGraph[graphs.size()];
-		this.graphs.toArray(array);
-		if (this.orderingComparator != null)
-			Arrays.sort(array, this.orderingComparator);
-		return array;
-	}
+  @Override
+  public PlasmaDataGraph[] getResults() {
+    PlasmaDataGraph[] array = new PlasmaDataGraph[graphs.size()];
+    this.graphs.toArray(array);
+    if (this.orderingComparator != null)
+      Arrays.sort(array, this.orderingComparator);
+    return array;
+  }
 
-	@Override
-	public boolean canIgnoreResults() {
-		return this.graphRecognizerRootExpr == null;
-	}
+  @Override
+  public boolean canIgnoreResults() {
+    return this.graphRecognizerRootExpr == null;
+  }
 
-	@Override
-	public int size() {
-		return this.graphs.size();
-	}
+  @Override
+  public int size() {
+    return this.graphs.size();
+  }
 
-	private String serializeGraph(commonj.sdo.DataGraph graph)
-			throws IOException {
-		DefaultOptions options = new DefaultOptions(graph.getRootObject()
-				.getType().getURI());
-		options.setRootNamespacePrefix("debug");
+  private String serializeGraph(commonj.sdo.DataGraph graph) throws IOException {
+    DefaultOptions options = new DefaultOptions(graph.getRootObject().getType().getURI());
+    options.setRootNamespacePrefix("debug");
 
-		XMLDocument doc = PlasmaXMLHelper.INSTANCE.createDocument(
-				graph.getRootObject(),
-				graph.getRootObject().getType().getURI(), null);
-		ByteArrayOutputStream os = new ByteArrayOutputStream();
-		PlasmaXMLHelper.INSTANCE.save(doc, os, options);
-		os.flush();
-		os.close();
-		String xml = new String(os.toByteArray());
-		return xml;
-	}
+    XMLDocument doc = PlasmaXMLHelper.INSTANCE.createDocument(graph.getRootObject(), graph
+        .getRootObject().getType().getURI(), null);
+    ByteArrayOutputStream os = new ByteArrayOutputStream();
+    PlasmaXMLHelper.INSTANCE.save(doc, os, options);
+    os.flush();
+    os.close();
+    String xml = new String(os.toByteArray());
+    return xml;
+  }
 
 }

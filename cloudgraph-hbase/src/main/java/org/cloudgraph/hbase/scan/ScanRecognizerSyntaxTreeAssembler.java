@@ -58,74 +58,68 @@ import org.plasma.sdo.PlasmaType;
  * @see DefaultBinaryExprTreeAssembler
  * @see ScanRecognizerContext
  */
-public class ScanRecognizerSyntaxTreeAssembler
-		extends
-			DefaultBinaryExprTreeAssembler {
-	protected DataGraphConfig graphConfig;
+public class ScanRecognizerSyntaxTreeAssembler extends DefaultBinaryExprTreeAssembler {
+  protected DataGraphConfig graphConfig;
 
-	/**
-	 * Constructs an assembler based on the given predicate data graph
-	 * configuration and graph root type.
-	 * 
-	 * @param predicate
-	 *            the predicate
-	 * @param rootType
-	 *            the graph root type
-	 */
-	public ScanRecognizerSyntaxTreeAssembler(Where predicate,
-			PlasmaType rootType) {
-		super(predicate, rootType);
-	}
+  /**
+   * Constructs an assembler based on the given predicate data graph
+   * configuration and graph root type.
+   * 
+   * @param predicate
+   *          the predicate
+   * @param rootType
+   *          the graph root type
+   */
+  public ScanRecognizerSyntaxTreeAssembler(Where predicate, PlasmaType rootType) {
+    super(predicate, rootType);
+  }
 
-	/**
-	 * Creates and returns a relational binary expression based on the given
-	 * terms and <a href=
-	 * "http://docs.plasma-sdo.org/api/org/plasma/query/model/RelationalOperator.html"
-	 * >relational</a> operator.
-	 * 
-	 * @param property
-	 *            the property term
-	 * @param literal
-	 *            the literal term
-	 * @param operator
-	 *            the <a href=
-	 *            "http://docs.plasma-sdo.org/api/org/plasma/query/model/RelationalOperator.html"
-	 *            >relational</a> operator
-	 * @return a relational binary expression based on the given terms and <a
-	 *         href=
-	 *         "http://docs.plasma-sdo.org/api/org/plasma/query/model/RelationalOperator.html"
-	 *         >relational</a> operator.
-	 */
-	@Override
-	public RelationalBinaryExpr createRelationalBinaryExpr(Property property,
-			Literal literal, RelationalOperator operator) {
-		return new ScanRecognizerRelationalBinaryExpr(property, literal,
-				operator);
-	}
+  /**
+   * Creates and returns a relational binary expression based on the given terms
+   * and <a href=
+   * "http://docs.plasma-sdo.org/api/org/plasma/query/model/RelationalOperator.html"
+   * >relational</a> operator.
+   * 
+   * @param property
+   *          the property term
+   * @param literal
+   *          the literal term
+   * @param operator
+   *          the <a href=
+   *          "http://docs.plasma-sdo.org/api/org/plasma/query/model/RelationalOperator.html"
+   *          >relational</a> operator
+   * @return a relational binary expression based on the given terms and <a
+   *         href=
+   *         "http://docs.plasma-sdo.org/api/org/plasma/query/model/RelationalOperator.html"
+   *         >relational</a> operator.
+   */
+  @Override
+  public RelationalBinaryExpr createRelationalBinaryExpr(Property property, Literal literal,
+      RelationalOperator operator) {
+    return new ScanRecognizerRelationalBinaryExpr(property, literal, operator);
+  }
 
-	/**
-	 * Creates and returns a logical binary expression based on the given terms
-	 * and <a href=
-	 * "http://docs.plasma-sdo.org/api/org/plasma/query/model/LogicalOperator.html"
-	 * >logical</a> operator.
-	 * 
-	 * @param property
-	 *            the property term
-	 * @param literal
-	 *            the literal term
-	 * @param operator
-	 *            the <a href=
-	 *            "http://docs.plasma-sdo.org/api/org/plasma/query/model/LogicalOperator.html"
-	 *            >logical</a> operator
-	 * @return a wildcard binary expression based on the given terms and <a
-	 *         href=
-	 *         "http://docs.plasma-sdo.org/api/org/plasma/query/model/LogicalOperator.html"
-	 *         >logical</a> operator.
-	 */
-	@Override
-	public LogicalBinaryExpr createLogicalBinaryExpr(Expr left, Expr right,
-			LogicalOperator operator) {
-		return new ScanRecognizerLogicalBinaryExpr(left, right, operator);
-	}
+  /**
+   * Creates and returns a logical binary expression based on the given terms
+   * and <a href=
+   * "http://docs.plasma-sdo.org/api/org/plasma/query/model/LogicalOperator.html"
+   * >logical</a> operator.
+   * 
+   * @param property
+   *          the property term
+   * @param literal
+   *          the literal term
+   * @param operator
+   *          the <a href=
+   *          "http://docs.plasma-sdo.org/api/org/plasma/query/model/LogicalOperator.html"
+   *          >logical</a> operator
+   * @return a wildcard binary expression based on the given terms and <a href=
+   *         "http://docs.plasma-sdo.org/api/org/plasma/query/model/LogicalOperator.html"
+   *         >logical</a> operator.
+   */
+  @Override
+  public LogicalBinaryExpr createLogicalBinaryExpr(Expr left, Expr right, LogicalOperator operator) {
+    return new ScanRecognizerLogicalBinaryExpr(left, right, operator);
+  }
 
 }

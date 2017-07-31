@@ -6,33 +6,33 @@ import commonj.sdo.DataObject;
 
 public interface SequenceGenerator {
 
-	// public abstract java.util.UUID getRootUUID();
+  // public abstract java.util.UUID getRootUUID();
 
-	public abstract boolean isUpdated();
+  public abstract boolean isUpdated();
 
-	public abstract void close();
+  public abstract void close();
 
-	public abstract boolean hasLastSequence(PlasmaType type);
+  public abstract boolean hasLastSequence(PlasmaType type);
 
-	public abstract Long lastSequence(PlasmaType type);
+  public abstract Long lastSequence(PlasmaType type);
 
-	/**
-	 * Creates and adds a sequence number mapped to the UUID within the given
-	 * data object.
-	 * 
-	 * @param dataObject
-	 *            the data object
-	 * @return the new sequence number
-	 * @throws IllegalArgumentException
-	 *             if the data object is already mapped
-	 */
-	public abstract Long nextSequence(DataObject dataObject);
+  /**
+   * Creates and adds a sequence number mapped to the UUID within the given data
+   * object.
+   * 
+   * @param dataObject
+   *          the data object
+   * @return the new sequence number
+   * @throws IllegalArgumentException
+   *           if the data object is already mapped
+   */
+  public abstract Long nextSequence(DataObject dataObject);
 
-	public abstract Long nextSequence(PlasmaType type);
+  public abstract Long nextSequence(PlasmaType type);
 
-	public abstract String marshalAsString();
+  public abstract String marshalAsString();
 
-	public String marshalAsString(boolean formatted);
+  public String marshalAsString(boolean formatted);
 
-	public abstract byte[] marshal();
+  public abstract byte[] marshal();
 }

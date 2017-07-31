@@ -53,145 +53,149 @@ import commonj.sdo.DataObject;
  */
 public interface RowWriter extends RowOperation {
 
-	/**
-	 * Returns the row put mutation.
-	 * 
-	 * @return the row put mutation.
-	 */
-	public Put getRow();
+  /**
+   * Returns the row put mutation.
+   * 
+   * @return the row put mutation.
+   */
+  public Put getRow();
 
-	/**
-	 * Creates a new row delete mutation, is not exists.
-	 */
-	public void deleteRow();
+  /**
+   * Creates a new row delete mutation, is not exists.
+   */
+  public void deleteRow();
 
-	/**
-	 * Returns the existing (or creates a new) row delete mutation.
-	 * 
-	 * @return the existing (or creates a new) row delete mutation.
-	 */
-	public Delete getRowDelete();
+  /**
+   * Returns the existing (or creates a new) row delete mutation.
+   * 
+   * @return the existing (or creates a new) row delete mutation.
+   */
+  public Delete getRowDelete();
 
-	/**
-	 * Returns whether there is an existing row delete mutation.
-	 * 
-	 * @return whether there is an existing row delete mutation.
-	 */
-	public boolean hasRowDelete();
+  /**
+   * Returns whether there is an existing row delete mutation.
+   * 
+   * @return whether there is an existing row delete mutation.
+   */
+  public boolean hasRowDelete();
 
-	/**
-	 * Return the write operations for a row.
-	 * 
-	 * @return the write operations for a row.
-	 */
-	public List<Row> getWriteOperations();
+  /**
+   * Return the write operations for a row.
+   * 
+   * @return the write operations for a row.
+   */
+  public List<Row> getWriteOperations();
 
-	/**
-	 * Returns a single column value for this row given a context data object
-	 * and property. Uses a statefull column key factory to generate a column
-	 * key based on the given context data object and property.
-	 * 
-	 * @param dataObject
-	 *            the context data object
-	 * @param property
-	 *            the context property
-	 * @return the column value bytes
-	 * @throws IOException
-	 * 
-	 * @see StatefullColumnKeyFactory
-	 */
-	public byte[] fetchColumnValue(PlasmaDataObject dataObject,
-			PlasmaProperty property) throws IOException;
+  /**
+   * Returns a single column value for this row given a context data object and
+   * property. Uses a statefull column key factory to generate a column key
+   * based on the given context data object and property.
+   * 
+   * @param dataObject
+   *          the context data object
+   * @param property
+   *          the context property
+   * @return the column value bytes
+   * @throws IOException
+   * 
+   * @see StatefullColumnKeyFactory
+   */
+  public byte[] fetchColumnValue(PlasmaDataObject dataObject, PlasmaProperty property)
+      throws IOException;
 
-	/**
-	 * Returns the container for this writer.
-	 * 
-	 * @return the container for this writer.
-	 */
-	public TableWriter getTableWriter();
+  /**
+   * Returns the container for this writer.
+   * 
+   * @return the container for this writer.
+   */
+  public TableWriter getTableWriter();
 
-	/**
-	 * Returns whether the root data object for this writer is created.
-	 * 
-	 * @return whether the root data object for this writer is created.
-	 */
-	public boolean isRootCreated();
+  /**
+   * Returns whether the root data object for this writer is created.
+   * 
+   * @return whether the root data object for this writer is created.
+   */
+  public boolean isRootCreated();
 
-	/**
-	 * Returns whether the root data object for this writer is deleted.
-	 * 
-	 * @return whether the root data object for this writer is deleted.
-	 */
-	public boolean isRootDeleted();
+  /**
+   * Returns whether the root data object for this writer is deleted.
+   * 
+   * @return whether the root data object for this writer is deleted.
+   */
+  public boolean isRootDeleted();
 
-	public long newSequence(PlasmaDataObject dataObject) throws IOException;
+  public long newSequence(PlasmaDataObject dataObject) throws IOException;
 
-	public void writeRowEntityMetaData(PlasmaDataObject dataObject,
-			long sequence) throws IOException;
-	public void deleteRowEntityMetaData(PlasmaDataObject dataObject,
-			long sequence) throws IOException;
+  public void writeRowEntityMetaData(PlasmaDataObject dataObject, long sequence) throws IOException;
 
-	public void writeRowData(PlasmaDataObject dataObject, long sequence,
-			PlasmaProperty property, byte[] value) throws IOException;
-	public void deleteRowData(PlasmaDataObject dataObject, long sequence,
-			PlasmaProperty property) throws IOException;
+  public void deleteRowEntityMetaData(PlasmaDataObject dataObject, long sequence)
+      throws IOException;
 
-	/**
-	 * Returns an existing or new edge writer for the given data object and
-	 * source edge property
-	 * 
-	 * @param dataObject
-	 *            the data object
-	 * @param property
-	 *            the source edge property
-	 * @return an existing or new edge writer for the given data object and
-	 *         source edge property
-	 * @throws IOException
-	 */
-	// public EdgeWriter getEdgeWriter(PlasmaDataObject dataObject,
-	// PlasmaProperty property) throws IOException;
+  public void writeRowData(PlasmaDataObject dataObject, long sequence, PlasmaProperty property,
+      byte[] value) throws IOException;
 
-	/**
-	 * Returns an existing or new edge writer for the given data object,
-	 * sequence and source edge property
-	 * 
-	 * @param dataObject
-	 *            the data object
-	 * @param property
-	 *            the source edge property
-	 * @param sequence
-	 *            the sequence for the given data object type, unique within the
-	 *            graph/row
-	 * @return an existing or new edge writer for the given data object,
-	 *         sequence and source edge property
-	 * @throws IOException
-	 */
-	public EdgeWriter getEdgeWriter(PlasmaDataObject dataObject,
-			PlasmaProperty property, long sequence) throws IOException;
+  public void deleteRowData(PlasmaDataObject dataObject, long sequence, PlasmaProperty property)
+      throws IOException;
 
-	/**
-	 * Returns the edge writer for the source edge or null if not exists.
-	 * 
-	 * @param dataObject
-	 *            the data object
-	 * @param sequence
-	 *            the sequence
-	 * @return the edge writer for the source edge or null if not exists.
-	 * @throws IOException
-	 */
-	// public EdgeWriter getEdgeWriter(PlasmaDataObject dataObject, long
-	// sequence) throws IOException;
+  /**
+   * Returns an existing or new edge writer for the given data object and source
+   * edge property
+   * 
+   * @param dataObject
+   *          the data object
+   * @param property
+   *          the source edge property
+   * @return an existing or new edge writer for the given data object and source
+   *         edge property
+   * @throws IOException
+   */
+  // public EdgeWriter getEdgeWriter(PlasmaDataObject dataObject,
+  // PlasmaProperty property) throws IOException;
 
-	/**
-	 * 
-	 * @param dataObject
-	 * @param sequence
-	 * @param type
-	 */
-	public void addSequence(DataObject dataObject, long sequence);
-	public boolean containsSequence(DataObject dataObject);
-	public long getSequence(DataObject dataObject);
+  /**
+   * Returns an existing or new edge writer for the given data object, sequence
+   * and source edge property
+   * 
+   * @param dataObject
+   *          the data object
+   * @param property
+   *          the source edge property
+   * @param sequence
+   *          the sequence for the given data object type, unique within the
+   *          graph/row
+   * @return an existing or new edge writer for the given data object, sequence
+   *         and source edge property
+   * @throws IOException
+   */
+  public EdgeWriter getEdgeWriter(PlasmaDataObject dataObject, PlasmaProperty property,
+      long sequence) throws IOException;
 
-	public byte[] encodeRootType();
-	public byte[] encodeType(PlasmaType type);
+  /**
+   * Returns the edge writer for the source edge or null if not exists.
+   * 
+   * @param dataObject
+   *          the data object
+   * @param sequence
+   *          the sequence
+   * @return the edge writer for the source edge or null if not exists.
+   * @throws IOException
+   */
+  // public EdgeWriter getEdgeWriter(PlasmaDataObject dataObject, long
+  // sequence) throws IOException;
+
+  /**
+   * 
+   * @param dataObject
+   * @param sequence
+   * @param type
+   */
+  public void addSequence(DataObject dataObject, long sequence);
+
+  public boolean containsSequence(DataObject dataObject);
+
+  public long getSequence(DataObject dataObject);
+
+  public byte[] encodeRootType();
+
+  public byte[] encodeType(PlasmaType type);
 }

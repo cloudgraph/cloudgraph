@@ -45,50 +45,50 @@ import org.cloudgraph.query.expr.EvaluationContext;
  */
 public class EdgeRecognizerContext implements EvaluationContext {
 
-	private Map<String, KeyValue> keyMap;
-	private Long sequence;
+  private Map<String, KeyValue> keyMap;
+  private Long sequence;
 
-	/**
-	 * Constructs an empty context.
-	 */
-	public EdgeRecognizerContext() {
-	}
+  /**
+   * Constructs an empty context.
+   */
+  public EdgeRecognizerContext() {
+  }
 
-	/**
-	 * Returns the HBase <a href=
-	 * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/KeyValue.html"
-	 * >KeyValue</a> specific for the current sequence.
-	 * 
-	 * @return the HBase <a href=
-	 *         "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/KeyValue.html"
-	 *         >KeyValue</a> specific for the current sequence.
-	 */
-	public Map<String, KeyValue> getKeyMap() {
-		return keyMap;
-	}
+  /**
+   * Returns the HBase <a href=
+   * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/KeyValue.html"
+   * >KeyValue</a> specific for the current sequence.
+   * 
+   * @return the HBase <a href=
+   *         "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/KeyValue.html"
+   *         >KeyValue</a> specific for the current sequence.
+   */
+  public Map<String, KeyValue> getKeyMap() {
+    return keyMap;
+  }
 
-	/**
-	 * Sets the HBase <a href=
-	 * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/KeyValue.html"
-	 * >KeyValue</a> specific for the current sequence.
-	 */
-	public void setKeyMap(Map<String, KeyValue> keyMap) {
-		this.keyMap = keyMap;
-	}
+  /**
+   * Sets the HBase <a href=
+   * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/KeyValue.html"
+   * >KeyValue</a> specific for the current sequence.
+   */
+  public void setKeyMap(Map<String, KeyValue> keyMap) {
+    this.keyMap = keyMap;
+  }
 
-	/**
-	 * Returns the current sequence.
-	 * 
-	 * @return the current sequence.
-	 */
-	public Long getSequence() {
-		return sequence;
-	}
+  /**
+   * Returns the current sequence.
+   * 
+   * @return the current sequence.
+   */
+  public Long getSequence() {
+    return sequence;
+  }
 
-	/**
-	 * Sets the current sequence.
-	 */
-	public void setSequence(Long sequence) {
-		this.sequence = sequence;
-	}
+  /**
+   * Sets the current sequence.
+   */
+  public void setSequence(Long sequence) {
+    this.sequence = sequence;
+  }
 }

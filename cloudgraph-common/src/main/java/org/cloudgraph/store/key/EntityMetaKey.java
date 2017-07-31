@@ -39,55 +39,54 @@ import org.plasma.sdo.core.CoreConstants;
  * @since 1.0.0
  */
 public enum EntityMetaKey implements MetaKey {
-	/**
-	 * The timestamp for an entire entity within a graph/row indicating the last
-	 * modified date for the entity, the value being a string representation of
-	 * a long integer.
-	 */
-	TIMESTAMP(
-			"_TS",
-			"timestamp for an entire entity within a graph/row indicating the last modified date for the entity"),
-	/**
-	 * Represents the uuid of an entity, and is a mandatory field for all
-	 * queries. The value associated with this field is a uuid which allows all
-	 * assembled data object to be universally unique across sessions and
-	 * clients
-	 */
-	UUID("_UU", "the UUID for an entity"),
-	/**
-	 * The qualified type name for the entity. Used to dynamically determine the
-	 * type/subtype of the entity e.g. when unmarshalled or de-referenced as
-	 * part of an edge (collection).
-	 */
-	TYPE("_TP", "qualified type name for an entity");
+  /**
+   * The timestamp for an entire entity within a graph/row indicating the last
+   * modified date for the entity, the value being a string representation of a
+   * long integer.
+   */
+  TIMESTAMP(
+      "_TS",
+      "timestamp for an entire entity within a graph/row indicating the last modified date for the entity"),
+  /**
+   * Represents the uuid of an entity, and is a mandatory field for all queries.
+   * The value associated with this field is a uuid which allows all assembled
+   * data object to be universally unique across sessions and clients
+   */
+  UUID("_UU", "the UUID for an entity"),
+  /**
+   * The qualified type name for the entity. Used to dynamically determine the
+   * type/subtype of the entity e.g. when unmarshalled or de-referenced as part
+   * of an edge (collection).
+   */
+  TYPE("_TP", "qualified type name for an entity");
 
-	private String code;
-	private String description;
-	byte[] codeBytes;
-	private EntityMetaKey(String code, String description) {
-		this.code = code;
-		this.description = description;
-		this.codeBytes = this.code.getBytes(Charset
-				.forName(CoreConstants.UTF8_ENCODING));
-	}
+  private String code;
+  private String description;
+  byte[] codeBytes;
 
-	@Override
-	public byte[] codeAsBytes() {
-		return this.codeBytes;
-	}
+  private EntityMetaKey(String code, String description) {
+    this.code = code;
+    this.description = description;
+    this.codeBytes = this.code.getBytes(Charset.forName(CoreConstants.UTF8_ENCODING));
+  }
 
-	@Override
-	public String asString() {
-		return this.name() + " (" + this.code + ")";
-	}
+  @Override
+  public byte[] codeAsBytes() {
+    return this.codeBytes;
+  }
 
-	@Override
-	public String code() {
-		return this.code;
-	}
+  @Override
+  public String asString() {
+    return this.name() + " (" + this.code + ")";
+  }
 
-	@Override
-	public String description() {
-		return this.description;
-	}
+  @Override
+  public String code() {
+    return this.code;
+  }
+
+  @Override
+  public String description() {
+    return this.description;
+  }
 }

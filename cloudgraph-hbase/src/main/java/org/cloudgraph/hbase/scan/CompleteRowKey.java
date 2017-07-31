@@ -30,5 +30,5 @@ package org.cloudgraph.hbase.scan;
  * @see CompleteRowKeyLiteral
  */
 public interface CompleteRowKey {
-	public byte[] getKey();
+  public byte[] getKey();
 }

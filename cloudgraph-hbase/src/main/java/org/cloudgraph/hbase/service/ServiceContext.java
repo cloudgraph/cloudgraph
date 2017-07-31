@@ -34,15 +34,15 @@ import org.cloudgraph.state.StateMarshalingContext;
  */
 public interface ServiceContext {
 
-	/**
-	 * Returns the state marshalling context associated with the context.
-	 * 
-	 * @return the state marshalling context associated with the context.
-	 */
-	public StateMarshalingContext getMarshallingContext();
+  /**
+   * Returns the state marshalling context associated with the context.
+   * 
+   * @return the state marshalling context associated with the context.
+   */
+  public StateMarshalingContext getMarshallingContext();
 
-	/**
-	 * Frees any resources associated with this context.
-	 */
-	public void close();
+  /**
+   * Frees any resources associated with this context.
+   */
+  public void close();
 }

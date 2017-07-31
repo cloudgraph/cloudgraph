@@ -22,31 +22,35 @@
 package org.cloudgraph.state;
 
 public class SimpleStateMarshallingContext implements StateMarshalingContext {
-	private NonValidatingDataBinding binding;
-	@SuppressWarnings("unused")
-	private SimpleStateMarshallingContext() {
-	}
-	public SimpleStateMarshallingContext(NonValidatingDataBinding binding) {
-		this.binding = binding;
-	}
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.cloudgraph.state.StateMarshalingContext#getBinding()
-	 */
-	@Override
-	public NonValidatingDataBinding getBinding() {
-		return binding;
-	}
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.cloudgraph.state.StateMarshalingContext#returnDataBinding(org.cloudgraph
-	 * .state.NonValidatingDataBinding)
-	 */
-	@Override
-	public void returnBinding(NonValidatingDataBinding binding) {
-	}
+  private NonValidatingDataBinding binding;
+
+  @SuppressWarnings("unused")
+  private SimpleStateMarshallingContext() {
+  }
+
+  public SimpleStateMarshallingContext(NonValidatingDataBinding binding) {
+    this.binding = binding;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.cloudgraph.state.StateMarshalingContext#getBinding()
+   */
+  @Override
+  public NonValidatingDataBinding getBinding() {
+    return binding;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.cloudgraph.state.StateMarshalingContext#returnDataBinding(org.cloudgraph
+   * .state.NonValidatingDataBinding)
+   */
+  @Override
+  public void returnBinding(NonValidatingDataBinding binding) {
+  }
 
 }

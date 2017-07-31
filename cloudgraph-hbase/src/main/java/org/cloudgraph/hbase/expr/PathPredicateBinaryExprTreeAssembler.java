@@ -74,63 +74,58 @@ import org.plasma.sdo.PlasmaType;
  * @see CompositeColumnKeyFactory
  * 
  */
-public abstract class PathPredicateBinaryExprTreeAssembler
-		extends
-			DefaultBinaryExprTreeAssembler {
-	private static Log log = LogFactory
-			.getLog(PathPredicateBinaryExprTreeAssembler.class);
+public abstract class PathPredicateBinaryExprTreeAssembler extends DefaultBinaryExprTreeAssembler {
+  private static Log log = LogFactory.getLog(PathPredicateBinaryExprTreeAssembler.class);
 
-	protected CompositeColumnKeyFactory columnKeyFactory;
-	protected PlasmaType edgeType;
+  protected CompositeColumnKeyFactory columnKeyFactory;
+  protected PlasmaType edgeType;
 
-	/**
-	 * Constructs an assembler based on the given predicate and graph edge type.
-	 * 
-	 * @param predicate
-	 *            the predicate
-	 * @param edgeType
-	 *            the graph edge type which is the type for the reference
-	 *            property within the graph which represents an edge
-	 * @param rootType
-	 *            the graph root type
-	 */
-	public PathPredicateBinaryExprTreeAssembler(Where predicate,
-			PlasmaType edgeType, PlasmaType rootType) {
-		super(predicate, rootType);
-		this.edgeType = edgeType;
-		this.columnKeyFactory = new CompositeColumnKeyFactory(this.rootType);
+  /**
+   * Constructs an assembler based on the given predicate and graph edge type.
+   * 
+   * @param predicate
+   *          the predicate
+   * @param edgeType
+   *          the graph edge type which is the type for the reference property
+   *          within the graph which represents an edge
+   * @param rootType
+   *          the graph root type
+   */
+  public PathPredicateBinaryExprTreeAssembler(Where predicate, PlasmaType edgeType,
+      PlasmaType rootType) {
+    super(predicate, rootType);
+    this.edgeType = edgeType;
+    this.columnKeyFactory = new CompositeColumnKeyFactory(this.rootType);
 
-	}
+  }
 
-	/**
-	 * Process the traversal end event for a query
-	 * {@link org.plasma.query.model.Property property} within an
-	 * {@link org.plasma.query.model.Expression expression} setting up context
-	 * information for the endpoint property and its type, as well as physical
-	 * column qualifier name bytes which are set into the
-	 * {@link #contextQueryProperty} physical name bytes. for the current
-	 * {@link org.plasma.query.model.Expression expression}.
-	 * 
-	 * @see org.plasma.query.visitor.DefaultQueryVisitor#end(org.plasma.query.model.Property)
-	 */
-	@Override
-	public void end(Property property) {
-		Path path = property.getPath();
-		PlasmaType targetType = (PlasmaType) this.edgeType;
-		if (path != null)
-			throw new GraphFilterException(
-					"property paths not supported within path predicate expressions");
+  /**
+   * Process the traversal end event for a query
+   * {@link org.plasma.query.model.Property property} within an
+   * {@link org.plasma.query.model.Expression expression} setting up context
+   * information for the endpoint property and its type, as well as physical
+   * column qualifier name bytes which are set into the
+   * {@link #contextQueryProperty} physical name bytes. for the current
+   * {@link org.plasma.query.model.Expression expression}.
+   * 
+   * @see org.plasma.query.visitor.DefaultQueryVisitor#end(org.plasma.query.model.Property)
+   */
+  @Override
+  public void end(Property property) {
+    Path path = property.getPath();
+    PlasmaType targetType = (PlasmaType) this.edgeType;
+    if (path != null)
+      throw new GraphFilterException(
+          "property paths not supported within path predicate expressions");
 
-		PlasmaProperty endpointProp = (PlasmaProperty) targetType
-				.getProperty(property.getName());
-		this.contextProperty = endpointProp;
-		this.contextType = targetType;
-		this.contextQueryProperty = property;
-		byte[] columnKey = this.columnKeyFactory.createColumnKey(this.edgeType,
-				this.contextProperty);
-		this.contextQueryProperty.setPhysicalNameBytes(columnKey);
+    PlasmaProperty endpointProp = (PlasmaProperty) targetType.getProperty(property.getName());
+    this.contextProperty = endpointProp;
+    this.contextType = targetType;
+    this.contextQueryProperty = property;
+    byte[] columnKey = this.columnKeyFactory.createColumnKey(this.edgeType, this.contextProperty);
+    this.contextQueryProperty.setPhysicalNameBytes(columnKey);
 
-		super.start(property);
-	}
+    super.start(property);
+  }
 
 }

@@ -47,91 +47,89 @@ import commonj.sdo.Type;
  */
 public interface DistributedReader extends DistributedOperation {
 
-	/**
-	 * Returns the table reader for the given configured table name.
-	 * 
-	 * @param tableName
-	 *            the name of the configured table.
-	 * @return the table reader for the given configured table name.
-	 */
-	public TableReader getTableReader(String tableName);
+  /**
+   * Returns the table reader for the given configured table name.
+   * 
+   * @param tableName
+   *          the name of the configured table.
+   * @return the table reader for the given configured table name.
+   */
+  public TableReader getTableReader(String tableName);
 
-	/**
-	 * Returns the table reader for the given qualified type name.
-	 * 
-	 * @param qualifiedTypeName
-	 *            the qualified type name.
-	 * @return the table reader for the given qualified type name.
-	 */
-	public TableReader getTableReader(QName qualifiedTypeName);
+  /**
+   * Returns the table reader for the given qualified type name.
+   * 
+   * @param qualifiedTypeName
+   *          the qualified type name.
+   * @return the table reader for the given qualified type name.
+   */
+  public TableReader getTableReader(QName qualifiedTypeName);
 
-	/**
-	 * Adds the given table reader to the container
-	 * 
-	 * @param reader
-	 *            the table reader.
-	 */
-	public void addTableReader(TableReader reader);
+  /**
+   * Adds the given table reader to the container
+   * 
+   * @param reader
+   *          the table reader.
+   */
+  public void addTableReader(TableReader reader);
 
-	/**
-	 * Returns the count of table readers for this container.
-	 * 
-	 * @return the count of table readers for this container
-	 */
-	public int getTableReaderCount();
+  /**
+   * Returns the count of table readers for this container.
+   * 
+   * @return the count of table readers for this container
+   */
+  public int getTableReaderCount();
 
-	/**
-	 * Returns all table readers for the this container
-	 * 
-	 * @return all table readers for the this container
-	 */
-	public List<TableReader> getTableReaders();
+  /**
+   * Returns all table readers for the this container
+   * 
+   * @return all table readers for the this container
+   */
+  public List<TableReader> getTableReaders();
 
-	/**
-	 * Returns the table reader associated with the data graph root.
-	 * 
-	 * @return the table reader associated with the data graph root.
-	 */
-	public TableReader getRootTableReader();
+  /**
+   * Returns the table reader associated with the data graph root.
+   * 
+   * @return the table reader associated with the data graph root.
+   */
+  public TableReader getRootTableReader();
 
-	/**
-	 * Sets the table reader associated with the data graph root.
-	 * 
-	 * @param reader
-	 *            the table reader
-	 */
-	public void setRootTableReader(TableReader reader);
+  /**
+   * Sets the table reader associated with the data graph root.
+   * 
+   * @param reader
+   *          the table reader
+   */
+  public void setRootTableReader(TableReader reader);
 
-	/**
-	 * Returns the row reader associated with the given data object
-	 * 
-	 * @param dataObject
-	 *            the data object
-	 * @return the row reader associated with the given data object
-	 * @throws IllegalArgumentException
-	 *             if the given data object is not associated with any row
-	 *             reader.
-	 */
-	public RowReader getRowReader(DataObject dataObject);
+  /**
+   * Returns the row reader associated with the given data object
+   * 
+   * @param dataObject
+   *          the data object
+   * @return the row reader associated with the given data object
+   * @throws IllegalArgumentException
+   *           if the given data object is not associated with any row reader.
+   */
+  public RowReader getRowReader(DataObject dataObject);
 
-	public void mapRowReader(DataObject dataObject, RowReader rowReader);
+  public void mapRowReader(DataObject dataObject, RowReader rowReader);
 
-	public void mapRowReader(long dataObjectSequence, PlasmaType type,
-			RowReader rowReader);
+  public void mapRowReader(long dataObjectSequence, PlasmaType type, RowReader rowReader);
 
-	public void mapRowReader(String rowKey, RowReader rowReader);
+  public void mapRowReader(String rowKey, RowReader rowReader);
 
-	/**
-	 * Returns a list of types associated with the given table operation.
-	 * 
-	 * @param reader
-	 *            the table operation
-	 * @return a list of types associated with the given table operation.
-	 */
-	public List<Type> getTypes(TableReader operation);
+  /**
+   * Returns a list of types associated with the given table operation.
+   * 
+   * @param reader
+   *          the table operation
+   * @return a list of types associated with the given table operation.
+   */
+  public List<Type> getTypes(TableReader operation);
 
-	/**
-	 * Frees resources associated with this reader and any component readers.
-	 */
-	public void clear();
+  /**
+   * Frees resources associated with this reader and any component readers.
+   */
+  public void clear();
 }

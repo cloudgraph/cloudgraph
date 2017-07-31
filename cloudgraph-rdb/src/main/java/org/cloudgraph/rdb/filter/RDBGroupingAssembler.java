@@ -34,61 +34,56 @@ import org.plasma.query.visitor.Traversal;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
 
-public class RDBGroupingAssembler extends DefaultQueryVisitor
-		implements
-			QueryConstants {
-	private static Log log = LogFactory.getLog(RDBGroupingAssembler.class);
+public class RDBGroupingAssembler extends DefaultQueryVisitor implements QueryConstants {
+  private static Log log = LogFactory.getLog(RDBGroupingAssembler.class);
 
-	private PlasmaType contextType;
-	private commonj.sdo.Property contextProp;
-	private StringBuilder groupingDeclaration = new StringBuilder();
-	private AliasMap aliasMap;
+  private PlasmaType contextType;
+  private commonj.sdo.Property contextProp;
+  private StringBuilder groupingDeclaration = new StringBuilder();
+  private AliasMap aliasMap;
 
-	@SuppressWarnings("unused")
-	private RDBGroupingAssembler() {
-	}
+  @SuppressWarnings("unused")
+  private RDBGroupingAssembler() {
+  }
 
-	public RDBGroupingAssembler(GroupBy groupby, PlasmaType contextType,
-			AliasMap aliasMap) {
-		this.contextType = contextType;
-		this.aliasMap = aliasMap;
+  public RDBGroupingAssembler(GroupBy groupby, PlasmaType contextType, AliasMap aliasMap) {
+    this.contextType = contextType;
+    this.aliasMap = aliasMap;
 
-		if (groupby.getTextContent() == null)
-			groupby.accept(this); // traverse
-		else
-			groupingDeclaration.append(groupby.getTextContent().getValue());
-	}
+    if (groupby.getTextContent() == null)
+      groupby.accept(this); // traverse
+    else
+      groupingDeclaration.append(groupby.getTextContent().getValue());
+  }
 
-	public String getGroupingDeclaration() {
-		return groupingDeclaration.toString();
-	}
+  public String getGroupingDeclaration() {
+    return groupingDeclaration.toString();
+  }
 
-	public void start(Property property) {
-		if (groupingDeclaration.length() == 0)
-			groupingDeclaration.append("GROUP BY ");
+  public void start(Property property) {
+    if (groupingDeclaration.length() == 0)
+      groupingDeclaration.append("GROUP BY ");
 
-		if (groupingDeclaration.length() > "GROUP BY ".length())
-			groupingDeclaration.append(", ");
-		PlasmaType targetType = contextType;
-		if (property.getPath() != null) {
-			Path path = property.getPath();
-			for (int i = 0; i < path.getPathNodes().size(); i++) {
-				PlasmaProperty prop = (PlasmaProperty) targetType
-						.getProperty(path.getPathNodes().get(i)
-								.getPathElement().getValue());
-				targetType = (PlasmaType) prop.getType();
-			}
-		}
-		PlasmaProperty endpoint = (PlasmaProperty) targetType
-				.getProperty(property.getName());
-		contextProp = endpoint;
+    if (groupingDeclaration.length() > "GROUP BY ".length())
+      groupingDeclaration.append(", ");
+    PlasmaType targetType = contextType;
+    if (property.getPath() != null) {
+      Path path = property.getPath();
+      for (int i = 0; i < path.getPathNodes().size(); i++) {
+        PlasmaProperty prop = (PlasmaProperty) targetType.getProperty(path.getPathNodes().get(i)
+            .getPathElement().getValue());
+        targetType = (PlasmaType) prop.getType();
+      }
+    }
+    PlasmaProperty endpoint = (PlasmaProperty) targetType.getProperty(property.getName());
+    contextProp = endpoint;
 
-		String alias = this.aliasMap.getAlias(targetType);
-		if (alias == null)
-			alias = this.aliasMap.addAlias(targetType);
-		groupingDeclaration.append(alias);
-		groupingDeclaration.append(".");
-		groupingDeclaration.append(endpoint.getPhysicalName());
-		this.getContext().setTraversal(Traversal.ABORT);
-	}
+    String alias = this.aliasMap.getAlias(targetType);
+    if (alias == null)
+      alias = this.aliasMap.addAlias(targetType);
+    groupingDeclaration.append(alias);
+    groupingDeclaration.append(".");
+    groupingDeclaration.append(endpoint.getPhysicalName());
+    this.getContext().setTraversal(Traversal.ABORT);
+  }
 }

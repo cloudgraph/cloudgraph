@@ -57,145 +57,133 @@ import org.plasma.sdo.PlasmaType;
  * @author Scott Cinnamond
  * @since 0.5
  */
-public class CompositeColumnKeyFactory extends ByteBufferKeyFactory
-		implements
-			GraphColumnKeyFactory {
-	private static final Log log = LogFactory
-			.getLog(CompositeColumnKeyFactory.class);
+public class CompositeColumnKeyFactory extends ByteBufferKeyFactory implements
+    GraphColumnKeyFactory {
+  private static final Log log = LogFactory.getLog(CompositeColumnKeyFactory.class);
 
-	public CompositeColumnKeyFactory(PlasmaType rootType) {
-		super(rootType);
-	}
-	public CompositeColumnKeyFactory(RowState graphRow) {
-		super(graphRow);
-		// TODO Auto-generated constructor stub
-	}
+  public CompositeColumnKeyFactory(PlasmaType rootType) {
+    super(rootType);
+  }
 
-	@Override
-	public byte[] createColumnKey(PlasmaType type, PlasmaProperty property) {
+  public CompositeColumnKeyFactory(RowState graphRow) {
+    super(graphRow);
+    // TODO Auto-generated constructor stub
+  }
 
-		this.buf.clear();
-		addColumnKeyFields(type, property);
+  @Override
+  public byte[] createColumnKey(PlasmaType type, PlasmaProperty property) {
 
-		// ByteBuffer.array() returns unsized array so don't sent that back to
-		// clients
-		// to misuse.
-		// Use native arraycopy() method as it uses native memcopy to create
-		// result array
-		// and because and
-		// ByteBuffer.get(byte[] dst,int offset, int length) is not native
-		byte[] result = new byte[this.buf.position()];
-		System.arraycopy(this.buf.array(), this.buf.arrayOffset(), result, 0,
-				this.buf.position());
+    this.buf.clear();
+    addColumnKeyFields(type, property);
 
-		return result;
-	}
+    // ByteBuffer.array() returns unsized array so don't sent that back to
+    // clients
+    // to misuse.
+    // Use native arraycopy() method as it uses native memcopy to create
+    // result array
+    // and because and
+    // ByteBuffer.get(byte[] dst,int offset, int length) is not native
+    byte[] result = new byte[this.buf.position()];
+    System.arraycopy(this.buf.array(), this.buf.arrayOffset(), result, 0, this.buf.position());
 
-	@Override
-	public byte[] createColumnKey(PlasmaType type, EntityMetaKey metaField) {
-		this.buf.clear();
-		addColumnKeyFields(type, metaField);
-		byte[] result = new byte[this.buf.position()];
-		System.arraycopy(this.buf.array(), this.buf.arrayOffset(), result, 0,
-				this.buf.position());
-		return result;
-	}
+    return result;
+  }
 
-	@Override
-	public byte[] createColumnKey(PlasmaType type, EdgeMetaKey metaField) {
-		this.buf.clear();
-		addColumnKeyFields(type, metaField);
-		byte[] result = new byte[this.buf.position()];
-		System.arraycopy(this.buf.array(), this.buf.arrayOffset(), result, 0,
-				this.buf.position());
-		return result;
-	}
+  @Override
+  public byte[] createColumnKey(PlasmaType type, EntityMetaKey metaField) {
+    this.buf.clear();
+    addColumnKeyFields(type, metaField);
+    byte[] result = new byte[this.buf.position()];
+    System.arraycopy(this.buf.array(), this.buf.arrayOffset(), result, 0, this.buf.position());
+    return result;
+  }
 
-	@Override
-	public byte[] createColumnKey(PlasmaType type, PlasmaProperty property,
-			EntityMetaKey metaField) {
-		this.buf.clear();
-		addColumnKeyFields(type, property);
-		this.buf.put(this.getGraph()
-				.getColumnKeyReferenceMetadataDelimiterBytes());
-		this.buf.put(metaField.codeAsBytes());
-		byte[] result = new byte[this.buf.position()];
-		System.arraycopy(this.buf.array(), this.buf.arrayOffset(), result, 0,
-				this.buf.position());
-		return result;
-	}
+  @Override
+  public byte[] createColumnKey(PlasmaType type, EdgeMetaKey metaField) {
+    this.buf.clear();
+    addColumnKeyFields(type, metaField);
+    byte[] result = new byte[this.buf.position()];
+    System.arraycopy(this.buf.array(), this.buf.arrayOffset(), result, 0, this.buf.position());
+    return result;
+  }
 
-	@Override
-	public byte[] createColumnKey(PlasmaType type, PlasmaProperty property,
-			EdgeMetaKey metaField) {
-		this.buf.clear();
-		addColumnKeyFields(type, property);
-		this.buf.put(this.getGraph()
-				.getColumnKeyReferenceMetadataDelimiterBytes());
-		this.buf.put(metaField.codeAsBytes());
-		byte[] result = new byte[this.buf.position()];
-		System.arraycopy(this.buf.array(), this.buf.arrayOffset(), result, 0,
-				this.buf.position());
-		return result;
-	}
+  @Override
+  public byte[] createColumnKey(PlasmaType type, PlasmaProperty property, EntityMetaKey metaField) {
+    this.buf.clear();
+    addColumnKeyFields(type, property);
+    this.buf.put(this.getGraph().getColumnKeyReferenceMetadataDelimiterBytes());
+    this.buf.put(metaField.codeAsBytes());
+    byte[] result = new byte[this.buf.position()];
+    System.arraycopy(this.buf.array(), this.buf.arrayOffset(), result, 0, this.buf.position());
+    return result;
+  }
 
-	protected void addColumnKeyFields(PlasmaType type, EntityMetaKey metaField) {
-		int i = 0;
-		for (KeyFieldConfig fieldConfig : this.getGraph().getColumnKeyFields()) {
-			if (i > 0)
-				this.buf.put(this.getGraph().getColumnKeyFieldDelimiterBytes());
-			PreDefinedKeyFieldConfig predefinedFieldConfig = (PreDefinedKeyFieldConfig) fieldConfig;
-			byte[] keyValue = predefinedFieldConfig
-					.getKeyBytes(type, metaField);
-			if (fieldConfig.isHash()) {
-				keyValue = this.hashing.toStringBytes(keyValue);
-			}
-			this.buf.put(keyValue);
-			i++;
-		}
-	}
+  @Override
+  public byte[] createColumnKey(PlasmaType type, PlasmaProperty property, EdgeMetaKey metaField) {
+    this.buf.clear();
+    addColumnKeyFields(type, property);
+    this.buf.put(this.getGraph().getColumnKeyReferenceMetadataDelimiterBytes());
+    this.buf.put(metaField.codeAsBytes());
+    byte[] result = new byte[this.buf.position()];
+    System.arraycopy(this.buf.array(), this.buf.arrayOffset(), result, 0, this.buf.position());
+    return result;
+  }
 
-	protected void addColumnKeyFields(PlasmaType type, EdgeMetaKey metaField) {
-		int i = 0;
-		for (KeyFieldConfig fieldConfig : this.getGraph().getColumnKeyFields()) {
-			if (i > 0)
-				this.buf.put(this.getGraph().getColumnKeyFieldDelimiterBytes());
-			PreDefinedKeyFieldConfig predefinedFieldConfig = (PreDefinedKeyFieldConfig) fieldConfig;
-			byte[] keyValue = predefinedFieldConfig
-					.getKeyBytes(type, metaField);
-			if (fieldConfig.isHash()) {
-				keyValue = this.hashing.toStringBytes(keyValue);
-			}
-			this.buf.put(keyValue);
-			i++;
-		}
-	}
+  protected void addColumnKeyFields(PlasmaType type, EntityMetaKey metaField) {
+    int i = 0;
+    for (KeyFieldConfig fieldConfig : this.getGraph().getColumnKeyFields()) {
+      if (i > 0)
+        this.buf.put(this.getGraph().getColumnKeyFieldDelimiterBytes());
+      PreDefinedKeyFieldConfig predefinedFieldConfig = (PreDefinedKeyFieldConfig) fieldConfig;
+      byte[] keyValue = predefinedFieldConfig.getKeyBytes(type, metaField);
+      if (fieldConfig.isHash()) {
+        keyValue = this.hashing.toStringBytes(keyValue);
+      }
+      this.buf.put(keyValue);
+      i++;
+    }
+  }
 
-	protected void addColumnKeyFields(PlasmaType type, PlasmaProperty property) {
-		int i = 0;
-		for (KeyFieldConfig fieldConfig : this.getGraph().getColumnKeyFields()) {
-			if (i > 0)
-				this.buf.put(this.getGraph().getColumnKeyFieldDelimiterBytes());
-			PreDefinedKeyFieldConfig predefinedFieldConfig = (PreDefinedKeyFieldConfig) fieldConfig;
-			byte[] keyValue = predefinedFieldConfig.getKeyBytes(type, property);
-			if (fieldConfig.isHash()) {
-				keyValue = this.hashing.toStringBytes(keyValue);
-			}
-			this.buf.put(keyValue);
-			i++;
-		}
-	}
+  protected void addColumnKeyFields(PlasmaType type, EdgeMetaKey metaField) {
+    int i = 0;
+    for (KeyFieldConfig fieldConfig : this.getGraph().getColumnKeyFields()) {
+      if (i > 0)
+        this.buf.put(this.getGraph().getColumnKeyFieldDelimiterBytes());
+      PreDefinedKeyFieldConfig predefinedFieldConfig = (PreDefinedKeyFieldConfig) fieldConfig;
+      byte[] keyValue = predefinedFieldConfig.getKeyBytes(type, metaField);
+      if (fieldConfig.isHash()) {
+        keyValue = this.hashing.toStringBytes(keyValue);
+      }
+      this.buf.put(keyValue);
+      i++;
+    }
+  }
 
-	protected byte[] configureTokenBytes(byte[] token, DataGraphConfig graph,
-			Hashing hashing, PreDefinedFieldName tokenName) {
-		byte[] result = token;
-		ColumnKeyFieldConfig tokenConfig = graph.getColumnKeyField(tokenName);
-		if (tokenConfig != null) {
-			if (tokenConfig.isHash()) {
-				result = hashing.toStringBytes(result);
-			}
-		}
-		return result;
-	}
+  protected void addColumnKeyFields(PlasmaType type, PlasmaProperty property) {
+    int i = 0;
+    for (KeyFieldConfig fieldConfig : this.getGraph().getColumnKeyFields()) {
+      if (i > 0)
+        this.buf.put(this.getGraph().getColumnKeyFieldDelimiterBytes());
+      PreDefinedKeyFieldConfig predefinedFieldConfig = (PreDefinedKeyFieldConfig) fieldConfig;
+      byte[] keyValue = predefinedFieldConfig.getKeyBytes(type, property);
+      if (fieldConfig.isHash()) {
+        keyValue = this.hashing.toStringBytes(keyValue);
+      }
+      this.buf.put(keyValue);
+      i++;
+    }
+  }
+
+  protected byte[] configureTokenBytes(byte[] token, DataGraphConfig graph, Hashing hashing,
+      PreDefinedFieldName tokenName) {
+    byte[] result = token;
+    ColumnKeyFieldConfig tokenConfig = graph.getColumnKeyField(tokenName);
+    if (tokenConfig != null) {
+      if (tokenConfig.isHash()) {
+        result = hashing.toStringBytes(result);
+      }
+    }
+    return result;
+  }
 
 }

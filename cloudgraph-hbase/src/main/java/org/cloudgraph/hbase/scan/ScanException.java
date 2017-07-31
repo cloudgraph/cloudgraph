@@ -28,18 +28,18 @@ import org.cloudgraph.common.CloudGraphRuntimeException;
  * @since 0.5
  */
 public class ScanException extends CloudGraphRuntimeException {
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	public ScanException() {
-		super();
-	}
+  public ScanException() {
+    super();
+  }
 
-	public ScanException(String msg) {
-		super(msg);
-	}
+  public ScanException(String msg) {
+    super(msg);
+  }
 
-	public ScanException(Throwable t) {
-		super(t);
-	}
+  public ScanException(Throwable t) {
+    super(t);
+  }
 
 }

@@ -28,11 +28,13 @@ import org.cloudgraph.store.service.GraphServiceException;
  * @since 0.5
  */
 public class RDBServiceException extends GraphServiceException {
-	private static final long serialVersionUID = 1L;
-	public RDBServiceException(String message) {
-		super(message);
-	}
-	public RDBServiceException(Throwable t) {
-		super(t);
-	}
+  private static final long serialVersionUID = 1L;
+
+  public RDBServiceException(String message) {
+    super(message);
+  }
+
+  public RDBServiceException(Throwable t) {
+    super(t);
+  }
 }

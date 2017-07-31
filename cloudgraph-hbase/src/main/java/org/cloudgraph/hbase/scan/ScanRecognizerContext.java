@@ -50,17 +50,17 @@ import org.cloudgraph.query.expr.EvaluationContext;
  */
 public class ScanRecognizerContext implements EvaluationContext {
 
-	private DataGraphConfig graph;
+  private DataGraphConfig graph;
 
-	/**
-	 * Constructs an empty context.
-	 */
-	public ScanRecognizerContext(DataGraphConfig graph) {
-		this.graph = graph;
-	}
+  /**
+   * Constructs an empty context.
+   */
+  public ScanRecognizerContext(DataGraphConfig graph) {
+    this.graph = graph;
+  }
 
-	public DataGraphConfig getGraph() {
-		return graph;
-	}
+  public DataGraphConfig getGraph() {
+    return graph;
+  }
 
 }

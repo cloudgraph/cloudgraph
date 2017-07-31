@@ -6,8 +6,8 @@ import commonj.sdo.DataObject;
 
 public class DefaultRowOperation extends GraphRow implements RowOperation {
 
-	public DefaultRowOperation(byte[] rowKey, DataObject rootDataObject) {
-		super(rowKey, rootDataObject);
-	}
+  public DefaultRowOperation(byte[] rowKey, DataObject rootDataObject) {
+    super(rowKey, rootDataObject);
+  }
 
 }

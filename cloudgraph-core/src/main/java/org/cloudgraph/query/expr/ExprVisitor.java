@@ -30,16 +30,16 @@ package org.cloudgraph.query.expr;
  */
 public interface ExprVisitor {
 
-	/**
-	 * The client event received when a new node is encountered.
-	 * 
-	 * @param target
-	 *            the target node
-	 * @param source
-	 *            the target node
-	 * @param level
-	 *            the traversal level
-	 * @see Expr
-	 */
-	public void visit(Expr target, Expr source, int level);
+  /**
+   * The client event received when a new node is encountered.
+   * 
+   * @param target
+   *          the target node
+   * @param source
+   *          the target node
+   * @param level
+   *          the traversal level
+   * @see Expr
+   */
+  public void visit(Expr target, Expr source, int level);
 }

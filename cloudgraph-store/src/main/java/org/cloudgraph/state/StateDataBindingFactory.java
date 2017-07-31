@@ -36,18 +36,15 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
  * 
  * @see StateNonValidatingDataBinding
  */
-public class StateDataBindingFactory
-		extends
-			BasePooledObjectFactory<StateNonValidatingDataBinding> {
+public class StateDataBindingFactory extends BasePooledObjectFactory<StateNonValidatingDataBinding> {
 
-	@Override
-	public StateNonValidatingDataBinding create() throws Exception {
-		return new StateNonValidatingDataBinding();
-	}
+  @Override
+  public StateNonValidatingDataBinding create() throws Exception {
+    return new StateNonValidatingDataBinding();
+  }
 
-	@Override
-	public PooledObject<StateNonValidatingDataBinding> wrap(
-			StateNonValidatingDataBinding binding) {
-		return new DefaultPooledObject<StateNonValidatingDataBinding>(binding);
-	}
+  @Override
+  public PooledObject<StateNonValidatingDataBinding> wrap(StateNonValidatingDataBinding binding) {
+    return new DefaultPooledObject<StateNonValidatingDataBinding>(binding);
+  }
 }

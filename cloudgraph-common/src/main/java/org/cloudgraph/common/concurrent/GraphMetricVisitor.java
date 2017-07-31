@@ -31,34 +31,32 @@ import commonj.sdo.DataObject;
 
 public class GraphMetricVisitor implements PlasmaDataGraphVisitor {
 
-	private long count = 0;
-	private long depth = 0;
-	private HashSet<String> threadNames = new HashSet<String>();
+  private long count = 0;
+  private long depth = 0;
+  private HashSet<String> threadNames = new HashSet<String>();
 
-	@Override
-	public void visit(DataObject target, DataObject source,
-			String sourcePropertyName, int level) {
-		count++;
-		if (level > depth)
-			depth = level;
+  @Override
+  public void visit(DataObject target, DataObject source, String sourcePropertyName, int level) {
+    count++;
+    if (level > depth)
+      depth = level;
 
-		CoreNode node = (CoreNode) target;
-		String thread = (String) node.getValueObject().get(
-				CloudGraphConstants.GRAPH_NODE_THREAD_NAME);
-		if (thread != null)
-			this.threadNames.add(thread);
+    CoreNode node = (CoreNode) target;
+    String thread = (String) node.getValueObject().get(CloudGraphConstants.GRAPH_NODE_THREAD_NAME);
+    if (thread != null)
+      this.threadNames.add(thread);
 
-	}
+  }
 
-	public long getCount() {
-		return count;
-	}
+  public long getCount() {
+    return count;
+  }
 
-	public long getDepth() {
-		return depth;
-	}
+  public long getDepth() {
+    return depth;
+  }
 
-	public long getThreadCount() {
-		return threadNames.size();
-	}
+  public long getThreadCount() {
+    return threadNames.size();
+  }
 }

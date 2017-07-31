@@ -61,30 +61,28 @@ import commonj.sdo.Property;
  * @since 0.5
  */
 public class BinaryPrefixColumnFilterAssembler extends FilterListAssembler {
-	private static Log log = LogFactory
-			.getLog(BinaryPrefixColumnFilterAssembler.class);
-	private GraphColumnKeyFactory columnKeyFac;
+  private static Log log = LogFactory.getLog(BinaryPrefixColumnFilterAssembler.class);
+  private GraphColumnKeyFactory columnKeyFac;
 
-	public BinaryPrefixColumnFilterAssembler(PlasmaType rootType) {
-		super(rootType);
-		this.columnKeyFac = new CompositeColumnKeyFactory(rootType);
+  public BinaryPrefixColumnFilterAssembler(PlasmaType rootType) {
+    super(rootType);
+    this.columnKeyFac = new CompositeColumnKeyFactory(rootType);
 
-		this.rootFilter = new FilterList(FilterList.Operator.MUST_PASS_ONE);
-	}
+    this.rootFilter = new FilterList(FilterList.Operator.MUST_PASS_ONE);
+  }
 
-	public void assemble(Set<Property> properties, PlasmaType contextType) {
-		// Note: using many binary prefix qualifier filters
-		// rather than a single MultipleColumnPrefixFilter under the
-		// assumption that the binary compare is more
-		// efficient than the string conversion
-		// required by the MultipleColumnPrefixFilter (?)
-		for (Property p : properties) {
-			PlasmaProperty prop = (PlasmaProperty) p;
-			byte[] key = this.columnKeyFac.createColumnKey(contextType, prop);
-			QualifierFilter qualFilter = new QualifierFilter(
-					CompareFilter.CompareOp.EQUAL, new BinaryPrefixComparator(
-							key));
-			this.rootFilter.addFilter(qualFilter);
-		}
-	}
+  public void assemble(Set<Property> properties, PlasmaType contextType) {
+    // Note: using many binary prefix qualifier filters
+    // rather than a single MultipleColumnPrefixFilter under the
+    // assumption that the binary compare is more
+    // efficient than the string conversion
+    // required by the MultipleColumnPrefixFilter (?)
+    for (Property p : properties) {
+      PlasmaProperty prop = (PlasmaProperty) p;
+      byte[] key = this.columnKeyFac.createColumnKey(contextType, prop);
+      QualifierFilter qualFilter = new QualifierFilter(CompareFilter.CompareOp.EQUAL,
+          new BinaryPrefixComparator(key));
+      this.rootFilter.addFilter(qualFilter);
+    }
+  }
 }

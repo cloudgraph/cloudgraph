@@ -34,16 +34,16 @@ package org.cloudgraph.hbase.scan;
  */
 public interface CompleteRowKeyLiteral {
 
-	/**
-	 * Returns the bytes used to represent an "equals" relational operator for a
-	 * specific composite row key field, under an HBase 'Get' operation for the
-	 * various optionally configurable hashing, formatting and padding features.
-	 * 
-	 * @return the bytes used to represent an "equals" relational operator for a
-	 *         specific composite row key field, under an HBase 'Get' operation
-	 *         for the various optionally configurable hashing, formatting and
-	 *         padding features.
-	 */
-	public byte[] getEqualsBytes();
+  /**
+   * Returns the bytes used to represent an "equals" relational operator for a
+   * specific composite row key field, under an HBase 'Get' operation for the
+   * various optionally configurable hashing, formatting and padding features.
+   * 
+   * @return the bytes used to represent an "equals" relational operator for a
+   *         specific composite row key field, under an HBase 'Get' operation
+   *         for the various optionally configurable hashing, formatting and
+   *         padding features.
+   */
+  public byte[] getEqualsBytes();
 
 }

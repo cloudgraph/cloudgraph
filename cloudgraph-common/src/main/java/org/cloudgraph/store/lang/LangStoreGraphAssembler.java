@@ -33,14 +33,14 @@ import org.plasma.sdo.access.provider.common.PropertyPair;
  * @since 0.6.2
  */
 public interface LangStoreGraphAssembler extends DataGraphAssembler {
-	/**
-	 * Initiates the assembly of a data graph based on the given property key
-	 * value pair results list.
-	 * 
-	 * @param results
-	 *            the results list
-	 * 
-	 * @see DataGraphAssembler.getDataGraph()
-	 */
-	public void assemble(List<PropertyPair> results);
+  /**
+   * Initiates the assembly of a data graph based on the given property key
+   * value pair results list.
+   * 
+   * @param results
+   *          the results list
+   * 
+   * @see DataGraphAssembler.getDataGraph()
+   */
+  public void assemble(List<PropertyPair> results);
 }

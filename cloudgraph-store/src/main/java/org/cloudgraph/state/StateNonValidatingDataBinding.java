@@ -42,76 +42,75 @@ import org.xml.sax.SAXException;
  */
 public class StateNonValidatingDataBinding implements NonValidatingDataBinding {
 
-	private NonValidatingUnmarshaler unmarshaler;
+  private NonValidatingUnmarshaler unmarshaler;
 
-	public static Class<?>[] FACTORIES = {org.cloudgraph.state.ObjectFactory.class,};
+  public static Class<?>[] FACTORIES = { org.cloudgraph.state.ObjectFactory.class, };
 
-	public StateNonValidatingDataBinding() throws JAXBException, SAXException {
-		this.unmarshaler = new NonValidatingUnmarshaler(
-				JAXBContext.newInstance(FACTORIES));
-	}
+  public StateNonValidatingDataBinding() throws JAXBException, SAXException {
+    this.unmarshaler = new NonValidatingUnmarshaler(JAXBContext.newInstance(FACTORIES));
+  }
 
-	public Class<?>[] getObjectFactories() {
-		return FACTORIES;
-	}
+  public Class<?>[] getObjectFactories() {
+    return FACTORIES;
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.cloudgraph.state.NonValidatingDataBinding#marshal(java.lang.Object)
-	 */
-	@Override
-	public String marshal(Object root) throws JAXBException {
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.cloudgraph.state.NonValidatingDataBinding#marshal(java.lang.Object)
+   */
+  @Override
+  public String marshal(Object root) throws JAXBException {
 
-		return unmarshaler.marshal(root);
-	}
+    return unmarshaler.marshal(root);
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.cloudgraph.state.NonValidatingDataBinding#marshal(java.lang.Object,
-	 * java.io.OutputStream)
-	 */
-	@Override
-	public void marshal(Object root, OutputStream stream) throws JAXBException {
-		unmarshaler.marshal(root, stream);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.cloudgraph.state.NonValidatingDataBinding#marshal(java.lang.Object,
+   * java.io.OutputStream)
+   */
+  @Override
+  public void marshal(Object root, OutputStream stream) throws JAXBException {
+    unmarshaler.marshal(root, stream);
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.cloudgraph.state.NonValidatingDataBinding#marshal(java.lang.Object,
-	 * java.io.OutputStream, boolean)
-	 */
-	@Override
-	public void marshal(Object root, OutputStream stream,
-			boolean formattedOutput) throws JAXBException {
-		unmarshaler.marshal(root, stream, formattedOutput);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.cloudgraph.state.NonValidatingDataBinding#marshal(java.lang.Object,
+   * java.io.OutputStream, boolean)
+   */
+  @Override
+  public void marshal(Object root, OutputStream stream, boolean formattedOutput)
+      throws JAXBException {
+    unmarshaler.marshal(root, stream, formattedOutput);
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.cloudgraph.state.NonValidatingDataBinding#unmarshal(java.lang.String)
-	 */
-	@Override
-	public Object unmarshal(String xml) throws JAXBException {
-		return unmarshaler.unmarshal(xml);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.cloudgraph.state.NonValidatingDataBinding#unmarshal(java.lang.String)
+   */
+  @Override
+  public Object unmarshal(String xml) throws JAXBException {
+    return unmarshaler.unmarshal(xml);
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.cloudgraph.state.NonValidatingDataBinding#unmarshal(java.io.InputStream
-	 * )
-	 */
-	@Override
-	public Object unmarshal(InputStream stream) throws JAXBException {
-		return unmarshaler.unmarshal(stream);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.cloudgraph.state.NonValidatingDataBinding#unmarshal(java.io.InputStream
+   * )
+   */
+  @Override
+  public Object unmarshal(InputStream stream) throws JAXBException {
+    return unmarshaler.unmarshal(stream);
+  }
 }

@@ -26,18 +26,18 @@ package org.cloudgraph.hbase.scan;
  * @since 0.5.3
  */
 public class InvalidFuzzyRowKeyWildcardException extends ScanException {
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	public InvalidFuzzyRowKeyWildcardException() {
-		super();
-	}
+  public InvalidFuzzyRowKeyWildcardException() {
+    super();
+  }
 
-	public InvalidFuzzyRowKeyWildcardException(String msg) {
-		super(msg);
-	}
+  public InvalidFuzzyRowKeyWildcardException(String msg) {
+    super(msg);
+  }
 
-	public InvalidFuzzyRowKeyWildcardException(Throwable t) {
-		super(t);
-	}
+  public InvalidFuzzyRowKeyWildcardException(Throwable t) {
+    super(t);
+  }
 
 }

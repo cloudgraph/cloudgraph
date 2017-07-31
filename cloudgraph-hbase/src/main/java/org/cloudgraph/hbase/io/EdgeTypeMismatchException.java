@@ -31,17 +31,17 @@ package org.cloudgraph.hbase.io;
  */
 public class EdgeTypeMismatchException extends OperationException {
 
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	public EdgeTypeMismatchException() {
-		super();
-	}
+  public EdgeTypeMismatchException() {
+    super();
+  }
 
-	public EdgeTypeMismatchException(String msg) {
-		super(msg);
-	}
+  public EdgeTypeMismatchException(String msg) {
+    super(msg);
+  }
 
-	public EdgeTypeMismatchException(Throwable t) {
-		super(t);
-	}
+  public EdgeTypeMismatchException(Throwable t) {
+    super(t);
+  }
 }

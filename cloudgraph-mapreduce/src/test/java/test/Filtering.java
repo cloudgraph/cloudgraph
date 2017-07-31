@@ -28,87 +28,81 @@ import org.apache.hadoop.util.GenericOptionsParser;
  */
 public class Filtering {
 
-	public static class FilteringMapper
-			extends
-				Mapper<Object, Text, NullWritable, Text> {
-		private TreeMap<Integer, Text> map = new TreeMap<Integer, Text>();
+  public static class FilteringMapper extends Mapper<Object, Text, NullWritable, Text> {
+    private TreeMap<Integer, Text> map = new TreeMap<Integer, Text>();
 
-		public void map(Object key, Text value, Context context)
-				throws IOException, InterruptedException {
-			String[] parsed = value.toString().split("\\s+");
-			map.put(Integer.parseInt(parsed[1]), new Text(value));
-			if (map.size() > 10) {
-				map.remove(map.firstKey());
-			}
-		}
-		protected void cleanup(Context context) throws IOException,
-				InterruptedException {
-			for (Text t : map.values()) {
-				context.write(NullWritable.get(), t);
-			}
-		}
-	}
+    public void map(Object key, Text value, Context context) throws IOException,
+        InterruptedException {
+      String[] parsed = value.toString().split("\\s+");
+      map.put(Integer.parseInt(parsed[1]), new Text(value));
+      if (map.size() > 10) {
+        map.remove(map.firstKey());
+      }
+    }
 
-	public static class FilteringReducer
-			extends
-				Reducer<NullWritable, Text, NullWritable, Text> {
-		private TreeMap<Integer, Text> map = new TreeMap<Integer, Text>();
+    protected void cleanup(Context context) throws IOException, InterruptedException {
+      for (Text t : map.values()) {
+        context.write(NullWritable.get(), t);
+      }
+    }
+  }
 
-		public void reduce(NullWritable key, Iterable<Text> values,
-				Context context) throws IOException, InterruptedException {
-			for (Text value : values) {
-				String[] parsed = value.toString().split("\\s+");
-				map.put(Integer.parseInt(parsed[1]), new Text(value));
-				if (map.size() > 10) {
-					map.remove(map.firstKey());
-				}
-			}
-			for (Text t : map.descendingMap().values()) {
-				context.write(NullWritable.get(), t);
-			}
-		}
-	}
+  public static class FilteringReducer extends Reducer<NullWritable, Text, NullWritable, Text> {
+    private TreeMap<Integer, Text> map = new TreeMap<Integer, Text>();
 
-	public static void runJob(Configuration conf, String[] args)
-			throws IOException {
-		Job job = new Job(conf);
-		job.setMapOutputKeyClass(NullWritable.class);
-		job.setMapOutputValueClass(Text.class);
-		job.setOutputKeyClass(NullWritable.class);
-		job.setOutputValueClass(Text.class);
-		MultipleInputs.addInputPath(job, new Path(args[0]),
-				TextInputFormat.class, FilteringMapper.class);
-		job.setReducerClass(FilteringReducer.class);
-		job.setNumReduceTasks(1);
-		Path outPath = new Path("/tmp/test");
-		FileOutputFormat.setOutputPath(job, outPath);
-		FileSystem dfs = FileSystem.get(outPath.toUri(), conf);
-		if (dfs.exists(outPath)) {
-			dfs.delete(outPath, true);
-		}
+    public void reduce(NullWritable key, Iterable<Text> values, Context context)
+        throws IOException, InterruptedException {
+      for (Text value : values) {
+        String[] parsed = value.toString().split("\\s+");
+        map.put(Integer.parseInt(parsed[1]), new Text(value));
+        if (map.size() > 10) {
+          map.remove(map.firstKey());
+        }
+      }
+      for (Text t : map.descendingMap().values()) {
+        context.write(NullWritable.get(), t);
+      }
+    }
+  }
 
-		try {
-			job.waitForCompletion(true);
-		} catch (InterruptedException ex) {
-			ex.printStackTrace();
-		} catch (ClassNotFoundException ex) {
-			ex.printStackTrace();
-		}
-	}
+  public static void runJob(Configuration conf, String[] args) throws IOException {
+    Job job = new Job(conf);
+    job.setMapOutputKeyClass(NullWritable.class);
+    job.setMapOutputValueClass(Text.class);
+    job.setOutputKeyClass(NullWritable.class);
+    job.setOutputValueClass(Text.class);
+    MultipleInputs.addInputPath(job, new Path(args[0]), TextInputFormat.class,
+        FilteringMapper.class);
+    job.setReducerClass(FilteringReducer.class);
+    job.setNumReduceTasks(1);
+    Path outPath = new Path("/tmp/test");
+    FileOutputFormat.setOutputPath(job, outPath);
+    FileSystem dfs = FileSystem.get(outPath.toUri(), conf);
+    if (dfs.exists(outPath)) {
+      dfs.delete(outPath, true);
+    }
 
-	public static void main(String[] args) throws IOException {
-		Configuration conf = new Configuration();
-		String[] otherArgs = new GenericOptionsParser(conf, args)
-				.getRemainingArgs();
-		if (otherArgs.length == 0) {
-			System.out.println("Wrong number of parameters: " + args.length);
-			System.exit(-1);
-		}
-		try {
-			runJob(conf, otherArgs);
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-	}
+    try {
+      job.waitForCompletion(true);
+    } catch (InterruptedException ex) {
+      ex.printStackTrace();
+    } catch (ClassNotFoundException ex) {
+      ex.printStackTrace();
+    }
+  }
+
+  public static void main(String[] args) throws IOException {
+    Configuration conf = new Configuration();
+    String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
+    if (otherArgs.length == 0) {
+      System.out.println("Wrong number of parameters: " + args.length);
+      System.exit(-1);
+    }
+    try {
+      runJob(conf, otherArgs);
+    } catch (IOException ex) {
+      ex.printStackTrace();
+    }
+  }
 
 }

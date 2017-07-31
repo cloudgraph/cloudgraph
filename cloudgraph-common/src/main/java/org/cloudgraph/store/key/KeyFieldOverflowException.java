@@ -29,18 +29,18 @@ package org.cloudgraph.store.key;
  * @since 0.5.3
  */
 public class KeyFieldOverflowException extends KeyException {
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	public KeyFieldOverflowException() {
-		super();
-	}
+  public KeyFieldOverflowException() {
+    super();
+  }
 
-	public KeyFieldOverflowException(String msg) {
-		super(msg);
-	}
+  public KeyFieldOverflowException(String msg) {
+    super(msg);
+  }
 
-	public KeyFieldOverflowException(Throwable t) {
-		super(t);
-	}
+  public KeyFieldOverflowException(Throwable t) {
+    super(t);
+  }
 
 }

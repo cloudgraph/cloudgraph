@@ -63,97 +63,89 @@ import commonj.sdo.Type;
  * @author Scott Cinnamond
  * @since 0.5
  */
-public class GraphFetchColumnFilterAssembler extends FilterListAssembler
-		implements
-			HBaseFilterAssembler {
-	private static Log log = LogFactory
-			.getLog(GraphFetchColumnFilterAssembler.class);
+public class GraphFetchColumnFilterAssembler extends FilterListAssembler implements
+    HBaseFilterAssembler {
+  private static Log log = LogFactory.getLog(GraphFetchColumnFilterAssembler.class);
 
-	private GraphColumnKeyFactory columnKeyFac;
-	private Map<String, byte[]> prefixMap = new HashMap<String, byte[]>();
-	private Selection propertySelection;
+  private GraphColumnKeyFactory columnKeyFac;
+  private Map<String, byte[]> prefixMap = new HashMap<String, byte[]>();
+  private Selection propertySelection;
 
-	public GraphFetchColumnFilterAssembler(Selection selection,
-			PlasmaType rootType) {
+  public GraphFetchColumnFilterAssembler(Selection selection, PlasmaType rootType) {
 
-		super(rootType);
-		this.propertySelection = selection;
-		this.columnKeyFac = new CompositeColumnKeyFactory(rootType);
+    super(rootType);
+    this.propertySelection = selection;
+    this.columnKeyFac = new CompositeColumnKeyFactory(rootType);
 
-		this.rootFilter = new FilterList(FilterList.Operator.MUST_PASS_ONE);
+    this.rootFilter = new FilterList(FilterList.Operator.MUST_PASS_ONE);
 
-		// add default filters for graph state info needed for all queries
-		QualifierFilter filter = null;
-		for (GraphMetaKey field : GraphMetaKey.values()) {
-			filter = new QualifierFilter(CompareFilter.CompareOp.EQUAL,
-					new SubstringComparator(field.code()));
-			this.rootFilter.addFilter(filter);
-		}
+    // add default filters for graph state info needed for all queries
+    QualifierFilter filter = null;
+    for (GraphMetaKey field : GraphMetaKey.values()) {
+      filter = new QualifierFilter(CompareFilter.CompareOp.EQUAL, new SubstringComparator(
+          field.code()));
+      this.rootFilter.addFilter(filter);
+    }
 
-		collect();
+    collect();
 
-		byte[][] prefixes = new byte[this.prefixMap.size()][];
-		int i = 0;
-		for (byte[] prefix : this.prefixMap.values()) {
-			prefixes[i] = prefix;
-			i++;
-		}
-		MultipleColumnPrefixFilter multiPrefixfilter = new MultipleColumnPrefixFilter(
-				prefixes);
+    byte[][] prefixes = new byte[this.prefixMap.size()][];
+    int i = 0;
+    for (byte[] prefix : this.prefixMap.values()) {
+      prefixes[i] = prefix;
+      i++;
+    }
+    MultipleColumnPrefixFilter multiPrefixfilter = new MultipleColumnPrefixFilter(prefixes);
 
-		this.rootFilter.addFilter(multiPrefixfilter);
+    this.rootFilter.addFilter(multiPrefixfilter);
 
-	}
+  }
 
-	public void clear() {
-		super.clear();
-		this.prefixMap.clear();
-	}
+  public void clear() {
+    super.clear();
+    this.prefixMap.clear();
+  }
 
-	/**
-	 * Collects and maps column prefixes used to create HBase filter(s) for
-	 * column selection.
-	 * 
-	 * @param select
-	 *            the select clause
-	 */
-	private void collect() {
-		byte[] colKey = null;
-		String colKeyStr;
-		for (Type type : this.propertySelection.getInheritedTypes()) {
-			PlasmaType plasmaType = (PlasmaType) type;
-			// adds entity level meta data qualifier prefixes for ALL types
-			// in the selection
-			for (EntityMetaKey metaField : EntityMetaKey.values()) {
-				colKey = this.columnKeyFac.createColumnKey(plasmaType,
-						metaField);
-				colKeyStr = Bytes.toString(colKey);
-				this.prefixMap.put(colKeyStr, colKey);
-			}
+  /**
+   * Collects and maps column prefixes used to create HBase filter(s) for column
+   * selection.
+   * 
+   * @param select
+   *          the select clause
+   */
+  private void collect() {
+    byte[] colKey = null;
+    String colKeyStr;
+    for (Type type : this.propertySelection.getInheritedTypes()) {
+      PlasmaType plasmaType = (PlasmaType) type;
+      // adds entity level meta data qualifier prefixes for ALL types
+      // in the selection
+      for (EntityMetaKey metaField : EntityMetaKey.values()) {
+        colKey = this.columnKeyFac.createColumnKey(plasmaType, metaField);
+        colKeyStr = Bytes.toString(colKey);
+        this.prefixMap.put(colKeyStr, colKey);
+      }
 
-			Set<Property> props = this.propertySelection
-					.getInheritedProperties(type);
-			for (Property prop : props) {
-				colKey = this.columnKeyFac.createColumnKey(plasmaType,
-						(PlasmaProperty) prop);
-				colKeyStr = Bytes.toString(colKey);
-				this.prefixMap.put(colKeyStr, colKey);
-			}
-		}
-	}
+      Set<Property> props = this.propertySelection.getInheritedProperties(type);
+      for (Property prop : props) {
+        colKey = this.columnKeyFac.createColumnKey(plasmaType, (PlasmaProperty) prop);
+        colKeyStr = Bytes.toString(colKey);
+        this.prefixMap.put(colKeyStr, colKey);
+      }
+    }
+  }
 
-	protected void log(Select root) {
-		String xml = "";
-		PlasmaQueryDataBinding binding;
-		try {
-			binding = new PlasmaQueryDataBinding(
-					new DefaultValidationEventHandler());
-			xml = binding.marshal(root);
-		} catch (JAXBException e) {
-			log.debug(e);
-		} catch (SAXException e) {
-			log.debug(e);
-		}
-		log.debug("query: " + xml);
-	}
+  protected void log(Select root) {
+    String xml = "";
+    PlasmaQueryDataBinding binding;
+    try {
+      binding = new PlasmaQueryDataBinding(new DefaultValidationEventHandler());
+      xml = binding.marshal(root);
+    } catch (JAXBException e) {
+      log.debug(e);
+    } catch (SAXException e) {
+      log.debug(e);
+    }
+    log.debug("query: " + xml);
+  }
 }

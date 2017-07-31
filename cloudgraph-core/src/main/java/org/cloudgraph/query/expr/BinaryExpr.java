@@ -30,24 +30,25 @@ import org.plasma.query.Term;
  * @since 0.5.2
  */
 public interface BinaryExpr extends Expr {
-	/**
-	 * Returns the "left" child node for the expression.
-	 * 
-	 * @return the "left" child node for the expression.
-	 */
-	public Term getLeft();
-	/**
-	 * Returns the "right" child node for the expression.
-	 * 
-	 * @return the "right" child node for the expression.
-	 */
-	public Term getRight();
+  /**
+   * Returns the "left" child node for the expression.
+   * 
+   * @return the "left" child node for the expression.
+   */
+  public Term getLeft();
 
-	/**
-	 * Begins the traversal of the expression as a root.
-	 * 
-	 * @param visitor
-	 *            the traversal visitor
-	 */
-	public void accept(ExprVisitor visitor);
+  /**
+   * Returns the "right" child node for the expression.
+   * 
+   * @return the "right" child node for the expression.
+   */
+  public Term getRight();
+
+  /**
+   * Begins the traversal of the expression as a root.
+   * 
+   * @param visitor
+   *          the traversal visitor
+   */
+  public void accept(ExprVisitor visitor);
 }

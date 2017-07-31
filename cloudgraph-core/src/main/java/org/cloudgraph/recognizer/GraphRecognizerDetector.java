@@ -61,41 +61,41 @@ import org.plasma.sdo.PlasmaType;
  */
 public class GraphRecognizerDetector implements ExprVisitor {
 
-	private static Log log = LogFactory.getLog(GraphRecognizerDetector.class);
+  private static Log log = LogFactory.getLog(GraphRecognizerDetector.class);
 
-	private PlasmaType rootType;
-	private DataGraphConfig graph;
-	private boolean queryRequiresGraphRecognizer = false;
+  private PlasmaType rootType;
+  private DataGraphConfig graph;
+  private boolean queryRequiresGraphRecognizer = false;
 
-	public GraphRecognizerDetector(PlasmaType rootType) {
-		this.rootType = rootType;
-		QName rootTypeQname = this.rootType.getQualifiedName();
-		this.graph = CloudGraphConfig.getInstance().getDataGraph(rootTypeQname);
-	}
+  public GraphRecognizerDetector(PlasmaType rootType) {
+    this.rootType = rootType;
+    QName rootTypeQname = this.rootType.getQualifiedName();
+    this.graph = CloudGraphConfig.getInstance().getDataGraph(rootTypeQname);
+  }
 
-	public boolean isQueryRequiresGraphRecognizer() {
-		return queryRequiresGraphRecognizer;
-	}
+  public boolean isQueryRequiresGraphRecognizer() {
+    return queryRequiresGraphRecognizer;
+  }
 
-	@Override
-	public void visit(Expr target, Expr source, int level) {
-		if (target instanceof RelationalBinaryExpr) {
-			RelationalBinaryExpr expr = (RelationalBinaryExpr) target;
-			UserDefinedRowKeyFieldConfig fieldConfig = graph
-					.getUserDefinedRowKeyField(expr.getPropertyPath());
-			if (fieldConfig == null) {
-				this.queryRequiresGraphRecognizer = true;
-				return;
-			}
-		} else if (target instanceof WildcardBinaryExpr) {
-			WildcardBinaryExpr expr = (WildcardBinaryExpr) target;
-			UserDefinedRowKeyFieldConfig fieldConfig = graph
-					.getUserDefinedRowKeyField(expr.getPropertyPath());
-			if (fieldConfig == null) {
-				this.queryRequiresGraphRecognizer = true;
-				return;
-			}
-		}
-	}
+  @Override
+  public void visit(Expr target, Expr source, int level) {
+    if (target instanceof RelationalBinaryExpr) {
+      RelationalBinaryExpr expr = (RelationalBinaryExpr) target;
+      UserDefinedRowKeyFieldConfig fieldConfig = graph.getUserDefinedRowKeyField(expr
+          .getPropertyPath());
+      if (fieldConfig == null) {
+        this.queryRequiresGraphRecognizer = true;
+        return;
+      }
+    } else if (target instanceof WildcardBinaryExpr) {
+      WildcardBinaryExpr expr = (WildcardBinaryExpr) target;
+      UserDefinedRowKeyFieldConfig fieldConfig = graph.getUserDefinedRowKeyField(expr
+          .getPropertyPath());
+      if (fieldConfig == null) {
+        this.queryRequiresGraphRecognizer = true;
+        return;
+      }
+    }
+  }
 
 }

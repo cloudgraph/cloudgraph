@@ -33,126 +33,128 @@ import org.plasma.sdo.DataFlavor;
  * @since 0.5.3
  */
 public class Padding {
-	private Charset charset;
-	private byte zero;
-	private byte space;
-	@SuppressWarnings("unused")
-	private Padding() {
-	}
-	public Padding(Charset charset) {
-		this.charset = charset;
-		this.zero = (byte) Character.valueOf('0').charValue();
-		this.space = (byte) Character.valueOf(' ').charValue();
-	}
+  private Charset charset;
+  private byte zero;
+  private byte space;
 
-	/**
-	 * Returns an array front padded with zeros or rear padded with spaces
-	 * depending on the given data flavor. Returns the given array as is if the
-	 * given array size is less than or equal to the given max length.
-	 * 
-	 * @param value
-	 *            the value
-	 * @param maxLength
-	 *            the maximum length of the target key field
-	 * @param dataFlavor
-	 *            the data flavor
-	 * @return an array front padded with zeros or rear padded with spaces
-	 *         depending on the given data flavor. Returns the given array as is
-	 *         if the given array size is less than or equal to the given max
-	 *         length.
-	 */
-	public final byte[] pad(byte[] value, int maxLength, DataFlavor dataFlavor) {
+  @SuppressWarnings("unused")
+  private Padding() {
+  }
 
-		int len = value.length;
-		int delta = maxLength - len;
-		if (delta <= 0)
-			return value;
-		byte[] result = null;
+  public Padding(Charset charset) {
+    this.charset = charset;
+    this.zero = (byte) Character.valueOf('0').charValue();
+    this.space = (byte) Character.valueOf(' ').charValue();
+  }
 
-		switch (dataFlavor) {
-			case integral :
-			case real : // front pad with zeros
-				result = front(value, maxLength, zero);
-				break;
-			case temporal :
-			case string :
-			case other :
-			default : // end pad with spaces
-				result = back(value, maxLength, space);
-				break;
-		}
-		return result;
-	}
+  /**
+   * Returns an array front padded with zeros or rear padded with spaces
+   * depending on the given data flavor. Returns the given array as is if the
+   * given array size is less than or equal to the given max length.
+   * 
+   * @param value
+   *          the value
+   * @param maxLength
+   *          the maximum length of the target key field
+   * @param dataFlavor
+   *          the data flavor
+   * @return an array front padded with zeros or rear padded with spaces
+   *         depending on the given data flavor. Returns the given array as is
+   *         if the given array size is less than or equal to the given max
+   *         length.
+   */
+  public final byte[] pad(byte[] value, int maxLength, DataFlavor dataFlavor) {
 
-	public byte[] front(byte[] src, int maxLength, byte pad) {
-		byte[] result = new byte[maxLength];
-		int delta = maxLength - src.length;
-		Arrays.fill(result, 0, delta, pad);
-		System.arraycopy(src, 0, result, delta, src.length);
-		return result;
-	}
+    int len = value.length;
+    int delta = maxLength - len;
+    if (delta <= 0)
+      return value;
+    byte[] result = null;
 
-	public byte[] back(byte[] src, int maxLength, byte pad) {
-		byte[] result = new byte[maxLength];
-		int delta = maxLength - src.length;
-		System.arraycopy(src, 0, result, 0, src.length);
-		Arrays.fill(result, src.length, src.length + delta, pad);
-		return result;
-	}
+    switch (dataFlavor) {
+    case integral:
+    case real: // front pad with zeros
+      result = front(value, maxLength, zero);
+      break;
+    case temporal:
+    case string:
+    case other:
+    default: // end pad with spaces
+      result = back(value, maxLength, space);
+      break;
+    }
+    return result;
+  }
 
-	/**
-	 * Returns an array front padded with zeros or rear padded with spaces
-	 * depending on the given data flavor.
-	 * 
-	 * @param value
-	 *            the value
-	 * @param maxLength
-	 *            the maximum length of the target key field
-	 * @param dataFlavor
-	 *            the data flavor
-	 * @return an array front padded with zeros or rear padded with spaces
-	 *         depending on the given data flavor.
-	 */
-	public final String pad(String value, int maxLength, DataFlavor dataFlavor) {
-		int len = value.length();
-		int delta = maxLength - len;
-		if (delta < 0)
-			return value;
-		String result = null;
+  public byte[] front(byte[] src, int maxLength, byte pad) {
+    byte[] result = new byte[maxLength];
+    int delta = maxLength - src.length;
+    Arrays.fill(result, 0, delta, pad);
+    System.arraycopy(src, 0, result, delta, src.length);
+    return result;
+  }
 
-		switch (dataFlavor) {
-			case integral :
-			case real : // fount pad with zeros
-				result = front(value, maxLength, '0');
-				break;
-			case temporal :
-			case string :
-			case other :
-			default : // end pad with spaces
-				result = back(value, maxLength, ' ');
-				break;
-		}
+  public byte[] back(byte[] src, int maxLength, byte pad) {
+    byte[] result = new byte[maxLength];
+    int delta = maxLength - src.length;
+    System.arraycopy(src, 0, result, 0, src.length);
+    Arrays.fill(result, src.length, src.length + delta, pad);
+    return result;
+  }
 
-		return new String(result);
-	}
+  /**
+   * Returns an array front padded with zeros or rear padded with spaces
+   * depending on the given data flavor.
+   * 
+   * @param value
+   *          the value
+   * @param maxLength
+   *          the maximum length of the target key field
+   * @param dataFlavor
+   *          the data flavor
+   * @return an array front padded with zeros or rear padded with spaces
+   *         depending on the given data flavor.
+   */
+  public final String pad(String value, int maxLength, DataFlavor dataFlavor) {
+    int len = value.length();
+    int delta = maxLength - len;
+    if (delta < 0)
+      return value;
+    String result = null;
 
-	public String front(String src, int maxLength, char pad) {
-		char[] result = new char[maxLength];
-		char[] srcchars = src.toCharArray();
-		int delta = maxLength - srcchars.length;
-		int offset = delta;
-		Arrays.fill(result, 0, delta, pad);
-		System.arraycopy(srcchars, 0, result, offset, srcchars.length);
-		return new String(result);
-	}
+    switch (dataFlavor) {
+    case integral:
+    case real: // fount pad with zeros
+      result = front(value, maxLength, '0');
+      break;
+    case temporal:
+    case string:
+    case other:
+    default: // end pad with spaces
+      result = back(value, maxLength, ' ');
+      break;
+    }
 
-	public String back(String src, int maxLength, char pad) {
-		char[] result = new char[maxLength];
-		char[] srcchars = src.toCharArray();
-		int delta = maxLength - srcchars.length;
-		System.arraycopy(srcchars, 0, result, 0, srcchars.length);
-		Arrays.fill(result, srcchars.length, srcchars.length + delta, pad);
-		return new String(result);
-	}
+    return new String(result);
+  }
+
+  public String front(String src, int maxLength, char pad) {
+    char[] result = new char[maxLength];
+    char[] srcchars = src.toCharArray();
+    int delta = maxLength - srcchars.length;
+    int offset = delta;
+    Arrays.fill(result, 0, delta, pad);
+    System.arraycopy(srcchars, 0, result, offset, srcchars.length);
+    return new String(result);
+  }
+
+  public String back(String src, int maxLength, char pad) {
+    char[] result = new char[maxLength];
+    char[] srcchars = src.toCharArray();
+    int delta = maxLength - srcchars.length;
+    System.arraycopy(srcchars, 0, result, 0, srcchars.length);
+    Arrays.fill(result, srcchars.length, srcchars.length + delta, pad);
+    return new String(result);
+  }
 
 }

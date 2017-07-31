@@ -35,6 +35,7 @@ package org.cloudgraph.hbase.scan;
  * @see FuzzyRowKey
  */
 public interface FuzzyRowKeyLiteral {
-	public byte[] getFuzzyKeyBytes();
-	public byte[] getFuzzyInfoBytes();
+  public byte[] getFuzzyKeyBytes();
+
+  public byte[] getFuzzyInfoBytes();
 }

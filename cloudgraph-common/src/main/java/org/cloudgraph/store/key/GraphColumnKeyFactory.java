@@ -48,79 +48,77 @@ import org.plasma.sdo.PlasmaType;
  */
 public interface GraphColumnKeyFactory {
 
-	/**
-	 * Generates and returns a column key based on the given metadata type and
-	 * meta field as well as the configured CloudGraph column key
-	 * {@link org.cloudgraph.config.ColumnKeyModel model} for a specific table
-	 * {@link org.cloudgraph.config.Table configuration}.
-	 * 
-	 * @param type
-	 *            the metadata type
-	 * @param metaField
-	 *            the meta field
-	 * @return the column key bytes
-	 */
-	public byte[] createColumnKey(PlasmaType type, EntityMetaKey metaField);
+  /**
+   * Generates and returns a column key based on the given metadata type and
+   * meta field as well as the configured CloudGraph column key
+   * {@link org.cloudgraph.config.ColumnKeyModel model} for a specific table
+   * {@link org.cloudgraph.config.Table configuration}.
+   * 
+   * @param type
+   *          the metadata type
+   * @param metaField
+   *          the meta field
+   * @return the column key bytes
+   */
+  public byte[] createColumnKey(PlasmaType type, EntityMetaKey metaField);
 
-	/**
-	 * Generates and returns a column key based on the given metadata type and
-	 * meta field as well as the configured CloudGraph column key
-	 * {@link org.cloudgraph.config.ColumnKeyModel model} for a specific table
-	 * {@link org.cloudgraph.config.Table configuration}.
-	 * 
-	 * @param type
-	 *            the metadata type
-	 * @param metaField
-	 *            the meta field
-	 * @return the column key bytes
-	 */
-	public byte[] createColumnKey(PlasmaType type, EdgeMetaKey metaField);
+  /**
+   * Generates and returns a column key based on the given metadata type and
+   * meta field as well as the configured CloudGraph column key
+   * {@link org.cloudgraph.config.ColumnKeyModel model} for a specific table
+   * {@link org.cloudgraph.config.Table configuration}.
+   * 
+   * @param type
+   *          the metadata type
+   * @param metaField
+   *          the meta field
+   * @return the column key bytes
+   */
+  public byte[] createColumnKey(PlasmaType type, EdgeMetaKey metaField);
 
-	/**
-	 * Generates and returns a column key based on the given metadata type and
-	 * property as well as the configured CloudGraph column key
-	 * {@link org.cloudgraph.config.ColumnKeyModel model} for a specific table
-	 * {@link org.cloudgraph.config.Table configuration}.
-	 * 
-	 * @param type
-	 *            the metadata type
-	 * @param property
-	 *            the property
-	 * @return the column key bytes
-	 */
-	public byte[] createColumnKey(PlasmaType type, PlasmaProperty property);
+  /**
+   * Generates and returns a column key based on the given metadata type and
+   * property as well as the configured CloudGraph column key
+   * {@link org.cloudgraph.config.ColumnKeyModel model} for a specific table
+   * {@link org.cloudgraph.config.Table configuration}.
+   * 
+   * @param type
+   *          the metadata type
+   * @param property
+   *          the property
+   * @return the column key bytes
+   */
+  public byte[] createColumnKey(PlasmaType type, PlasmaProperty property);
 
-	/**
-	 * Generates and returns a column key based on the given metadata type and
-	 * property as well as the configured CloudGraph column key
-	 * {@link org.cloudgraph.config.ColumnKeyModel model} for a specific table
-	 * {@link org.cloudgraph.config.Table configuration}.
-	 * 
-	 * @param type
-	 *            the metadata type
-	 * @param property
-	 *            the property
-	 * @param metaField
-	 *            the meta field
-	 * @return the column key bytes
-	 */
-	public byte[] createColumnKey(PlasmaType type, PlasmaProperty property,
-			EntityMetaKey metaField);
+  /**
+   * Generates and returns a column key based on the given metadata type and
+   * property as well as the configured CloudGraph column key
+   * {@link org.cloudgraph.config.ColumnKeyModel model} for a specific table
+   * {@link org.cloudgraph.config.Table configuration}.
+   * 
+   * @param type
+   *          the metadata type
+   * @param property
+   *          the property
+   * @param metaField
+   *          the meta field
+   * @return the column key bytes
+   */
+  public byte[] createColumnKey(PlasmaType type, PlasmaProperty property, EntityMetaKey metaField);
 
-	/**
-	 * Generates and returns a column key based on the given metadata type and
-	 * property as well as the configured CloudGraph column key
-	 * {@link org.cloudgraph.config.ColumnKeyModel model} for a specific table
-	 * {@link org.cloudgraph.config.Table configuration}.
-	 * 
-	 * @param type
-	 *            the metadata type
-	 * @param property
-	 *            the property
-	 * @param metaField
-	 *            the meta field
-	 * @return the column key bytes
-	 */
-	public byte[] createColumnKey(PlasmaType type, PlasmaProperty property,
-			EdgeMetaKey metaField);
+  /**
+   * Generates and returns a column key based on the given metadata type and
+   * property as well as the configured CloudGraph column key
+   * {@link org.cloudgraph.config.ColumnKeyModel model} for a specific table
+   * {@link org.cloudgraph.config.Table configuration}.
+   * 
+   * @param type
+   *          the metadata type
+   * @param property
+   *          the property
+   * @param metaField
+   *          the meta field
+   * @return the column key bytes
+   */
+  public byte[] createColumnKey(PlasmaType type, PlasmaProperty property, EdgeMetaKey metaField);
 }

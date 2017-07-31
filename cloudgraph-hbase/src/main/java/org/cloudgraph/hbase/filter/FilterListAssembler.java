@@ -49,52 +49,53 @@ import org.plasma.sdo.PlasmaType;
  * @since 0.5
  */
 public abstract class FilterListAssembler implements HBaseFilterAssembler {
-	private static Log log = LogFactory.getLog(FilterListAssembler.class);
+  private static Log log = LogFactory.getLog(FilterListAssembler.class);
 
-	protected List<Object> params;
-	protected FilterList rootFilter;
-	protected PlasmaType rootType;
+  protected List<Object> params;
+  protected FilterList rootFilter;
+  protected PlasmaType rootType;
 
-	@SuppressWarnings("unused")
-	private FilterListAssembler() {
-	}
-	protected FilterListAssembler(PlasmaType rootType) {
-		this.rootType = rootType;
+  @SuppressWarnings("unused")
+  private FilterListAssembler() {
+  }
 
-		this.rootFilter = new FilterList(FilterList.Operator.MUST_PASS_ALL);
-	}
+  protected FilterListAssembler(PlasmaType rootType) {
+    this.rootType = rootType;
 
-	/**
-	 * Returns the assembled filter or filter list root.
-	 * 
-	 * @return the assembled filter or filter list root.
-	 */
-	public Filter getFilter() {
-		return rootFilter;
-	}
+    this.rootFilter = new FilterList(FilterList.Operator.MUST_PASS_ALL);
+  }
 
-	public void clear() {
-		if (params != null)
-			params.clear();
-		this.rootFilter.getFilters().clear();
-	}
+  /**
+   * Returns the assembled filter or filter list root.
+   * 
+   * @return the assembled filter or filter list root.
+   */
+  public Filter getFilter() {
+    return rootFilter;
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.cloudgraph.hbase.filter.HBaseFilterAssembler#getParams()
-	 */
-	public Object[] getParams() {
-		Object[] result = new Object[params.size()];
-		Iterator<Object> iter = params.iterator();
-		for (int i = 0; iter.hasNext(); i++) {
-			Object param = iter.next();
-			if (!(param instanceof NullLiteral))
-				result[i] = param;
-			else
-				result[i] = null;
-		}
-		return result;
-	}
+  public void clear() {
+    if (params != null)
+      params.clear();
+    this.rootFilter.getFilters().clear();
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.cloudgraph.hbase.filter.HBaseFilterAssembler#getParams()
+   */
+  public Object[] getParams() {
+    Object[] result = new Object[params.size()];
+    Iterator<Object> iter = params.iterator();
+    for (int i = 0; iter.hasNext(); i++) {
+      Object param = iter.next();
+      if (!(param instanceof NullLiteral))
+        result[i] = param;
+      else
+        result[i] = null;
+    }
+    return result;
+  }
 
 }

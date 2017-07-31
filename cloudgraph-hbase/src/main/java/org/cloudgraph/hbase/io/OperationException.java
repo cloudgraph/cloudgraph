@@ -29,17 +29,17 @@ import org.cloudgraph.common.CloudGraphRuntimeException;
  */
 public class OperationException extends CloudGraphRuntimeException {
 
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	public OperationException() {
-		super();
-	}
+  public OperationException() {
+    super();
+  }
 
-	public OperationException(String msg) {
-		super(msg);
-	}
+  public OperationException(String msg) {
+    super(msg);
+  }
 
-	public OperationException(Throwable t) {
-		super(t);
-	}
+  public OperationException(Throwable t) {
+    super(t);
+  }
 }

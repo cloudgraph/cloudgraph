@@ -37,75 +37,68 @@ import org.plasma.query.visitor.Traversal;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
 
-public class RDBOrderingAssembler extends DefaultQueryVisitor
-		implements
-			QueryConstants {
-	private static Log log = LogFactory.getLog(RDBOrderingAssembler.class);
+public class RDBOrderingAssembler extends DefaultQueryVisitor implements QueryConstants {
+  private static Log log = LogFactory.getLog(RDBOrderingAssembler.class);
 
-	private PlasmaType contextType;
-	private commonj.sdo.Property contextProp;
-	private StringBuilder orderingDeclaration = new StringBuilder();
-	private AliasMap aliasMap;
+  private PlasmaType contextType;
+  private commonj.sdo.Property contextProp;
+  private StringBuilder orderingDeclaration = new StringBuilder();
+  private AliasMap aliasMap;
 
-	@SuppressWarnings("unused")
-	private RDBOrderingAssembler() {
-	}
+  @SuppressWarnings("unused")
+  private RDBOrderingAssembler() {
+  }
 
-	public RDBOrderingAssembler(OrderBy orderby, PlasmaType contextType,
-			AliasMap aliasMap) {
-		this.contextType = contextType;
-		this.aliasMap = aliasMap;
+  public RDBOrderingAssembler(OrderBy orderby, PlasmaType contextType, AliasMap aliasMap) {
+    this.contextType = contextType;
+    this.aliasMap = aliasMap;
 
-		if (orderby.getTextContent() == null)
-			orderby.accept(this); // traverse
-		else
-			orderingDeclaration.append(orderby.getTextContent().getValue());
-	}
+    if (orderby.getTextContent() == null)
+      orderby.accept(this); // traverse
+    else
+      orderingDeclaration.append(orderby.getTextContent().getValue());
+  }
 
-	public String getOrderingDeclaration() {
-		return orderingDeclaration.toString();
-	}
+  public String getOrderingDeclaration() {
+    return orderingDeclaration.toString();
+  }
 
-	public void start(Property property) {
-		if (orderingDeclaration.length() == 0)
-			orderingDeclaration.append("ORDER BY ");
+  public void start(Property property) {
+    if (orderingDeclaration.length() == 0)
+      orderingDeclaration.append("ORDER BY ");
 
-		if (orderingDeclaration.length() > "ORDER BY ".length())
-			orderingDeclaration.append(", ");
-		PlasmaType targetType = contextType;
-		if (property.getPath() != null) {
-			Path path = property.getPath();
-			for (int i = 0; i < path.getPathNodes().size(); i++) {
-				PlasmaProperty prop = (PlasmaProperty) targetType
-						.getProperty(path.getPathNodes().get(i)
-								.getPathElement().getValue());
-				targetType = (PlasmaType) prop.getType();
-			}
-		}
-		PlasmaProperty endpoint = (PlasmaProperty) targetType
-				.getProperty(property.getName());
-		contextProp = endpoint;
+    if (orderingDeclaration.length() > "ORDER BY ".length())
+      orderingDeclaration.append(", ");
+    PlasmaType targetType = contextType;
+    if (property.getPath() != null) {
+      Path path = property.getPath();
+      for (int i = 0; i < path.getPathNodes().size(); i++) {
+        PlasmaProperty prop = (PlasmaProperty) targetType.getProperty(path.getPathNodes().get(i)
+            .getPathElement().getValue());
+        targetType = (PlasmaType) prop.getType();
+      }
+    }
+    PlasmaProperty endpoint = (PlasmaProperty) targetType.getProperty(property.getName());
+    contextProp = endpoint;
 
-		String targetAlias = this.aliasMap.getAlias(targetType);
-		if (targetAlias == null)
-			targetAlias = this.aliasMap.addAlias(targetType);
+    String targetAlias = this.aliasMap.getAlias(targetType);
+    if (targetAlias == null)
+      targetAlias = this.aliasMap.addAlias(targetType);
 
-		List<Function> functions = property.getFunctions();
-		if (functions == null || functions.size() == 0) {
-			orderingDeclaration.append(targetAlias + "."
-					+ endpoint.getPhysicalName());
-		} else {
-			orderingDeclaration.append(Functions.wrap(endpoint, functions,
-					targetAlias));
-		}
+    List<Function> functions = property.getFunctions();
+    if (functions == null || functions.size() == 0) {
+      orderingDeclaration.append(targetAlias + "." + endpoint.getPhysicalName());
+    } else {
+      orderingDeclaration.append(Functions.wrap(endpoint, functions, targetAlias));
+    }
 
-		if (property.getDirection() == null
-				|| property.getDirection().ordinal() == org.plasma.query.model.SortDirectionValues.ASC
-						.ordinal())
-			orderingDeclaration.append(" ASC");
-		else
-			orderingDeclaration.append(" DESC");
+    if (property.getDirection() == null
+        || property.getDirection().ordinal() == org.plasma.query.model.SortDirectionValues.ASC
+            .ordinal())
+      orderingDeclaration.append(" ASC");
+    else
+      orderingDeclaration.append(" DESC");
 
-		this.getContext().setTraversal(Traversal.ABORT);
-	}
+    this.getContext().setTraversal(Traversal.ABORT);
+  }
 }

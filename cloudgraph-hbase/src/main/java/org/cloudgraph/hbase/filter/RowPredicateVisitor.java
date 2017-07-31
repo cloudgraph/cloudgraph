@@ -75,229 +75,213 @@ import org.plasma.sdo.access.DataAccessException;
  * @since 0.5
  */
 public class RowPredicateVisitor extends PredicateVisitor {
-	private static Log log = LogFactory.getLog(RowPredicateVisitor.class);
-	protected String contextPropertyPath;
-	protected GraphRowKeyExpressionFactory rowKeyFac;
+  private static Log log = LogFactory.getLog(RowPredicateVisitor.class);
+  protected String contextPropertyPath;
+  protected GraphRowKeyExpressionFactory rowKeyFac;
 
-	public RowPredicateVisitor(PlasmaType rootType) {
-		super(rootType);
-	}
+  public RowPredicateVisitor(PlasmaType rootType) {
+    super(rootType);
+  }
 
-	/**
-	 * Process the traversal start event for a query
-	 * {@link org.plasma.query.model.Expression expression} creating a new HBase
-	 * <a target="#" href=
-	 * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/filter/FilterList.html"
-	 * >filter list</a> with a default <a target="#" href=
-	 * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/filter/FilterList.Operator.html#MUST_PASS_ALL"
-	 * >MUST_PASS_ALL</a> operator and pushes it onto the stack. Any subsequent
-	 * {@link org.plasma.query.model.Literal literals} encountered then cause a
-	 * new <a target="#" href=
-	 * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/filter/RowFilter.html"
-	 * >row filter</a> to be created and added to this new filter list which is
-	 * on the top of the stack.
-	 * 
-	 * @param expression
-	 *            the expression
-	 */
-	@Override
-	public void start(Expression expression) {
-		if (hasChildExpressions(expression)) {
-			if (log.isDebugEnabled())
-				log.debug("pushing expression filter");
-			this.pushFilter();
-		}
+  /**
+   * Process the traversal start event for a query
+   * {@link org.plasma.query.model.Expression expression} creating a new HBase
+   * <a target="#" href=
+   * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/filter/FilterList.html"
+   * >filter list</a> with a default <a target="#" href=
+   * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/filter/FilterList.Operator.html#MUST_PASS_ALL"
+   * >MUST_PASS_ALL</a> operator and pushes it onto the stack. Any subsequent
+   * {@link org.plasma.query.model.Literal literals} encountered then cause a
+   * new <a target="#" href=
+   * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/filter/RowFilter.html"
+   * >row filter</a> to be created and added to this new filter list which is on
+   * the top of the stack.
+   * 
+   * @param expression
+   *          the expression
+   */
+  @Override
+  public void start(Expression expression) {
+    if (hasChildExpressions(expression)) {
+      if (log.isDebugEnabled())
+        log.debug("pushing expression filter");
+      this.pushFilter();
+    }
 
-		for (Term term : expression.getTerms())
-			if (term.getSubqueryOperator() != null)
-				throw new GraphFilterException(
-						"subqueries for row filters not yet supported");
-	}
+    for (Term term : expression.getTerms())
+      if (term.getSubqueryOperator() != null)
+        throw new GraphFilterException("subqueries for row filters not yet supported");
+  }
 
-	/**
-	 * Process the traversal end event for a query
-	 * {@link org.plasma.query.model.Expression expression} removing the current
-	 * (top) HBase {@link org.apache.hadoop.hbase.filter.FilterList filter list}
-	 * from the stack.
-	 * 
-	 * @param expression
-	 *            the expression
-	 */
-	@Override
-	public void end(Expression expression) {
-		if (hasChildExpressions(expression)) {
-			if (log.isDebugEnabled())
-				log.debug("poping expression filter");
-			this.popFilter();
-		}
-	}
+  /**
+   * Process the traversal end event for a query
+   * {@link org.plasma.query.model.Expression expression} removing the current
+   * (top) HBase {@link org.apache.hadoop.hbase.filter.FilterList filter list}
+   * from the stack.
+   * 
+   * @param expression
+   *          the expression
+   */
+  @Override
+  public void end(Expression expression) {
+    if (hasChildExpressions(expression)) {
+      if (log.isDebugEnabled())
+        log.debug("poping expression filter");
+      this.popFilter();
+    }
+  }
 
-	/**
-	 * Process the traversal start event for a query
-	 * {@link org.plasma.query.model.Property property} within an
-	 * {@link org.plasma.query.model.Expression expression} just traversing the
-	 * property path if exists and capturing context information for the current
-	 * {@link org.plasma.query.model.Expression expression}.
-	 * 
-	 * @see org.plasma.query.visitor.DefaultQueryVisitor#start(org.plasma.query.model.Property)
-	 */
-	@Override
-	public void start(Property property) {
-		Path path = property.getPath();
-		PlasmaType targetType = (PlasmaType) this.rootType;
-		if (path != null) {
-			for (int i = 0; i < path.getPathNodes().size(); i++) {
-				AbstractPathElement pathElem = path.getPathNodes().get(i)
-						.getPathElement();
-				if (pathElem instanceof WildcardPathElement)
-					throw new DataAccessException(
-							"wildcard path elements applicable for 'Select' clause paths only, not 'Where' clause paths");
-				String elem = ((PathElement) pathElem).getValue();
-				PlasmaProperty prop = (PlasmaProperty) targetType
-						.getProperty(elem);
-				targetType = (PlasmaType) prop.getType(); // traverse
-			}
-		}
-		PlasmaProperty endpointProp = (PlasmaProperty) targetType
-				.getProperty(property.getName());
-		this.contextProperty = endpointProp;
-		this.contextType = targetType;
-		this.contextPropertyPath = property.asPathString();
+  /**
+   * Process the traversal start event for a query
+   * {@link org.plasma.query.model.Property property} within an
+   * {@link org.plasma.query.model.Expression expression} just traversing the
+   * property path if exists and capturing context information for the current
+   * {@link org.plasma.query.model.Expression expression}.
+   * 
+   * @see org.plasma.query.visitor.DefaultQueryVisitor#start(org.plasma.query.model.Property)
+   */
+  @Override
+  public void start(Property property) {
+    Path path = property.getPath();
+    PlasmaType targetType = (PlasmaType) this.rootType;
+    if (path != null) {
+      for (int i = 0; i < path.getPathNodes().size(); i++) {
+        AbstractPathElement pathElem = path.getPathNodes().get(i).getPathElement();
+        if (pathElem instanceof WildcardPathElement)
+          throw new DataAccessException(
+              "wildcard path elements applicable for 'Select' clause paths only, not 'Where' clause paths");
+        String elem = ((PathElement) pathElem).getValue();
+        PlasmaProperty prop = (PlasmaProperty) targetType.getProperty(elem);
+        targetType = (PlasmaType) prop.getType(); // traverse
+      }
+    }
+    PlasmaProperty endpointProp = (PlasmaProperty) targetType.getProperty(property.getName());
+    this.contextProperty = endpointProp;
+    this.contextType = targetType;
+    this.contextPropertyPath = property.asPathString();
 
-		super.start(property);
-	}
+    super.start(property);
+  }
 
-	public void start(WildcardOperator operator) {
-		switch (operator.getValue()) {
-			case LIKE :
-				this.contextHBaseCompareOp = CompareFilter.CompareOp.EQUAL;
-				this.contextOpWildcard = true;
-				break;
-			default :
-				throw new GraphFilterException("unknown operator '"
-						+ operator.getValue().toString() + "'");
-		}
-		super.start(operator);
-	}
+  public void start(WildcardOperator operator) {
+    switch (operator.getValue()) {
+    case LIKE:
+      this.contextHBaseCompareOp = CompareFilter.CompareOp.EQUAL;
+      this.contextOpWildcard = true;
+      break;
+    default:
+      throw new GraphFilterException("unknown operator '" + operator.getValue().toString() + "'");
+    }
+    super.start(operator);
+  }
 
-	/**
-	 * Process the traversal start event for a query
-	 * {@link org.plasma.query.model.Literal literal} within an
-	 * {@link org.plasma.query.model.Expression expression} creating an HBase
-	 * {@link org.apache.hadoop.hbase.filter.RowFilter row filter} and adding it
-	 * to the filter hierarchy. Looks at the context under which the literal is
-	 * encountered and if a user defined row key token configuration is found,
-	 * creates a regular expression based HBase row filter.
-	 * 
-	 * @param literal
-	 *            the expression literal
-	 * @throws GraphFilterException
-	 *             if no user defined row-key token is configured for the
-	 *             current literal context.
-	 */
-	@Override
-	public void start(Literal literal) {
-		String content = literal.getValue();
-		if (this.contextProperty == null)
-			throw new IllegalStateException(
-					"expected context property for literal");
-		if (this.contextType == null)
-			throw new IllegalStateException("expected context type for literal");
-		if (this.rootType == null)
-			throw new IllegalStateException("expected context type for literal");
-		if (this.contextHBaseCompareOp == null)
-			throw new IllegalStateException(
-					"expected context operator for literal");
+  /**
+   * Process the traversal start event for a query
+   * {@link org.plasma.query.model.Literal literal} within an
+   * {@link org.plasma.query.model.Expression expression} creating an HBase
+   * {@link org.apache.hadoop.hbase.filter.RowFilter row filter} and adding it
+   * to the filter hierarchy. Looks at the context under which the literal is
+   * encountered and if a user defined row key token configuration is found,
+   * creates a regular expression based HBase row filter.
+   * 
+   * @param literal
+   *          the expression literal
+   * @throws GraphFilterException
+   *           if no user defined row-key token is configured for the current
+   *           literal context.
+   */
+  @Override
+  public void start(Literal literal) {
+    String content = literal.getValue();
+    if (this.contextProperty == null)
+      throw new IllegalStateException("expected context property for literal");
+    if (this.contextType == null)
+      throw new IllegalStateException("expected context type for literal");
+    if (this.rootType == null)
+      throw new IllegalStateException("expected context type for literal");
+    if (this.contextHBaseCompareOp == null)
+      throw new IllegalStateException("expected context operator for literal");
 
-		// Match the current property to a user defined
-		// row key token, if match we can add a row filter.
-		if (this.rowKeyFac.hasUserDefinedRowKeyToken(this.rootType,
-				this.contextPropertyPath)) {
-			KeyValue pair = new KeyValue(this.contextProperty, content);
-			pair.setPropertyPath(this.contextPropertyPath);
-			if (this.contextOpWildcard)
-				pair.setIsWildcard(true);
+    // Match the current property to a user defined
+    // row key token, if match we can add a row filter.
+    if (this.rowKeyFac.hasUserDefinedRowKeyToken(this.rootType, this.contextPropertyPath)) {
+      KeyValue pair = new KeyValue(this.contextProperty, content);
+      pair.setPropertyPath(this.contextPropertyPath);
+      if (this.contextOpWildcard)
+        pair.setIsWildcard(true);
 
-			// FIXME: can't several of these be lumped together if in the same
-			// AND expression parent??
-			List<KeyValue> pairs = new ArrayList<KeyValue>();
-			pairs.add(pair);
+      // FIXME: can't several of these be lumped together if in the same
+      // AND expression parent??
+      List<KeyValue> pairs = new ArrayList<KeyValue>();
+      pairs.add(pair);
 
-			String rowKeyExpr = this.rowKeyFac.createRowKeyExpr(pairs);
+      String rowKeyExpr = this.rowKeyFac.createRowKeyExpr(pairs);
 
-			Filter rowFilter = new RowFilter(this.contextHBaseCompareOp,
-					new RegexStringComparator(rowKeyExpr));
-			if (this.filterStack.size() > 0) {
-				FilterList top = this.filterStack.peek();
-				top.addFilter(rowFilter);
-			} else {
-				FilterList filterList = new FilterList(
-						FilterList.Operator.MUST_PASS_ALL);
-				filterList.addFilter(rowFilter);
-				this.filterStack.push(filterList);
-				this.rootFilter = filterList;
-			}
+      Filter rowFilter = new RowFilter(this.contextHBaseCompareOp, new RegexStringComparator(
+          rowKeyExpr));
+      if (this.filterStack.size() > 0) {
+        FilterList top = this.filterStack.peek();
+        top.addFilter(rowFilter);
+      } else {
+        FilterList filterList = new FilterList(FilterList.Operator.MUST_PASS_ALL);
+        filterList.addFilter(rowFilter);
+        this.filterStack.push(filterList);
+        this.rootFilter = filterList;
+      }
 
-			if (log.isDebugEnabled())
-				log.debug("created row filter: " + rowKeyExpr + " operator: "
-						+ this.contextHBaseCompareOp);
-		} else
-			log.warn("no user defined row-key token for query path '"
-					+ this.contextPropertyPath + "'");
+      if (log.isDebugEnabled())
+        log.debug("created row filter: " + rowKeyExpr + " operator: " + this.contextHBaseCompareOp);
+    } else
+      log.warn("no user defined row-key token for query path '" + this.contextPropertyPath + "'");
 
-		super.start(literal);
-	}
+    super.start(literal);
+  }
 
-	/**
-	 * (non-Javadoc)
-	 * 
-	 * @see org.plasma.query.visitor.DefaultQueryVisitor#start(org.plasma.query.model.NullLiteral)
-	 */
-	@Override
-	public void start(NullLiteral nullLiteral) {
-		throw new GraphFilterException(
-				"null literals for row filters not yet supported");
-	}
+  /**
+   * (non-Javadoc)
+   * 
+   * @see org.plasma.query.visitor.DefaultQueryVisitor#start(org.plasma.query.model.NullLiteral)
+   */
+  @Override
+  public void start(NullLiteral nullLiteral) {
+    throw new GraphFilterException("null literals for row filters not yet supported");
+  }
 
-	/**
-	 * Process a {@link org.plasma.query.model.LogicalOperator logical operator}
-	 * query traversal start event. If the {@link FilterList filter list} on the
-	 * top of the filter stack is not an 'OR' filter, since it's immutable and
-	 * we cannot modify its operator, create an 'OR' filter and swaps out the
-	 * existing filters into the new 'OR' {@link FilterList filter list}.
-	 */
-	public void start(LogicalOperator operator) {
+  /**
+   * Process a {@link org.plasma.query.model.LogicalOperator logical operator}
+   * query traversal start event. If the {@link FilterList filter list} on the
+   * top of the filter stack is not an 'OR' filter, since it's immutable and we
+   * cannot modify its operator, create an 'OR' filter and swaps out the
+   * existing filters into the new 'OR' {@link FilterList filter list}.
+   */
+  public void start(LogicalOperator operator) {
 
-		switch (operator.getValue()) {
-			case AND :
-				break; // default filter list oper is must-pass-all (AND)
-			case OR :
-				if (this.filterStack.size() == 0) {
-					FilterList filterList = new FilterList(
-							FilterList.Operator.MUST_PASS_ALL);
-					this.filterStack.push(filterList);
-					this.rootFilter = filterList;
-				}
+    switch (operator.getValue()) {
+    case AND:
+      break; // default filter list oper is must-pass-all (AND)
+    case OR:
+      if (this.filterStack.size() == 0) {
+        FilterList filterList = new FilterList(FilterList.Operator.MUST_PASS_ALL);
+        this.filterStack.push(filterList);
+        this.rootFilter = filterList;
+      }
 
-				FilterList top = this.filterStack.peek();
-				if (top.getOperator().ordinal() != FilterList.Operator.MUST_PASS_ONE
-						.ordinal()) {
-					FilterList orList = new FilterList(
-							FilterList.Operator.MUST_PASS_ONE);
-					for (Filter filter : top.getFilters())
-						orList.addFilter(filter);
-					top.getFilters().clear();
-					this.filterStack.pop();
-					FilterList previous = this.filterStack.peek();
-					if (!previous.getFilters().remove(top))
-						throw new IllegalStateException(
-								"could not remove filter list");
-					previous.addFilter(orList);
-					this.filterStack.push(orList);
-				}
-				break;
-		}
-		super.start(operator);
-	}
+      FilterList top = this.filterStack.peek();
+      if (top.getOperator().ordinal() != FilterList.Operator.MUST_PASS_ONE.ordinal()) {
+        FilterList orList = new FilterList(FilterList.Operator.MUST_PASS_ONE);
+        for (Filter filter : top.getFilters())
+          orList.addFilter(filter);
+        top.getFilters().clear();
+        this.filterStack.pop();
+        FilterList previous = this.filterStack.peek();
+        if (!previous.getFilters().remove(top))
+          throw new IllegalStateException("could not remove filter list");
+        previous.addFilter(orList);
+        this.filterStack.push(orList);
+      }
+      break;
+    }
+    super.start(operator);
+  }
 
 }

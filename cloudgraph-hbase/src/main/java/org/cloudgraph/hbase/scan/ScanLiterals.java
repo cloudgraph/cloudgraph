@@ -46,198 +46,191 @@ import org.plasma.query.model.RelationalOperator;
  * @since 0.5
  */
 public class ScanLiterals {
-	private static Log log = LogFactory.getLog(ScanLiterals.class);
-	private Map<Integer, List<ScanLiteral>> literalMap = new HashMap<Integer, List<ScanLiteral>>();
-	private List<ScanLiteral> literalList = new ArrayList<ScanLiteral>();
-	private boolean hasWildcardLiterals = false;
-	private boolean hasMultipleWildcardLiterals = false;
-	private boolean hasOtherThanSingleTrailingWildcards = false;
-	private boolean hasOnlyEqualityRelationalOperators = true;
-	private Map<DataGraphConfig, Boolean> hasContiguousPartialKeyScanFieldValuesMap;
-	private Map<DataGraphConfig, Boolean> hasContiguousKeyFieldValuesMap;
+  private static Log log = LogFactory.getLog(ScanLiterals.class);
+  private Map<Integer, List<ScanLiteral>> literalMap = new HashMap<Integer, List<ScanLiteral>>();
+  private List<ScanLiteral> literalList = new ArrayList<ScanLiteral>();
+  private boolean hasWildcardLiterals = false;
+  private boolean hasMultipleWildcardLiterals = false;
+  private boolean hasOtherThanSingleTrailingWildcards = false;
+  private boolean hasOnlyEqualityRelationalOperators = true;
+  private Map<DataGraphConfig, Boolean> hasContiguousPartialKeyScanFieldValuesMap;
+  private Map<DataGraphConfig, Boolean> hasContiguousKeyFieldValuesMap;
 
-	public ScanLiterals() {
-	}
+  public ScanLiterals() {
+  }
 
-	public List<ScanLiteral> getLiterals() {
-		return literalList;
-	}
+  public List<ScanLiteral> getLiterals() {
+    return literalList;
+  }
 
-	public List<ScanLiteral> getLiterals(
-			UserDefinedRowKeyFieldConfig fieldConfig) {
-		return literalMap.get(fieldConfig.getSequenceNum());
-	}
+  public List<ScanLiteral> getLiterals(UserDefinedRowKeyFieldConfig fieldConfig) {
+    return literalMap.get(fieldConfig.getSequenceNum());
+  }
 
-	public int size() {
-		return this.literalList.size();
-	}
+  public int size() {
+    return this.literalList.size();
+  }
 
-	public void addLiteral(ScanLiteral scanLiteral) {
-		if (scanLiteral instanceof WildcardStringLiteral) {
-			if (this.hasWildcardLiterals)
-				this.hasMultipleWildcardLiterals = true;
-			this.hasWildcardLiterals = true;
+  public void addLiteral(ScanLiteral scanLiteral) {
+    if (scanLiteral instanceof WildcardStringLiteral) {
+      if (this.hasWildcardLiterals)
+        this.hasMultipleWildcardLiterals = true;
+      this.hasWildcardLiterals = true;
 
-			WildcardStringLiteral wildcardStringLiteral = (WildcardStringLiteral) scanLiteral;
-			String content = wildcardStringLiteral.getContent().trim();
-			if (!content.endsWith(Wildcard.WILDCARD_CHAR)) {
-				this.hasOtherThanSingleTrailingWildcards = true;
-			} else {
-				// it has another wildcard preceding the trailing one
-				if (content.indexOf(Wildcard.WILDCARD_CHAR) < content.length() - 1) {
-					this.hasOtherThanSingleTrailingWildcards = true;
-				}
-			}
-		}
+      WildcardStringLiteral wildcardStringLiteral = (WildcardStringLiteral) scanLiteral;
+      String content = wildcardStringLiteral.getContent().trim();
+      if (!content.endsWith(Wildcard.WILDCARD_CHAR)) {
+        this.hasOtherThanSingleTrailingWildcards = true;
+      } else {
+        // it has another wildcard preceding the trailing one
+        if (content.indexOf(Wildcard.WILDCARD_CHAR) < content.length() - 1) {
+          this.hasOtherThanSingleTrailingWildcards = true;
+        }
+      }
+    }
 
-		RelationalOperator oper = scanLiteral.getRelationalOperator();
-		if (oper != null) {
-			switch (oper.getValue()) {
-				case EQUALS :
-					break;
-				default :
-					this.hasOnlyEqualityRelationalOperators = false;
-			}
-		}
+    RelationalOperator oper = scanLiteral.getRelationalOperator();
+    if (oper != null) {
+      switch (oper.getValue()) {
+      case EQUALS:
+        break;
+      default:
+        this.hasOnlyEqualityRelationalOperators = false;
+      }
+    }
 
-		UserDefinedRowKeyFieldConfig fieldConfig = scanLiteral.getFieldConfig();
-		List<ScanLiteral> list = this.literalMap.get(fieldConfig
-				.getSequenceNum());
-		if (list == null) {
-			list = new ArrayList<ScanLiteral>(4);
-			this.literalMap.put(fieldConfig.getSequenceNum(), list);
-		}
-		list.add(scanLiteral);
-		this.literalList.add(scanLiteral);
-	}
+    UserDefinedRowKeyFieldConfig fieldConfig = scanLiteral.getFieldConfig();
+    List<ScanLiteral> list = this.literalMap.get(fieldConfig.getSequenceNum());
+    if (list == null) {
+      list = new ArrayList<ScanLiteral>(4);
+      this.literalMap.put(fieldConfig.getSequenceNum(), list);
+    }
+    list.add(scanLiteral);
+    this.literalList.add(scanLiteral);
+  }
 
-	/**
-	 * Returns true if this set of literals can support a partial row key scan
-	 * for the given graph
-	 * 
-	 * @param graph
-	 *            the graph
-	 * @return true if this set of literals can support a partial row key scan
-	 *         for the given graph
-	 */
-	public boolean supportPartialRowKeyScan(DataGraphConfig graph) {
-		if (this.hasMultipleWildcardLiterals
-				|| this.hasOtherThanSingleTrailingWildcards)
-			return false;
+  /**
+   * Returns true if this set of literals can support a partial row key scan for
+   * the given graph
+   * 
+   * @param graph
+   *          the graph
+   * @return true if this set of literals can support a partial row key scan for
+   *         the given graph
+   */
+  public boolean supportPartialRowKeyScan(DataGraphConfig graph) {
+    if (this.hasMultipleWildcardLiterals || this.hasOtherThanSingleTrailingWildcards)
+      return false;
 
-		// ensure if there is a wildcard literal that its the last literal
-		// in terms of sequence within the row key definition
-		if (this.hasWildcardLiterals) {
-			int maxLiteralSeq = 0;
-			int wildcardLiteralSeq = 0;
-			for (ScanLiteral literal : literalList) {
-				if (literal.getFieldConfig().getSeqNum() > maxLiteralSeq)
-					maxLiteralSeq = literal.getFieldConfig().getSeqNum();
-				if (literal instanceof WildcardStringLiteral) {
-					if (wildcardLiteralSeq > 0)
-						log.warn("detected multiple wildcard literals - ignoring");
-					wildcardLiteralSeq = literal.getFieldConfig().getSeqNum();
-				}
-			}
-			if (wildcardLiteralSeq != maxLiteralSeq)
-				return false;
-		}
+    // ensure if there is a wildcard literal that its the last literal
+    // in terms of sequence within the row key definition
+    if (this.hasWildcardLiterals) {
+      int maxLiteralSeq = 0;
+      int wildcardLiteralSeq = 0;
+      for (ScanLiteral literal : literalList) {
+        if (literal.getFieldConfig().getSeqNum() > maxLiteralSeq)
+          maxLiteralSeq = literal.getFieldConfig().getSeqNum();
+        if (literal instanceof WildcardStringLiteral) {
+          if (wildcardLiteralSeq > 0)
+            log.warn("detected multiple wildcard literals - ignoring");
+          wildcardLiteralSeq = literal.getFieldConfig().getSeqNum();
+        }
+      }
+      if (wildcardLiteralSeq != maxLiteralSeq)
+        return false;
+    }
 
-		if (hasContiguousPartialKeyScanFieldValuesMap == null)
-			hasContiguousPartialKeyScanFieldValuesMap = new HashMap<DataGraphConfig, Boolean>();
+    if (hasContiguousPartialKeyScanFieldValuesMap == null)
+      hasContiguousPartialKeyScanFieldValuesMap = new HashMap<DataGraphConfig, Boolean>();
 
-		if (this.hasContiguousPartialKeyScanFieldValuesMap.get(graph) == null) {
-			boolean hasContiguousPartialKeyScanFieldValues = true;
+    if (this.hasContiguousPartialKeyScanFieldValuesMap.get(graph) == null) {
+      boolean hasContiguousPartialKeyScanFieldValues = true;
 
-			int size = graph.getUserDefinedRowKeyFields().size();
-			int[] scanLiteralCount = initScanLiteralCount(graph);
+      int size = graph.getUserDefinedRowKeyFields().size();
+      int[] scanLiteralCount = initScanLiteralCount(graph);
 
-			// If any field literal 'gap' found, i.e. if no literals found
-			// for a field and where the next field DOES have literals
-			for (int i = 0; i < size - 1; i++)
-				if (scanLiteralCount[i] == 0 && scanLiteralCount[i + 1] > 0)
-					hasContiguousPartialKeyScanFieldValues = false;
+      // If any field literal 'gap' found, i.e. if no literals found
+      // for a field and where the next field DOES have literals
+      for (int i = 0; i < size - 1; i++)
+        if (scanLiteralCount[i] == 0 && scanLiteralCount[i + 1] > 0)
+          hasContiguousPartialKeyScanFieldValues = false;
 
-			this.hasContiguousPartialKeyScanFieldValuesMap.put(graph,
-					hasContiguousPartialKeyScanFieldValues);
-		}
+      this.hasContiguousPartialKeyScanFieldValuesMap.put(graph,
+          hasContiguousPartialKeyScanFieldValues);
+    }
 
-		return this.hasContiguousPartialKeyScanFieldValuesMap.get(graph)
-				.booleanValue();
-	}
+    return this.hasContiguousPartialKeyScanFieldValuesMap.get(graph).booleanValue();
+  }
 
-	/**
-	 * Returns true if this set of literals can support a partial row key scan
-	 * for the given graph
-	 * 
-	 * @param graph
-	 *            the graph
-	 * @return true if this set of literals can support a partial row key scan
-	 *         for the given graph
-	 */
-	public boolean supportCompleteRowKey(DataGraphConfig graph) {
-		if (this.hasWildcardLiterals)
-			return false;
+  /**
+   * Returns true if this set of literals can support a partial row key scan for
+   * the given graph
+   * 
+   * @param graph
+   *          the graph
+   * @return true if this set of literals can support a partial row key scan for
+   *         the given graph
+   */
+  public boolean supportCompleteRowKey(DataGraphConfig graph) {
+    if (this.hasWildcardLiterals)
+      return false;
 
-		if (!this.hasOnlyEqualityRelationalOperators)
-			return false;
+    if (!this.hasOnlyEqualityRelationalOperators)
+      return false;
 
-		if (hasContiguousKeyFieldValuesMap == null)
-			hasContiguousKeyFieldValuesMap = new HashMap<DataGraphConfig, Boolean>();
-		if (this.hasContiguousKeyFieldValuesMap.get(graph) == null) {
-			boolean hasContiguousFieldValues = true;
+    if (hasContiguousKeyFieldValuesMap == null)
+      hasContiguousKeyFieldValuesMap = new HashMap<DataGraphConfig, Boolean>();
+    if (this.hasContiguousKeyFieldValuesMap.get(graph) == null) {
+      boolean hasContiguousFieldValues = true;
 
-			int size = graph.getUserDefinedRowKeyFields().size();
-			int[] scanLiteralCount = initScanLiteralCount(graph);
+      int size = graph.getUserDefinedRowKeyFields().size();
+      int[] scanLiteralCount = initScanLiteralCount(graph);
 
-			// If any field literal 'gap' found
-			for (int i = 0; i < size; i++)
-				if (scanLiteralCount[i] == 0)
-					hasContiguousFieldValues = false;
+      // If any field literal 'gap' found
+      for (int i = 0; i < size; i++)
+        if (scanLiteralCount[i] == 0)
+          hasContiguousFieldValues = false;
 
-			for (PreDefinedKeyFieldConfig field : graph
-					.getPreDefinedRowKeyFields()) {
-				switch (field.getName()) {
-					case URI :
-					case TYPE :
-						break;
-					case UUID :
-						// Because the UUID predefined field exists in the row
-						// key definition
-						// and the UUID cannot be used in a query, as it is an
-						// internal value for
-						// a data object and has no accessor/mutator per se,
-						// this makes
-						// a complete/get operation impossible
-						hasContiguousFieldValues = false;
-						break;
-					default :
-				}
-			}
+      for (PreDefinedKeyFieldConfig field : graph.getPreDefinedRowKeyFields()) {
+        switch (field.getName()) {
+        case URI:
+        case TYPE:
+          break;
+        case UUID:
+          // Because the UUID predefined field exists in the row
+          // key definition
+          // and the UUID cannot be used in a query, as it is an
+          // internal value for
+          // a data object and has no accessor/mutator per se,
+          // this makes
+          // a complete/get operation impossible
+          hasContiguousFieldValues = false;
+          break;
+        default:
+        }
+      }
 
-			this.hasContiguousKeyFieldValuesMap.put(graph,
-					hasContiguousFieldValues);
-		}
+      this.hasContiguousKeyFieldValuesMap.put(graph, hasContiguousFieldValues);
+    }
 
-		return this.hasContiguousKeyFieldValuesMap.get(graph).booleanValue();
-	}
+    return this.hasContiguousKeyFieldValuesMap.get(graph).booleanValue();
+  }
 
-	private int[] initScanLiteralCount(DataGraphConfig graph) {
-		int size = graph.getUserDefinedRowKeyFields().size();
-		int[] scanLiteralCount = new int[size];
+  private int[] initScanLiteralCount(DataGraphConfig graph) {
+    int size = graph.getUserDefinedRowKeyFields().size();
+    int[] scanLiteralCount = new int[size];
 
-		for (int i = 0; i < size; i++) {
-			UserDefinedRowKeyFieldConfig fieldConfig = graph
-					.getUserDefinedRowKeyFields().get(i);
-			List<ScanLiteral> list = this.getLiterals(fieldConfig);
-			if (list != null)
-				scanLiteralCount[i] = list.size();
-			else
-				scanLiteralCount[i] = 0;
-		}
+    for (int i = 0; i < size; i++) {
+      UserDefinedRowKeyFieldConfig fieldConfig = graph.getUserDefinedRowKeyFields().get(i);
+      List<ScanLiteral> list = this.getLiterals(fieldConfig);
+      if (list != null)
+        scanLiteralCount[i] = list.size();
+      else
+        scanLiteralCount[i] = 0;
+    }
 
-		return scanLiteralCount;
+    return scanLiteralCount;
 
-	}
+  }
 
 }

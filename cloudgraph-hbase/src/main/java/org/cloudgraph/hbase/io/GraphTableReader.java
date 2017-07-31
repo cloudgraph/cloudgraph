@@ -62,231 +62,222 @@ import commonj.sdo.DataObject;
  * @since 0.5.1
  */
 public class GraphTableReader extends GraphTable implements TableReader {
-	private static Log log = LogFactory.getLog(GraphTableReader.class);
-	private Connection connection;
-	private Table table;
-	/** maps data object UUIDs strings and row key strings to row readers */
-	private Map<String, RowReader> rowReaderMap = new HashMap<String, RowReader>();
-	private DistributedOperation distributedOperation;
+  private static Log log = LogFactory.getLog(GraphTableReader.class);
+  private Connection connection;
+  private Table table;
+  /** maps data object UUIDs strings and row key strings to row readers */
+  private Map<String, RowReader> rowReaderMap = new HashMap<String, RowReader>();
+  private DistributedOperation distributedOperation;
 
-	public GraphTableReader(TableConfig table,
-			DistributedOperation distributedOperation) {
-		super(table);
-		this.distributedOperation = distributedOperation;
-	}
+  public GraphTableReader(TableConfig table, DistributedOperation distributedOperation) {
+    super(table);
+    this.distributedOperation = distributedOperation;
+  }
 
-	/**
-	 * 
-	 * Returns the qualified table name associated with this reader.
-	 * 
-	 * @return the qualified table name associated with this reader.
-	 */
-	public String getTableName() {
-		return this.getTableConfig().getQualifiedName();
-	}
+  /**
+   * 
+   * Returns the qualified table name associated with this reader.
+   * 
+   * @return the qualified table name associated with this reader.
+   */
+  public String getTableName() {
+    return this.getTableConfig().getQualifiedName();
+  }
 
-	@Override
-	public Table getTable() {
-		if (this.connection == null) {
-			try {
-				this.connection = HBaseConnectionManager.instance().getConnection();
-				TableName tableName = TableName.valueOf(tableConfig.getQualifiedName());  				 
-				// Note: calling tableExists() using the admin HBase API is expensive and is
-				// showing up on CPU profiling results. Just call get table and catch :(
-				// Unfortunately at least on windows client, below get operation does not throw
-				// anything and continues on. 
-				if (!this.connection.tableExists(tableName)) {
-					HBaseConnectionManager.instance().createTable(this.connection, tableName);
-					this.table = this.connection.getTable(tableName);					
-				}
-				else {				
-					try {
-					    this.table = this.connection.getTable(tableName);
-					}
-					catch (TableNotFoundException | NamespaceNotFoundException e) {
-						HBaseConnectionManager.instance().createTable(this.connection, tableName);
-						this.table = this.connection.getTable(tableName);
-					}
-				}
-			} catch (IOException e) {
-				throw new OperationException(e);
-			}
-		}
-		return this.table;
-	}
-	/**
-	 * Returns whether there is an active HBase table pooled connection for this
-	 * context.
-	 * 
-	 * @return whether there is an active HBase table pooled connection for this
-	 *         context.
-	 */
-	public boolean hasConnection() {
-		return this.connection != null;
-	}
+  @Override
+  public Table getTable() {
+    if (this.connection == null) {
+      try {
+        this.connection = HBaseConnectionManager.instance().getConnection();
+        TableName tableName = TableName.valueOf(tableConfig.getQualifiedName());
+        // Note: calling tableExists() using the admin HBase API is expensive
+        // and is
+        // showing up on CPU profiling results. Just call get table and catch :(
+        // Unfortunately at least on windows client, below get operation does
+        // not throw
+        // anything and continues on.
+        if (!this.connection.tableExists(tableName)) {
+          HBaseConnectionManager.instance().createTable(this.connection, tableName);
+          this.table = this.connection.getTable(tableName);
+        } else {
+          try {
+            this.table = this.connection.getTable(tableName);
+          } catch (TableNotFoundException | NamespaceNotFoundException e) {
+            HBaseConnectionManager.instance().createTable(this.connection, tableName);
+            this.table = this.connection.getTable(tableName);
+          }
+        }
+      } catch (IOException e) {
+        throw new OperationException(e);
+      }
+    }
+    return this.table;
+  }
 
-	/**
-	 * Returns the row reader context for the given data object or null if null
-	 * exists
-	 * 
-	 * @param dataObject
-	 *            the data object
-	 * @return the row reader context for the given data object or null if null
-	 *         exists
-	 */
-	@Override
-	public RowReader getRowReader(DataObject dataObject) {
-		String uuid = ((PlasmaDataObject) dataObject).getUUIDAsString();
-		return rowReaderMap.get(uuid);
-	}
+  /**
+   * Returns whether there is an active HBase table pooled connection for this
+   * context.
+   * 
+   * @return whether there is an active HBase table pooled connection for this
+   *         context.
+   */
+  public boolean hasConnection() {
+    return this.connection != null;
+  }
 
-	/**
-	 * Returns the row reader context for the given row key or null if null
-	 * exists
-	 * 
-	 * @param rowKey
-	 *            the row key bytes
-	 * @return the row reader context for the given row key or null if null
-	 *         exists
-	 */
-	@Override
-	public RowReader getRowReader(byte[] rowKey) {
-		return rowReaderMap.get(Bytes.toString(rowKey));
-	}
+  /**
+   * Returns the row reader context for the given data object or null if null
+   * exists
+   * 
+   * @param dataObject
+   *          the data object
+   * @return the row reader context for the given data object or null if null
+   *         exists
+   */
+  @Override
+  public RowReader getRowReader(DataObject dataObject) {
+    String uuid = ((PlasmaDataObject) dataObject).getUUIDAsString();
+    return rowReaderMap.get(uuid);
+  }
 
-	@Override
-	public RowReader getRowReader(String rowKey) {
-		return rowReaderMap.get(rowKey);
-	}
+  /**
+   * Returns the row reader context for the given row key or null if null exists
+   * 
+   * @param rowKey
+   *          the row key bytes
+   * @return the row reader context for the given row key or null if null exists
+   */
+  @Override
+  public RowReader getRowReader(byte[] rowKey) {
+    return rowReaderMap.get(Bytes.toString(rowKey));
+  }
 
-	/**
-	 * Returns the row reader context for the given UUID
-	 * 
-	 * @param uuid
-	 *            the UUID
-	 * @return the row reader context for the given UUID
-	 */
-	@Override
-	public RowReader getRowReader(UUID uuid) {
-		return rowReaderMap.get(uuid.toString());
-	}
+  @Override
+  public RowReader getRowReader(String rowKey) {
+    return rowReaderMap.get(rowKey);
+  }
 
-	/**
-	 * Adds the given row reader context mapping it to the given UUID
-	 * 
-	 * @param uuid
-	 *            the UUID
-	 * @param rowReader
-	 *            the row reader context
-	 * @throws IllegalArgumentException
-	 *             if an existing row reader is already mapped for the given
-	 *             data object UUID
-	 */
-	@Override
-	public void addRowReader(UUID uuid, RowReader rowReader)
-			throws IllegalArgumentException {
-		if (rowReaderMap.get(uuid.toString()) != null)
-			throw new IllegalArgumentException(
-					"given UUID already mapped to a row reader, " + uuid);
-		rowReaderMap.put(uuid.toString(), rowReader);
-	}
+  /**
+   * Returns the row reader context for the given UUID
+   * 
+   * @param uuid
+   *          the UUID
+   * @return the row reader context for the given UUID
+   */
+  @Override
+  public RowReader getRowReader(UUID uuid) {
+    return rowReaderMap.get(uuid.toString());
+  }
 
-	/**
-	 * Returns all row reader context values for this table context.
-	 * 
-	 * @return all row reader context values for this table context.
-	 */
-	@Override
-	public List<RowReader> getAllRowReaders() {
-		List<RowReader> result = new ArrayList<RowReader>();
-		result.addAll(rowReaderMap.values());
-		return result;
-	}
+  /**
+   * Adds the given row reader context mapping it to the given UUID
+   * 
+   * @param uuid
+   *          the UUID
+   * @param rowReader
+   *          the row reader context
+   * @throws IllegalArgumentException
+   *           if an existing row reader is already mapped for the given data
+   *           object UUID
+   */
+  @Override
+  public void addRowReader(UUID uuid, RowReader rowReader) throws IllegalArgumentException {
+    if (rowReaderMap.get(uuid.toString()) != null)
+      throw new IllegalArgumentException("given UUID already mapped to a row reader, " + uuid);
+    rowReaderMap.put(uuid.toString(), rowReader);
+  }
 
-	/**
-	 * Creates and adds a row reader based on the given data object and result
-	 * row mapping it by UUID string and row key string.
-	 * 
-	 * @param dataObject
-	 *            the data object
-	 * @return the row reader
-	 * @throws IllegalArgumentException
-	 *             if an existing row reader is already mapped for the given
-	 *             data object UUID
-	 */
-	@Override
-	public RowReader createRowReader(DataObject dataObject, Result resultRow)
-			throws IllegalArgumentException {
+  /**
+   * Returns all row reader context values for this table context.
+   * 
+   * @return all row reader context values for this table context.
+   */
+  @Override
+  public List<RowReader> getAllRowReaders() {
+    List<RowReader> result = new ArrayList<RowReader>();
+    result.addAll(rowReaderMap.values());
+    return result;
+  }
 
-		byte[] rowKey = resultRow.getRow();
-		String keyString = Bytes.toString(rowKey);
-		UUID uuid = ((PlasmaDataObject) dataObject).getUUID();
-		if (this.rowReaderMap.containsKey(uuid.toString()))
-			throw new IllegalArgumentException(
-					"given UUID already mapped to a row reader, " + uuid);
-		if (this.rowReaderMap.containsKey(keyString))
-			throw new IllegalArgumentException(
-					"existing row reader is already mapped for the given row key, "
-							+ keyString);
-		GraphRowReader rowReader = new GraphRowReader(resultRow.getRow(),
-				resultRow, dataObject, this);
-		this.addRowReader(uuid, rowReader);
-		this.rowReaderMap.put(keyString, rowReader);
+  /**
+   * Creates and adds a row reader based on the given data object and result row
+   * mapping it by UUID string and row key string.
+   * 
+   * @param dataObject
+   *          the data object
+   * @return the row reader
+   * @throws IllegalArgumentException
+   *           if an existing row reader is already mapped for the given data
+   *           object UUID
+   */
+  @Override
+  public RowReader createRowReader(DataObject dataObject, Result resultRow)
+      throws IllegalArgumentException {
 
-		// set the row key so we can look it up on
-		// modify and delete ops
-		CoreDataObject coreObject = (CoreDataObject) dataObject;
-		coreObject.getValueObject().put(CloudGraphConstants.ROW_KEY,
-				rowReader.getRowKey());
+    byte[] rowKey = resultRow.getRow();
+    String keyString = Bytes.toString(rowKey);
+    UUID uuid = ((PlasmaDataObject) dataObject).getUUID();
+    if (this.rowReaderMap.containsKey(uuid.toString()))
+      throw new IllegalArgumentException("given UUID already mapped to a row reader, " + uuid);
+    if (this.rowReaderMap.containsKey(keyString))
+      throw new IllegalArgumentException(
+          "existing row reader is already mapped for the given row key, " + keyString);
+    GraphRowReader rowReader = new GraphRowReader(resultRow.getRow(), resultRow, dataObject, this);
+    this.addRowReader(uuid, rowReader);
+    this.rowReaderMap.put(keyString, rowReader);
 
-		return rowReader;
-	}
+    // set the row key so we can look it up on
+    // modify and delete ops
+    CoreDataObject coreObject = (CoreDataObject) dataObject;
+    coreObject.getValueObject().put(CloudGraphConstants.ROW_KEY, rowReader.getRowKey());
 
-	/**
-	 * Returns the distributed context associated with this table operation
-	 * context.
-	 * 
-	 * @return the distributed context associated with this table operation
-	 *         context.
-	 */
-	@Override
-	public DistributedOperation getDistributedOperation() {
-		return this.distributedOperation;
-	}
+    return rowReader;
+  }
 
-	/**
-	 * Sets the distributed context associated with this table operation
-	 * context.
-	 * 
-	 * @param distributedOperation
-	 *            the operation
-	 */
-	// @Override
-	// public void setDistributedOperation(DistributedOperation
-	// distributedOperation) {
-	// this.distributedOperation = distributedOperation;
-	// }
+  /**
+   * Returns the distributed context associated with this table operation
+   * context.
+   * 
+   * @return the distributed context associated with this table operation
+   *         context.
+   */
+  @Override
+  public DistributedOperation getDistributedOperation() {
+    return this.distributedOperation;
+  }
 
-	/**
-	 * Frees resources associated with this reader and any component readers.
-	 */
-	public void clear() {
-		this.rowReaderMap.clear();
-	}
+  /**
+   * Sets the distributed context associated with this table operation context.
+   * 
+   * @param distributedOperation
+   *          the operation
+   */
+  // @Override
+  // public void setDistributedOperation(DistributedOperation
+  // distributedOperation) {
+  // this.distributedOperation = distributedOperation;
+  // }
 
-	@Override
-	public void close() throws IOException {
-		try {
-			// don't close table here, let the connection
-			// deal with resources it controls
-			if (this.connection != null)
-				this.connection.close();
-		} catch (IOException e) {
-			log.error(e.getMessage(), e);
-		} finally {
-			this.table = null;
-			this.connection = null;
-		}
-	}
+  /**
+   * Frees resources associated with this reader and any component readers.
+   */
+  public void clear() {
+    this.rowReaderMap.clear();
+  }
+
+  @Override
+  public void close() throws IOException {
+    try {
+      // don't close table here, let the connection
+      // deal with resources it controls
+      if (this.connection != null)
+        this.connection.close();
+    } catch (IOException e) {
+      log.error(e.getMessage(), e);
+    } finally {
+      this.table = null;
+      this.connection = null;
+    }
+  }
 
 }

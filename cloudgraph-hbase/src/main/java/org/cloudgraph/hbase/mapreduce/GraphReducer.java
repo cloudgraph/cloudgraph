@@ -35,38 +35,34 @@ import commonj.sdo.DataGraph;
 /**
  *
  * @param <KEYIN>
- *            The type of the input key.
+ *          The type of the input key.
  * @param <VALUEIN>
- *            The type of the input value.
+ *          The type of the input value.
  * @param <KEYOUT>
- *            The type of the output key.
+ *          The type of the output key.
  * @see org.apache.hadoop.mapreduce.Reducer
  */
-public class GraphReducer<KEYIN, VALUEIN, KEYOUT>
-		extends
-			Reducer<KEYIN, VALUEIN, KEYOUT, Writable>
-		implements
-			GraphMutator,
-			GraphAccessor {
-	private GraphServiceDelegate serviceDelegate;
-	public GraphReducer() {
-		this.serviceDelegate = new GraphServiceDelegate();
-	}
+public class GraphReducer<KEYIN, VALUEIN, KEYOUT> extends Reducer<KEYIN, VALUEIN, KEYOUT, Writable>
+    implements GraphMutator, GraphAccessor {
+  private GraphServiceDelegate serviceDelegate;
 
-	@Override
-	public DataGraph[] find(Query query, JobContext context) throws IOException {
-		return this.serviceDelegate.find(query, context);
-	}
+  public GraphReducer() {
+    this.serviceDelegate = new GraphServiceDelegate();
+  }
 
-	@Override
-	public void commit(DataGraph graph, JobContext context) throws IOException {
-		this.serviceDelegate.commit(graph, context);
-	}
+  @Override
+  public DataGraph[] find(Query query, JobContext context) throws IOException {
+    return this.serviceDelegate.find(query, context);
+  }
 
-	@Override
-	public void commit(DataGraph[] graphs, JobContext context)
-			throws IOException {
-		this.serviceDelegate.commit(graphs, context);
-	}
+  @Override
+  public void commit(DataGraph graph, JobContext context) throws IOException {
+    this.serviceDelegate.commit(graph, context);
+  }
+
+  @Override
+  public void commit(DataGraph[] graphs, JobContext context) throws IOException {
+    this.serviceDelegate.commit(graphs, context);
+  }
 
 }

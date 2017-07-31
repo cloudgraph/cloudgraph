@@ -56,112 +56,107 @@ import com.google.common.cache.LoadingCache;
  * @since 0.6.3
  */
 public class Connection {
-	private static Log log = LogFactory.getLog(Connection.class);
-	private org.apache.hadoop.hbase.client.Connection con;
-	private ObjectPool<Connection> pool;
-	private LoadingCache<TableName, Table> tableCache;
+  private static Log log = LogFactory.getLog(Connection.class);
+  private org.apache.hadoop.hbase.client.Connection con;
+  private ObjectPool<Connection> pool;
+  private LoadingCache<TableName, Table> tableCache;
 
-	public Connection(org.apache.hadoop.hbase.client.Connection conection,
-			ObjectPool<Connection> pool) {
-		super();
-		this.con = conection;
-		this.pool = pool;
-		this.tableCache = CacheBuilder.newBuilder().maximumSize(10)
-				.expireAfterAccess(30, TimeUnit.SECONDS)
-				.build(new CacheLoader<TableName, Table>() {
-					@Override
-					public Table load(TableName tableName) throws Exception {
-						return con.getTable(tableName);
-					}
-				});
-	}
+  public Connection(org.apache.hadoop.hbase.client.Connection conection, ObjectPool<Connection> pool) {
+    super();
+    this.con = conection;
+    this.pool = pool;
+    this.tableCache = CacheBuilder.newBuilder().maximumSize(10)
+        .expireAfterAccess(30, TimeUnit.SECONDS).build(new CacheLoader<TableName, Table>() {
+          @Override
+          public Table load(TableName tableName) throws Exception {
+            return con.getTable(tableName);
+          }
+        });
+  }
 
-	public void close() throws IOException {
-		if (log.isDebugEnabled())
-			log.debug("closing wrapped connection, " + this.con);
-		try {
-			this.pool.returnObject(this);
-		} catch (Exception e) {
-			throw new GraphServiceException(e);
-		}
-	}
+  public void close() throws IOException {
+    if (log.isDebugEnabled())
+      log.debug("closing wrapped connection, " + this.con);
+    try {
+      this.pool.returnObject(this);
+    } catch (Exception e) {
+      throw new GraphServiceException(e);
+    }
+  }
 
-	public void destroy() throws IOException {
-		for (Table table : this.tableCache.asMap().values())
-			table.close();
-	}
-	public boolean isClosed() {
-		return con.isClosed();
-	}
+  public void destroy() throws IOException {
+    for (Table table : this.tableCache.asMap().values())
+      table.close();
+  }
 
-	public void abort(String why, Throwable e) {
-		con.abort(why, e);
-	}
+  public boolean isClosed() {
+    return con.isClosed();
+  }
 
-	public boolean isAborted() {
-		return con.isAborted();
-	}
+  public void abort(String why, Throwable e) {
+    con.abort(why, e);
+  }
 
-	public Configuration getConfiguration() {
-		return con.getConfiguration();
-	}
+  public boolean isAborted() {
+    return con.isAborted();
+  }
 
-	public boolean tableExists(TableName tableName) throws IOException {
-		boolean exists = false;
-		Table table = this.tableCache.getIfPresent(tableName);
-		if (table != null) {
-			exists = true;
-		} else {
-			exists = getAdmin().tableExists(tableName);
-			if (exists) {
-				try {
-					this.tableCache.get(tableName);
-				} catch (ExecutionException e) {
-					log.error(e.getMessage(), e);
-				}
-			}
-		}
-		return exists;
-	}
+  public Configuration getConfiguration() {
+    return con.getConfiguration();
+  }
 
-	public Table getTable(TableName tableName) throws IOException {
-		Table result = null;
-		try {
-			result = this.tableCache.get(tableName);
-		} catch (ExecutionException e) {
-			log.error(e.getMessage(), e);
-		}
-		return result;
-	}
+  public boolean tableExists(TableName tableName) throws IOException {
+    boolean exists = false;
+    Table table = this.tableCache.getIfPresent(tableName);
+    if (table != null) {
+      exists = true;
+    } else {
+      exists = getAdmin().tableExists(tableName);
+      if (exists) {
+        try {
+          this.tableCache.get(tableName);
+        } catch (ExecutionException e) {
+          log.error(e.getMessage(), e);
+        }
+      }
+    }
+    return exists;
+  }
 
-	public Table getTable(TableName tableName, ExecutorService pool)
-			throws IOException {
-		Table result = null;
-		try {
-			result = this.tableCache.get(tableName);
-		} catch (ExecutionException e) {
-			log.error(e.getMessage(), e);
-		}
-		return result;
-	}
+  public Table getTable(TableName tableName) throws IOException {
+    Table result = null;
+    try {
+      result = this.tableCache.get(tableName);
+    } catch (ExecutionException e) {
+      log.error(e.getMessage(), e);
+    }
+    return result;
+  }
 
-	public BufferedMutator getBufferedMutator(TableName tableName)
-			throws IOException {
-		return con.getBufferedMutator(tableName);
-	}
+  public Table getTable(TableName tableName, ExecutorService pool) throws IOException {
+    Table result = null;
+    try {
+      result = this.tableCache.get(tableName);
+    } catch (ExecutionException e) {
+      log.error(e.getMessage(), e);
+    }
+    return result;
+  }
 
-	public BufferedMutator getBufferedMutator(BufferedMutatorParams params)
-			throws IOException {
-		return con.getBufferedMutator(params);
-	}
+  public BufferedMutator getBufferedMutator(TableName tableName) throws IOException {
+    return con.getBufferedMutator(tableName);
+  }
 
-	public RegionLocator getRegionLocator(TableName tableName)
-			throws IOException {
-		return con.getRegionLocator(tableName);
-	}
+  public BufferedMutator getBufferedMutator(BufferedMutatorParams params) throws IOException {
+    return con.getBufferedMutator(params);
+  }
 
-	public Admin getAdmin() throws IOException {
-		return con.getAdmin();
-	}
+  public RegionLocator getRegionLocator(TableName tableName) throws IOException {
+    return con.getRegionLocator(tableName);
+  }
+
+  public Admin getAdmin() throws IOException {
+    return con.getAdmin();
+  }
 
 }

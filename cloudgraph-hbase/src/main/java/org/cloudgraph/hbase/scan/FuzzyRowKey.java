@@ -34,12 +34,14 @@ import org.apache.hadoop.hbase.filter.Filter;
  * @see FuzzyRowKeyLiteral
  */
 public interface FuzzyRowKey {
-	public byte[] getFuzzyKeyBytes();
-	public byte[] getFuzzyInfoBytes();
-	/**
-	 * Returns the assembled filter, filter list or filter hierarchy root.
-	 * 
-	 * @return the assembled filter, filter list or or filter hierarchy root.
-	 */
-	public Filter getFilter();
+  public byte[] getFuzzyKeyBytes();
+
+  public byte[] getFuzzyInfoBytes();
+
+  /**
+   * Returns the assembled filter, filter list or filter hierarchy root.
+   * 
+   * @return the assembled filter, filter list or or filter hierarchy root.
+   */
+  public Filter getFilter();
 }

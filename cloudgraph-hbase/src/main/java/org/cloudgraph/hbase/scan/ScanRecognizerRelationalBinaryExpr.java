@@ -46,67 +46,60 @@ import org.plasma.sdo.PlasmaType;
  * @since 0.5.3
  * @see ScanRecognizerContext
  */
-public class ScanRecognizerRelationalBinaryExpr
-		extends
-			DefaultRelationalBinaryExpr implements RelationalBinaryExpr {
-	private static Log log = LogFactory
-			.getLog(ScanRecognizerRelationalBinaryExpr.class);
-	protected ScanLiteral scanLiteral;
+public class ScanRecognizerRelationalBinaryExpr extends DefaultRelationalBinaryExpr implements
+    RelationalBinaryExpr {
+  private static Log log = LogFactory.getLog(ScanRecognizerRelationalBinaryExpr.class);
+  protected ScanLiteral scanLiteral;
 
-	/**
-	 * Constructs an expression based on the given terms.
-	 * 
-	 * @param property
-	 *            the "left" property term
-	 * @param literal
-	 *            the "right" literal term
-	 * @param operator
-	 *            the relational operator
-	 * @see EdgeRecognizerContext
-	 */
-	public ScanRecognizerRelationalBinaryExpr(Property property,
-			Literal literal, RelationalOperator operator) {
-		super(property, literal, operator);
-	}
+  /**
+   * Constructs an expression based on the given terms.
+   * 
+   * @param property
+   *          the "left" property term
+   * @param literal
+   *          the "right" literal term
+   * @param operator
+   *          the relational operator
+   * @see EdgeRecognizerContext
+   */
+  public ScanRecognizerRelationalBinaryExpr(Property property, Literal literal,
+      RelationalOperator operator) {
+    super(property, literal, operator);
+  }
 
-	/**
-	 * Returns a "truth" value for the expression using a specific evaluation
-	 * {@link ScanRecognizerContext context} by ... within the binary expression
-	 * tree.
-	 * 
-	 * @param context
-	 * @return a "truth" value for the expression
-	 * @see ScanRecognizerContext
-	 */
-	@Override
-	public boolean evaluate(EvaluationContext context) {
-		ScanRecognizerContext ctx = (ScanRecognizerContext) context;
-		ScanLiteral literal = createLiteral(ctx.getGraph());
+  /**
+   * Returns a "truth" value for the expression using a specific evaluation
+   * {@link ScanRecognizerContext context} by ... within the binary expression
+   * tree.
+   * 
+   * @param context
+   * @return a "truth" value for the expression
+   * @see ScanRecognizerContext
+   */
+  @Override
+  public boolean evaluate(EvaluationContext context) {
+    ScanRecognizerContext ctx = (ScanRecognizerContext) context;
+    ScanLiteral literal = createLiteral(ctx.getGraph());
 
-		return false;
-	}
+    return false;
+  }
 
-	private ScanLiteral createLiteral(DataGraphConfig graph) {
-		// Match the current property to a user defined
-		// row key token, if found we can process
-		UserDefinedRowKeyFieldConfig fieldConfig = graph
-				.getUserDefinedRowKeyField(this.propertyPath);
-		if (fieldConfig != null) {
-			PlasmaProperty property = (PlasmaProperty) fieldConfig
-					.getEndpointProperty();
-			ScanLiteralFactory factory = new ScanLiteralFactory();
+  private ScanLiteral createLiteral(DataGraphConfig graph) {
+    // Match the current property to a user defined
+    // row key token, if found we can process
+    UserDefinedRowKeyFieldConfig fieldConfig = graph.getUserDefinedRowKeyField(this.propertyPath);
+    if (fieldConfig != null) {
+      PlasmaProperty property = (PlasmaProperty) fieldConfig.getEndpointProperty();
+      ScanLiteralFactory factory = new ScanLiteralFactory();
 
-			ScanLiteral scanLiteral = factory.createLiteral(
-					this.literal.getValue(), property,
-					(PlasmaType) graph.getRootType(), this.operator,
-					fieldConfig);
-			return scanLiteral;
-		} else
-			log.warn("no user defined row-key field for query path '"
-					+ this.propertyPath
-					+ "' - deferring to graph recogniser post processor");
+      ScanLiteral scanLiteral = factory.createLiteral(this.literal.getValue(), property,
+          (PlasmaType) graph.getRootType(), this.operator, fieldConfig);
+      return scanLiteral;
+    } else
+      log.warn("no user defined row-key field for query path '" + this.propertyPath
+          + "' - deferring to graph recogniser post processor");
 
-		return null;
-	}
+    return null;
+  }
 
 }

@@ -34,18 +34,15 @@ import org.plasma.sdo.helper.PlasmaTypeHelper;
  */
 public abstract class JobSetup {
 
-	protected static PlasmaType getRootType(Query query) {
-		From from = query.getModel().getFromClause();
-		if (from.getEntity() == null)
-			throw new IllegalArgumentException(
-					"given query has no root type and/or URI");
-		if (from.getEntity().getName() == null
-				|| from.getEntity().getNamespaceURI() == null)
-			throw new IllegalArgumentException(
-					"given query has no root type and/or URI");
-		PlasmaType type = (PlasmaType) PlasmaTypeHelper.INSTANCE.getType(from
-				.getEntity().getNamespaceURI(), from.getEntity().getName());
-		return type;
-	}
+  protected static PlasmaType getRootType(Query query) {
+    From from = query.getModel().getFromClause();
+    if (from.getEntity() == null)
+      throw new IllegalArgumentException("given query has no root type and/or URI");
+    if (from.getEntity().getName() == null || from.getEntity().getNamespaceURI() == null)
+      throw new IllegalArgumentException("given query has no root type and/or URI");
+    PlasmaType type = (PlasmaType) PlasmaTypeHelper.INSTANCE.getType(from.getEntity()
+        .getNamespaceURI(), from.getEntity().getName());
+    return type;
+  }
 
 }

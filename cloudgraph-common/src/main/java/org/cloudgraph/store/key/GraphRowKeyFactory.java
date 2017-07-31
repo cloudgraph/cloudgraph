@@ -51,47 +51,47 @@ import commonj.sdo.Type;
  */
 public interface GraphRowKeyFactory {
 
-	/**
-	 * Creates and returns a composite row key based on properties within the
-	 * given data graph using its root data object as the graph root.
-	 * Implementations are typically driven by the CloudGraph configuration
-	 * section specified for the given Data Graph URI and Type name.
-	 * 
-	 * @param dataGraph
-	 *            the Data Graph
-	 * @return a composite row key.
-	 */
-	public byte[] createRowKeyBytes(DataGraph dataGraph);
+  /**
+   * Creates and returns a composite row key based on properties within the
+   * given data graph using its root data object as the graph root.
+   * Implementations are typically driven by the CloudGraph configuration
+   * section specified for the given Data Graph URI and Type name.
+   * 
+   * @param dataGraph
+   *          the Data Graph
+   * @return a composite row key.
+   */
+  public byte[] createRowKeyBytes(DataGraph dataGraph);
 
-	/**
-	 * Creates and returns a composite row key based on properties within the
-	 * data graph using the given data object as the graph root. Implementations
-	 * are typically driven by the CloudGraph configuration section specified
-	 * for the given Data Graph URI and Type name.
-	 * 
-	 * @param dataGraph
-	 *            the Data Graph
-	 * @return a composite row key.
-	 */
-	public byte[] createRowKeyBytes(DataObject dataObject);
+  /**
+   * Creates and returns a composite row key based on properties within the data
+   * graph using the given data object as the graph root. Implementations are
+   * typically driven by the CloudGraph configuration section specified for the
+   * given Data Graph URI and Type name.
+   * 
+   * @param dataGraph
+   *          the Data Graph
+   * @return a composite row key.
+   */
+  public byte[] createRowKeyBytes(DataObject dataObject);
 
-	/**
-	 * Generates a row key based only on the given root type.
-	 * 
-	 * @param type
-	 *            the root type for the target data graph
-	 * @return the row key
-	 */
-	public byte[] createRowKeyBytes(Type type);
+  /**
+   * Generates a row key based only on the given root type.
+   * 
+   * @param type
+   *          the root type for the target data graph
+   * @return the row key
+   */
+  public byte[] createRowKeyBytes(Type type);
 
-	/**
-	 * Creates and returns a composite row key based on the given key values.
-	 * Implementations are typically driven by the CloudGraph configuration
-	 * section specified for the given Data Graph URI and Type name.
-	 * 
-	 * @param values
-	 *            the key values
-	 * @return a composite row key.
-	 */
-	public byte[] createRowKeyBytes(List<KeyValue> values);
+  /**
+   * Creates and returns a composite row key based on the given key values.
+   * Implementations are typically driven by the CloudGraph configuration
+   * section specified for the given Data Graph URI and Type name.
+   * 
+   * @param values
+   *          the key values
+   * @return a composite row key.
+   */
+  public byte[] createRowKeyBytes(List<KeyValue> values);
 }

@@ -28,6 +28,7 @@ package org.cloudgraph.common.concurrent;
  * @since 0.6.2
  */
 public interface SubgraphTask {
-	public void start();
-	public void join();
+  public void start();
+
+  public void join();
 }

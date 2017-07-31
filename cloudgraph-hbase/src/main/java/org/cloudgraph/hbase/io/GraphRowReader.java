@@ -58,101 +58,94 @@ import commonj.sdo.DataObject;
  */
 public class GraphRowReader extends DefaultRowOperation implements RowReader {
 
-	private static Log log = LogFactory.getLog(GraphRowReader.class);
+  private static Log log = LogFactory.getLog(GraphRowReader.class);
 
-	private ColumnMap row;
-	private TableReader tableReader;
-	private Map<Integer, EdgeReader> edgeReaderMap = new HashMap<Integer, EdgeReader>();
+  private ColumnMap row;
+  private TableReader tableReader;
+  private Map<Integer, EdgeReader> edgeReaderMap = new HashMap<Integer, EdgeReader>();
 
-	public GraphRowReader(byte[] rowKey, Result result,
-			DataObject rootDataObject, TableReader tableReader) {
-		super(rowKey, rootDataObject);
-		this.row = new ColumnMap(result);
-		this.tableReader = tableReader;
-		byte[] state = this.row.getColumnValue(this.tableReader
-				.getTableConfig().getDataColumnFamilyNameBytes(),
-				GraphMetaKey.SEQUENCE_MAPPING.codeAsBytes());
-		if (state != null) {
-			if (log.isDebugEnabled()) {
-				String uuid = ((PlasmaDataObject) rootDataObject)
-						.getUUIDAsString();
-				log.debug("root: " + uuid + " state: " + new String(state));
-			}
-		}
-		byte[] toumbstone = this.row.getColumnValue(this.tableReader
-				.getTableConfig().getDataColumnFamilyNameBytes(),
-				GraphMetaKey.TOMBSTONE.codeAsBytes());
-		if (toumbstone != null)
-			throw new ToumbstoneRowException(
-					"cannot read toumbstone row for root, "
-							+ rootDataObject.toString());
+  public GraphRowReader(byte[] rowKey, Result result, DataObject rootDataObject,
+      TableReader tableReader) {
+    super(rowKey, rootDataObject);
+    this.row = new ColumnMap(result);
+    this.tableReader = tableReader;
+    byte[] state = this.row.getColumnValue(this.tableReader.getTableConfig()
+        .getDataColumnFamilyNameBytes(), GraphMetaKey.SEQUENCE_MAPPING.codeAsBytes());
+    if (state != null) {
+      if (log.isDebugEnabled()) {
+        String uuid = ((PlasmaDataObject) rootDataObject).getUUIDAsString();
+        log.debug("root: " + uuid + " state: " + new String(state));
+      }
+    }
+    byte[] toumbstone = this.row.getColumnValue(this.tableReader.getTableConfig()
+        .getDataColumnFamilyNameBytes(), GraphMetaKey.TOMBSTONE.codeAsBytes());
+    if (toumbstone != null)
+      throw new ToumbstoneRowException("cannot read toumbstone row for root, "
+          + rootDataObject.toString());
 
-		// this.sequenceMapping = new
-		// BindingSequenceGenerator(Bytes.toString(state),
-		// this.tableReader.getDistributedOperation().getMarshallingContext());
-		if (state != null)
-			this.sequenceMapping = new ProtoSequenceGenerator(state);
-		else
-			this.sequenceMapping = new ProtoSequenceGenerator();
-		if (log.isDebugEnabled())
-			log.debug(this.sequenceMapping.toString());
+    // this.sequenceMapping = new
+    // BindingSequenceGenerator(Bytes.toString(state),
+    // this.tableReader.getDistributedOperation().getMarshallingContext());
+    if (state != null)
+      this.sequenceMapping = new ProtoSequenceGenerator(state);
+    else
+      this.sequenceMapping = new ProtoSequenceGenerator();
+    if (log.isDebugEnabled())
+      log.debug(this.sequenceMapping.toString());
 
-		this.columnKeyFactory = new StatefullColumnKeyFactory(this);
-	}
+    this.columnKeyFactory = new StatefullColumnKeyFactory(this);
+  }
 
-	@Override
-	public ColumnMap getRow() {
-		return this.row;
-	}
+  @Override
+  public ColumnMap getRow() {
+    return this.row;
+  }
 
-	@Override
-	public TableReader getTableReader() {
-		return this.tableReader;
-	}
+  @Override
+  public TableReader getTableReader() {
+    return this.tableReader;
+  }
 
-	/**
-	 * Frees resources associated with this reader.
-	 */
-	public void clear() {
+  /**
+   * Frees resources associated with this reader.
+   */
+  public void clear() {
 
-	}
+  }
 
-	@Override
-	public EdgeReader getEdgeReader(PlasmaType type, PlasmaProperty property,
-			long sequence) throws IOException {
-		int hashCode = getHashCode(type, property, sequence);
-		EdgeReader edgeReader = edgeReaderMap.get(hashCode);
-		if (edgeReader == null) {
-			if (sequence > 0) {
-				edgeReader = new GraphEdgeReader(type, property, sequence, this
-						.getTableReader().getTableConfig(), this.graphConfig,
-						this);
-			} else {
-				edgeReader = new GraphEdgeReader(type, property, this
-						.getTableReader().getTableConfig(), this.graphConfig,
-						this);
-			}
-			edgeReaderMap.put(hashCode, edgeReader);
-		}
-		return edgeReader;
-	}
+  @Override
+  public EdgeReader getEdgeReader(PlasmaType type, PlasmaProperty property, long sequence)
+      throws IOException {
+    int hashCode = getHashCode(type, property, sequence);
+    EdgeReader edgeReader = edgeReaderMap.get(hashCode);
+    if (edgeReader == null) {
+      if (sequence > 0) {
+        edgeReader = new GraphEdgeReader(type, property, sequence, this.getTableReader()
+            .getTableConfig(), this.graphConfig, this);
+      } else {
+        edgeReader = new GraphEdgeReader(type, property, this.getTableReader().getTableConfig(),
+            this.graphConfig, this);
+      }
+      edgeReaderMap.put(hashCode, edgeReader);
+    }
+    return edgeReader;
+  }
 
-	@Override
-	public boolean edgeExists(PlasmaType type, PlasmaProperty property,
-			long sequence) throws IOException {
-		if (sequence > 0)
-			return GraphEdgeReader.exists(type, property, sequence, this
-					.getTableReader().getTableConfig(), this.graphConfig, this);
-		else
-			return GraphEdgeReader.exists(type, property, this.getTableReader()
-					.getTableConfig(), this.graphConfig, this);
-	}
+  @Override
+  public boolean edgeExists(PlasmaType type, PlasmaProperty property, long sequence)
+      throws IOException {
+    if (sequence > 0)
+      return GraphEdgeReader.exists(type, property, sequence, this.getTableReader()
+          .getTableConfig(), this.graphConfig, this);
+    else
+      return GraphEdgeReader.exists(type, property, this.getTableReader().getTableConfig(),
+          this.graphConfig, this);
+  }
 
-	@Override
-	public PlasmaType decodeType(byte[] bytes) {
-		String[] tokens = Bytes.toString(bytes).split(ROOT_TYPE_DELIM);
-		return (PlasmaType) PlasmaTypeHelper.INSTANCE.findTypeByPhysicalName(
-				tokens[0], tokens[1]);
-	}
+  @Override
+  public PlasmaType decodeType(byte[] bytes) {
+    String[] tokens = Bytes.toString(bytes).split(ROOT_TYPE_DELIM);
+    return (PlasmaType) PlasmaTypeHelper.INSTANCE.findTypeByPhysicalName(tokens[0], tokens[1]);
+  }
 
 }

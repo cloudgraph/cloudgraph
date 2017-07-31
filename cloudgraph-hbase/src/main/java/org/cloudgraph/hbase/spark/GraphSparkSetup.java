@@ -11,21 +11,19 @@ import org.plasma.sdo.PlasmaType;
 
 public class GraphSparkSetup extends JobSetup {
 
-	public static void setupJob(Query query, Job job) {
-		Configuration conf = job.getConfiguration();
-		HBaseConfiguration.merge(conf, HBaseConfiguration.create(conf));
+  public static void setupJob(Query query, Job job) {
+    Configuration conf = job.getConfiguration();
+    HBaseConfiguration.merge(conf, HBaseConfiguration.create(conf));
 
-		PlasmaType type = getRootType(query);
+    PlasmaType type = getRootType(query);
 
-		Where where = query.getModel().findWhereClause();
-		SelectionCollector selectionCollector = null;
-		if (where != null)
-			selectionCollector = new SelectionCollector(query.getModel()
-					.getSelectClause(), where, type);
-		else
-			selectionCollector = new SelectionCollector(query.getModel()
-					.getSelectClause(), type);
-		selectionCollector.setOnlyDeclaredProperties(false);
+    Where where = query.getModel().findWhereClause();
+    SelectionCollector selectionCollector = null;
+    if (where != null)
+      selectionCollector = new SelectionCollector(query.getModel().getSelectClause(), where, type);
+    else
+      selectionCollector = new SelectionCollector(query.getModel().getSelectClause(), type);
+    selectionCollector.setOnlyDeclaredProperties(false);
 
-	}
+  }
 }

@@ -29,8 +29,8 @@ package org.cloudgraph.common;
  */
 public interface Assembler {
 
-	/**
-	 * Frees associated resources
-	 */
-	public void clear();
+  /**
+   * Frees associated resources
+   */
+  public void clear();
 }

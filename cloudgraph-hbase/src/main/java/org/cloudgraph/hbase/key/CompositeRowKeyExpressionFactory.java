@@ -58,206 +58,192 @@ import commonj.sdo.Type;
  * @author Scott Cinnamond
  * @since 0.5
  */
-public class CompositeRowKeyExpressionFactory extends ByteBufferKeyFactory
-		implements
-			GraphRowKeyExpressionFactory {
-	private static final Log log = LogFactory
-			.getLog(CompositeRowKeyExpressionFactory.class);
+public class CompositeRowKeyExpressionFactory extends ByteBufferKeyFactory implements
+    GraphRowKeyExpressionFactory {
+  private static final Log log = LogFactory.getLog(CompositeRowKeyExpressionFactory.class);
 
-	public CompositeRowKeyExpressionFactory(RowState graphRow) {
-		super(graphRow);
-	}
+  public CompositeRowKeyExpressionFactory(RowState graphRow) {
+    super(graphRow);
+  }
 
-	public CompositeRowKeyExpressionFactory(PlasmaType rootType) {
-		super(rootType);
-	}
+  public CompositeRowKeyExpressionFactory(PlasmaType rootType) {
+    super(rootType);
+  }
 
-	@Override
-	public String createRowKeyExpr(List<KeyValue> values) {
-		StringBuilder result = new StringBuilder();
+  @Override
+  public String createRowKeyExpr(List<KeyValue> values) {
+    StringBuilder result = new StringBuilder();
 
-		if (values == null || values.size() == 0)
-			throw new IllegalArgumentException(
-					"expected non-null, non-zero length list argument 'values'");
+    if (values == null || values.size() == 0)
+      throw new IllegalArgumentException(
+          "expected non-null, non-zero length list argument 'values'");
 
-		String keyValue = null;
-		int i = 0;
-		for (KeyFieldConfig fieldConfig : this.getGraph().getRowKeyFields()) {
-			if (i > 0)
-				this.buf.put(this.getGraph().getRowKeyFieldDelimiterBytes());
-			if (fieldConfig instanceof PreDefinedKeyFieldConfig) {
-				PreDefinedKeyFieldConfig predefinedConfig = (PreDefinedKeyFieldConfig) fieldConfig;
-				keyValue = new String(predefinedConfig.getKeyBytes(this
-						.getRootType()), this.charset);
-			} else if (fieldConfig instanceof UserDefinedRowKeyFieldConfig) {
-				UserDefinedRowKeyFieldConfig userFieldConfig = (UserDefinedRowKeyFieldConfig) fieldConfig;
-				KeyValue found = findTokenValue(
-						userFieldConfig.getPropertyPath(), values);
-				// user has a configuration for this path
-				if (found != null) {
-					keyValue = String.valueOf(found.getValue());
-					if (userFieldConfig.isHash()) {
-						if (found.isWildcard())
-							throw new GraphKeyException(
-									"cannot create wildcard expression for user"
-											+ " defined row-key field with XPath expression '"
-											+ userFieldConfig
-													.getPathExpression()
-											+ "'"
-											+ " for table '"
-											+ this.getTable().getName()
-											+ "' - this field is defined as using an integral hash algorithm which prevents the use of wildcards");
-					} else if (found.isWildcard()) {
-						String expr = getDataFlavorRegex(found.getProp()
-								.getDataFlavor());
-						String replaceExpr = "\\" + found.getWildcard();
-						keyValue = keyValue.replaceAll(replaceExpr, expr);
-					}
-				} else {
-					if (userFieldConfig.isHash())
-						throw new GraphKeyException(
-								"cannot default datatype expression for user"
-										+ " defined row-key field with XPath expression '"
-										+ userFieldConfig.getPathExpression()
-										+ "'"
-										+ " for table '"
-										+ this.getTable().getName()
-										+ "' - this field is defined as using an integral hash algorithm which prevents the use of wildcards");
-					PlasmaProperty prop = (PlasmaProperty) userFieldConfig
-							.getEndpointProperty();
-					keyValue = getDataFlavorRegex(prop.getDataFlavor());
-				}
-			}
+    String keyValue = null;
+    int i = 0;
+    for (KeyFieldConfig fieldConfig : this.getGraph().getRowKeyFields()) {
+      if (i > 0)
+        this.buf.put(this.getGraph().getRowKeyFieldDelimiterBytes());
+      if (fieldConfig instanceof PreDefinedKeyFieldConfig) {
+        PreDefinedKeyFieldConfig predefinedConfig = (PreDefinedKeyFieldConfig) fieldConfig;
+        keyValue = new String(predefinedConfig.getKeyBytes(this.getRootType()), this.charset);
+      } else if (fieldConfig instanceof UserDefinedRowKeyFieldConfig) {
+        UserDefinedRowKeyFieldConfig userFieldConfig = (UserDefinedRowKeyFieldConfig) fieldConfig;
+        KeyValue found = findTokenValue(userFieldConfig.getPropertyPath(), values);
+        // user has a configuration for this path
+        if (found != null) {
+          keyValue = String.valueOf(found.getValue());
+          if (userFieldConfig.isHash()) {
+            if (found.isWildcard())
+              throw new GraphKeyException(
+                  "cannot create wildcard expression for user"
+                      + " defined row-key field with XPath expression '"
+                      + userFieldConfig.getPathExpression()
+                      + "'"
+                      + " for table '"
+                      + this.getTable().getName()
+                      + "' - this field is defined as using an integral hash algorithm which prevents the use of wildcards");
+          } else if (found.isWildcard()) {
+            String expr = getDataFlavorRegex(found.getProp().getDataFlavor());
+            String replaceExpr = "\\" + found.getWildcard();
+            keyValue = keyValue.replaceAll(replaceExpr, expr);
+          }
+        } else {
+          if (userFieldConfig.isHash())
+            throw new GraphKeyException(
+                "cannot default datatype expression for user"
+                    + " defined row-key field with XPath expression '"
+                    + userFieldConfig.getPathExpression()
+                    + "'"
+                    + " for table '"
+                    + this.getTable().getName()
+                    + "' - this field is defined as using an integral hash algorithm which prevents the use of wildcards");
+          PlasmaProperty prop = (PlasmaProperty) userFieldConfig.getEndpointProperty();
+          keyValue = getDataFlavorRegex(prop.getDataFlavor());
+        }
+      }
 
-			if (fieldConfig.isHash()) {
-				keyValue = this.hashing.toString(keyValue);
-			}
+      if (fieldConfig.isHash()) {
+        keyValue = this.hashing.toString(keyValue);
+      }
 
-			result.append(keyValue);
+      result.append(keyValue);
 
-			i++;
-		}
+      i++;
+    }
 
-		return result.toString();
-	}
+    return result.toString();
+  }
 
-	@Override
-	public byte[] createRowKeyExprBytes(List<KeyValue> values) {
+  @Override
+  public byte[] createRowKeyExprBytes(List<KeyValue> values) {
 
-		if (values == null || values.size() == 0)
-			throw new IllegalArgumentException(
-					"expected non-null, non-zero length list argument 'values'");
+    if (values == null || values.size() == 0)
+      throw new IllegalArgumentException(
+          "expected non-null, non-zero length list argument 'values'");
 
-		this.buf.clear();
+    this.buf.clear();
 
-		byte[] keyValue = null;
-		int i = 0;
-		for (KeyFieldConfig fieldConfig : this.getGraph().getRowKeyFields()) {
-			if (i > 0)
-				this.buf.put(this.getGraph().getRowKeyFieldDelimiterBytes());
-			if (fieldConfig instanceof PreDefinedKeyFieldConfig) {
-				PreDefinedKeyFieldConfig predefinedConfig = (PreDefinedKeyFieldConfig) fieldConfig;
-				keyValue = predefinedConfig.getKeyBytes(this.getRootType());
-			} else if (fieldConfig instanceof UserDefinedRowKeyFieldConfig) {
-				UserDefinedRowKeyFieldConfig userFieldConfig = (UserDefinedRowKeyFieldConfig) fieldConfig;
-				KeyValue found = findTokenValue(
-						userFieldConfig.getPropertyPath(), values);
-				// user has a configuration for this path
-				if (found != null) {
-					String keyValueString = String.valueOf(found.getValue());
-					if (userFieldConfig.isHash()) {
-						if (found.isWildcard())
-							throw new GraphKeyException(
-									"cannot create wildcard expression for user"
-											+ " defined row-key field with XPath expression '"
-											+ userFieldConfig
-													.getPathExpression()
-											+ "'"
-											+ " for table '"
-											+ this.getTable().getName()
-											+ "' - this field is defined as using an integral hash algorithm which prevents the use of wildcards");
-					} else if (found.isWildcard()) {
-						String expr = getDataFlavorRegex(found.getProp()
-								.getDataFlavor());
-						String replaceExpr = "\\" + found.getWildcard();
-						keyValueString = keyValueString.replaceAll(replaceExpr,
-								expr);
-					}
-					keyValue = keyValueString.getBytes(charset);
-				} else {
-					if (userFieldConfig.isHash())
-						throw new GraphKeyException(
-								"cannot default datatype expression for user"
-										+ " defined row-key field with XPath expression '"
-										+ userFieldConfig.getPathExpression()
-										+ "'"
-										+ " for table '"
-										+ this.getTable().getName()
-										+ "' - this field is defined as using an integral hash algorithm which prevents the use of wildcards");
-					PlasmaProperty prop = (PlasmaProperty) userFieldConfig
-							.getEndpointProperty();
-					keyValue = getDataFlavorRegex(prop.getDataFlavor())
-							.getBytes(charset);
-				}
-			}
+    byte[] keyValue = null;
+    int i = 0;
+    for (KeyFieldConfig fieldConfig : this.getGraph().getRowKeyFields()) {
+      if (i > 0)
+        this.buf.put(this.getGraph().getRowKeyFieldDelimiterBytes());
+      if (fieldConfig instanceof PreDefinedKeyFieldConfig) {
+        PreDefinedKeyFieldConfig predefinedConfig = (PreDefinedKeyFieldConfig) fieldConfig;
+        keyValue = predefinedConfig.getKeyBytes(this.getRootType());
+      } else if (fieldConfig instanceof UserDefinedRowKeyFieldConfig) {
+        UserDefinedRowKeyFieldConfig userFieldConfig = (UserDefinedRowKeyFieldConfig) fieldConfig;
+        KeyValue found = findTokenValue(userFieldConfig.getPropertyPath(), values);
+        // user has a configuration for this path
+        if (found != null) {
+          String keyValueString = String.valueOf(found.getValue());
+          if (userFieldConfig.isHash()) {
+            if (found.isWildcard())
+              throw new GraphKeyException(
+                  "cannot create wildcard expression for user"
+                      + " defined row-key field with XPath expression '"
+                      + userFieldConfig.getPathExpression()
+                      + "'"
+                      + " for table '"
+                      + this.getTable().getName()
+                      + "' - this field is defined as using an integral hash algorithm which prevents the use of wildcards");
+          } else if (found.isWildcard()) {
+            String expr = getDataFlavorRegex(found.getProp().getDataFlavor());
+            String replaceExpr = "\\" + found.getWildcard();
+            keyValueString = keyValueString.replaceAll(replaceExpr, expr);
+          }
+          keyValue = keyValueString.getBytes(charset);
+        } else {
+          if (userFieldConfig.isHash())
+            throw new GraphKeyException(
+                "cannot default datatype expression for user"
+                    + " defined row-key field with XPath expression '"
+                    + userFieldConfig.getPathExpression()
+                    + "'"
+                    + " for table '"
+                    + this.getTable().getName()
+                    + "' - this field is defined as using an integral hash algorithm which prevents the use of wildcards");
+          PlasmaProperty prop = (PlasmaProperty) userFieldConfig.getEndpointProperty();
+          keyValue = getDataFlavorRegex(prop.getDataFlavor()).getBytes(charset);
+        }
+      }
 
-			if (fieldConfig.isHash()) {
-				keyValue = this.hashing.toStringBytes(keyValue);
-			}
+      if (fieldConfig.isHash()) {
+        keyValue = this.hashing.toStringBytes(keyValue);
+      }
 
-			buf.put(keyValue);
+      buf.put(keyValue);
 
-			i++;
-		}
+      i++;
+    }
 
-		// ByteBuffer.array() returns unsized array so don't sent that back to
-		// clients
-		// to misuse.
-		// Use native arraycopy() method as it uses native memcopy to create
-		// result array
-		// and because and
-		// ByteBuffer.get(byte[] dst,int offset, int length) is not native
-		byte[] result = new byte[this.buf.position()];
-		System.arraycopy(this.buf.array(), this.buf.arrayOffset(), result, 0,
-				this.buf.position());
-		return result;
-	}
+    // ByteBuffer.array() returns unsized array so don't sent that back to
+    // clients
+    // to misuse.
+    // Use native arraycopy() method as it uses native memcopy to create
+    // result array
+    // and because and
+    // ByteBuffer.get(byte[] dst,int offset, int length) is not native
+    byte[] result = new byte[this.buf.position()];
+    System.arraycopy(this.buf.array(), this.buf.arrayOffset(), result, 0, this.buf.position());
+    return result;
+  }
 
-	private KeyValue findTokenValue(String path, List<KeyValue> values) {
-		for (KeyValue pair : values) {
-			if (pair.getPropertyPath().equals(path))
-				return pair;
-		}
-		return null;
-	}
+  private KeyValue findTokenValue(String path, List<KeyValue> values) {
+    for (KeyValue pair : values) {
+      if (pair.getPropertyPath().equals(path))
+        return pair;
+    }
+    return null;
+  }
 
-	private String getDataFlavorRegex(DataFlavor dataFlavor) {
-		switch (dataFlavor) {
-			case integral :
-				return "[0-9\\-]+?";
-			case real :
-				return "[0-9\\-\\.]+?";
-			default :
-				return ".*?"; // any character zero or more times
-		}
-	}
+  private String getDataFlavorRegex(DataFlavor dataFlavor) {
+    switch (dataFlavor) {
+    case integral:
+      return "[0-9\\-]+?";
+    case real:
+      return "[0-9\\-\\.]+?";
+    default:
+      return ".*?"; // any character zero or more times
+    }
+  }
 
-	/**
-	 * Returns true if the data graph configured for the given
-	 * {@link commonj.sdo.Type type} has a user defined token which maps to the
-	 * given property path.
-	 * 
-	 * @param type
-	 *            the SDO type
-	 * @param path
-	 *            the property path
-	 * @return true if the data graph configured for the given
-	 *         {@link commonj.sdo.Type type} has a user defined token which maps
-	 *         to the given property path.
-	 */
-	@Override
-	public boolean hasUserDefinedRowKeyToken(Type type, String path) {
-		return this.getGraph().getUserDefinedRowKeyField(path) != null;
-	}
+  /**
+   * Returns true if the data graph configured for the given
+   * {@link commonj.sdo.Type type} has a user defined token which maps to the
+   * given property path.
+   * 
+   * @param type
+   *          the SDO type
+   * @param path
+   *          the property path
+   * @return true if the data graph configured for the given
+   *         {@link commonj.sdo.Type type} has a user defined token which maps
+   *         to the given property path.
+   */
+  @Override
+  public boolean hasUserDefinedRowKeyToken(Type type, String path) {
+    return this.getGraph().getUserDefinedRowKeyField(path) != null;
+  }
 
 }

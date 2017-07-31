@@ -37,56 +37,53 @@ import org.xml.sax.SAXException;
  * @author Scott Cinnamond
  * @since 0.6.2
  */
-public class ConcurrentNonValidatingDataBinding
-		implements
-			NonValidatingDataBinding {
+public class ConcurrentNonValidatingDataBinding implements NonValidatingDataBinding {
 
-	private NonValidatingUnmarshaler unmarshaler;
+  private NonValidatingUnmarshaler unmarshaler;
 
-	public static Class<?>[] FACTORIES = {org.cloudgraph.state.ObjectFactory.class,};
+  public static Class<?>[] FACTORIES = { org.cloudgraph.state.ObjectFactory.class, };
 
-	public ConcurrentNonValidatingDataBinding() throws JAXBException,
-			SAXException {
-		this.unmarshaler = new NonValidatingUnmarshaler(
-				JAXBContext.newInstance(FACTORIES));
-	}
+  public ConcurrentNonValidatingDataBinding() throws JAXBException, SAXException {
+    this.unmarshaler = new NonValidatingUnmarshaler(JAXBContext.newInstance(FACTORIES));
+  }
 
-	public Class<?>[] getObjectFactories() {
-		return FACTORIES;
-	}
-	@Override
-	public String marshal(Object root) throws JAXBException {
-		synchronized (this) {
-			return unmarshaler.marshal(root);
-		}
-	}
+  public Class<?>[] getObjectFactories() {
+    return FACTORIES;
+  }
 
-	@Override
-	public void marshal(Object root, OutputStream stream) throws JAXBException {
-		synchronized (this) {
-			unmarshaler.marshal(root, stream);
-		}
-	}
+  @Override
+  public String marshal(Object root) throws JAXBException {
+    synchronized (this) {
+      return unmarshaler.marshal(root);
+    }
+  }
 
-	@Override
-	public void marshal(Object root, OutputStream stream,
-			boolean formattedOutput) throws JAXBException {
-		synchronized (this) {
-			unmarshaler.marshal(root, stream, formattedOutput);
-		}
-	}
+  @Override
+  public void marshal(Object root, OutputStream stream) throws JAXBException {
+    synchronized (this) {
+      unmarshaler.marshal(root, stream);
+    }
+  }
 
-	@Override
-	public Object unmarshal(String xml) throws JAXBException {
-		synchronized (this) {
-			return unmarshaler.unmarshal(xml);
-		}
-	}
+  @Override
+  public void marshal(Object root, OutputStream stream, boolean formattedOutput)
+      throws JAXBException {
+    synchronized (this) {
+      unmarshaler.marshal(root, stream, formattedOutput);
+    }
+  }
 
-	@Override
-	public Object unmarshal(InputStream stream) throws JAXBException {
-		synchronized (this) {
-			return unmarshaler.unmarshal(stream);
-		}
-	}
+  @Override
+  public Object unmarshal(String xml) throws JAXBException {
+    synchronized (this) {
+      return unmarshaler.unmarshal(xml);
+    }
+  }
+
+  @Override
+  public Object unmarshal(InputStream stream) throws JAXBException {
+    synchronized (this) {
+      return unmarshaler.unmarshal(stream);
+    }
+  }
 }

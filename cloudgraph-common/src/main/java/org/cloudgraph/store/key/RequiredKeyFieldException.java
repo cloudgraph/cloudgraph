@@ -26,18 +26,18 @@ package org.cloudgraph.store.key;
  * @since 0.7.0
  */
 public class RequiredKeyFieldException extends KeyException {
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	public RequiredKeyFieldException() {
-		super();
-	}
+  public RequiredKeyFieldException() {
+    super();
+  }
 
-	public RequiredKeyFieldException(String msg) {
-		super(msg);
-	}
+  public RequiredKeyFieldException(String msg) {
+    super(msg);
+  }
 
-	public RequiredKeyFieldException(Throwable t) {
-		super(t);
-	}
+  public RequiredKeyFieldException(Throwable t) {
+    super(t);
+  }
 
 }

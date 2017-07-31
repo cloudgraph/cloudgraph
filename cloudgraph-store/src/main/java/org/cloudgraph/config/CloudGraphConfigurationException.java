@@ -27,20 +27,19 @@ import org.cloudgraph.common.CloudGraphRuntimeException;
  * @author Scott Cinnamond
  * @since 0.5
  */
-public class CloudGraphConfigurationException
-		extends
-			CloudGraphRuntimeException {
-	private static final long serialVersionUID = 1L;
-	public CloudGraphConfigurationException(String message) {
-		super(message);
-	}
+public class CloudGraphConfigurationException extends CloudGraphRuntimeException {
+  private static final long serialVersionUID = 1L;
 
-	public CloudGraphConfigurationException(Throwable t) {
-		super(t);
-	}
+  public CloudGraphConfigurationException(String message) {
+    super(message);
+  }
 
-	public CloudGraphConfigurationException(String message, Throwable cause) {
-		super(message, cause);
-	}
+  public CloudGraphConfigurationException(Throwable t) {
+    super(t);
+  }
+
+  public CloudGraphConfigurationException(String message, Throwable cause) {
+    super(message, cause);
+  }
 
 }

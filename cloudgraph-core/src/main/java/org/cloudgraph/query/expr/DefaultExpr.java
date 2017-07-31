@@ -28,13 +28,13 @@ package org.cloudgraph.query.expr;
  * @since 0.5.2
  */
 public abstract class DefaultExpr {
-	protected DefaultExpr() {
-		super();
-	}
+  protected DefaultExpr() {
+    super();
+  }
 
-	public String toString() {
-		StringBuilder buf = new StringBuilder();
-		buf.append(this.getClass().getSimpleName());
-		return buf.toString();
-	}
+  public String toString() {
+    StringBuilder buf = new StringBuilder();
+    buf.append(this.getClass().getSimpleName());
+    return buf.toString();
+  }
 }

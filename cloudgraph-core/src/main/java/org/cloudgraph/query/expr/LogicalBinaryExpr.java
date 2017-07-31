@@ -32,10 +32,10 @@ import org.plasma.query.model.LogicalOperator;
  * @since 0.5.2
  */
 public interface LogicalBinaryExpr extends BinaryExpr {
-	/**
-	 * Returns the logical operator.
-	 * 
-	 * @return the logical operator.
-	 */
-	public LogicalOperator getOperator();
+  /**
+   * Returns the logical operator.
+   * 
+   * @return the logical operator.
+   */
+  public LogicalOperator getOperator();
 }

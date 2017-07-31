@@ -32,10 +32,10 @@ import org.plasma.query.model.ArithmeticOperator;
  * @since 0.5.2
  */
 public interface ArithmeticBinaryExpr extends BinaryExpr {
-	/**
-	 * Returns the arithmetic operator.
-	 * 
-	 * @return the arithmetic operator.
-	 */
-	public ArithmeticOperator getOperator();
+  /**
+   * Returns the arithmetic operator.
+   * 
+   * @return the arithmetic operator.
+   */
+  public ArithmeticOperator getOperator();
 }

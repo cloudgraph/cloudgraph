@@ -26,68 +26,68 @@ import commonj.sdo.DataGraph;
 import commonj.sdo.Type;
 
 public class GraphXmlTest extends CommonTest {
-	static final Log log = LogFactory.getLog(GraphXmlTest.class);
+  static final Log log = LogFactory.getLog(GraphXmlTest.class);
 
-	private MapDriver<LongWritable, GraphWritable, Text, Text> mapDriver;
-	private ReduceDriver<Text, Text, Text, Text> reduceDriver;
-	private MapReduceDriver<LongWritable, Text, Text, Text, Text, Text> mapReduceDriver;
+  private MapDriver<LongWritable, GraphWritable, Text, Text> mapDriver;
+  private ReduceDriver<Text, Text, Text, Text> reduceDriver;
+  private MapReduceDriver<LongWritable, Text, Text, Text, Text, Text> mapReduceDriver;
 
-	public static Test suite() {
-		return CommonTestSetup.newTestSetup(GraphXmlTest.class);
-	}
+  public static Test suite() {
+    return CommonTestSetup.newTestSetup(GraphXmlTest.class);
+  }
 
-	public void setUp() {
-		TestMapper mapper = new TestMapper();
-		mapDriver = MapDriver.newMapDriver(mapper);
-	}
+  public void setUp() {
+    TestMapper mapper = new TestMapper();
+    mapDriver = MapDriver.newMapDriver(mapper);
+  }
 
-	public void testMapper() throws IOException {
+  public void testMapper() throws IOException {
 
-		DataGraph dataGraph = PlasmaDataFactory.INSTANCE.createDataGraph();
-		dataGraph.getChangeSummary().beginLogging(); // log changes from this
-														// point
-		Type rootType = PlasmaTypeHelper.INSTANCE.getType(Actor.class);
-		Actor root = (Actor) dataGraph.createRootObject(rootType);
-		root.setName("actor 1");
-		Blog blog = root.createBlog();
-		blog.setName("my blog");
+    DataGraph dataGraph = PlasmaDataFactory.INSTANCE.createDataGraph();
+    dataGraph.getChangeSummary().beginLogging(); // log changes from this
+    // point
+    Type rootType = PlasmaTypeHelper.INSTANCE.getType(Actor.class);
+    Actor root = (Actor) dataGraph.createRootObject(rootType);
+    root.setName("actor 1");
+    Blog blog = root.createBlog();
+    blog.setName("my blog");
 
-		mapDriver.withInput(new LongWritable(1), new GraphWritable(dataGraph));
-		mapDriver.runTest();
-	}
+    mapDriver.withInput(new LongWritable(1), new GraphWritable(dataGraph));
+    mapDriver.runTest();
+  }
 
-	public void testInputFormat() throws IOException {
+  public void testInputFormat() throws IOException {
 
-		DataGraph dataGraph = PlasmaDataFactory.INSTANCE.createDataGraph();
-		dataGraph.getChangeSummary().beginLogging(); // log changes from this
-														// point
-		Type rootType = PlasmaTypeHelper.INSTANCE.getType(Actor.class);
-		Actor root = (Actor) dataGraph.createRootObject(rootType);
-		root.setName("actor 1");
-		Blog blog = root.createBlog();
-		blog.setName("my blog");
+    DataGraph dataGraph = PlasmaDataFactory.INSTANCE.createDataGraph();
+    dataGraph.getChangeSummary().beginLogging(); // log changes from this
+    // point
+    Type rootType = PlasmaTypeHelper.INSTANCE.getType(Actor.class);
+    Actor root = (Actor) dataGraph.createRootObject(rootType);
+    root.setName("actor 1");
+    Blog blog = root.createBlog();
+    blog.setName("my blog");
 
-		mapDriver.withInput(new LongWritable(1), new GraphWritable(dataGraph));
-		mapDriver.runTest();
-	}
+    mapDriver.withInput(new LongWritable(1), new GraphWritable(dataGraph));
+    mapDriver.runTest();
+  }
 
-	public class TestMapper extends GraphXmlMapper<Text, Text> {
-		@Override
-		public void map(LongWritable k, GraphWritable v, Context context) {
-			try {
-				log.info(v.toXMLString());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
+  public class TestMapper extends GraphXmlMapper<Text, Text> {
+    @Override
+    public void map(LongWritable k, GraphWritable v, Context context) {
+      try {
+        log.info(v.toXMLString());
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+  }
 
-	public static class TestReducer extends Reducer<Text, Text, Text, Text> {
-		private Text result = new Text();
+  public static class TestReducer extends Reducer<Text, Text, Text, Text> {
+    private Text result = new Text();
 
-		public void reduce(Text key, Iterable<Text> values, Context context)
-				throws IOException, InterruptedException {
-		}
-	}
+    public void reduce(Text key, Iterable<Text> values, Context context) throws IOException,
+        InterruptedException {
+    }
+  }
 
 }

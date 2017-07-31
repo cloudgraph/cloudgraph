@@ -34,17 +34,17 @@ package org.cloudgraph.hbase.io;
  */
 public class UUIDMismatchException extends OperationException {
 
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	public UUIDMismatchException() {
-		super();
-	}
+  public UUIDMismatchException() {
+    super();
+  }
 
-	public UUIDMismatchException(String msg) {
-		super(msg);
-	}
+  public UUIDMismatchException(String msg) {
+    super(msg);
+  }
 
-	public UUIDMismatchException(Throwable t) {
-		super(t);
-	}
+  public UUIDMismatchException(Throwable t) {
+    super(t);
+  }
 }

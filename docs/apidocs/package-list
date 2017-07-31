@@ -22,6 +22,7 @@ org.cloudgraph.rdb.graph
 org.cloudgraph.rdb.service
 org.cloudgraph.recognizer
 org.cloudgraph.state
+org.cloudgraph.state.proto
 org.cloudgraph.store.key
 org.cloudgraph.store.lang
 org.cloudgraph.store.service

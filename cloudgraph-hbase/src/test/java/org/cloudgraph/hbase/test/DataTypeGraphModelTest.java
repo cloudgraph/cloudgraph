@@ -43,166 +43,157 @@ import commonj.sdo.Property;
  * @since 0.5
  */
 public abstract class DataTypeGraphModelTest extends HBaseTestCase {
-	private static Log log = LogFactory.getLog(DataTypeGraphModelTest.class);
+  private static Log log = LogFactory.getLog(DataTypeGraphModelTest.class);
 
-	protected int maxLevels = 1;
-	protected int maxRows = 6; // Some tests slice for name on third child, so
-								// keep at least 3 rows
+  protected int maxLevels = 1;
+  protected int maxRows = 6; // Some tests slice for name on third child, so
 
-	protected void fillGraph(Node root, long id, Date now, String namePrefix) {
-		Node parent = root;
-		for (int i = 0; i < maxRows; i++) {
-			Node child = parent.createChild();
-			fillNode(child, id, now, namePrefix, 1, i);
-			/*
-			 * for (int j = 0; j < maxRows; j++) { Node child2 =
-			 * child.createChild(); fillNode(child2, id, now, namePrefix, 2, j);
-			 * for (int k = 0; k < maxRows; k++) { Node child3 =
-			 * child2.createChild(); fillNode(child3, id, now, namePrefix, 3,
-			 * k); } }
-			 */
-		}
-		// addNodes(root, id, now,
-		// maxLevels, 1,
-		// maxRows);
-	}
+  // keep at least 3 rows
 
-	protected void addNodes(Node parent, long id, Date now, String namePrefix,
-			long maxLevels, long level, long maxRows) {
+  protected void fillGraph(Node root, long id, Date now, String namePrefix) {
+    Node parent = root;
+    for (int i = 0; i < maxRows; i++) {
+      Node child = parent.createChild();
+      fillNode(child, id, now, namePrefix, 1, i);
+      /*
+       * for (int j = 0; j < maxRows; j++) { Node child2 = child.createChild();
+       * fillNode(child2, id, now, namePrefix, 2, j); for (int k = 0; k <
+       * maxRows; k++) { Node child3 = child2.createChild(); fillNode(child3,
+       * id, now, namePrefix, 3, k); } }
+       */
+    }
+    // addNodes(root, id, now,
+    // maxLevels, 1,
+    // maxRows);
+  }
 
-		for (int i = 0; i < maxRows; i++) {
-			Node child = parent.createChild();
-			fillNode(child, id, now, namePrefix, level, i);
-			if (level < maxLevels)
-				addNodes(child, id, now, namePrefix, maxLevels, level++,
-						maxRows);
-		}
-	}
+  protected void addNodes(Node parent, long id, Date now, String namePrefix, long maxLevels,
+      long level, long maxRows) {
 
-	protected Node fillNode(Node node, long id, Date now, String namePrefix,
-			long level, long sequence) {
-		return fillNode(node, id, id, now, namePrefix, level, sequence);
-	}
+    for (int i = 0; i < maxRows; i++) {
+      Node child = parent.createChild();
+      fillNode(child, id, now, namePrefix, level, i);
+      if (level < maxLevels)
+        addNodes(child, id, now, namePrefix, maxLevels, level++, maxRows);
+    }
+  }
 
-	protected Node fillNode(Node node, long rootId, long id, Date now,
-			String namePrefix, long level, long sequence) {
-		String name = namePrefix + "_" + level + "_" + sequence;
+  protected Node fillNode(Node node, long id, Date now, String namePrefix, long level, long sequence) {
+    return fillNode(node, id, id, now, namePrefix, level, sequence);
+  }
 
-		long temp = id - (long) 1357000000000L;
-		// log.info("id: " + id);
-		// log.info("reduced id: " + temp);
+  protected Node fillNode(Node node, long rootId, long id, Date now, String namePrefix, long level,
+      long sequence) {
+    String name = namePrefix + "_" + level + "_" + sequence;
 
-		double doubleId = (double) temp * (double) 0.001;
-		float floatId = Double.valueOf(doubleId).floatValue();
+    long temp = id - (long) 1357000000000L;
+    // log.info("id: " + id);
+    // log.info("reduced id: " + temp);
 
-		node.setRootId(rootId);
-		node.setLevelNum(level);
-		node.setSequenceNum(sequence);
+    double doubleId = (double) temp * (double) 0.001;
+    float floatId = Double.valueOf(doubleId).floatValue();
 
-		node.setName(name);
-		node.setBooleanField(true);
-		node.setByteField((byte) 1);
-		node.setBytesField(name.getBytes());
-		node.setCharacterField('c');
+    node.setRootId(rootId);
+    node.setLevelNum(level);
+    node.setSequenceNum(sequence);
 
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(now);
-		cal.add(Calendar.DAY_OF_YEAR, (int) sequence);
+    node.setName(name);
+    node.setBooleanField(true);
+    node.setByteField((byte) 1);
+    node.setBytesField(name.getBytes());
+    node.setCharacterField('c');
 
-		node.setDateField(cal.getTime());
+    Calendar cal = Calendar.getInstance();
+    cal.setTime(now);
+    cal.add(Calendar.DAY_OF_YEAR, (int) sequence);
 
-		Property prop = node.getType().getProperty(Node.DATE_TIME_FIELD);
-		node.setDateTimeField((String) DataConverter.INSTANCE.fromDate(
-				prop.getType(), cal.getTime()));
+    node.setDateField(cal.getTime());
 
-		prop = node.getType().getProperty(Node.DAY_FIELD);
-		node.setDayField((String) DataConverter.INSTANCE.fromDate(
-				prop.getType(), cal.getTime()));
+    Property prop = node.getType().getProperty(Node.DATE_TIME_FIELD);
+    node.setDateTimeField((String) DataConverter.INSTANCE.fromDate(prop.getType(), cal.getTime()));
 
-		prop = node.getType().getProperty(Node.MONTH_FIELD);
-		node.setMonthField((String) DataConverter.INSTANCE.fromDate(
-				prop.getType(), cal.getTime()));
+    prop = node.getType().getProperty(Node.DAY_FIELD);
+    node.setDayField((String) DataConverter.INSTANCE.fromDate(prop.getType(), cal.getTime()));
 
-		prop = node.getType().getProperty(Node.MONTH_DAY_FIELD);
-		node.setMonthDayField((String) DataConverter.INSTANCE.fromDate(
-				prop.getType(), cal.getTime()));
+    prop = node.getType().getProperty(Node.MONTH_FIELD);
+    node.setMonthField((String) DataConverter.INSTANCE.fromDate(prop.getType(), cal.getTime()));
 
-		prop = node.getType().getProperty(Node.YEAR_FIELD);
-		node.setYearField((String) DataConverter.INSTANCE.fromDate(
-				prop.getType(), cal.getTime()));
+    prop = node.getType().getProperty(Node.MONTH_DAY_FIELD);
+    node.setMonthDayField((String) DataConverter.INSTANCE.fromDate(prop.getType(), cal.getTime()));
 
-		prop = node.getType().getProperty(Node.YEAR_MONTH_FIELD);
-		node.setYearMonthField((String) DataConverter.INSTANCE.fromDate(
-				prop.getType(), cal.getTime()));
+    prop = node.getType().getProperty(Node.YEAR_FIELD);
+    node.setYearField((String) DataConverter.INSTANCE.fromDate(prop.getType(), cal.getTime()));
 
-		prop = node.getType().getProperty(Node.YEAR_MONTH_DAY_FIELD);
-		node.setYearMonthDayField((String) DataConverter.INSTANCE.fromDate(
-				prop.getType(), cal.getTime()));
+    prop = node.getType().getProperty(Node.YEAR_MONTH_FIELD);
+    node.setYearMonthField((String) DataConverter.INSTANCE.fromDate(prop.getType(), cal.getTime()));
 
-		prop = node.getType().getProperty(Node.TIME_FIELD);
-		node.setTimeField((String) DataConverter.INSTANCE.fromDate(
-				prop.getType(), cal.getTime()));
+    prop = node.getType().getProperty(Node.YEAR_MONTH_DAY_FIELD);
+    node.setYearMonthDayField((String) DataConverter.INSTANCE.fromDate(prop.getType(),
+        cal.getTime()));
 
-		node.setDecimalField(new BigDecimal(doubleId));
-		node.setDoubleField(doubleId);
-		// node.setDurationField();
-		node.setFloatField(floatId);
+    prop = node.getType().getProperty(Node.TIME_FIELD);
+    node.setTimeField((String) DataConverter.INSTANCE.fromDate(prop.getType(), cal.getTime()));
 
-		node.setIntField(Integer.MAX_VALUE);
-		node.setIntegerField(BigInteger.valueOf(id));
+    node.setDecimalField(new BigDecimal(doubleId));
+    node.setDoubleField(doubleId);
+    // node.setDurationField();
+    node.setFloatField(floatId);
 
-		node.setLongField(id);
+    node.setIntField(Integer.MAX_VALUE);
+    node.setIntegerField(BigInteger.valueOf(id));
 
-		node.setObjectField(name);
-		node.setShortField(Short.MAX_VALUE);
-		node.setStringField(name);
-		List<String> list = new ArrayList<String>();
-		list.add(name);
-		node.setStringsField(list);
-		node.setUriField(name);
-		return node;
-	}
+    node.setLongField(id);
 
-	protected Node fetchGraphFull(long id) {
-		QNode query = createGraphQueryFull(id);
-		this.marshal(query.getModel(), id);
+    node.setObjectField(name);
+    node.setShortField(Short.MAX_VALUE);
+    node.setStringField(name);
+    List<String> list = new ArrayList<String>();
+    list.add(name);
+    node.setStringsField(list);
+    node.setUriField(name);
+    return node;
+  }
 
-		DataGraph[] result = service.find(query);
-		assertTrue(result != null);
-		assertTrue(result.length == 1);
+  protected Node fetchGraphFull(long id) {
+    QNode query = createGraphQueryFull(id);
+    this.marshal(query.getModel(), id);
 
-		return (Node) result[0].getRootObject();
-	}
+    DataGraph[] result = service.find(query);
+    assertTrue(result != null);
+    assertTrue(result.length == 1);
 
-	protected QNode createGraphQueryFull(long id) {
-		QNode root = QNode.newQuery();
-		root.select(root.wildcard());
-		root.select(root.child().wildcard());
-		root.select(root.child().child().wildcard());
-		root.select(root.child().child().child().wildcard());
-		root.select(root.child().child().child().child().wildcard());
+    return (Node) result[0].getRootObject();
+  }
 
-		root.where(root.rootId().eq(id));
-		// root.where(root.creationDate().between(new Date(), new Date()));
-		return root;
-	}
+  protected QNode createGraphQueryFull(long id) {
+    QNode root = QNode.newQuery();
+    root.select(root.wildcard());
+    root.select(root.child().wildcard());
+    root.select(root.child().child().wildcard());
+    root.select(root.child().child().child().wildcard());
+    root.select(root.child().child().child().child().wildcard());
 
-	protected Node fetchGraphSlice(long id, String name) {
-		QNode root = QNode.newQuery();
-		Expression predicate = root.name().eq(name);
-		root.select(root.wildcard());
-		root.select(root.child(predicate).wildcard());
-		root.select(root.child(predicate).child().wildcard());
-		root.select(root.child(predicate).child().child().wildcard());
-		root.select(root.child(predicate).child().child().child().wildcard());
+    root.where(root.rootId().eq(id));
+    // root.where(root.creationDate().between(new Date(), new Date()));
+    return root;
+  }
 
-		root.where(root.rootId().eq(id));
+  protected Node fetchGraphSlice(long id, String name) {
+    QNode root = QNode.newQuery();
+    Expression predicate = root.name().eq(name);
+    root.select(root.wildcard());
+    root.select(root.child(predicate).wildcard());
+    root.select(root.child(predicate).child().wildcard());
+    root.select(root.child(predicate).child().child().wildcard());
+    root.select(root.child(predicate).child().child().child().wildcard());
 
-		DataGraph[] result = service.find(root);
-		assertTrue(result != null);
-		assertTrue(result.length == 1);
+    root.where(root.rootId().eq(id));
 
-		return (Node) result[0].getRootObject();
-	}
+    DataGraph[] result = service.find(root);
+    assertTrue(result != null);
+    assertTrue(result.length == 1);
+
+    return (Node) result[0].getRootObject();
+  }
 
 }

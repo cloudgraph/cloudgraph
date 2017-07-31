@@ -26,26 +26,30 @@ package org.cloudgraph.common.concurrent;
  * @since 0.6.2
  */
 public class ConfigProps {
-	private int minThreadPoolSize;
-	private int maxThreadPoolSize;
-	private int maxThreadDepth;
-	@SuppressWarnings("unused")
-	private ConfigProps() {
-	}
-	public ConfigProps(int minThreadPoolSize, int maxThreadPoolSize,
-			int maxThreadDepth) {
-		super();
-		this.minThreadPoolSize = minThreadPoolSize;
-		this.maxThreadPoolSize = maxThreadPoolSize;
-		this.maxThreadDepth = maxThreadDepth;
-	}
-	public int getMinThreadPoolSize() {
-		return minThreadPoolSize;
-	}
-	public int getMaxThreadPoolSize() {
-		return maxThreadPoolSize;
-	}
-	public int getMaxThreadDepth() {
-		return maxThreadDepth;
-	}
+  private int minThreadPoolSize;
+  private int maxThreadPoolSize;
+  private int maxThreadDepth;
+
+  @SuppressWarnings("unused")
+  private ConfigProps() {
+  }
+
+  public ConfigProps(int minThreadPoolSize, int maxThreadPoolSize, int maxThreadDepth) {
+    super();
+    this.minThreadPoolSize = minThreadPoolSize;
+    this.maxThreadPoolSize = maxThreadPoolSize;
+    this.maxThreadDepth = maxThreadDepth;
+  }
+
+  public int getMinThreadPoolSize() {
+    return minThreadPoolSize;
+  }
+
+  public int getMaxThreadPoolSize() {
+    return maxThreadPoolSize;
+  }
+
+  public int getMaxThreadDepth() {
+    return maxThreadDepth;
+  }
 }

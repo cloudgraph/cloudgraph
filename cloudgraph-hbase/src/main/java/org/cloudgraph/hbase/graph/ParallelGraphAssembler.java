@@ -78,67 +78,62 @@ import org.plasma.sdo.PlasmaType;
  * @since 0.6.2
  */
 public class ParallelGraphAssembler extends DistributedAssembler {
-	/**
-	 * Thread pool shared by all tasks created by this assembler.
-	 */
-	private ThreadPoolExecutor executorService;
-	private ConfigProps config;
+  /**
+   * Thread pool shared by all tasks created by this assembler.
+   */
+  private ThreadPoolExecutor executorService;
+  private ConfigProps config;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param rootType
-	 *            the SDO root type for the result data graph
-	 * @param selection
-	 *            selected SDO properties. Properties are mapped by selected
-	 *            types required in the result graph.
-	 * @param snapshotDate
-	 *            the query snapshot date which is populated into every data
-	 *            object in the result data graph.
-	 * @param distributedReader
-	 *            the distributed reader
-	 * @param minPoolSize
-	 *            the minimum or core size of the underlying thread pool used
-	 *            for all tasks executed under this assembler
-	 * @param maxPoolSize
-	 *            the maximum size of the underlying thread pool used for all
-	 *            tasks executed under this assembler
-	 */
-	public ParallelGraphAssembler(PlasmaType rootType, Selection selection,
-			DistributedReader distributedReader, Timestamp snapshotDate,
-			ConfigProps config) {
-		super(rootType, selection, distributedReader, snapshotDate);
+  /**
+   * Constructor.
+   * 
+   * @param rootType
+   *          the SDO root type for the result data graph
+   * @param selection
+   *          selected SDO properties. Properties are mapped by selected types
+   *          required in the result graph.
+   * @param snapshotDate
+   *          the query snapshot date which is populated into every data object
+   *          in the result data graph.
+   * @param distributedReader
+   *          the distributed reader
+   * @param minPoolSize
+   *          the minimum or core size of the underlying thread pool used for
+   *          all tasks executed under this assembler
+   * @param maxPoolSize
+   *          the maximum size of the underlying thread pool used for all tasks
+   *          executed under this assembler
+   */
+  public ParallelGraphAssembler(PlasmaType rootType, Selection selection,
+      DistributedReader distributedReader, Timestamp snapshotDate, ConfigProps config) {
+    super(rootType, selection, distributedReader, snapshotDate);
 
-		this.executorService = new ThreadPoolExecutor(
-				config.getMinThreadPoolSize(), config.getMaxThreadPoolSize(),
-				0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
-				new ThreadPoolExecutor.CallerRunsPolicy());
-		this.config = config;
-	}
+    this.executorService = new ThreadPoolExecutor(config.getMinThreadPoolSize(),
+        config.getMaxThreadPoolSize(), 0L, TimeUnit.MILLISECONDS,
+        new LinkedBlockingQueue<Runnable>(), new ThreadPoolExecutor.CallerRunsPolicy());
+    this.config = config;
+  }
 
-	public ThreadPoolExecutor getExecutorService() {
-		return executorService;
-	}
+  public ThreadPoolExecutor getExecutorService() {
+    return executorService;
+  }
 
-	public ConfigProps getConfig() {
-		return config;
-	}
+  public ConfigProps getConfig() {
+    return config;
+  }
 
-	/**
-	 * Creates a single task and begins the traversal from root in the current
-	 * thread.
-	 */
-	@Override
-	protected void assemble(PlasmaDataObject target, long targetSequence,
-			EdgeReader sourceCollection, PlasmaDataObject source,
-			PlasmaProperty sourceProperty, RowReader rowReader, int level)
-			throws IOException {
+  /**
+   * Creates a single task and begins the traversal from root in the current
+   * thread.
+   */
+  @Override
+  protected void assemble(PlasmaDataObject target, long targetSequence,
+      EdgeReader sourceCollection, PlasmaDataObject source, PlasmaProperty sourceProperty,
+      RowReader rowReader, int level) throws IOException {
 
-		ParallelSubgraphTask task = new ParallelSubgraphTask(target,
-				targetSequence, this.selection, this.snapshotDate,
-				this.distributedReader, sourceCollection, source,
-				sourceProperty, rowReader, level, 0, this.executorService,
-				this.config);
-		task.assemble(); // in current thread.
-	}
+    ParallelSubgraphTask task = new ParallelSubgraphTask(target, targetSequence, this.selection,
+        this.snapshotDate, this.distributedReader, sourceCollection, source, sourceProperty,
+        rowReader, level, 0, this.executorService, this.config);
+    task.assemble(); // in current thread.
+  }
 }

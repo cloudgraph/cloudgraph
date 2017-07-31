@@ -31,19 +31,19 @@ package org.cloudgraph.query.expr;
  */
 public interface Expr extends Term {
 
-	/**
-	 * Returns a "truth" value for the expression based on the given context.
-	 * 
-	 * @param context
-	 * @return a "truth" value for the expression based on the given context.
-	 */
-	public boolean evaluate(EvaluationContext context);
+  /**
+   * Returns a "truth" value for the expression based on the given context.
+   * 
+   * @param context
+   * @return a "truth" value for the expression based on the given context.
+   */
+  public boolean evaluate(EvaluationContext context);
 
-	/**
-	 * Begins the traversal of the expression as a root.
-	 * 
-	 * @param visitor
-	 *            the traversal visitor
-	 */
-	public void accept(ExprVisitor visitor);
+  /**
+   * Begins the traversal of the expression as a root.
+   * 
+   * @param visitor
+   *          the traversal visitor
+   */
+  public void accept(ExprVisitor visitor);
 }

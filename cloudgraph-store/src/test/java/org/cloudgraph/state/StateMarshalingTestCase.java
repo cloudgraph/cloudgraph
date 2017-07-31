@@ -44,90 +44,83 @@ import org.xml.sax.SAXException;
  * @since 0.5.2
  */
 public class StateMarshalingTestCase extends StateTestCase {
-	private static Log log = LogFactory.getLog(StateMarshalingTestCase.class);
+  private static Log log = LogFactory.getLog(StateMarshalingTestCase.class);
 
-	private ValidatingDataBinding binding;
+  private ValidatingDataBinding binding;
 
-	public void setUp() throws Exception {
-	}
+  public void setUp() throws Exception {
+  }
 
-	public void testBindingUnmarshal() throws JAXBException, SAXException,
-			FileNotFoundException {
-		this.binding = new StateValidatingDataBinding();
-		File file = new File("./src/test/resources/state-example.xml");
-		FileInputStream stream = new FileInputStream(file);
-		StateModel root = (StateModel) this.binding.validate(stream);
-		String xml = this.binding.marshal(root);
-		log.info(xml);
-	}
+  public void testBindingUnmarshal() throws JAXBException, SAXException, FileNotFoundException {
+    this.binding = new StateValidatingDataBinding();
+    File file = new File("./src/test/resources/state-example.xml");
+    FileInputStream stream = new FileInputStream(file);
+    StateModel root = (StateModel) this.binding.validate(stream);
+    String xml = this.binding.marshal(root);
+    log.info(xml);
+  }
 
-	public void testBindingMarshal() throws JAXBException, SAXException,
-			FileNotFoundException {
-		StateMarshalingContext context = new SimpleStateMarshallingContext(
-				new StateNonValidatingDataBinding());
-		SequenceGenerator state = new BindingSequenceGenerator(context);
-		String xml = state.marshalAsString(true);
-		log.info("marshal: " + xml);
-	}
+  public void testBindingMarshal() throws JAXBException, SAXException, FileNotFoundException {
+    StateMarshalingContext context = new SimpleStateMarshallingContext(
+        new StateNonValidatingDataBinding());
+    SequenceGenerator state = new BindingSequenceGenerator(context);
+    String xml = state.marshalAsString(true);
+    log.info("marshal: " + xml);
+  }
 
-	public void testProtoMarshal() throws JAXBException, SAXException,
-			FileNotFoundException {
-		SequenceGenerator state = new ProtoSequenceGenerator(/*
-															 * java.util.UUID.
-															 * randomUUID()
-															 */);
-		PlasmaType typeActor = (PlasmaType) PlasmaTypeHelper.INSTANCE
-				.getType(Actor.class);
-		assertFalse(state.hasLastSequence(typeActor));
-		state.nextSequence(typeActor);
-		state.nextSequence(typeActor);
-		state.nextSequence(typeActor);
-		assertTrue(state.hasLastSequence(typeActor));
-		assertTrue(state.lastSequence(typeActor) == 3);
+  public void testProtoMarshal() throws JAXBException, SAXException, FileNotFoundException {
+    SequenceGenerator state = new ProtoSequenceGenerator(/*
+                                                          * java.util.UUID.
+                                                          * randomUUID()
+                                                          */);
+    PlasmaType typeActor = (PlasmaType) PlasmaTypeHelper.INSTANCE.getType(Actor.class);
+    assertFalse(state.hasLastSequence(typeActor));
+    state.nextSequence(typeActor);
+    state.nextSequence(typeActor);
+    state.nextSequence(typeActor);
+    assertTrue(state.hasLastSequence(typeActor));
+    assertTrue(state.lastSequence(typeActor) == 3);
 
-		PlasmaType typeBlog = (PlasmaType) PlasmaTypeHelper.INSTANCE
-				.getType(Blog.class);
-		assertFalse(state.hasLastSequence(typeBlog));
-		state.nextSequence(typeBlog);
-		state.nextSequence(typeBlog);
-		assertTrue(state.hasLastSequence(typeBlog));
-		assertTrue(state.lastSequence(typeBlog) == 2);
+    PlasmaType typeBlog = (PlasmaType) PlasmaTypeHelper.INSTANCE.getType(Blog.class);
+    assertFalse(state.hasLastSequence(typeBlog));
+    state.nextSequence(typeBlog);
+    state.nextSequence(typeBlog);
+    assertTrue(state.hasLastSequence(typeBlog));
+    assertTrue(state.lastSequence(typeBlog) == 2);
 
-		PlasmaType typeStory = (PlasmaType) PlasmaTypeHelper.INSTANCE
-				.getType(Story.class);
-		assertFalse(state.hasLastSequence(typeStory));
-		state.nextSequence(typeStory);
-		assertTrue(state.hasLastSequence(typeStory));
-		state.nextSequence(typeStory);
-		state.nextSequence(typeStory);
-		state.nextSequence(typeStory);
-		state.nextSequence(typeStory);
-		assertTrue(state.hasLastSequence(typeStory));
-		assertTrue(state.lastSequence(typeStory) == 5);
+    PlasmaType typeStory = (PlasmaType) PlasmaTypeHelper.INSTANCE.getType(Story.class);
+    assertFalse(state.hasLastSequence(typeStory));
+    state.nextSequence(typeStory);
+    assertTrue(state.hasLastSequence(typeStory));
+    state.nextSequence(typeStory);
+    state.nextSequence(typeStory);
+    state.nextSequence(typeStory);
+    state.nextSequence(typeStory);
+    assertTrue(state.hasLastSequence(typeStory));
+    assertTrue(state.lastSequence(typeStory) == 5);
 
-		byte[] content = state.marshal();
+    byte[] content = state.marshal();
 
-		// unmarshal current state and check it
-		state = new ProtoSequenceGenerator(content);
-		assertTrue(state.hasLastSequence(typeActor));
-		assertTrue(state.lastSequence(typeActor) == 3);
-		assertTrue(state.hasLastSequence(typeBlog));
-		assertTrue(state.lastSequence(typeBlog) == 2);
-		assertTrue(state.hasLastSequence(typeStory));
-		assertTrue(state.lastSequence(typeStory) == 5);
+    // unmarshal current state and check it
+    state = new ProtoSequenceGenerator(content);
+    assertTrue(state.hasLastSequence(typeActor));
+    assertTrue(state.lastSequence(typeActor) == 3);
+    assertTrue(state.hasLastSequence(typeBlog));
+    assertTrue(state.lastSequence(typeBlog) == 2);
+    assertTrue(state.hasLastSequence(typeStory));
+    assertTrue(state.lastSequence(typeStory) == 5);
 
-		PlasmaType typeFriendship = (PlasmaType) PlasmaTypeHelper.INSTANCE
-				.getType(Friendship.class);
-		assertFalse(state.hasLastSequence(typeFriendship));
-		state.nextSequence(typeFriendship);
-		assertTrue(state.hasLastSequence(typeFriendship));
-		state.nextSequence(typeFriendship);
-		state.nextSequence(typeFriendship);
-		assertTrue(state.hasLastSequence(typeFriendship));
-		assertTrue(state.lastSequence(typeFriendship) == 3);
+    PlasmaType typeFriendship = (PlasmaType) PlasmaTypeHelper.INSTANCE.getType(Friendship.class);
+    assertFalse(state.hasLastSequence(typeFriendship));
+    state.nextSequence(typeFriendship);
+    assertTrue(state.hasLastSequence(typeFriendship));
+    state.nextSequence(typeFriendship);
+    state.nextSequence(typeFriendship);
+    assertTrue(state.hasLastSequence(typeFriendship));
+    assertTrue(state.lastSequence(typeFriendship) == 3);
 
-		content = state.marshal();
+    content = state.marshal();
 
-	}
+  }
 
 }

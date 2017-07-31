@@ -42,271 +42,238 @@ import commonj.sdo.Type;
  * @since 0.5
  */
 public class DataGraphConfig {
-	private DataGraph graph;
-	private TableConfig table;
-	private Map<PreDefinedFieldName, PreDefinedKeyFieldConfig> preDefinedRowKeyFieldMap = new HashMap<PreDefinedFieldName, PreDefinedKeyFieldConfig>();
-	private List<PreDefinedKeyFieldConfig> preDefinedRowKeyFieldList = new ArrayList<PreDefinedKeyFieldConfig>();
-	private Map<PreDefinedFieldName, ColumnKeyFieldConfig> preDefinedColumnKeyFieldMap = new HashMap<PreDefinedFieldName, ColumnKeyFieldConfig>();
-	private List<UserDefinedRowKeyFieldConfig> userDefinedRowKeyFieldList = new ArrayList<UserDefinedRowKeyFieldConfig>();
-	private Map<String, UserDefinedRowKeyFieldConfig> pathToUserDefinedRowKeyMap = new HashMap<String, UserDefinedRowKeyFieldConfig>();
-	private Map<commonj.sdo.Property, UserDefinedRowKeyFieldConfig> propertyToUserDefinedRowKeyMap = new HashMap<commonj.sdo.Property, UserDefinedRowKeyFieldConfig>();
-	private List<KeyFieldConfig> rowKeyFieldList = new ArrayList<KeyFieldConfig>();
-	private List<KeyFieldConfig> columnKeyFieldList = new ArrayList<KeyFieldConfig>();
-	private Map<String, Property> propertyNameToPropertyMap = new HashMap<String, Property>();
+  private DataGraph graph;
+  private TableConfig table;
+  private Map<PreDefinedFieldName, PreDefinedKeyFieldConfig> preDefinedRowKeyFieldMap = new HashMap<PreDefinedFieldName, PreDefinedKeyFieldConfig>();
+  private List<PreDefinedKeyFieldConfig> preDefinedRowKeyFieldList = new ArrayList<PreDefinedKeyFieldConfig>();
+  private Map<PreDefinedFieldName, ColumnKeyFieldConfig> preDefinedColumnKeyFieldMap = new HashMap<PreDefinedFieldName, ColumnKeyFieldConfig>();
+  private List<UserDefinedRowKeyFieldConfig> userDefinedRowKeyFieldList = new ArrayList<UserDefinedRowKeyFieldConfig>();
+  private Map<String, UserDefinedRowKeyFieldConfig> pathToUserDefinedRowKeyMap = new HashMap<String, UserDefinedRowKeyFieldConfig>();
+  private Map<commonj.sdo.Property, UserDefinedRowKeyFieldConfig> propertyToUserDefinedRowKeyMap = new HashMap<commonj.sdo.Property, UserDefinedRowKeyFieldConfig>();
+  private List<KeyFieldConfig> rowKeyFieldList = new ArrayList<KeyFieldConfig>();
+  private List<KeyFieldConfig> columnKeyFieldList = new ArrayList<KeyFieldConfig>();
+  private Map<String, Property> propertyNameToPropertyMap = new HashMap<String, Property>();
 
-	private byte[] rowKeyFieldDelimiterBytes;
-	private byte[] columnKeyFieldDelimiterBytes;
-	private byte[] columnKeySequenceDelimiterBytes;
-	private byte[] columnKeyReferenceMetadataDelimiterBytes;
+  private byte[] rowKeyFieldDelimiterBytes;
+  private byte[] columnKeyFieldDelimiterBytes;
+  private byte[] columnKeySequenceDelimiterBytes;
+  private byte[] columnKeyReferenceMetadataDelimiterBytes;
 
-	@SuppressWarnings("unused")
-	private DataGraphConfig() {
-	}
-	public DataGraphConfig(DataGraph graph, TableConfig table) {
-		super();
-		this.graph = graph;
-		this.table = table;
+  @SuppressWarnings("unused")
+  private DataGraphConfig() {
+  }
 
-		// validate the URI
-		try {
-			PlasmaConfig.getInstance().getSDONamespaceByURI(graph.getUri());
-		} catch (ConfigurationException e) {
-			throw new CloudGraphConfigurationException("invalid graph URI '"
-					+ graph.getUri() + "' specified for table, '"
-					+ table.getName() + "'", e);
-		}
+  public DataGraphConfig(DataGraph graph, TableConfig table) {
+    super();
+    this.graph = graph;
+    this.table = table;
 
-		// validate the type against the URI
-		Type typeResult = PlasmaTypeHelper.INSTANCE.getType(graph.getUri(),
-				graph.getType());
-		if (typeResult == null)
-			throw new CloudGraphConfigurationException(
-					"invalid graph URI/type combination '" + graph.getUri()
-							+ "/" + graph.getType()
-							+ "' specified for table, '" + table.getName()
-							+ "' - type does not exist");
+    // validate the URI
+    try {
+      PlasmaConfig.getInstance().getSDONamespaceByURI(graph.getUri());
+    } catch (ConfigurationException e) {
+      throw new CloudGraphConfigurationException("invalid graph URI '" + graph.getUri()
+          + "' specified for table, '" + table.getName() + "'", e);
+    }
 
-		for (Property prop : graph.getProperties())
-			propertyNameToPropertyMap.put(prop.getName(), prop);
+    // validate the type against the URI
+    Type typeResult = PlasmaTypeHelper.INSTANCE.getType(graph.getUri(), graph.getType());
+    if (typeResult == null)
+      throw new CloudGraphConfigurationException("invalid graph URI/type combination '"
+          + graph.getUri() + "/" + graph.getType() + "' specified for table, '" + table.getName()
+          + "' - type does not exist");
 
-		int totalRowKeyFields = this.graph.getRowKeyModel().getRowKeyFields()
-				.size();
-		int seqNum = 1;
-		for (RowKeyField rowKeyField : this.graph.getRowKeyModel()
-				.getRowKeyFields()) {
-			if (rowKeyField.getPredefinedField() != null) {
-				PredefinedField predefinedField = rowKeyField
-						.getPredefinedField();
-				PreDefinedKeyFieldConfig predefinedFieldConfig = new PreDefinedKeyFieldConfig(
-						predefinedField, seqNum, totalRowKeyFields);
-				preDefinedRowKeyFieldMap.put(predefinedField.getName(),
-						predefinedFieldConfig);
-				preDefinedRowKeyFieldList.add(predefinedFieldConfig);
-				this.rowKeyFieldList.add(predefinedFieldConfig);
-			} else if (rowKeyField.getUserDefinedField() != null) {
-				UserDefinedField userField = rowKeyField.getUserDefinedField();
-				UserDefinedRowKeyFieldConfig userFieldConfig = new UserDefinedRowKeyFieldConfig(
-						this, userField, seqNum, totalRowKeyFields);
-				userDefinedRowKeyFieldList.add(userFieldConfig);
-				if (this.pathToUserDefinedRowKeyMap.get(userFieldConfig
-						.getPropertyPath()) != null)
-					throw new CloudGraphConfigurationException(
-							"a user defined token path '"
-									+ userFieldConfig.getPathExpression()
-									+ "' already exists with property path '"
-									+ userFieldConfig.getPropertyPath()
-									+ "' for data graph of type, "
-									+ this.graph.getUri() + "#"
-									+ this.graph.getType());
-				this.pathToUserDefinedRowKeyMap.put(
-						userFieldConfig.getPropertyPath(), userFieldConfig);
-				this.propertyToUserDefinedRowKeyMap.put(
-						userFieldConfig.getEndpointProperty(), userFieldConfig);
-				this.rowKeyFieldList.add(userFieldConfig);
-			} else
-				throw new CloudGraphConfigurationException(
-						"unexpected row key model field instance, "
-								+ rowKeyField.getClass().getName());
-			seqNum++;
-		}
+    for (Property prop : graph.getProperties())
+      propertyNameToPropertyMap.put(prop.getName(), prop);
 
-		ColumnKeyModel columnKeyModel = this.graph.getColumnKeyModel();
-		if (columnKeyModel.getReferenceMetadataDelimiter() == null)
-			throw new CloudGraphConfigurationException(
-					"found invalid (null) column metadata delimiter "
-							+ "for table, " + this.table.getName()
-							+ ", for graph " + this.graph.getUri() + "#"
-							+ this.graph.getType());
-		if (columnKeyModel.getFieldDelimiter() == null)
-			throw new CloudGraphConfigurationException(
-					"found invalid (null) column field delimiter "
-							+ "for table, " + this.table.getName()
-							+ ", for graph " + this.graph.getUri() + "#"
-							+ this.graph.getType());
-		if (columnKeyModel.getSequenceDelimiter() == null)
-			throw new CloudGraphConfigurationException(
-					"found invalid (null) column sequence delimiter "
-							+ "for table, " + this.table.getName()
-							+ ", for graph " + this.graph.getUri() + "#"
-							+ this.graph.getType());
-		if (columnKeyModel.getReferenceMetadataDelimiter().equals(
-				columnKeyModel.getFieldDelimiter()))
-			throw new CloudGraphConfigurationException("found duplicate ("
-					+ columnKeyModel.getFieldDelimiter()
-					+ ") column metadata delimiter " + "for table, "
-					+ this.table.getName() + ", for graph "
-					+ this.graph.getUri() + "#" + this.graph.getType());
-		if (columnKeyModel.getSequenceDelimiter().equals(
-				columnKeyModel.getFieldDelimiter()))
-			throw new CloudGraphConfigurationException("found duplicate ("
-					+ columnKeyModel.getFieldDelimiter()
-					+ ") column sequence delimiter " + "for table, "
-					+ this.table.getName() + ", for graph "
-					+ this.graph.getUri() + "#" + this.graph.getType());
-		if (columnKeyModel.getReferenceMetadataDelimiter().equals(
-				columnKeyModel.getSequenceDelimiter()))
-			throw new CloudGraphConfigurationException("found duplicate ("
-					+ columnKeyModel.getSequenceDelimiter()
-					+ ") column metadata delimiter " + "for table, "
-					+ this.table.getName() + ", for graph "
-					+ this.graph.getUri() + "#" + this.graph.getType());
+    int totalRowKeyFields = this.graph.getRowKeyModel().getRowKeyFields().size();
+    int seqNum = 1;
+    for (RowKeyField rowKeyField : this.graph.getRowKeyModel().getRowKeyFields()) {
+      if (rowKeyField.getPredefinedField() != null) {
+        PredefinedField predefinedField = rowKeyField.getPredefinedField();
+        PreDefinedKeyFieldConfig predefinedFieldConfig = new PreDefinedKeyFieldConfig(
+            predefinedField, seqNum, totalRowKeyFields);
+        preDefinedRowKeyFieldMap.put(predefinedField.getName(), predefinedFieldConfig);
+        preDefinedRowKeyFieldList.add(predefinedFieldConfig);
+        this.rowKeyFieldList.add(predefinedFieldConfig);
+      } else if (rowKeyField.getUserDefinedField() != null) {
+        UserDefinedField userField = rowKeyField.getUserDefinedField();
+        UserDefinedRowKeyFieldConfig userFieldConfig = new UserDefinedRowKeyFieldConfig(this,
+            userField, seqNum, totalRowKeyFields);
+        userDefinedRowKeyFieldList.add(userFieldConfig);
+        if (this.pathToUserDefinedRowKeyMap.get(userFieldConfig.getPropertyPath()) != null)
+          throw new CloudGraphConfigurationException("a user defined token path '"
+              + userFieldConfig.getPathExpression() + "' already exists with property path '"
+              + userFieldConfig.getPropertyPath() + "' for data graph of type, "
+              + this.graph.getUri() + "#" + this.graph.getType());
+        this.pathToUserDefinedRowKeyMap.put(userFieldConfig.getPropertyPath(), userFieldConfig);
+        this.propertyToUserDefinedRowKeyMap.put(userFieldConfig.getEndpointProperty(),
+            userFieldConfig);
+        this.rowKeyFieldList.add(userFieldConfig);
+      } else
+        throw new CloudGraphConfigurationException("unexpected row key model field instance, "
+            + rowKeyField.getClass().getName());
+      seqNum++;
+    }
 
-		int totalColumnKeyFields = columnKeyModel.getColumnKeyFields().size();
-		seqNum = 1;
-		for (ColumnKeyField ctoken : columnKeyModel.getColumnKeyFields()) {
-			ColumnKeyFieldConfig columnFieldConfig = new ColumnKeyFieldConfig(
-					ctoken, seqNum, totalColumnKeyFields);
-			preDefinedColumnKeyFieldMap
-					.put(ctoken.getName(), columnFieldConfig);
-			this.columnKeyFieldList.add(columnFieldConfig);
-			seqNum++;
-		}
-	}
+    ColumnKeyModel columnKeyModel = this.graph.getColumnKeyModel();
+    if (columnKeyModel.getReferenceMetadataDelimiter() == null)
+      throw new CloudGraphConfigurationException("found invalid (null) column metadata delimiter "
+          + "for table, " + this.table.getName() + ", for graph " + this.graph.getUri() + "#"
+          + this.graph.getType());
+    if (columnKeyModel.getFieldDelimiter() == null)
+      throw new CloudGraphConfigurationException("found invalid (null) column field delimiter "
+          + "for table, " + this.table.getName() + ", for graph " + this.graph.getUri() + "#"
+          + this.graph.getType());
+    if (columnKeyModel.getSequenceDelimiter() == null)
+      throw new CloudGraphConfigurationException("found invalid (null) column sequence delimiter "
+          + "for table, " + this.table.getName() + ", for graph " + this.graph.getUri() + "#"
+          + this.graph.getType());
+    if (columnKeyModel.getReferenceMetadataDelimiter().equals(columnKeyModel.getFieldDelimiter()))
+      throw new CloudGraphConfigurationException("found duplicate ("
+          + columnKeyModel.getFieldDelimiter() + ") column metadata delimiter " + "for table, "
+          + this.table.getName() + ", for graph " + this.graph.getUri() + "#"
+          + this.graph.getType());
+    if (columnKeyModel.getSequenceDelimiter().equals(columnKeyModel.getFieldDelimiter()))
+      throw new CloudGraphConfigurationException("found duplicate ("
+          + columnKeyModel.getFieldDelimiter() + ") column sequence delimiter " + "for table, "
+          + this.table.getName() + ", for graph " + this.graph.getUri() + "#"
+          + this.graph.getType());
+    if (columnKeyModel.getReferenceMetadataDelimiter()
+        .equals(columnKeyModel.getSequenceDelimiter()))
+      throw new CloudGraphConfigurationException("found duplicate ("
+          + columnKeyModel.getSequenceDelimiter() + ") column metadata delimiter " + "for table, "
+          + this.table.getName() + ", for graph " + this.graph.getUri() + "#"
+          + this.graph.getType());
 
-	public DataGraph getGraph() {
-		return this.graph;
-	}
+    int totalColumnKeyFields = columnKeyModel.getColumnKeyFields().size();
+    seqNum = 1;
+    for (ColumnKeyField ctoken : columnKeyModel.getColumnKeyFields()) {
+      ColumnKeyFieldConfig columnFieldConfig = new ColumnKeyFieldConfig(ctoken, seqNum,
+          totalColumnKeyFields);
+      preDefinedColumnKeyFieldMap.put(ctoken.getName(), columnFieldConfig);
+      this.columnKeyFieldList.add(columnFieldConfig);
+      seqNum++;
+    }
+  }
 
-	public ColumnKeyModel getColumnKeyModel() {
-		return this.graph.getColumnKeyModel();
-	}
+  public DataGraph getGraph() {
+    return this.graph;
+  }
 
-	public Type getRootType() {
-		return PlasmaTypeHelper.INSTANCE.getType(this.graph.getUri(),
-				this.graph.getType());
-	}
+  public ColumnKeyModel getColumnKeyModel() {
+    return this.graph.getColumnKeyModel();
+  }
 
-	public List<Property> getProperties() {
-		return this.graph.properties;
-	}
+  public Type getRootType() {
+    return PlasmaTypeHelper.INSTANCE.getType(this.graph.getUri(), this.graph.getType());
+  }
 
-	public Property findProperty(String name) {
-		return this.propertyNameToPropertyMap.get(name);
-	}
+  public List<Property> getProperties() {
+    return this.graph.properties;
+  }
 
-	public List<PreDefinedKeyFieldConfig> getPreDefinedRowKeyFields() {
-		return this.preDefinedRowKeyFieldList;
-	}
+  public Property findProperty(String name) {
+    return this.propertyNameToPropertyMap.get(name);
+  }
 
-	public PreDefinedKeyFieldConfig getPreDefinedRowKeyField(
-			PreDefinedFieldName name) {
-		return this.preDefinedRowKeyFieldMap.get(name);
-	}
+  public List<PreDefinedKeyFieldConfig> getPreDefinedRowKeyFields() {
+    return this.preDefinedRowKeyFieldList;
+  }
 
-	public String getRowKeyFieldDelimiter() {
-		return this.graph.getRowKeyModel().getFieldDelimiter();
-	}
+  public PreDefinedKeyFieldConfig getPreDefinedRowKeyField(PreDefinedFieldName name) {
+    return this.preDefinedRowKeyFieldMap.get(name);
+  }
 
-	public byte[] getRowKeyFieldDelimiterBytes() {
-		if (rowKeyFieldDelimiterBytes == null) {
-			this.rowKeyFieldDelimiterBytes = this.graph.getRowKeyModel()
-					.getFieldDelimiter()
-					.getBytes(Charset.forName(CoreConstants.UTF8_ENCODING));
-		}
-		return rowKeyFieldDelimiterBytes;
-	}
+  public String getRowKeyFieldDelimiter() {
+    return this.graph.getRowKeyModel().getFieldDelimiter();
+  }
 
-	public boolean hasUserDefinedRowKeyFields() {
-		return this.userDefinedRowKeyFieldList.size() > 0;
-	}
+  public byte[] getRowKeyFieldDelimiterBytes() {
+    if (rowKeyFieldDelimiterBytes == null) {
+      this.rowKeyFieldDelimiterBytes = this.graph.getRowKeyModel().getFieldDelimiter()
+          .getBytes(Charset.forName(CoreConstants.UTF8_ENCODING));
+    }
+    return rowKeyFieldDelimiterBytes;
+  }
 
-	public List<UserDefinedRowKeyFieldConfig> getUserDefinedRowKeyFields() {
-		return userDefinedRowKeyFieldList;
-	}
+  public boolean hasUserDefinedRowKeyFields() {
+    return this.userDefinedRowKeyFieldList.size() > 0;
+  }
 
-	public UserDefinedRowKeyFieldConfig getUserDefinedRowKeyField(String path) {
-		return this.pathToUserDefinedRowKeyMap.get(path);
-	}
+  public List<UserDefinedRowKeyFieldConfig> getUserDefinedRowKeyFields() {
+    return userDefinedRowKeyFieldList;
+  }
 
-	public List<KeyFieldConfig> getRowKeyFields() {
-		return this.rowKeyFieldList;
-	}
+  public UserDefinedRowKeyFieldConfig getUserDefinedRowKeyField(String path) {
+    return this.pathToUserDefinedRowKeyMap.get(path);
+  }
 
-	public List<KeyFieldConfig> getColumnKeyFields() {
-		return this.columnKeyFieldList;
-	}
+  public List<KeyFieldConfig> getRowKeyFields() {
+    return this.rowKeyFieldList;
+  }
 
-	/**
-	 * Returns the row key field config for the given path endpoint property, or
-	 * null if not exists. An endpoint property is a property which terminates
-	 * an SDO XPath.
-	 * 
-	 * @param property
-	 *            the endpoint property
-	 * @return the row key field config for the given path endpoint property, or
-	 *         null if not exists.
-	 */
-	public UserDefinedRowKeyFieldConfig findUserDefinedRowKeyField(
-			commonj.sdo.Property property) {
-		return this.propertyToUserDefinedRowKeyMap.get(property);
-	}
+  public List<KeyFieldConfig> getColumnKeyFields() {
+    return this.columnKeyFieldList;
+  }
 
-	public ColumnKeyFieldConfig getColumnKeyField(PreDefinedFieldName name) {
-		return preDefinedColumnKeyFieldMap.get(name);
-	}
+  /**
+   * Returns the row key field config for the given path endpoint property, or
+   * null if not exists. An endpoint property is a property which terminates an
+   * SDO XPath.
+   * 
+   * @param property
+   *          the endpoint property
+   * @return the row key field config for the given path endpoint property, or
+   *         null if not exists.
+   */
+  public UserDefinedRowKeyFieldConfig findUserDefinedRowKeyField(commonj.sdo.Property property) {
+    return this.propertyToUserDefinedRowKeyMap.get(property);
+  }
 
-	public String getColumnKeyFieldDelimiter() {
-		return this.graph.getColumnKeyModel().getFieldDelimiter();
-	}
+  public ColumnKeyFieldConfig getColumnKeyField(PreDefinedFieldName name) {
+    return preDefinedColumnKeyFieldMap.get(name);
+  }
 
-	public String getColumnKeySequenceDelimiter() {
-		return this.graph.getColumnKeyModel().getSequenceDelimiter();
-	}
+  public String getColumnKeyFieldDelimiter() {
+    return this.graph.getColumnKeyModel().getFieldDelimiter();
+  }
 
-	public byte[] getColumnKeyFieldDelimiterBytes() {
-		if (columnKeyFieldDelimiterBytes == null) {
-			this.columnKeyFieldDelimiterBytes = this.graph.getColumnKeyModel()
-					.getFieldDelimiter()
-					.getBytes(Charset.forName(CoreConstants.UTF8_ENCODING));
-		}
-		return columnKeyFieldDelimiterBytes;
-	}
+  public String getColumnKeySequenceDelimiter() {
+    return this.graph.getColumnKeyModel().getSequenceDelimiter();
+  }
 
-	public byte[] getColumnKeySequenceDelimiterBytes() {
-		if (columnKeySequenceDelimiterBytes == null) {
-			this.columnKeySequenceDelimiterBytes = this.graph
-					.getColumnKeyModel().getSequenceDelimiter()
-					.getBytes(Charset.forName(CoreConstants.UTF8_ENCODING));
-		}
-		return columnKeySequenceDelimiterBytes;
-	}
+  public byte[] getColumnKeyFieldDelimiterBytes() {
+    if (columnKeyFieldDelimiterBytes == null) {
+      this.columnKeyFieldDelimiterBytes = this.graph.getColumnKeyModel().getFieldDelimiter()
+          .getBytes(Charset.forName(CoreConstants.UTF8_ENCODING));
+    }
+    return columnKeyFieldDelimiterBytes;
+  }
 
-	public byte[] getColumnKeyReferenceMetadataDelimiterBytes() {
-		if (columnKeyReferenceMetadataDelimiterBytes == null) {
-			this.columnKeyReferenceMetadataDelimiterBytes = this.graph
-					.getColumnKeyModel().getReferenceMetadataDelimiter()
-					.getBytes(Charset.forName(CoreConstants.UTF8_ENCODING));
-		}
-		return columnKeyReferenceMetadataDelimiterBytes;
-	}
+  public byte[] getColumnKeySequenceDelimiterBytes() {
+    if (columnKeySequenceDelimiterBytes == null) {
+      this.columnKeySequenceDelimiterBytes = this.graph.getColumnKeyModel().getSequenceDelimiter()
+          .getBytes(Charset.forName(CoreConstants.UTF8_ENCODING));
+    }
+    return columnKeySequenceDelimiterBytes;
+  }
 
-	/**
-	 * Returns the configured table for this data graph config.
-	 * 
-	 * @return the configured table for this data graph config.
-	 */
-	public TableConfig getTable() {
-		return table;
-	}
+  public byte[] getColumnKeyReferenceMetadataDelimiterBytes() {
+    if (columnKeyReferenceMetadataDelimiterBytes == null) {
+      this.columnKeyReferenceMetadataDelimiterBytes = this.graph.getColumnKeyModel()
+          .getReferenceMetadataDelimiter().getBytes(Charset.forName(CoreConstants.UTF8_ENCODING));
+    }
+    return columnKeyReferenceMetadataDelimiterBytes;
+  }
+
+  /**
+   * Returns the configured table for this data graph config.
+   * 
+   * @return the configured table for this data graph config.
+   */
+  public TableConfig getTable() {
+    return table;
+  }
 
 }

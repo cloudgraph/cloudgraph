@@ -38,39 +38,44 @@ import org.plasma.sdo.access.provider.common.PropertyPair;
  * @since 0.6.2
  */
 public class Traversal {
-	private PlasmaType subrootType;
-	private PlasmaDataObject source;
-	private PlasmaProperty sourceProperty;
-	private List<PropertyPair> childKeyPairs;
-	private int level;
-	@SuppressWarnings("unused")
-	private Traversal() {
-	}
+  private PlasmaType subrootType;
+  private PlasmaDataObject source;
+  private PlasmaProperty sourceProperty;
+  private List<PropertyPair> childKeyPairs;
+  private int level;
 
-	public Traversal(PlasmaType subrootType, PlasmaDataObject source,
-			PlasmaProperty sourceProperty, List<PropertyPair> childKeyPairs,
-			int level) {
-		super();
-		this.subrootType = subrootType;
-		this.source = source;
-		this.sourceProperty = sourceProperty;
-		this.childKeyPairs = childKeyPairs;
-		this.level = level;
-	}
-	public PlasmaType getSubrootType() {
-		return subrootType;
-	}
-	public PlasmaDataObject getSource() {
-		return source;
-	}
-	public PlasmaProperty getSourceProperty() {
-		return sourceProperty;
-	}
-	public List<PropertyPair> getChildKeyPairs() {
-		return childKeyPairs;
-	}
-	public int getLevel() {
-		return level;
-	}
+  @SuppressWarnings("unused")
+  private Traversal() {
+  }
+
+  public Traversal(PlasmaType subrootType, PlasmaDataObject source, PlasmaProperty sourceProperty,
+      List<PropertyPair> childKeyPairs, int level) {
+    super();
+    this.subrootType = subrootType;
+    this.source = source;
+    this.sourceProperty = sourceProperty;
+    this.childKeyPairs = childKeyPairs;
+    this.level = level;
+  }
+
+  public PlasmaType getSubrootType() {
+    return subrootType;
+  }
+
+  public PlasmaDataObject getSource() {
+    return source;
+  }
+
+  public PlasmaProperty getSourceProperty() {
+    return sourceProperty;
+  }
+
+  public List<PropertyPair> getChildKeyPairs() {
+    return childKeyPairs;
+  }
+
+  public int getLevel() {
+    return level;
+  }
 
 }

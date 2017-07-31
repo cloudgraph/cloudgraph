@@ -39,51 +39,47 @@ import org.plasma.sdo.access.DataAccessException;
  */
 public class ProviderManager {
 
-	private static final Log log = LogFactory.getLog(ProviderManager.class);
-	private static ProviderManager instance;
-	private ConnectionProvider provider;
+  private static final Log log = LogFactory.getLog(ProviderManager.class);
+  private static ProviderManager instance;
+  private ConnectionProvider provider;
 
-	private ProviderManager() {
-		Properties props = new Properties();
-		for (Property property : PlasmaConfig.getInstance()
-				.getDataAccessProvider(DataAccessProviderName.JDBC)
-				.getProperties()) {
-			props.put(property.getName(), property.getValue());
-		}
-		String providerName = props
-				.getProperty(ConfigurationConstants.JDBC_PROVIDER_NAME);
-		try {
-			this.provider = (ConnectionProvider) java.lang.Class.forName(
-					providerName).newInstance();
-		} catch (Exception e2) {
-			log.error("Error when attempting to obtain JDBC Provider: "
-					+ providerName, e2);
-			throw new DataAccessException(e2);
-		}
-	}
+  private ProviderManager() {
+    Properties props = new Properties();
+    for (Property property : PlasmaConfig.getInstance()
+        .getDataAccessProvider(DataAccessProviderName.JDBC).getProperties()) {
+      props.put(property.getName(), property.getValue());
+    }
+    String providerName = props.getProperty(ConfigurationConstants.JDBC_PROVIDER_NAME);
+    try {
+      this.provider = (ConnectionProvider) java.lang.Class.forName(providerName).newInstance();
+    } catch (Exception e2) {
+      log.error("Error when attempting to obtain JDBC Provider: " + providerName, e2);
+      throw new DataAccessException(e2);
+    }
+  }
 
-	public static ProviderManager instance() {
-		if (instance == null)
-			initInstance(); // double-checked locking pattern
-		return instance;
-	}
+  public static ProviderManager instance() {
+    if (instance == null)
+      initInstance(); // double-checked locking pattern
+    return instance;
+  }
 
-	private static synchronized void initInstance() {
-		if (instance == null)
-			instance = new ProviderManager();
-	}
+  private static synchronized void initInstance() {
+    if (instance == null)
+      instance = new ProviderManager();
+  }
 
-	protected void finalize() {
-		log.debug("Finalizing " + this.getClass().getName());
-		try {
-			super.finalize();
-		} catch (Throwable ex) {
-			log.error("finalize failed: ", ex);
-		}
-	}
+  protected void finalize() {
+    log.debug("Finalizing " + this.getClass().getName());
+    try {
+      super.finalize();
+    } catch (Throwable ex) {
+      log.error("finalize failed: ", ex);
+    }
+  }
 
-	public Connection getConnection() throws SQLException {
-		return this.provider.getConnection();
-	}
+  public Connection getConnection() throws SQLException {
+    return this.provider.getConnection();
+  }
 
 }

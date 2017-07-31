@@ -27,7 +27,7 @@ package org.cloudgraph.mapreduce;
  * @since 0.6.0
  */
 public interface GraphXml {
-	public static final String ROOT_ELEM_NAMESPACE_URI = "cloudgraph.mapreduce.root.namespace.uri";
-	public static final String ROOT_ELEM_NAMESPACE_PREFIX = "cloudgraph.mapreduce.root.namespace.prefix";
+  public static final String ROOT_ELEM_NAMESPACE_URI = "cloudgraph.mapreduce.root.namespace.uri";
+  public static final String ROOT_ELEM_NAMESPACE_PREFIX = "cloudgraph.mapreduce.root.namespace.prefix";
 
 }

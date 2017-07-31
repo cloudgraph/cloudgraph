@@ -21,45 +21,37 @@ import org.plasma.sdo.access.DataAccessException;
  * Supplies connections using a JNDI registered datasource.
  */
 public class JNDIDataSourceProvider implements DataSourceProvder {
-	private static final Log log = LogFactory
-			.getLog(JNDIDataSourceProvider.class);
-	protected DataSource datasource;
+  private static final Log log = LogFactory.getLog(JNDIDataSourceProvider.class);
+  protected DataSource datasource;
 
-	public JNDIDataSourceProvider() {
-		Properties props = new Properties();
-		for (Property property : PlasmaConfig.getInstance()
-				.getDataAccessProvider(DataAccessProviderName.JDBC)
-				.getProperties()) {
-			props.put(property.getName(), property.getValue());
-		}
+  public JNDIDataSourceProvider() {
+    Properties props = new Properties();
+    for (Property property : PlasmaConfig.getInstance()
+        .getDataAccessProvider(DataAccessProviderName.JDBC).getProperties()) {
+      props.put(property.getName(), property.getValue());
+    }
 
-		String datasourceName = props
-				.getProperty(ConfigurationConstants.JDBC_DATASOURCE_NAME);
-		if (datasourceName == null)
-			throw new DataAccessException(
-					"cannot lookup datasource - datasource name property '"
-							+ ConfigurationConstants.JDBC_DATASOURCE_NAME
-							+ "' not found in configuration for "
-							+ "data access provider '"
-							+ DataAccessProviderName.JDBC.name()
-							+ "' - a fully qualified JNDI name is required");
-		try {
-			Context initialContext = new InitialContext();
-			this.datasource = (DataSource) initialContext
-					.lookup(datasourceName);
-			if (this.datasource == null) {
-				throw new DataAccessException("cannot lookup datasource '"
-						+ datasourceName + "'");
-			}
-		} catch (NamingException ex) {
-			log.error("cannot lookup datasource '" + datasourceName + "'", ex);
-			throw new DataAccessException(ex);
-		}
-	}
+    String datasourceName = props.getProperty(ConfigurationConstants.JDBC_DATASOURCE_NAME);
+    if (datasourceName == null)
+      throw new DataAccessException("cannot lookup datasource - datasource name property '"
+          + ConfigurationConstants.JDBC_DATASOURCE_NAME + "' not found in configuration for "
+          + "data access provider '" + DataAccessProviderName.JDBC.name()
+          + "' - a fully qualified JNDI name is required");
+    try {
+      Context initialContext = new InitialContext();
+      this.datasource = (DataSource) initialContext.lookup(datasourceName);
+      if (this.datasource == null) {
+        throw new DataAccessException("cannot lookup datasource '" + datasourceName + "'");
+      }
+    } catch (NamingException ex) {
+      log.error("cannot lookup datasource '" + datasourceName + "'", ex);
+      throw new DataAccessException(ex);
+    }
+  }
 
-	@Override
-	public Connection getConnection() throws SQLException {
-		return this.datasource.getConnection();
-	}
+  @Override
+  public Connection getConnection() throws SQLException {
+    return this.datasource.getConnection();
+  }
 
 }

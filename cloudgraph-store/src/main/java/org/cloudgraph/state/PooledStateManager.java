@@ -36,37 +36,36 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
  * @since 0.6.3
  */
 public class PooledStateManager implements StateMarshalingContext {
-	private static Log log = LogFactory.getLog(PooledStateManager.class);
-	private static volatile PooledStateManager instance = null;
-	private PooledStateMarshallingContext context;
+  private static Log log = LogFactory.getLog(PooledStateManager.class);
+  private static volatile PooledStateManager instance = null;
+  private PooledStateMarshallingContext context;
 
-	private PooledStateManager() {
-		GenericObjectPoolConfig config = new GenericObjectPoolConfig();
-		config.setMaxTotal(40);
-		config.setMinIdle(40);
-		context = new PooledStateMarshallingContext(config,
-				new StateDataBindingFactory());
-	}
+  private PooledStateManager() {
+    GenericObjectPoolConfig config = new GenericObjectPoolConfig();
+    config.setMaxTotal(40);
+    config.setMinIdle(40);
+    context = new PooledStateMarshallingContext(config, new StateDataBindingFactory());
+  }
 
-	public static PooledStateManager getInstance() {
-		if (instance == null)
-			initializeInstance();
-		return instance;
-	}
+  public static PooledStateManager getInstance() {
+    if (instance == null)
+      initializeInstance();
+    return instance;
+  }
 
-	private static synchronized void initializeInstance() {
-		if (instance == null)
-			instance = new PooledStateManager();
-	}
+  private static synchronized void initializeInstance() {
+    if (instance == null)
+      instance = new PooledStateManager();
+  }
 
-	@Override
-	public NonValidatingDataBinding getBinding() {
-		return context.getBinding();
-	}
+  @Override
+  public NonValidatingDataBinding getBinding() {
+    return context.getBinding();
+  }
 
-	@Override
-	public void returnBinding(NonValidatingDataBinding binding) {
-		context.returnBinding(binding);
-	}
+  @Override
+  public void returnBinding(NonValidatingDataBinding binding) {
+    context.returnBinding(binding);
+  }
 
 }

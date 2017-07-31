@@ -43,94 +43,91 @@ import commonj.sdo.Type;
  */
 public interface DistributedWriter extends DistributedOperation {
 
-	/**
-	 * Returns the table writer for the given configured table name.
-	 * 
-	 * @param tableName
-	 *            the name of the configured table.
-	 * @return the table writer for the given configured table name.
-	 */
-	public TableWriter getTableWriter(String tableName);
+  /**
+   * Returns the table writer for the given configured table name.
+   * 
+   * @param tableName
+   *          the name of the configured table.
+   * @return the table writer for the given configured table name.
+   */
+  public TableWriter getTableWriter(String tableName);
 
-	/**
-	 * Adds the given table writer to the container
-	 * 
-	 * @param writer
-	 *            the table writer.
-	 */
-	public void addTableWriter(TableWriter writer);
+  /**
+   * Adds the given table writer to the container
+   * 
+   * @param writer
+   *          the table writer.
+   */
+  public void addTableWriter(TableWriter writer);
 
-	/**
-	 * Returns the count of table writers for this container.
-	 * 
-	 * @return the count of table writers for this container
-	 */
-	public int getTableWriterCount();
+  /**
+   * Returns the count of table writers for this container.
+   * 
+   * @return the count of table writers for this container
+   */
+  public int getTableWriterCount();
 
-	/**
-	 * Returns all table writers for the this container
-	 * 
-	 * @return all table writers for the this container
-	 */
-	public List<TableWriter> getTableWriters();
+  /**
+   * Returns all table writers for the this container
+   * 
+   * @return all table writers for the this container
+   */
+  public List<TableWriter> getTableWriters();
 
-	/**
-	 * Returns the table writer associated with the data graph root.
-	 * 
-	 * @return the table writer associated with the data graph root.
-	 */
-	public TableWriter getRootTableWriter();
+  /**
+   * Returns the table writer associated with the data graph root.
+   * 
+   * @return the table writer associated with the data graph root.
+   */
+  public TableWriter getRootTableWriter();
 
-	/**
-	 * Sets the table writer associated with the data graph root.
-	 * 
-	 * @param writer
-	 *            the table writer
-	 */
-	public void setRootTableWriter(TableWriter writer);
+  /**
+   * Sets the table writer associated with the data graph root.
+   * 
+   * @param writer
+   *          the table writer
+   */
+  public void setRootTableWriter(TableWriter writer);
 
-	/**
-	 * Returns the row writer associated with the given data object or null if
-	 * no row writer is associated.
-	 * 
-	 * @param dataObject
-	 *            the data object
-	 * @return the row writer associated with the given data object or null if
-	 *         no row writer is associated.
-	 */
-	public RowWriter findRowWriter(DataObject dataObject);
+  /**
+   * Returns the row writer associated with the given data object or null if no
+   * row writer is associated.
+   * 
+   * @param dataObject
+   *          the data object
+   * @return the row writer associated with the given data object or null if no
+   *         row writer is associated.
+   */
+  public RowWriter findRowWriter(DataObject dataObject);
 
-	/**
-	 * Returns the row writer associated with the given data object
-	 * 
-	 * @param dataObject
-	 *            the data object
-	 * @return the row writer associated with the given data object
-	 * @throws IllegalArgumentException
-	 *             if the given data object is not associated with any row
-	 *             writer.
-	 */
-	public RowWriter getRowWriter(DataObject dataObject);
+  /**
+   * Returns the row writer associated with the given data object
+   * 
+   * @param dataObject
+   *          the data object
+   * @return the row writer associated with the given data object
+   * @throws IllegalArgumentException
+   *           if the given data object is not associated with any row writer.
+   */
+  public RowWriter getRowWriter(DataObject dataObject);
 
-	/**
-	 * Creates and returns a new row writer associated with the given data
-	 * object.
-	 * 
-	 * @param dataObject
-	 *            the data object
-	 * @return a new row writer associated with the given data object.
-	 * @throws IllegalArgumentException
-	 *             if the given data object is already associated with a row
-	 *             writer.
-	 */
-	public RowWriter createRowWriter(DataObject dataObject) throws IOException;
+  /**
+   * Creates and returns a new row writer associated with the given data object.
+   * 
+   * @param dataObject
+   *          the data object
+   * @return a new row writer associated with the given data object.
+   * @throws IllegalArgumentException
+   *           if the given data object is already associated with a row writer.
+   */
+  public RowWriter createRowWriter(DataObject dataObject) throws IOException;
 
-	/**
-	 * Returns a list of types associated with the given table operation.
-	 * 
-	 * @param reader
-	 *            the table operation
-	 * @return a list of types associated with the given table operation.
-	 */
-	public List<Type> getTypes(TableWriter operation);
+  /**
+   * Returns a list of types associated with the given table operation.
+   * 
+   * @param reader
+   *          the table operation
+   * @return a list of types associated with the given table operation.
+   */
+  public List<Type> getTypes(TableWriter operation);
 }

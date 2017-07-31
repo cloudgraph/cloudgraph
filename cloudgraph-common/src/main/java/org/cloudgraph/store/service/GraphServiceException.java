@@ -28,14 +28,17 @@ import org.cloudgraph.common.CloudGraphRuntimeException;
  * @since 0.5
  */
 public class GraphServiceException extends CloudGraphRuntimeException {
-	private static final long serialVersionUID = 1L;
-	public GraphServiceException(String message) {
-		super(message);
-	}
-	public GraphServiceException(Throwable t) {
-		super(t);
-	}
-	public GraphServiceException(String message, Throwable cause) {
-		super(message, cause);
-	}
+  private static final long serialVersionUID = 1L;
+
+  public GraphServiceException(String message) {
+    super(message);
+  }
+
+  public GraphServiceException(Throwable t) {
+    super(t);
+  }
+
+  public GraphServiceException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

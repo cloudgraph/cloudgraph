@@ -30,6 +30,7 @@ package org.cloudgraph.hbase.scan;
  * @see PartialRowKeyLiteral
  */
 public interface PartialRowKey {
-	public byte[] getStartKey();
-	public byte[] getStopKey();
+  public byte[] getStartKey();
+
+  public byte[] getStopKey();
 }

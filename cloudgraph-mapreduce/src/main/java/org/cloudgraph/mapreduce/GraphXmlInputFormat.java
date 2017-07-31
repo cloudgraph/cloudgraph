@@ -41,38 +41,33 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
  * @author Scott Cinnamond
  * @since 0.5.8
  */
-public class GraphXmlInputFormat
-		extends
-			FileInputFormat<LongWritable, GraphWritable>
-		implements
-			Configurable,
-			GraphXml {
+public class GraphXmlInputFormat extends FileInputFormat<LongWritable, GraphWritable> implements
+    Configurable, GraphXml {
 
-	/** The configuration. */
-	private Configuration conf = null;
+  /** The configuration. */
+  private Configuration conf = null;
 
-	@Override
-	public Configuration getConf() {
-		return this.conf;
-	}
+  @Override
+  public Configuration getConf() {
+    return this.conf;
+  }
 
-	@Override
-	public void setConf(Configuration configuration) {
-		this.conf = configuration;
-	}
+  @Override
+  public void setConf(Configuration configuration) {
+    this.conf = configuration;
+  }
 
-	@Override
-	public RecordReader<LongWritable, GraphWritable> createRecordReader(
-			InputSplit split, TaskAttemptContext context) throws IOException,
-			InterruptedException {
-		GraphXmlRecordReader reader = new GraphXmlRecordReader();
-		try {
-			reader.initialize(split, context);
-		} catch (InterruptedException e) {
-			throw new InterruptedIOException(e.getMessage());
-		}
+  @Override
+  public RecordReader<LongWritable, GraphWritable> createRecordReader(InputSplit split,
+      TaskAttemptContext context) throws IOException, InterruptedException {
+    GraphXmlRecordReader reader = new GraphXmlRecordReader();
+    try {
+      reader.initialize(split, context);
+    } catch (InterruptedException e) {
+      throw new InterruptedIOException(e.getMessage());
+    }
 
-		return reader;
-	}
+    return reader;
+  }
 
 }
