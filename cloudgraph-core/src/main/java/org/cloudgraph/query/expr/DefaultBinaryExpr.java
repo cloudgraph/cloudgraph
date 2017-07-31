@@ -34,22 +34,27 @@ import org.plasma.query.model.WildcardPathElement;
 import org.plasma.sdo.core.CoreType;
 
 /**
- * Contains default functionality for query expressions composed of 
- * two parts or terms, including a visitor traversal implementation.   
+ * Contains default functionality for query expressions composed of two parts or
+ * terms, including a visitor traversal implementation.
+ * 
  * @author Scott Cinnamond
  * @since 0.5.2
  * @see Term
  * @see ExprVisitor
  * @see EvaluationContext
  */
-public abstract class DefaultBinaryExpr extends DefaultExpr 
-    implements BinaryExpr {
-    private static Log log = LogFactory.getLog(DefaultBinaryExpr.class);
-	
+public abstract class DefaultBinaryExpr extends DefaultExpr
+		implements
+			BinaryExpr {
+	private static Log log = LogFactory.getLog(DefaultBinaryExpr.class);
+
 	/**
 	 * Constructs an expression using the given terms
-	 * @param left the "left" expression term
-	 * @param right the "right" expression term
+	 * 
+	 * @param left
+	 *            the "left" expression term
+	 * @param right
+	 *            the "right" expression term
 	 */
 	public DefaultBinaryExpr(Term left, Term right) {
 		super();
@@ -77,72 +82,66 @@ public abstract class DefaultBinaryExpr extends DefaultExpr
 	public void setRight(Term right) {
 		this.right = right;
 	}
-	
+
 	/**
-	 * Returns a "truth" value for the expression based
-	 * on the given context. 
+	 * Returns a "truth" value for the expression based on the given context.
+	 * 
 	 * @param context
-	 * @return a "truth" value for the expression based
-	 * on the given context.
+	 * @return a "truth" value for the expression based on the given context.
 	 */
 	@Override
 	public boolean evaluate(EvaluationContext context) {
 		return true;
 	}
-	
+
 	/**
-	 * Begins the traversal of the expression tree with this
-	 * node as the root. 
-	 * @param visitor the expression visitor
+	 * Begins the traversal of the expression tree with this node as the root.
+	 * 
+	 * @param visitor
+	 *            the expression visitor
 	 */
 	public void accept(ExprVisitor visitor) {
 		accept(this, null, visitor, new HashSet<Expr>(), 0);
 	}
 
-	private void accept(Expr target, Expr source, 
-			ExprVisitor visitor, HashSet<Expr> visited, int level) {
+	private void accept(Expr target, Expr source, ExprVisitor visitor,
+			HashSet<Expr> visited, int level) {
 		if (!visited.contains(target)) {
-		    visitor.visit(target, source, level);
-		    visited.add(target);
-		}
-		else
+			visitor.visit(target, source, level);
+			visited.add(target);
+		} else
 			return;
 		if (DefaultBinaryExpr.class.isAssignableFrom(this.left.getClass())) {
-			DefaultBinaryExpr expr = (DefaultBinaryExpr)this.left;
+			DefaultBinaryExpr expr = (DefaultBinaryExpr) this.left;
 			expr.accept(expr, this, visitor, visited, level + 1);
-		}
-		else
+		} else
 			log.debug("ignoring left, " + this.left.getClass().getName());
-		
+
 		if (DefaultBinaryExpr.class.isAssignableFrom(this.right.getClass())) {
-			DefaultBinaryExpr expr = (DefaultBinaryExpr)this.right;
+			DefaultBinaryExpr expr = (DefaultBinaryExpr) this.right;
 			expr.accept(expr, this, visitor, visited, level + 1);
-		}
-		else
+		} else
 			log.debug("ignoring right, " + this.right.getClass().getName());
 	}
-	
-	protected String createPropertyPath(Property property)
-	{
+
+	protected String createPropertyPath(Property property) {
 		StringBuilder buf = new StringBuilder();
 		if (property.getPath() != null) {
 			for (PathNode node : property.getPath().getPathNodes()) {
 				AbstractPathElement pathElem = node.getPathElement();
 				if (pathElem instanceof PathElement) {
-					buf.append(((PathElement)pathElem).getValue());
-				}
-				else if (pathElem instanceof WildcardPathElement){
-					buf.append(((WildcardPathElement)pathElem).getValue());					
-				}
-				else {
-					throw new IllegalStateException("unknown path element, " 
-				        + pathElem.getClass().getName());
+					buf.append(((PathElement) pathElem).getValue());
+				} else if (pathElem instanceof WildcardPathElement) {
+					buf.append(((WildcardPathElement) pathElem).getValue());
+				} else {
+					throw new IllegalStateException("unknown path element, "
+							+ pathElem.getClass().getName());
 				}
 				buf.append("/");
 			}
 		}
 		buf.append(property.getName());
 		return buf.toString();
-		
+
 	}
 }

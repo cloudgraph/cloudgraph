@@ -37,78 +37,85 @@ import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
 
 /**
- * An {@link WildcardBinaryExpr} implementation which uses a specific 
- * evaluation {@link GraphRecognizerContext context} to evaluate
- * the value(s) of a data graph property along the query property
- * traversal path within the context of a binary expression (syntax) tree.       
+ * An {@link WildcardBinaryExpr} implementation which uses a specific evaluation
+ * {@link GraphRecognizerContext context} to evaluate the value(s) of a data
+ * graph property along the query property traversal path within the context of
+ * a binary expression (syntax) tree.
+ * 
  * @author Scott Cinnamond
  * @since 0.5.3
  * @see GraphRecognizerContext
  * @see GraphRecognizerSupport
  */
-public class GraphRecognizerWildcardBinaryExpr extends DefaultWildcardBinaryExpr 
-    implements WildcardBinaryExpr {
-    private static Log log = LogFactory.getLog(GraphRecognizerWildcardBinaryExpr.class);
- 	protected PlasmaProperty endpointProperty;
- 	protected GraphRecognizerSupport recognizer = new GraphRecognizerSupport();
-	
-    /**
-     * Constructs an expression based on the given terms
-     * and column qualifier prefix. 
-     * @param property the "left" property term
-     * @param columnQualifierPrefix the qualifier prefix used
-     * to evaluate the expression for a given context.
-     * @param literal the "right" literal term
-     * @param operator the relational operator
-     * @see EdgeRecognizerContext
-     */
-    public GraphRecognizerWildcardBinaryExpr(Property property,
-			Literal literal, 
-			WildcardOperator operator) {
+public class GraphRecognizerWildcardBinaryExpr
+		extends
+			DefaultWildcardBinaryExpr implements WildcardBinaryExpr {
+	private static Log log = LogFactory
+			.getLog(GraphRecognizerWildcardBinaryExpr.class);
+	protected PlasmaProperty endpointProperty;
+	protected GraphRecognizerSupport recognizer = new GraphRecognizerSupport();
+
+	/**
+	 * Constructs an expression based on the given terms and column qualifier
+	 * prefix.
+	 * 
+	 * @param property
+	 *            the "left" property term
+	 * @param columnQualifierPrefix
+	 *            the qualifier prefix used to evaluate the expression for a
+	 *            given context.
+	 * @param literal
+	 *            the "right" literal term
+	 * @param operator
+	 *            the relational operator
+	 * @see EdgeRecognizerContext
+	 */
+	public GraphRecognizerWildcardBinaryExpr(Property property,
+			Literal literal, WildcardOperator operator) {
 		super(property, literal, operator);
 	}
-	
+
 	/**
-	 * Returns a "truth" value for the expression using a specific 
-     * evaluation {@link GraphRecognizerContext context} by evaluate
-     * the value of a property associated with the evaluation {@link GraphRecognizerContext context} 
-     * within the binary expression tree.       
+	 * Returns a "truth" value for the expression using a specific evaluation
+	 * {@link GraphRecognizerContext context} by evaluate the value of a
+	 * property associated with the evaluation {@link GraphRecognizerContext
+	 * context} within the binary expression tree.
+	 * 
 	 * @param context
-	 * @return a "truth" value for the expression using a specific 
-     * evaluation {@link GraphRecognizerContext context} by evaluate
-     * the value of a property associated with the evaluation {@link GraphRecognizerContext context} 
-     * within the binary expression tree.
-     * @see GraphRecognizerContext
+	 * @return a "truth" value for the expression using a specific evaluation
+	 *         {@link GraphRecognizerContext context} by evaluate the value of a
+	 *         property associated with the evaluation
+	 *         {@link GraphRecognizerContext context} within the binary
+	 *         expression tree.
+	 * @see GraphRecognizerContext
 	 */
 	@Override
 	public boolean evaluate(EvaluationContext context) {
-		GraphRecognizerContext ctx = (GraphRecognizerContext)context;		
-				
+		GraphRecognizerContext ctx = (GraphRecognizerContext) context;
+
 		PlasmaDataGraph graph = ctx.getGraph();
 
 		if (this.endpointProperty == null)
-			this.endpointProperty = this.recognizer.getEndpoint(
-				this.property,
-				(PlasmaType)graph.getRootObject().getType());
-        
-		List<Object> values = new ArrayList<Object>();	
-		this.recognizer.collect(graph.getRootObject(), this.property, 
+			this.endpointProperty = this.recognizer.getEndpoint(this.property,
+					(PlasmaType) graph.getRootObject().getType());
+
+		List<Object> values = new ArrayList<Object>();
+		this.recognizer.collect(graph.getRootObject(), this.property,
 				this.property.getPath(), 0, values);
 		for (Object value : values) {
-			if (this.recognizer.evaluate(this.endpointProperty, 
-				value,
-				this.operator.getValue(),
-				this.literal.getValue())) {
+			if (this.recognizer.evaluate(this.endpointProperty, value,
+					this.operator.getValue(), this.literal.getValue())) {
 				if (log.isDebugEnabled())
-					log.debug(this.toString()+ " evaluate true: " + String.valueOf(value));
+					log.debug(this.toString() + " evaluate true: "
+							+ String.valueOf(value));
 				return true;
-			}
-			else {
+			} else {
 				if (log.isDebugEnabled())
-					log.debug(this.toString()+ " evaluate false: " + String.valueOf(value));
+					log.debug(this.toString() + " evaluate false: "
+							+ String.valueOf(value));
 			}
 		}
-		
+
 		return false;
-	}	
+	}
 }

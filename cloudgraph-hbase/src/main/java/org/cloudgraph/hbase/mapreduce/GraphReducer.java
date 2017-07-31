@@ -34,23 +34,30 @@ import commonj.sdo.DataGraph;
 
 /**
  *
- * @param <KEYIN>  The type of the input key.
- * @param <VALUEIN>  The type of the input value.
- * @param <KEYOUT>  The type of the output key.
+ * @param <KEYIN>
+ *            The type of the input key.
+ * @param <VALUEIN>
+ *            The type of the input value.
+ * @param <KEYOUT>
+ *            The type of the output key.
  * @see org.apache.hadoop.mapreduce.Reducer
  */
 public class GraphReducer<KEYIN, VALUEIN, KEYOUT>
-extends Reducer<KEYIN, VALUEIN, KEYOUT, Writable> implements GraphMutator, GraphAccessor {
-    private GraphServiceDelegate serviceDelegate;
+		extends
+			Reducer<KEYIN, VALUEIN, KEYOUT, Writable>
+		implements
+			GraphMutator,
+			GraphAccessor {
+	private GraphServiceDelegate serviceDelegate;
 	public GraphReducer() {
 		this.serviceDelegate = new GraphServiceDelegate();
 	}
-	
+
 	@Override
 	public DataGraph[] find(Query query, JobContext context) throws IOException {
 		return this.serviceDelegate.find(query, context);
 	}
-	
+
 	@Override
 	public void commit(DataGraph graph, JobContext context) throws IOException {
 		this.serviceDelegate.commit(graph, context);

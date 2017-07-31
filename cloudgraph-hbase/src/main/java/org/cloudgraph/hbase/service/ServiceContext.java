@@ -25,23 +25,24 @@ import org.cloudgraph.state.StateMarshalingContext;
 
 /**
  * Holds temporary state information for use within services held for the
- * duration of a service call. For most implementations the <{@link close} method
- * must be called within the finally block of the service method to free associated 
- * resources.
+ * duration of a service call. For most implementations the <{@link close}
+ * method must be called within the finally block of the service method to free
+ * associated resources.
  * 
  * @author Scott Cinnamond
  * @since 0.6.3
  */
 public interface ServiceContext {
-  
-	/** 
-	 * Returns the state marshalling context associated with the context. 
+
+	/**
+	 * Returns the state marshalling context associated with the context.
+	 * 
 	 * @return the state marshalling context associated with the context.
 	 */
 	public StateMarshalingContext getMarshallingContext();
-    
+
 	/**
-	 * Frees any resources associated with this context. 
+	 * Frees any resources associated with this context.
 	 */
-    public void close();
+	public void close();
 }

@@ -27,13 +27,13 @@ import org.plasma.sdo.PlasmaType;
 import org.plasma.sdo.helper.PlasmaTypeHelper;
 
 /**
- * A parallel compute job. 
+ * A parallel compute job.
+ * 
  * @author Scott Cinnamond
  * @since 0.6.3
  */
 public abstract class JobSetup {
-	
-	
+
 	protected static PlasmaType getRootType(Query query) {
 		From from = query.getModel().getFromClause();
 		if (from.getEntity() == null)
@@ -47,6 +47,5 @@ public abstract class JobSetup {
 				.getEntity().getNamespaceURI(), from.getEntity().getName());
 		return type;
 	}
-
 
 }

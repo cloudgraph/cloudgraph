@@ -21,7 +21,6 @@
  */
 package org.cloudgraph.hbase.connect;
 
-
 import java.io.IOException;
 
 import org.apache.commons.logging.Log;
@@ -43,55 +42,57 @@ import org.cloudgraph.hbase.service.CloudGraphContext;
 import org.cloudgraph.state.StateException;
 import org.cloudgraph.store.service.GraphServiceException;
 
-
 /**
  * Manages HBase table pool and table interface access.
+ * 
  * @see CloudGraphContext
  * @see TableConfig
  * @author Scott Cinnamond
  * @since 0.5
  */
 public class HBaseConnectionManager {
-	
-	/** not currently used as connection pools for HBase 1.0.x client not recommended */
+
+	/**
+	 * not currently used as connection pools for HBase 1.0.x client not
+	 * recommended
+	 */
 	public static final String CONNECTION_POOL_MIN_SIZE = "org.plasma.sdo.access.provider.hbase.ConnectionPoolMinSize";
 	public static final String CONNECTION_POOL_MAX_SIZE = "org.plasma.sdo.access.provider.hbase.ConnectionPoolMaxSize";
 
 	private GenericObjectPool<Connection> pool;
 
-	private static final Log log = LogFactory.getLog(HBaseConnectionManager.class);
+	private static final Log log = LogFactory
+			.getLog(HBaseConnectionManager.class);
 
-    private static volatile HBaseConnectionManager instance;
-    private Configuration config;
-	 
+	private static volatile HBaseConnectionManager instance;
+	private Configuration config;
 
-	private HBaseConnectionManager() {		
+	private HBaseConnectionManager() {
 		this.config = CloudGraphContext.instance().getConfig();
-		
+
 		int min = this.config.getInt(CONNECTION_POOL_MIN_SIZE, 1);
 		int max = this.config.getInt(CONNECTION_POOL_MAX_SIZE, 20);
-		
+
 		GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
-		poolConfig.setMinIdle(min);     
+		poolConfig.setMinIdle(min);
 		poolConfig.setMaxTotal(max);
-		PooledConnectionFactory factory = new PooledConnectionFactory(this.config);
+		PooledConnectionFactory factory = new PooledConnectionFactory(
+				this.config);
 		this.pool = new GenericObjectPool<Connection>(factory, poolConfig);
 		factory.setPool(pool);
 	}
 
-	public static HBaseConnectionManager instance()
-    {
-        if (instance == null)
-            initInstance();   
-        return instance;     
-    }
+	public static HBaseConnectionManager instance() {
+		if (instance == null)
+			initInstance();
+		return instance;
+	}
 
-    private static synchronized void initInstance()
-    {
-        if (instance == null)
-            instance = new HBaseConnectionManager();
-    }
- 
+	private static synchronized void initInstance() {
+		if (instance == null)
+			instance = new HBaseConnectionManager();
+	}
+
 	protected void finalize() {
 		log.debug("Finalizing ConnectionManager");
 		try {
@@ -100,38 +101,37 @@ public class HBaseConnectionManager {
 			log.error("ConnectionManager finalize failed to disconnect: ", ex);
 		}
 	}
-	
-	public Connection getConnection()  
-	{
-        try {
+
+	public Connection getConnection() {
+		try {
 			return this.pool.borrowObject();
 		} catch (Exception e) {
 			throw new GraphServiceException(e);
+		} finally {
 		}
-        finally {
-        }
-    }
-			
+	}
+
 	public void createTable(Connection connection, TableName name) {
 
 		Admin admin = null;
-    	try {
-    		admin = connection.getAdmin();
-    		TableConfig tableConfig = CloudGraphConfig.getInstance().getTable(name.getNamespaceAsString(), 
-    				name.getNameAsString());
-    		HTableDescriptor tableDesc = new HTableDescriptor(name);
-	    	HColumnDescriptor fam1 = new HColumnDescriptor(tableConfig.getDataColumnFamilyName().getBytes());
-	    	tableDesc.addFamily(fam1);
-	    	try {
-			    admin.createTable(tableDesc);
-	    	}
-	    	catch (NamespaceNotFoundException nnf) {
-				NamespaceDescriptor namespace =
-					NamespaceDescriptor.create(name.getNamespaceAsString())
-					    .addConfiguration("Description", "cloudgraph generated namespace").build();
+		try {
+			admin = connection.getAdmin();
+			TableConfig tableConfig = CloudGraphConfig.getInstance().getTable(
+					name.getNamespaceAsString(), name.getNameAsString());
+			HTableDescriptor tableDesc = new HTableDescriptor(name);
+			HColumnDescriptor fam1 = new HColumnDescriptor(tableConfig
+					.getDataColumnFamilyName().getBytes());
+			tableDesc.addFamily(fam1);
+			try {
+				admin.createTable(tableDesc);
+			} catch (NamespaceNotFoundException nnf) {
+				NamespaceDescriptor namespace = NamespaceDescriptor
+						.create(name.getNamespaceAsString())
+						.addConfiguration("Description",
+								"cloudgraph generated namespace").build();
 				admin.createNamespace(namespace);
-			    admin.createTable(tableDesc);	    		
-	    	}
+				admin.createTable(tableDesc);
+			}
 		} catch (MasterNotRunningException e1) {
 			throw new StateException(e1);
 		} catch (ZooKeeperConnectionException e1) {
@@ -146,15 +146,15 @@ public class HBaseConnectionManager {
 					log.error(e.getMessage(), e);
 				}
 		}
-    }
+	}
 
 	public void deleteTable(Connection connection, TableName name) {
 
 		Admin admin = null;
-    	try {
-    		admin = connection.getAdmin();
-    		admin.disableTable(name);
-    		admin.deleteTable(name);
+		try {
+			admin = connection.getAdmin();
+			admin.disableTable(name);
+			admin.deleteTable(name);
 		} catch (MasterNotRunningException e1) {
 			throw new StateException(e1);
 		} catch (ZooKeeperConnectionException e1) {
@@ -169,6 +169,6 @@ public class HBaseConnectionManager {
 					log.error(e.getMessage(), e);
 				}
 		}
-    }
-	
+	}
+
 }

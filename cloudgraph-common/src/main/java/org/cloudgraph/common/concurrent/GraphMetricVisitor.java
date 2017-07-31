@@ -41,12 +41,12 @@ public class GraphMetricVisitor implements PlasmaDataGraphVisitor {
 		count++;
 		if (level > depth)
 			depth = level;
-		
-		CoreNode node = (CoreNode)target;
-		String thread = (String)node.getValueObject().get(
-        		CloudGraphConstants.GRAPH_NODE_THREAD_NAME);
-        if (thread != null)
-        	this.threadNames.add(thread);
+
+		CoreNode node = (CoreNode) target;
+		String thread = (String) node.getValueObject().get(
+				CloudGraphConstants.GRAPH_NODE_THREAD_NAME);
+		if (thread != null)
+			this.threadNames.add(thread);
 
 	}
 
@@ -57,9 +57,8 @@ public class GraphMetricVisitor implements PlasmaDataGraphVisitor {
 	public long getDepth() {
 		return depth;
 	}
-	
+
 	public long getThreadCount() {
 		return threadNames.size();
 	}
 }
-

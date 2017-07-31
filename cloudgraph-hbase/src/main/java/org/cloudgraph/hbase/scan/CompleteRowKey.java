@@ -22,12 +22,13 @@
 package org.cloudgraph.hbase.scan;
 
 /**
- * Represents an entire row key such that every field element in the key is 
- * present. Provides access to the row key bytes.     
+ * Represents an entire row key such that every field element in the key is
+ * present. Provides access to the row key bytes.
+ * 
  * @author Scott Cinnamond
  * @since 0.5.5
  * @see CompleteRowKeyLiteral
  */
 public interface CompleteRowKey {
-    public byte[] getKey();
+	public byte[] getKey();
 }

@@ -35,40 +35,41 @@ import commonj.sdo.DataGraph;
 import commonj.sdo.helper.XMLDocument;
 
 /**
- * Allows data graphs to be consumable by Hadoop using XML
- * serialization under standard SDO provided mechanisms. A data graph of any
- * depth or complexity may be represented including graphs where the underlying
- * model contains instances of multiple inheritance. No XML Schema is required as the
- * serialized form is used as an internal representation only, and no XML Schema
- * validation is performed.  
+ * Allows data graphs to be consumable by Hadoop using XML serialization under
+ * standard SDO provided mechanisms. A data graph of any depth or complexity may
+ * be represented including graphs where the underlying model contains instances
+ * of multiple inheritance. No XML Schema is required as the serialized form is
+ * used as an internal representation only, and no XML Schema validation is
+ * performed.
  * 
  * <p>
- * For the write operation, the root URI, prepended by an integer representing its length, is written out first as this 
- * is critical for de-serialization in some cases. Then the XML representation is written, also 
- * prepended by an integer representing its length. 
- * During the read operation, the root URI is first un-marshaled and then used as an option for XML
- * de-serialization. 
+ * For the write operation, the root URI, prepended by an integer representing
+ * its length, is written out first as this is critical for de-serialization in
+ * some cases. Then the XML representation is written, also prepended by an
+ * integer representing its length. During the read operation, the root URI is
+ * first un-marshaled and then used as an option for XML de-serialization.
  * </p>
- *  
+ * 
  * @author Scott Cinnamond
  * @since 0.5.8
  * @see commonj.sdo.DataGraph
  * @see commonj.sdo.helper.XMLDocument
  */
 public class GraphWritable implements Writable {
-	
+
 	private DataGraph dataGraph;
-	
+
 	public GraphWritable() {
 		// for serialization only
 	}
-	
+
 	public GraphWritable(DataGraph dataGraph) {
 		this.dataGraph = dataGraph;
 	}
 
 	/**
-	 * Returns a 
+	 * Returns a
+	 * 
 	 * @return
 	 */
 	public DataGraph getDataGraph() {
@@ -76,9 +77,10 @@ public class GraphWritable implements Writable {
 	}
 
 	/**
-	 * The root URI, prepended by an integer representing its length, is written out first as this 
-     * is critical for de-serialization in some cases. Then the XML representation is written, also 
-     * prepended by an integer representing its length.
+	 * The root URI, prepended by an integer representing its length, is written
+	 * out first as this is critical for de-serialization in some cases. Then
+	 * the XML representation is written, also prepended by an integer
+	 * representing its length.
 	 */
 	@Override
 	public void write(DataOutput out) throws IOException {
@@ -86,7 +88,7 @@ public class GraphWritable implements Writable {
 		byte[] uribytes = uri.getBytes();
 		out.writeInt(uribytes.length);
 		out.write(uribytes);
-		
+
 		byte[] bytes = serializeGraph(this.dataGraph);
 		out.writeInt(bytes.length);
 		out.write(bytes);
@@ -94,47 +96,50 @@ public class GraphWritable implements Writable {
 
 	/**
 	 * The root URI is first unmarshaled and then used as an option for XML
-     * de-serialization. 
-	 * (non-Javadoc)
+	 * de-serialization. (non-Javadoc)
+	 * 
 	 * @see org.apache.hadoop.io.Writable#readFields(java.io.DataInput)
 	 */
 	@Override
 	public void readFields(DataInput in) throws IOException {
-	    int length = in.readInt();
-	    if (length == 0) {
-	    	return;
-	    }
-	    byte[] buf = new byte[length];
-	    in.readFully(buf);
-	    String uri = new String(buf);
+		int length = in.readInt();
+		if (length == 0) {
+			return;
+		}
+		byte[] buf = new byte[length];
+		in.readFully(buf);
+		String uri = new String(buf);
 
 		length = in.readInt();
-	    if(length == 0) {
-	      return;
-	    }
-	    buf = new byte[length];
+		if (length == 0) {
+			return;
+		}
+		buf = new byte[length];
 		in.readFully(buf);
-		
+
 		this.dataGraph = deserializeGraph(buf, uri);
 	}
-	
+
 	public String toXMLString() throws IOException {
 		return new String(serializeGraph(this.dataGraph));
 	}
-	
-	private DataGraph deserializeGraph(byte[] buf, String uri) throws IOException {
+
+	private DataGraph deserializeGraph(byte[] buf, String uri)
+			throws IOException {
 		long before = System.currentTimeMillis();
-		
+
 		ByteArrayInputStream is = new ByteArrayInputStream(buf);
 		DefaultOptions options = new DefaultOptions(uri);
 		options.setRootNamespacePrefix("ns1");
-		options.setValidate(false); // no XML schema for the doc necessary or present		
+		options.setValidate(false); // no XML schema for the doc necessary or
+									// present
 		XMLDocument doc = PlasmaXMLHelper.INSTANCE.load(is, uri, options);
-		
+
 		long after = System.currentTimeMillis();
-		//System.out.println(GraphWritable.class.getSimpleName() + " deserialization: " + String.valueOf(after - before));
-		
-		return doc.getRootObject().getDataGraph();		
+		// System.out.println(GraphWritable.class.getSimpleName() +
+		// " deserialization: " + String.valueOf(after - before));
+
+		return doc.getRootObject().getDataGraph();
 	}
 
 	private byte[] serializeGraph(DataGraph graph) throws IOException {
@@ -142,7 +147,7 @@ public class GraphWritable implements Writable {
 		DefaultOptions options = new DefaultOptions(graph.getRootObject()
 				.getType().getURI());
 		options.setRootNamespacePrefix("ns1");
-		//options.setPrettyPrint(false);  
+		// options.setPrettyPrint(false);
 		XMLDocument doc = PlasmaXMLHelper.INSTANCE.createDocument(
 				graph.getRootObject(),
 				graph.getRootObject().getType().getURI(), null);
@@ -150,7 +155,8 @@ public class GraphWritable implements Writable {
 		PlasmaXMLHelper.INSTANCE.save(doc, os, options);
 		os.flush();
 		long after = System.currentTimeMillis();
-		//System.out.println(GraphWritable.class.getSimpleName() + " serialization: " + String.valueOf(after - before));
+		// System.out.println(GraphWritable.class.getSimpleName() +
+		// " serialization: " + String.valueOf(after - before));
 		return os.toByteArray();
 	}
 }

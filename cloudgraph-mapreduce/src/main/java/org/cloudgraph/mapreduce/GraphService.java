@@ -22,8 +22,9 @@
 package org.cloudgraph.mapreduce;
 
 /**
- * Supports access, tracking and commit of modifications to arbitrary data graphs at various stages 
- * of a <code>Job</code>.
+ * Supports access, tracking and commit of modifications to arbitrary data
+ * graphs at various stages of a <code>Job</code>.
+ * 
  * @author Scott Cinnamond
  * @since 0.6.2
  * 

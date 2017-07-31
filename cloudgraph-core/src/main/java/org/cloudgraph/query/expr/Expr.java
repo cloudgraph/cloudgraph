@@ -22,26 +22,28 @@
 package org.cloudgraph.query.expr;
 
 /**
- * Base interface representing a query expression.  
+ * Base interface representing a query expression.
+ * 
  * @author Scott Cinnamond
  * @since 0.5.2
  * 
  * @see EvaluationContext
  */
 public interface Expr extends Term {
-	
+
 	/**
-	 * Returns a "truth" value for the expression based
-	 * on the given context. 
+	 * Returns a "truth" value for the expression based on the given context.
+	 * 
 	 * @param context
-	 * @return a "truth" value for the expression based
-	 * on the given context.
+	 * @return a "truth" value for the expression based on the given context.
 	 */
 	public boolean evaluate(EvaluationContext context);
-	
+
 	/**
 	 * Begins the traversal of the expression as a root.
-	 * @param visitor the traversal visitor
+	 * 
+	 * @param visitor
+	 *            the traversal visitor
 	 */
 	public void accept(ExprVisitor visitor);
 }

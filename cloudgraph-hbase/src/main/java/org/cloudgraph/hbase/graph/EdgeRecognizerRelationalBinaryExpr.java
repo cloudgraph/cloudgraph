@@ -32,63 +32,63 @@ import org.plasma.query.model.Property;
 import org.plasma.query.model.RelationalOperator;
 
 /**
- * An {@link RelationalBinaryExpr} implementation which uses a specific 
- * evaluation {@link EdgeRecognizerContext context} to locate
- * or recognize a given sequence based column qualifier within 
- * the context of the expression.       
+ * An {@link RelationalBinaryExpr} implementation which uses a specific
+ * evaluation {@link EdgeRecognizerContext context} to locate or recognize a
+ * given sequence based column qualifier within the context of the expression.
+ * 
  * @author Scott Cinnamond
  * @since 0.5.2
  * @see EdgeRecognizerContext
  */
-public class EdgeRecognizerRelationalBinaryExpr extends DefaultRelationalBinaryExpr 
-    implements RelationalBinaryExpr {
-    private static Log log = LogFactory.getLog(EdgeRecognizerRelationalBinaryExpr.class);
-    private String columnQualifierPrefix;
-	
-    /**
-     * Constructs an expression based on the given terms
-     * and column qualifier prefix. 
-     * @param property the "left" property term
-     * @param columnQualifierPrefix the qualifier prefix used
-     * to evaluate the expression for a given context.
-     * @param literal the "right" literal term
-     * @param operator the relational operator
-     * @see EdgeRecognizerContext
-     */
-    public EdgeRecognizerRelationalBinaryExpr(Property property,
-			String columnQualifierPrefix,
-			Literal literal, 
-			RelationalOperator operator) {
-		super(property, literal, operator);
-		this.columnQualifierPrefix = columnQualifierPrefix;		
-	}
-	
-	/**
-	 * Returns a "truth" value for the expression using a specific 
-     * evaluation {@link EdgeRecognizerContext context} to locate
-     * or recognize a given sequence based column qualifier within 
-     * the context of the expression.   
-	 * @param context
-	 * @return a "truth" value for the expression using a specific 
-     * evaluation {@link EdgeRecognizerContext context} to locate
-     * or recognize a given sequence based column qualifier within 
-     * the context of the expression.
-     * @see EdgeRecognizerContext
-	 */
-	@Override
-	public boolean evaluate(EvaluationContext context) {
-		EdgeRecognizerContext ctx = (EdgeRecognizerContext)context;		
-		//FIXME: use Array copy
-		String qualifier = this.columnQualifierPrefix 
-				+ String.valueOf(ctx.getSequence());
-		KeyValue value = ctx.getKeyMap().get(qualifier);
-		
-		
-		boolean found = value != null;
-		if (log.isDebugEnabled())
-			log.debug("evaluate: " + found + " '" + qualifier
-				+ "' in map " + ctx.getKeyMap().keySet());
-		return found;
-	}
-	    
+public class EdgeRecognizerRelationalBinaryExpr extends DefaultRelationalBinaryExpr implements
+    RelationalBinaryExpr {
+  private static Log log = LogFactory.getLog(EdgeRecognizerRelationalBinaryExpr.class);
+  private String columnQualifierPrefix;
+
+  /**
+   * Constructs an expression based on the given terms and column qualifier
+   * prefix.
+   * 
+   * @param property
+   *          the "left" property term
+   * @param columnQualifierPrefix
+   *          the qualifier prefix used to evaluate the expression for a given
+   *          context.
+   * @param literal
+   *          the "right" literal term
+   * @param operator
+   *          the relational operator
+   * @see EdgeRecognizerContext
+   */
+  public EdgeRecognizerRelationalBinaryExpr(Property property, String columnQualifierPrefix,
+      Literal literal, RelationalOperator operator) {
+    super(property, literal, operator);
+    this.columnQualifierPrefix = columnQualifierPrefix;
+  }
+
+  /**
+   * Returns a "truth" value for the expression using a specific evaluation
+   * {@link EdgeRecognizerContext context} to locate or recognize a given
+   * sequence based column qualifier within the context of the expression.
+   * 
+   * @param context
+   * @return a "truth" value for the expression using a specific evaluation
+   *         {@link EdgeRecognizerContext context} to locate or recognize a
+   *         given sequence based column qualifier within the context of the
+   *         expression.
+   * @see EdgeRecognizerContext
+   */
+  @Override
+  public boolean evaluate(EvaluationContext context) {
+    EdgeRecognizerContext ctx = (EdgeRecognizerContext) context;
+    // FIXME: use Array copy
+    String qualifier = this.columnQualifierPrefix + String.valueOf(ctx.getSequence());
+    KeyValue value = ctx.getKeyMap().get(qualifier);
+
+    boolean found = value != null;
+    if (log.isDebugEnabled())
+      log.debug("evaluate: " + found + " '" + qualifier + "' in map " + ctx.getKeyMap().keySet());
+    return found;
+  }
+
 }

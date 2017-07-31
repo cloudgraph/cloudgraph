@@ -21,20 +21,21 @@
  */
 package org.cloudgraph.config;
 
-
 /**
- * Encapsulates logic related to access of row key model
- * configuration information.  
+ * Encapsulates logic related to access of row key model configuration
+ * information.
+ * 
  * @author Scott Cinnamond
  * @since 0.5.8
  */
 public class RowKeyModelConfig {
-	
+
 	private RowKeyModel rowKeyModel;
-    
-    @SuppressWarnings("unused")
-	private RowKeyModelConfig() {}
-    
+
+	@SuppressWarnings("unused")
+	private RowKeyModelConfig() {
+	}
+
 	public RowKeyModelConfig(RowKeyModel rowKeyModel) {
 		super();
 		this.rowKeyModel = rowKeyModel;

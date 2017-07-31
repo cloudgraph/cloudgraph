@@ -51,9 +51,9 @@ import commonj.sdo.DataObject;
 import commonj.sdo.Property;
 
 /**
- * Supports serial graph assembly. 
- * Common graph assembler functionality resulting from initial re-factoring and addition of parallel 
- * assembly across RDB and Cassandra services. 
+ * Supports serial graph assembly. Common graph assembler functionality
+ * resulting from initial re-factoring and addition of parallel assembly across
+ * RDB and Cassandra services.
  * 
  * @author Scott Cinnamond
  * @since 0.6.2
@@ -65,15 +65,16 @@ public abstract class DefaultAssembler extends AssemblerSupport {
 	protected PlasmaType rootType;
 	protected PlasmaDataObject root;
 	protected Timestamp snapshotDate;
-	/** 
-	 * stores a mapping of previously created objects using a PK based hash, such that if the 
-	 * object is discovered again, no graph find is necessary
+	/**
+	 * stores a mapping of previously created objects using a PK based hash,
+	 * such that if the object is discovered again, no graph find is necessary
 	 */
 	protected Map<Integer, PlasmaDataObject> dataObjectMap;
 	protected Comparator<PropertyPair> nameComparator;
 
 	public DefaultAssembler(PlasmaType rootType, SelectionCollector collector,
-			StatementFactory statementFactory, StatementExecutor statementExecutor,
+			StatementFactory statementFactory,
+			StatementExecutor statementExecutor,
 			Map<Integer, PlasmaDataObject> dataObjectMap, Timestamp snapshotDate) {
 		super(collector, statementFactory, statementExecutor);
 		this.rootType = rootType;
@@ -87,94 +88,99 @@ public abstract class DefaultAssembler extends AssemblerSupport {
 			}
 		};
 	}
-	
+
 	/**
-	 * Assembles a data object of the given target type by first forming a query using the
-	 * given key/property pairs. If an existing data object is mapped for the given
-	 * key pairs, the existing data object is linked. 
-	 * @param targetType the type for the data object to be assembled
-	 * @param source the source data object
-	 * @param sourceProperty the source property
-	 * @param childKeyPairs the key pairs for the data object to be assembled
-	 */	
-	protected abstract void assemble(PlasmaType targetType, PlasmaDataObject source, PlasmaProperty sourceProperty, 
+	 * Assembles a data object of the given target type by first forming a query
+	 * using the given key/property pairs. If an existing data object is mapped
+	 * for the given key pairs, the existing data object is linked.
+	 * 
+	 * @param targetType
+	 *            the type for the data object to be assembled
+	 * @param source
+	 *            the source data object
+	 * @param sourceProperty
+	 *            the source property
+	 * @param childKeyPairs
+	 *            the key pairs for the data object to be assembled
+	 */
+	protected abstract void assemble(PlasmaType targetType,
+			PlasmaDataObject source, PlasmaProperty sourceProperty,
 			List<PropertyPair> childKeyPairs, int level);
-	
+
 	/**
-	 * Initiates the assembly of a data graph based on the 
-	 * given results list. 
-	 * @param results the results list
+	 * Initiates the assembly of a data graph based on the given results list.
+	 * 
+	 * @param results
+	 *            the results list
 	 * 
 	 * @see DataGraphAssembler.getDataGraph()
 	 */
 	public abstract void assemble(List<PropertyPair> results);
-	
-	protected DataGraph initRoot(List<PropertyPair> results)
-	{
-    	DataGraph dataGraph = PlasmaDataFactory.INSTANCE.createDataGraph();
-    	this.root = (PlasmaDataObject)dataGraph.createRootObject(this.rootType);		
+
+	protected DataGraph initRoot(List<PropertyPair> results) {
+		DataGraph dataGraph = PlasmaDataFactory.INSTANCE.createDataGraph();
+		this.root = (PlasmaDataObject) dataGraph
+				.createRootObject(this.rootType);
 		if (log.isDebugEnabled())
-			log.debug("assembling root: " 
-		        + this.root.getType().getName());
-		
-		CoreNode rootNode = (CoreNode)this.root;
-        // add concurrency fields
-        rootNode.setValue(CoreConstants.PROPERTY_NAME_SNAPSHOT_TIMESTAMP, 
-        			snapshotDate);
-    	rootNode.getValueObject().put(
-        		CloudGraphConstants.GRAPH_NODE_THREAD_NAME,
-        		Thread.currentThread().getName());
+			log.debug("assembling root: " + this.root.getType().getName());
+
+		CoreNode rootNode = (CoreNode) this.root;
+		// add concurrency fields
+		rootNode.setValue(CoreConstants.PROPERTY_NAME_SNAPSHOT_TIMESTAMP,
+				snapshotDate);
+		rootNode.getValueObject().put(
+				CloudGraphConstants.GRAPH_NODE_THREAD_NAME,
+				Thread.currentThread().getName());
 		// set data properties
 		for (PropertyPair pair : results) {
 			if (pair.getProp().getType().isDataType()) {
-				rootNode.setValue(pair.getProp().getName(), 
-						pair.getValue());
+				rootNode.setValue(pair.getProp().getName(), pair.getValue());
 			}
 		}
-		
-        // map it
-        int key = createHashKey(
-        	(PlasmaType)this.root.getType(), results);
-        if (log.isDebugEnabled())
-        	log.debug("mapping root " + key + "->" + this.root);
-        this.dataObjectMap.put(key, this.root);  
-		
-        return dataGraph;
+
+		// map it
+		int key = createHashKey((PlasmaType) this.root.getType(), results);
+		if (log.isDebugEnabled())
+			log.debug("mapping root " + key + "->" + this.root);
+		this.dataObjectMap.put(key, this.root);
+
+		return dataGraph;
 	}
 
-	public Map<PlasmaDataObject, List<PropertyPair>> collectResults(PlasmaType targetType, PlasmaDataObject source,
-			PlasmaProperty sourceProperty, List<List<PropertyPair>> result)
-	{
-		// first create (or link existing) data objects 
+	public Map<PlasmaDataObject, List<PropertyPair>> collectResults(
+			PlasmaType targetType, PlasmaDataObject source,
+			PlasmaProperty sourceProperty, List<List<PropertyPair>> result) {
+		// first create (or link existing) data objects
 		// "filling out" the containment hierarchy at this traversal level
 		// BEFORE recursing, as we may "cancel" out an object
 		// at the current level if it is first encountered
 		// within the recursion.
 		Map<PlasmaDataObject, List<PropertyPair>> resultMap = new HashMap<PlasmaDataObject, List<PropertyPair>>();
 		for (List<PropertyPair> row : result) {
-			
+
 			PlasmaDataObject target = this.findDataObject(targetType, row);
 			// if no existing data-object in graph
 			if (target == null) {
-			    target = this.createDataObject(row, source, 
-					sourceProperty);
-			    resultMap.put(target, row); // add only new object for later traversal
-			}
-			else { 
+				target = this.createDataObject(row, source, sourceProperty);
+				resultMap.put(target, row); // add only new object for later
+											// traversal
+			} else {
 				this.link(target, source, sourceProperty);
 				continue; // don't map it for later traversal
 				// Assume we traverse no farther given no traversal
-				// direction or containment info. We only know that we 
-				// encountered an existing node. Need more path specific 
-				// info including containment and traversal direction to construct
-				// a directed graph here. 
+				// direction or containment info. We only know that we
+				// encountered an existing node. Need more path specific
+				// info including containment and traversal direction to
+				// construct
+				// a directed graph here.
 				// Since the current selection collector maps any and all
 				// properties selected to a type, for each type/data-object
-				// we will, at this point, have gotten all the properties we expect anyway.
+				// we will, at this point, have gotten all the properties we
+				// expect anyway.
 				// So we create a link from the source to the existing DO, but
-				// traverse no further. 
-			}   
-		}	
+				// traverse no further.
+			}
+		}
 		return resultMap;
 	}
 
@@ -203,10 +209,9 @@ public abstract class DefaultAssembler extends AssemblerSupport {
 
 		// add concurrency fields
 		node.setValue(CoreConstants.PROPERTY_NAME_SNAPSHOT_TIMESTAMP,
-					snapshotDate);
-		node.getValueObject().put(
-        		CloudGraphConstants.GRAPH_NODE_THREAD_NAME,
-        		Thread.currentThread().getName());
+				snapshotDate);
+		node.getValueObject().put(CloudGraphConstants.GRAPH_NODE_THREAD_NAME,
+				Thread.currentThread().getName());
 
 		// set data properties bypassing SDO "setter" API
 		// to avoid triggering read-only property error
@@ -427,7 +432,6 @@ public abstract class DefaultAssembler extends AssemblerSupport {
 							+ target.toString());
 		}
 	}
-
 
 	public PlasmaDataGraph getDataGraph() {
 		return (PlasmaDataGraph) this.root.getDataGraph();

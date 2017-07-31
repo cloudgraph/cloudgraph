@@ -25,16 +25,16 @@ import org.cloudgraph.query.expr.EvaluationContext;
 import org.plasma.sdo.PlasmaDataGraph;
 
 /**
- * Context which supports the evaluation or 
- * "recognition" of a given data graph by a binary {@link Expr expression} 
- * tree, within the context of the {@link Expr expression} syntax.
+ * Context which supports the evaluation or "recognition" of a given data graph
+ * by a binary {@link Expr expression} tree, within the context of the
+ * {@link Expr expression} syntax.
  * <p>
- * A graph recognizer is required when query expressions are present
- * which reference properties not found in the row key model
- * for a target graph. 
+ * A graph recognizer is required when query expressions are present which
+ * reference properties not found in the row key model for a target graph.
  * </p>
+ * 
  * @author Scott Cinnamond
- * @since 0.5.3 
+ * @since 0.5.3
  * 
  * @see org.cloudgraph.query.expr.Expr
  * @see org.cloudgraph.query.expr.BinaryExpr
@@ -42,12 +42,12 @@ import org.plasma.sdo.PlasmaDataGraph;
 public class GraphRecognizerContext implements EvaluationContext {
 
 	private PlasmaDataGraph graph;
-    
-    /**
-     * Constructs an empty context.
-     */
-    public GraphRecognizerContext() {    	
-    }
+
+	/**
+	 * Constructs an empty context.
+	 */
+	public GraphRecognizerContext() {
+	}
 
 	public PlasmaDataGraph getGraph() {
 		return graph;
@@ -56,5 +56,5 @@ public class GraphRecognizerContext implements EvaluationContext {
 	public void setGraph(PlasmaDataGraph graph) {
 		this.graph = graph;
 	}
-    
+
 }

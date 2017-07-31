@@ -23,14 +23,16 @@ package org.cloudgraph.config;
 
 /**
  * The configuration for a column key.
+ * 
  * @author Scott Cinnamond
  * @since 0.5.1
  */
 public class ColumnKeyFieldConfig extends PreDefinedKeyFieldConfig {
 
 	private ColumnKeyField columnKeyField;
-	
-	public ColumnKeyFieldConfig(ColumnKeyField field, int seqNum, int totalFields) {
+
+	public ColumnKeyFieldConfig(ColumnKeyField field, int seqNum,
+			int totalFields) {
 		super(field, seqNum, totalFields);
 		this.columnKeyField = field;
 	}

@@ -21,9 +21,6 @@
  */
 package org.cloudgraph.hbase.test;
 
-
-
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -53,63 +50,59 @@ import commonj.sdo.helper.XMLDocument;
  * @since 0.5
  */
 public abstract class HBaseTestCase extends CommonTest {
-    private static Log log = LogFactory.getLog(HBaseTestCase.class);
-    protected SDODataAccessClient service;
-    protected String classesDir = System.getProperty("classes.dir");
-    protected String targetDir = System.getProperty("target.dir");
-    
-    public void setUp() throws Exception {
-        service = new SDODataAccessClient(
-        		new HBasePojoDataAccessClient());
-    }
-        
-    protected String serializeGraph(DataGraph graph) throws IOException
-    {
-        DefaultOptions options = new DefaultOptions(
-        		graph.getRootObject().getType().getURI());
-        options.setRootNamespacePrefix("test");
-        
-        XMLDocument doc = PlasmaXMLHelper.INSTANCE.createDocument(graph.getRootObject(), 
-        		graph.getRootObject().getType().getURI(), 
-        		null);
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-	    PlasmaXMLHelper.INSTANCE.save(doc, os, options);        
-        os.flush();
-        os.close(); 
-        String xml = new String(os.toByteArray());
-        return xml;
-    }
-    
-    protected void debugGraph(DataGraph dataGraph) throws IOException 
-    {
-        String xml = serializeGraph(dataGraph);
-        log.debug("GRAPH: " + xml);    	
-    }
-    
-    protected void logGraph(DataGraph dataGraph) throws IOException 
-    {
-        String xml = serializeGraph(dataGraph);
-        log.debug("GRAPH: " + xml);    	
-    }
-    
-    protected Query marshal(Query query, float id) {
-    	return marshal(query, String.valueOf(id));
-    }   
-    
-    protected Query marshal(Query query, String id) {
-        PlasmaQueryDataBinding binding;
+	private static Log log = LogFactory.getLog(HBaseTestCase.class);
+	protected SDODataAccessClient service;
+	protected String classesDir = System.getProperty("classes.dir");
+	protected String targetDir = System.getProperty("target.dir");
+
+	public void setUp() throws Exception {
+		service = new SDODataAccessClient(new HBasePojoDataAccessClient());
+	}
+
+	protected String serializeGraph(DataGraph graph) throws IOException {
+		DefaultOptions options = new DefaultOptions(graph.getRootObject()
+				.getType().getURI());
+		options.setRootNamespacePrefix("test");
+
+		XMLDocument doc = PlasmaXMLHelper.INSTANCE.createDocument(
+				graph.getRootObject(),
+				graph.getRootObject().getType().getURI(), null);
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		PlasmaXMLHelper.INSTANCE.save(doc, os, options);
+		os.flush();
+		os.close();
+		String xml = new String(os.toByteArray());
+		return xml;
+	}
+
+	protected void debugGraph(DataGraph dataGraph) throws IOException {
+		String xml = serializeGraph(dataGraph);
+		log.debug("GRAPH: " + xml);
+	}
+
+	protected void logGraph(DataGraph dataGraph) throws IOException {
+		String xml = serializeGraph(dataGraph);
+		log.debug("GRAPH: " + xml);
+	}
+
+	protected Query marshal(Query query, float id) {
+		return marshal(query, String.valueOf(id));
+	}
+
+	protected Query marshal(Query query, String id) {
+		PlasmaQueryDataBinding binding;
 		try {
 			binding = new PlasmaQueryDataBinding(
-			        new DefaultValidationEventHandler());
+					new DefaultValidationEventHandler());
 			String xml = binding.marshal(query);
-	        //log.info("query: " + xml);
-			String name = "query-" + id+ ".xml";
+			// log.info("query: " + xml);
+			String name = "query-" + id + ".xml";
 			File file = new File(new File("./target"), name);
 			FileOutputStream fos = new FileOutputStream(file);
 			binding.marshal(query, fos);
-	        FileInputStream fis = new FileInputStream(file);
-	        Query q2 = (Query)binding.unmarshal(fis);
-	    	return q2;
+			FileInputStream fis = new FileInputStream(file);
+			Query q2 = (Query) binding.unmarshal(fis);
+			return q2;
 		} catch (JAXBException e) {
 			throw new RuntimeException(e);
 		} catch (SAXException e) {
@@ -117,20 +110,19 @@ public abstract class HBaseTestCase extends CommonTest {
 		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
 		}
-    }
-    
-    protected void waitForMillis(long time) {
-       	Object lock = new Object();
-        synchronized (lock) {
-	        try {
-	        	log.info("waiting "+time+" millis...");
-	        	lock.wait(time);
-	        }
-	        catch (InterruptedException e) {
-	        	log.error(e.getMessage(), e);
-	        }
-        }
-        log.info("...continue");
-    }
-    
+	}
+
+	protected void waitForMillis(long time) {
+		Object lock = new Object();
+		synchronized (lock) {
+			try {
+				log.info("waiting " + time + " millis...");
+				lock.wait(time);
+			} catch (InterruptedException e) {
+				log.error(e.getMessage(), e);
+			}
+		}
+		log.info("...continue");
+	}
+
 }

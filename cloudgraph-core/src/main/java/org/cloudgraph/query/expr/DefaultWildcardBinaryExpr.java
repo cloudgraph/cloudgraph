@@ -26,33 +26,39 @@ import org.plasma.query.model.Property;
 import org.plasma.query.model.WildcardOperator;
 
 /**
- * Contains default functionality for 
- * <a href="http://docs.plasma-sdo.org/api/org/plasma/query/model/WildcardOperator.html">wildcard</a> 
- * binary query expressions.   
+ * Contains default functionality for <a href=
+ * "http://docs.plasma-sdo.org/api/org/plasma/query/model/WildcardOperator.html"
+ * >wildcard</a> binary query expressions.
+ * 
  * @author Scott Cinnamond
  * @since 0.5.2
  * @see Expr
  * @see ExprVisitor
  * @see EvaluationContext
  */
-public class DefaultWildcardBinaryExpr extends DefaultBinaryExpr 
-    implements WildcardBinaryExpr {
-    protected Property property;
-    protected Literal literal;
-    protected WildcardOperator operator;
-    protected String propertyPath;
+public class DefaultWildcardBinaryExpr extends DefaultBinaryExpr
+		implements
+			WildcardBinaryExpr {
+	protected Property property;
+	protected Literal literal;
+	protected WildcardOperator operator;
+	protected String propertyPath;
 
-    /**
-	 * Constructs a composite expression based on the given
-	 * terms and <a href="http://docs.plasma-sdo.org/api/org/plasma/query/model/WildcardOperator.html">wildcard</a>
-	 * operator.
-	 * @param left the "left" expression term
-	 * @param right the "right" expression term
-	 * @param oper the logical operator
-	 * @param contextProperty the context or graph traversal path endpoint property
+	/**
+	 * Constructs a composite expression based on the given terms and <a href=
+	 * "http://docs.plasma-sdo.org/api/org/plasma/query/model/WildcardOperator.html"
+	 * >wildcard</a> operator.
+	 * 
+	 * @param left
+	 *            the "left" expression term
+	 * @param right
+	 *            the "right" expression term
+	 * @param oper
+	 *            the logical operator
+	 * @param contextProperty
+	 *            the context or graph traversal path endpoint property
 	 */
-	public DefaultWildcardBinaryExpr(Property property,
-			Literal literal, 
+	public DefaultWildcardBinaryExpr(Property property, Literal literal,
 			WildcardOperator operator) {
 		super(property, literal);
 		if (property == null)
@@ -64,30 +70,35 @@ public class DefaultWildcardBinaryExpr extends DefaultBinaryExpr
 		this.operator = operator;
 		this.propertyPath = createPropertyPath(this.property);
 	}
-	
+
 	/**
-	 * Returns a "truth" value for the expression based
-	 * on an evaluation of the <a href="http://docs.plasma-sdo.org/api/org/plasma/query/model/WildcardOperator.html">wildcard</a>
-	 * operator within the given context. 
-	 * @param context the context
-	 * @return "truth" value for the expression based
-	 * on an evaluation of the <a href="http://docs.plasma-sdo.org/api/org/plasma/query/model/WildcardOperator.html">wildcard</a>
-	 * operator within the given context. 
+	 * Returns a "truth" value for the expression based on an evaluation of the
+	 * <a href=
+	 * "http://docs.plasma-sdo.org/api/org/plasma/query/model/WildcardOperator.html"
+	 * >wildcard</a> operator within the given context.
+	 * 
+	 * @param context
+	 *            the context
+	 * @return "truth" value for the expression based on an evaluation of the <a
+	 *         href=
+	 *         "http://docs.plasma-sdo.org/api/org/plasma/query/model/WildcardOperator.html"
+	 *         >wildcard</a> operator within the given context.
 	 */
 	@Override
 	public boolean evaluate(EvaluationContext context) {
 		return true;
 	}
-	
+
 	/**
 	 * Returns the operator for the expression.
+	 * 
 	 * @return the operator for the expression.
 	 */
 	@Override
 	public WildcardOperator getOperator() {
 		return this.operator;
 	}
-    
+
 	public String toString() {
 		StringBuilder buf = new StringBuilder();
 		buf.append(this.getClass().getSimpleName());
@@ -100,7 +111,7 @@ public class DefaultWildcardBinaryExpr extends DefaultBinaryExpr
 		buf.append("]");
 		return buf.toString();
 	}
-	
+
 	@Override
 	public Property getProperty() {
 		return property;

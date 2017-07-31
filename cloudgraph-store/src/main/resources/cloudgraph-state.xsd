@@ -23,11 +23,13 @@ qualifiers.
         </xsd:annotation>
 
         <xsd:sequence>
+            <!--
             <xsd:element name="Root" type="cloudgraph:Root" minOccurs="1" maxOccurs="1">
                 <xsd:annotation>
                     <xsd:documentation></xsd:documentation>
                 </xsd:annotation>
             </xsd:element>
+            -->
             <xsd:element name="URI" type="cloudgraph:URI" minOccurs="1" maxOccurs="unbounded">
                 <xsd:annotation>
                     <xsd:documentation></xsd:documentation>
@@ -155,7 +157,7 @@ derivative (a sub-type) of an abstract or concrete type.]]>
             <xsd:documentation></xsd:documentation>
         </xsd:annotation>
     </xsd:element>
-
+<!--
     <xsd:complexType name="Root">
         <xsd:annotation>
             <xsd:appinfo>
@@ -180,5 +182,5 @@ A unique identifier which represents the root of a data graph
             <xsd:documentation></xsd:documentation>
         </xsd:annotation>
     </xsd:element>
-
+-->
 </xsd:schema>

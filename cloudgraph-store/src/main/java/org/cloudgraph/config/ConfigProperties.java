@@ -6,7 +6,7 @@ import org.apache.commons.configuration.CompositeConfiguration;
 import org.apache.commons.configuration.Configuration;
 
 public class ConfigProperties extends CompositeConfiguration {
-    static final String defaultPropertiesFileName = "cloudgraph.properties";     
+	static final String defaultPropertiesFileName = "cloudgraph.properties";
 
 	public ConfigProperties() {
 		super();
@@ -18,7 +18,8 @@ public class ConfigProperties extends CompositeConfiguration {
 		construct();
 	}
 
-	public ConfigProperties(Configuration inMemoryConfiguration, Collection configurations) {
+	public ConfigProperties(Configuration inMemoryConfiguration,
+			Collection configurations) {
 		super(inMemoryConfiguration, configurations);
 		construct();
 	}
@@ -27,12 +28,11 @@ public class ConfigProperties extends CompositeConfiguration {
 		super(inMemoryConfiguration);
 		construct();
 	}
-	
+
 	private void construct() {
-//		for (ConfigProperty p : ConfigProperty.values()) {
-//			this.addProperty(p.name(), p.getDefaultValue());
-//		}
+		// for (ConfigProperty p : ConfigProperty.values()) {
+		// this.addProperty(p.name(), p.getDefaultValue());
+		// }
 	}
-		 
-	
+
 }

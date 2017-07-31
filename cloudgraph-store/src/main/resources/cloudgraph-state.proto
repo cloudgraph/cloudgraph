@@ -1,0 +1,22 @@
+package org.cloudgraph.state.proto;
+
+option optimize_for = SPEED;
+option java_outer_classname="StateModelProto";
+
+message StateModel {
+  repeated URI uri  = 1;
+}
+
+message URI {
+  required string name = 1;
+  repeated TypeEntry typeEntry = 2;
+}
+
+message TypeEntry {
+  required string name = 1;
+  required string uriName = 2;
+  required int64 sequence = 3; 
+  required int32 hashValue = 4;
+}
+
+

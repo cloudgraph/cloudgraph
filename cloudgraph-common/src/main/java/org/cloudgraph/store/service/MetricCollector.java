@@ -5,7 +5,7 @@ import org.plasma.sdo.PlasmaDataGraphVisitor;
 import commonj.sdo.DataObject;
 
 public class MetricCollector implements PlasmaDataGraphVisitor {
-		
+
 	private long count = 0;
 	private long depth = 0;
 	@Override
@@ -14,12 +14,12 @@ public class MetricCollector implements PlasmaDataGraphVisitor {
 		count++;
 		if (level > depth)
 			depth = level;
-		
+
 	}
 	public long getCount() {
 		return count;
 	}
 	public long getDepth() {
 		return depth;
-	}		
+	}
 }

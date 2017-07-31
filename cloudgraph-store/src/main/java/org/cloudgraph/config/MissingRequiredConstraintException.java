@@ -22,12 +22,15 @@
 package org.cloudgraph.config;
 
 /**
- * Thrown when a missing required constraint is detected during the
- * process of configuration loading and validation.
+ * Thrown when a missing required constraint is detected during the process of
+ * configuration loading and validation.
+ * 
  * @author Scott Cinnamond
  * @since 0.5.3
  */
-public class MissingRequiredConstraintException extends CloudGraphConfigurationException{
+public class MissingRequiredConstraintException
+		extends
+			CloudGraphConfigurationException {
 
 	private static final long serialVersionUID = 1L;
 

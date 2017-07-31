@@ -29,9 +29,11 @@ import org.plasma.sdo.PlasmaType;
 import org.plasma.sdo.access.provider.common.PropertyPair;
 
 /**
- * Encapsulates minimal recursive graph traversal information for use in concurrent
- * contexts, such as where a traversal is needed but the initialization data must be
- * captured and stored, and a traversal from a given subroot, initiated later.  
+ * Encapsulates minimal recursive graph traversal information for use in
+ * concurrent contexts, such as where a traversal is needed but the
+ * initialization data must be captured and stored, and a traversal from a given
+ * subroot, initiated later.
+ * 
  * @author Scott Cinnamond
  * @since 0.6.2
  */
@@ -42,11 +44,12 @@ public class Traversal {
 	private List<PropertyPair> childKeyPairs;
 	private int level;
 	@SuppressWarnings("unused")
-	private Traversal() {}
-	 
+	private Traversal() {
+	}
+
 	public Traversal(PlasmaType subrootType, PlasmaDataObject source,
-			PlasmaProperty sourceProperty,
-			List<PropertyPair> childKeyPairs, int level) {
+			PlasmaProperty sourceProperty, List<PropertyPair> childKeyPairs,
+			int level) {
 		super();
 		this.subrootType = subrootType;
 		this.source = source;
@@ -69,6 +72,5 @@ public class Traversal {
 	public int getLevel() {
 		return level;
 	}
-	
-}
 
+}

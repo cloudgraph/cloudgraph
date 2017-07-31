@@ -21,9 +21,9 @@
  */
 package org.cloudgraph.query.expr;
 
-
 /**
- * Default behavior for query expressions.  
+ * Default behavior for query expressions.
+ * 
  * @author Scott Cinnamond
  * @since 0.5.2
  */
@@ -31,7 +31,7 @@ public abstract class DefaultExpr {
 	protected DefaultExpr() {
 		super();
 	}
-    
+
 	public String toString() {
 		StringBuilder buf = new StringBuilder();
 		buf.append(this.getClass().getSimpleName());

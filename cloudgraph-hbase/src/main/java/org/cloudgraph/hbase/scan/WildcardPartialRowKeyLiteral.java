@@ -21,13 +21,12 @@
  */
 package org.cloudgraph.hbase.scan;
 
-
 /**
- * Represents the literal for an individual field within a composite partial 
- * row key scan and provides access to start and stop byte sequences for 
- * various wildcard operators under the HBase partial row-key 
- * scan for various optionally configurable hashing, 
- * formatting, padding and other features.
+ * Represents the literal for an individual field within a composite partial row
+ * key scan and provides access to start and stop byte sequences for various
+ * wildcard operators under the HBase partial row-key scan for various
+ * optionally configurable hashing, formatting, padding and other features.
+ * 
  * @author Scott Cinnamond
  * @since 0.5.8
  * @see PartialRowKey
@@ -36,30 +35,26 @@ package org.cloudgraph.hbase.scan;
 public interface WildcardPartialRowKeyLiteral extends PartialRowKeyLiteral {
 
 	/**
-	 * Returns the "start row" bytes 
-	 * used under certain conditions to represent a wildcard operator 
-	 * under an HBase partial row-key scan under 
-	 * the various optionally configurable hashing, 
-	 * formatting and padding features. 
-	 * @return the "start row" bytes 
-	 * used under certain conditions to represent a wildcard operator 
-	 * under an HBase partial row-key scan under 
-	 * the various optionally configurable hashing, 
-	 * formatting and padding features.
+	 * Returns the "start row" bytes used under certain conditions to represent
+	 * a wildcard operator under an HBase partial row-key scan under the various
+	 * optionally configurable hashing, formatting and padding features.
+	 * 
+	 * @return the "start row" bytes used under certain conditions to represent
+	 *         a wildcard operator under an HBase partial row-key scan under the
+	 *         various optionally configurable hashing, formatting and padding
+	 *         features.
 	 */
 	public byte[] getBetweenStartBytes();
-	
+
 	/**
-	 * Returns the "stop row" bytes 
-	 * used under certain conditions to represent a wildcard operator 
-	 * under an HBase partial row-key scan under 
-	 * the various optionally configurable hashing, 
-	 * formatting and padding features.
-	 * @return the "stop row" bytes 
-	 * used under certain conditions to represent a wildcard operator 
-	 * under an HBase partial row-key scan under 
-	 * the various optionally configurable hashing, 
-	 * formatting and padding features.
+	 * Returns the "stop row" bytes used under certain conditions to represent a
+	 * wildcard operator under an HBase partial row-key scan under the various
+	 * optionally configurable hashing, formatting and padding features.
+	 * 
+	 * @return the "stop row" bytes used under certain conditions to represent a
+	 *         wildcard operator under an HBase partial row-key scan under the
+	 *         various optionally configurable hashing, formatting and padding
+	 *         features.
 	 */
 	public byte[] getBetweenStopBytes();
 }

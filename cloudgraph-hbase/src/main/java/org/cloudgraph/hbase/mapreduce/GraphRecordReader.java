@@ -32,14 +32,17 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.cloudgraph.mapreduce.GraphWritable;
 
 /**
- * Iterates over HBase root table data for the current <code>TableSplit</code>, assembling data graphs based on the detailed selection criteria within a 
- * given <a href="http://plasma-sdo.org/org/plasma/query/Query.html">query</a>. Partially or fully
- * assembled data graphs may be passed to a {@link GraphRecordRecognizer} and potentially screened from
- * client {@link GraphMapper} extensions potentially illuminating business logic dedicated to identifying
- * specific records.   
+ * Iterates over HBase root table data for the current <code>TableSplit</code>,
+ * assembling data graphs based on the detailed selection criteria within a
+ * given <a href="http://plasma-sdo.org/org/plasma/query/Query.html">query</a>.
+ * Partially or fully assembled data graphs may be passed to a
+ * {@link GraphRecordRecognizer} and potentially screened from client
+ * {@link GraphMapper} extensions potentially illuminating business logic
+ * dedicated to identifying specific records.
  */
-public class GraphRecordReader extends
-		RecordReader<ImmutableBytesWritable, GraphWritable> {
+public class GraphRecordReader
+		extends
+			RecordReader<ImmutableBytesWritable, GraphWritable> {
 
 	private GraphRecordRecognizer recordReaderImpl = new GraphRecordRecognizer();
 

@@ -52,11 +52,12 @@ import commonj.sdo.DataGraph;
 
 public class Update extends DefaultMutation implements Collector {
 	private static Log log = LogFactory.getLog(Update.class);
-    public Update(ServiceContext context, SnapshotMap snapshotMap, String username) {
+	public Update(ServiceContext context, SnapshotMap snapshotMap,
+			String username) {
 		super(context, snapshotMap, username);
 	}
 
-    @Override
+	@Override
     public void collect(DataGraph dataGraph, PlasmaDataObject dataObject, 
     		DistributedWriter graphWriter,
     		TableWriter tableWriter,
@@ -146,14 +147,14 @@ public class Update extends DefaultMutation implements Collector {
             	}
             }        	
         }
-    } 
- 
-    /**
-     * Returns the unique set of properties for the given setting list. 
-     * @param settings the settings
-     * @return the unique properties
-     */
-    private HashSet<PlasmaProperty> collectProperties(List<Setting> settings)
+    }	/**
+	 * Returns the unique set of properties for the given setting list.
+	 * 
+	 * @param settings
+	 *            the settings
+	 * @return the unique properties
+	 */
+	private HashSet<PlasmaProperty> collectProperties(List<Setting> settings)
     {
     	HashSet<PlasmaProperty> result = new HashSet<>();
     	for (Setting setting : settings) {
@@ -162,50 +163,50 @@ public class Update extends DefaultMutation implements Collector {
     	}
     	return result;
     }
-
 	private void collectSingular(EdgeWriter edgeWriter,
 			PlasmaDataObject dataObject, HashSet<PlasmaDataObject> oldValues,
 			PlasmaProperty property, Object value) throws IOException {
 
 		PlasmaNode dataNode = (PlasmaNode) dataObject;
 		List<PlasmaEdge> edges = dataNode.getEdges(property);
-		
+
 		PlasmaDataObject oldDataObject = null;
 		if (oldValues.size() > 0) {
 			if (oldValues.size() == 1) {
 				oldDataObject = (PlasmaDataObject) oldValues.iterator().next();
 			} else
 				throw new GraphServiceException(
-					"unexpected List as old value for property, "+ property.toString());
+						"unexpected List as old value for property, "
+								+ property.toString());
 		}
 		// if has a new value
 		PlasmaDataObject newDataObject = null;
 		if (value != null) {
 			PlasmaEdge edge = edges.get(0);
-			
+
 			newDataObject = edge.getOpposite(dataNode).getDataObject();
 			if (oldDataObject != null)
 				edgeWriter.replace(oldDataObject, newDataObject);
-			else // add the new one
+			else
+				// add the new one
 				edgeWriter.add(newDataObject);
-		}
-		else {
+		} else {
 			if (oldDataObject != null)
 				edgeWriter.remove(oldDataObject);
 		}
-	}       
-    
-    private void collectMulti(EdgeWriter edgeWriter, 
-    		PlasmaDataObject dataObject,  
-    		HashSet<PlasmaDataObject> oldValues, PlasmaProperty property, Object value) throws IOException
-    {
-		
-        PlasmaNode dataNode = (PlasmaNode)dataObject;
-		List <PlasmaEdge> updatedEdges = dataNode.getEdges(property);
-        if (log.isDebugEnabled())
-            log.debug("merging " + String.valueOf(oldValues.size()) 
-            	+ " old and " + String.valueOf(updatedEdges.size()) + " current values");            	
-		edgeWriter.merge(dataNode, oldValues, updatedEdges);		
-    }
+	}
+
+	private void collectMulti(EdgeWriter edgeWriter,
+			PlasmaDataObject dataObject, HashSet<PlasmaDataObject> oldValues,
+			PlasmaProperty property, Object value) throws IOException {
+
+		PlasmaNode dataNode = (PlasmaNode) dataObject;
+		List<PlasmaEdge> updatedEdges = dataNode.getEdges(property);
+		if (log.isDebugEnabled())
+			log.debug("merging " + String.valueOf(oldValues.size())
+					+ " old and " + String.valueOf(updatedEdges.size())
+					+ " current values");
+		edgeWriter.merge(dataNode, oldValues, updatedEdges);
+	}
 
 }

@@ -24,43 +24,47 @@ package org.cloudgraph.hbase.io;
 import org.apache.hadoop.hbase.client.Table;
 import org.cloudgraph.state.TableState;
 
-
 /**
- * The the pooled connection and other context for 
- * read or write operations for a specific HBase table.  
+ * The the pooled connection and other context for read or write operations for
+ * a specific HBase table.
+ * 
  * @author Scott Cinnamond
  * @since 0.5.1
  */
 public interface TableOperation extends TableState {
-	
+
 	/**
-	 * Returns the HBase table pooled connection
-	 * for this context. 
-	 * @return the HBase table pooled connection
-	 * for this context.
+	 * Returns the HBase table pooled connection for this context.
+	 * 
+	 * @return the HBase table pooled connection for this context.
 	 */
-	public Table getTable(); 
-	
+	public Table getTable();
+
 	/**
-	 * Returns whether there is an active HBase table pooled connection
-	 * for this context. 
-	 * @return whether there is an active HBase table pooled connection
-	 * for this context.
+	 * Returns whether there is an active HBase table pooled connection for this
+	 * context.
+	 * 
+	 * @return whether there is an active HBase table pooled connection for this
+	 *         context.
 	 */
-	public boolean hasConnection(); 
-	
+	public boolean hasConnection();
+
 	/**
-	 * Returns the distributed context associated with this table
-	 * operation context. 
-	 * @return the distributed context associated with this table
-	 * operation context. 
+	 * Returns the distributed context associated with this table operation
+	 * context.
+	 * 
+	 * @return the distributed context associated with this table operation
+	 *         context.
 	 */
 	public DistributedOperation getDistributedOperation();
-	
+
 	/**
-	 * Sets the distributed context associated with this table
-	 * operation context. 
-	 * @param distributedOperation the operation
+	 * Sets the distributed context associated with this table operation
+	 * context.
+	 * 
+	 * @param distributedOperation
+	 *            the operation
 	 */
-	//public void setDistributedOperation(DistributedOperation distributedOperation);
+	// public void setDistributedOperation(DistributedOperation
+	// distributedOperation);
 }

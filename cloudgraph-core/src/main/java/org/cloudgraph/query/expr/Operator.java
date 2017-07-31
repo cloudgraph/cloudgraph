@@ -30,8 +30,8 @@ import org.plasma.query.model.RelationalOperator;
 import org.plasma.query.model.WildcardOperator;
 
 /**
- * Encapsulates a single operator and associated precedence evaluation 
- * and other logic.  
+ * Encapsulates a single operator and associated precedence evaluation and other
+ * logic.
  * 
  * @author Scott Cinnamond
  * @since 0.5.2
@@ -46,69 +46,85 @@ public class Operator implements Comparable<Operator> {
 	private Operator() {
 	}
 
-	private Operator( 
-			Map<Object, Integer> precedenceMap) {
+	private Operator(Map<Object, Integer> precedenceMap) {
 		this.precedenceMap = precedenceMap;
 	}
-	
+
 	/**
-	 * Constructs the encapsulated  
-	 * <a href="http://docs.plasma-sdo.org/api/org/plasma/query/model/RelationalOperator.html>relational"></a> operator 
-	 * along with its precedence map. 
-	 * @param oper the <a href="http://docs.plasma-sdo.org/api/org/plasma/query/model/RelationalOperator.html>relational"></a> operator
-	 * @param precedenceMap the precedence map
+	 * Constructs the encapsulated <a href=
+	 * "http://docs.plasma-sdo.org/api/org/plasma/query/model/RelationalOperator.html>relational"
+	 * ></a> operator along with its precedence map.
+	 * 
+	 * @param oper
+	 *            the <a href=
+	 *            "http://docs.plasma-sdo.org/api/org/plasma/query/model/RelationalOperator.html>relational"
+	 *            ></a> operator
+	 * @param precedenceMap
+	 *            the precedence map
 	 */
-	public Operator(RelationalOperator oper,
-			Map<Object, Integer> precedenceMap) {
+	public Operator(RelationalOperator oper, Map<Object, Integer> precedenceMap) {
 		this(precedenceMap);
 		this.oper = oper;
 		this.operValue = oper.getValue();
 	}
 
 	/**
-	 * Constructs the encapsulated  
-	 * <a href="http://docs.plasma-sdo.org/api/org/plasma/query/model/LogicalOperator.html>logical"></a> operator 
-	 * along with its precedence map. 
-	 * @param oper the <a href="http://docs.plasma-sdo.org/api/org/plasma/query/model/LogicalOperator.html>logical"></a> operator
-	 * @param precedenceMap the precedence map
+	 * Constructs the encapsulated <a href=
+	 * "http://docs.plasma-sdo.org/api/org/plasma/query/model/LogicalOperator.html>logical"
+	 * ></a> operator along with its precedence map.
+	 * 
+	 * @param oper
+	 *            the <a href=
+	 *            "http://docs.plasma-sdo.org/api/org/plasma/query/model/LogicalOperator.html>logical"
+	 *            ></a> operator
+	 * @param precedenceMap
+	 *            the precedence map
 	 */
-	public Operator(LogicalOperator oper,
-			Map<Object, Integer> precedenceMap) {
-		this(precedenceMap);
-		this.oper = oper;
-		this.operValue = oper.getValue();
-	}
-	
-	/**
-	 * Constructs the encapsulated  
-	 * <a href="http://docs.plasma-sdo.org/api/org/plasma/query/model/WildcardOperator.html>wildcard"></a> operator 
-	 * along with its precedence map. 
-	 * @param oper the <a href="http://docs.plasma-sdo.org/api/org/plasma/query/model/WildcardOperator.html>wildcard"></a> operator
-	 * @param precedenceMap the precedence map
-	 */
-	public Operator(WildcardOperator oper,
-			Map<Object, Integer> precedenceMap) {
+	public Operator(LogicalOperator oper, Map<Object, Integer> precedenceMap) {
 		this(precedenceMap);
 		this.oper = oper;
 		this.operValue = oper.getValue();
 	}
 
 	/**
-	 * Constructs the encapsulated  
-	 * <a href="http://docs.plasma-sdo.org/api/org/plasma/query/model/GroupOperator.html>group"></a> operator 
-	 * along with its precedence map. 
-	 * @param oper the <a href="http://docs.plasma-sdo.org/api/org/plasma/query/model/GroupOperator.html>group"></a> operator
-	 * @param precedenceMap the precedence map
+	 * Constructs the encapsulated <a href=
+	 * "http://docs.plasma-sdo.org/api/org/plasma/query/model/WildcardOperator.html>wildcard"
+	 * ></a> operator along with its precedence map.
+	 * 
+	 * @param oper
+	 *            the <a href=
+	 *            "http://docs.plasma-sdo.org/api/org/plasma/query/model/WildcardOperator.html>wildcard"
+	 *            ></a> operator
+	 * @param precedenceMap
+	 *            the precedence map
 	 */
-	public Operator(GroupOperator oper,
-			Map<Object, Integer> precedenceMap) {
+	public Operator(WildcardOperator oper, Map<Object, Integer> precedenceMap) {
 		this(precedenceMap);
 		this.oper = oper;
 		this.operValue = oper.getValue();
 	}
 
 	/**
-	 * Compares two operators using the precedence mapping. 
+	 * Constructs the encapsulated <a href=
+	 * "http://docs.plasma-sdo.org/api/org/plasma/query/model/GroupOperator.html>group"
+	 * ></a> operator along with its precedence map.
+	 * 
+	 * @param oper
+	 *            the <a href=
+	 *            "http://docs.plasma-sdo.org/api/org/plasma/query/model/GroupOperator.html>group"
+	 *            ></a> operator
+	 * @param precedenceMap
+	 *            the precedence map
+	 */
+	public Operator(GroupOperator oper, Map<Object, Integer> precedenceMap) {
+		this(precedenceMap);
+		this.oper = oper;
+		this.operValue = oper.getValue();
+	}
+
+	/**
+	 * Compares two operators using the precedence mapping.
+	 * 
 	 * @return the comparison result
 	 */
 	public int compareTo(Operator other) {
@@ -126,6 +142,7 @@ public class Operator implements Comparable<Operator> {
 
 	/**
 	 * Returns the operator base interface
+	 * 
 	 * @return the operator base interface
 	 */
 	public org.plasma.query.Operator getOperator() {

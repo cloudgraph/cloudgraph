@@ -29,8 +29,8 @@ import org.cloudgraph.state.StateMarshalingContext;
 
 /**
  * Uses a global pool for managing {@link StateMarshalingContext} and only
- * creates an instance on demand, returning the instance to the pool on
- * {link ServiceContext.close}. 
+ * creates an instance on demand, returning the instance to the pool on {link
+ * ServiceContext.close}.
  * 
  * @see StateMarshalingContext
  * @see PooledStateManager
@@ -38,34 +38,35 @@ import org.cloudgraph.state.StateMarshalingContext;
  * @since 0.6.3
  */
 public class LazyServiceContext implements ServiceContext {
-    private static Log log = LogFactory.getLog(LazyServiceContext.class);
-    private StateMarshalingContext marshallingContext;
-    private PooledStateManager pool;
-    
-    @SuppressWarnings("unused")
-	private LazyServiceContext() {}
-    public LazyServiceContext(PooledStateManager pooledMarshallingContext) {
-    	this.pool = pooledMarshallingContext;
-    }
-    
-    @Override
+	private static Log log = LogFactory.getLog(LazyServiceContext.class);
+	private StateMarshalingContext marshallingContext;
+	private PooledStateManager pool;
+
+	@SuppressWarnings("unused")
+	private LazyServiceContext() {
+	}
+	public LazyServiceContext(PooledStateManager pooledMarshallingContext) {
+		this.pool = pooledMarshallingContext;
+	}
+
+	@Override
 	public StateMarshalingContext getMarshallingContext() {
 		if (this.marshallingContext == null) {
-		    if (log.isDebugEnabled())
-			    log.debug("getting marshalling context from pool");
-    	    this.marshallingContext = new SimpleStateMarshallingContext(
-    		    this.pool.getBinding());
+			if (log.isDebugEnabled())
+				log.debug("getting marshalling context from pool");
+			this.marshallingContext = new SimpleStateMarshallingContext(
+					this.pool.getBinding());
 		}
 		return this.marshallingContext;
-	} 
-    
-    @Override
-    public void close() {
-    	if (this.marshallingContext != null) {
-		    if (log.isDebugEnabled())
-			    log.debug("returning marshalling context to pool");
-		    this.pool.returnBinding(this.marshallingContext.getBinding());
-	        this.marshallingContext = null;
-    	}
-    }
+	}
+
+	@Override
+	public void close() {
+		if (this.marshallingContext != null) {
+			if (log.isDebugEnabled())
+				log.debug("returning marshalling context to pool");
+			this.pool.returnBinding(this.marshallingContext.getBinding());
+			this.marshallingContext = null;
+		}
+	}
 }

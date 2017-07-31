@@ -22,11 +22,13 @@
 package org.cloudgraph.hbase.io;
 
 /**
- * For where 2 UUID's or UUID strings from 2 different contexts are expected
- * to match. 
- * <p></p>
+ * For where 2 UUID's or UUID strings from 2 different contexts are expected to
+ * match.
+ * <p>
+ * </p>
  * Thrown where e.g. a UUID which is queried from a data store is expected to
- * match a UUID within a data object or change summary passed to a service.   
+ * match a UUID within a data object or change summary passed to a service.
+ * 
  * @author Scott Cinnamond
  * @since 0.6.4
  */

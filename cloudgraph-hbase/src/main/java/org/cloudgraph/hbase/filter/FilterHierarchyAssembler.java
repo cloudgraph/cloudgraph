@@ -40,52 +40,56 @@ import org.plasma.query.model.Where;
 import org.plasma.sdo.PlasmaType;
 import org.xml.sax.SAXException;
 
-
 /**
- * Supports assembly of complex HBase filter hierarchies representing 
- * query predicate expression trees using a filter stack. 
+ * Supports assembly of complex HBase filter hierarchies representing query
+ * predicate expression trees using a filter stack.
  * <p>
- * HBase filters may be collected into 
- * lists using <a href="http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/filter/FilterList.html" target="#">FilterList</a>
- * each with a 
- * <a href="http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/filter/FilterList.Operator.html#MUST_PASS_ALL" target="#">MUST_PASS_ALL</a> or <a href="http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/filter/FilterList.Operator.html#MUST_PASS_ONE" target="#">MUST_PASS_ONE</a>
- *  (logical) operator. Lists may then be assembled into hierarchies 
- * used to represent complex expression trees filtering either rows
- * or columns in HBase.
- * </p> 
+ * HBase filters may be collected into lists using <a href=
+ * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/filter/FilterList.html"
+ * target="#">FilterList</a> each with a <a href=
+ * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/filter/FilterList.Operator.html#MUST_PASS_ALL"
+ * target="#">MUST_PASS_ALL</a> or <a href=
+ * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/filter/FilterList.Operator.html#MUST_PASS_ONE"
+ * target="#">MUST_PASS_ONE</a> (logical) operator. Lists may then be assembled
+ * into hierarchies used to represent complex expression trees filtering either
+ * rows or columns in HBase.
+ * </p>
+ * 
  * @author Scott Cinnamond
  * @since 0.5
  */
-public abstract class FilterHierarchyAssembler extends ExpresionVisitorSupport 
-    implements HBaseFilterAssembler
-{
-    private static Log log = LogFactory.getLog(FilterHierarchyAssembler.class);
+public abstract class FilterHierarchyAssembler extends ExpresionVisitorSupport
+		implements
+			HBaseFilterAssembler {
+	private static Log log = LogFactory.getLog(FilterHierarchyAssembler.class);
 
 	protected List<Object> params = new ArrayList<Object>();
 	protected FilterList rootFilter;
-    protected Stack<FilterList> filterStack = new Stack<FilterList>();
+	protected Stack<FilterList> filterStack = new Stack<FilterList>();
 	protected PlasmaType rootType;
-	
+
 	@SuppressWarnings("unused")
-	private FilterHierarchyAssembler() {}
+	private FilterHierarchyAssembler() {
+	}
 	protected FilterHierarchyAssembler(PlasmaType rootType) {
 		this.rootType = rootType;
 	}
-	
+
 	public void clear() {
-    	if (this.params != null)
-    		params.clear();
+		if (this.params != null)
+			params.clear();
 		this.filterStack.clear();
 	}
 
-    /**
-     * Returns the assembled filter, filter list or filter hierarchy root.
-     * @return the assembled filter, filter list or  or filter hierarchy root.
-     */
+	/**
+	 * Returns the assembled filter, filter list or filter hierarchy root.
+	 * 
+	 * @return the assembled filter, filter list or or filter hierarchy root.
+	 */
 	public Filter getFilter() {
 		return this.rootFilter;
 	}
-	
+
 	public Object[] getParams() {
 		Object[] result = new Object[params.size()];
 		Iterator<Object> iter = params.iterator();
@@ -98,27 +102,26 @@ public abstract class FilterHierarchyAssembler extends ExpresionVisitorSupport
 		}
 		return result;
 	}
-	
+
 	protected void pushFilter() {
 		pushFilter(FilterList.Operator.MUST_PASS_ALL);
 	}
-	
+
 	protected void pushFilter(FilterList.Operator oper) {
-        FilterList filter = new FilterList(oper);
-        FilterList top = null;
-        if (this.filterStack.size() > 0) {
-        	top = this.filterStack.peek();
-            top.addFilter(filter);
-	    }
-        else
-        	this.rootFilter = filter;
-        this.filterStack.push(filter);  		
+		FilterList filter = new FilterList(oper);
+		FilterList top = null;
+		if (this.filterStack.size() > 0) {
+			top = this.filterStack.peek();
+			top.addFilter(filter);
+		} else
+			this.rootFilter = filter;
+		this.filterStack.push(filter);
 	}
-	
+
 	protected void popFilter() {
 		this.filterStack.pop();
-	}	
-	
+	}
+
 	// String.split() can cause empty tokens under some circumstances
 	protected String[] filterTokens(String[] tokens) {
 		int count = 0;
@@ -135,20 +138,19 @@ public abstract class FilterHierarchyAssembler extends ExpresionVisitorSupport
 		return result;
 	}
 
-    protected void log(Where root)
-    {
-    	String xml = "";
-        PlasmaQueryDataBinding binding;
+	protected void log(Where root) {
+		String xml = "";
+		PlasmaQueryDataBinding binding;
 		try {
 			binding = new PlasmaQueryDataBinding(
-			    new DefaultValidationEventHandler());
-	        xml = binding.marshal(root);
+					new DefaultValidationEventHandler());
+			xml = binding.marshal(root);
 		} catch (JAXBException e) {
 			log.debug(e);
 		} catch (SAXException e) {
 			log.debug(e);
 		}
-        log.debug("query: " + xml);
-    }
+		log.debug("query: " + xml);
+	}
 
 }

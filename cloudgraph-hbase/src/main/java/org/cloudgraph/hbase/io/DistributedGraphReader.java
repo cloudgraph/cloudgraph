@@ -39,23 +39,20 @@ import org.plasma.sdo.PlasmaType;
 import commonj.sdo.DataObject;
 import commonj.sdo.Type;
 
-
 /**
- * Encapsulates one or more
- * graph table reader components for federation across
- * multiple physical tables and/or physical table rows. 
- * Maps physical configured
- * table names to respective table readers. In most usage
- * scenarios, a "root" table reader is typically added 
- * initially, then other reader are incrementally added
- * as association target types are detected and found configured as
- * graph roots within another distinct table context. 
+ * Encapsulates one or more graph table reader components for federation across
+ * multiple physical tables and/or physical table rows. Maps physical configured
+ * table names to respective table readers. In most usage scenarios, a "root"
+ * table reader is typically added initially, then other reader are
+ * incrementally added as association target types are detected and found
+ * configured as graph roots within another distinct table context.
  * <p>
  * Acts as a container for one or more {@link TableReader} elements
- * encapsulating a set of component table read operations 
- * for distributed assembly across multiple tables, or a single table
- * in the most simple (degenerate) case.  
+ * encapsulating a set of component table read operations for distributed
+ * assembly across multiple tables, or a single table in the most simple
+ * (degenerate) case.
  * </p>
+ * 
  * @see org.cloudgraph.hbase.io.GraphTableReader
  * @see org.cloudgraph.state.GraphTable
  * @author Scott Cinnamond
@@ -63,80 +60,82 @@ import commonj.sdo.Type;
  */
 public class DistributedGraphReader implements DistributedReader {
 
-    private static Log log = LogFactory.getLog(DistributedGraphReader.class);
-	
-    private TableReader rootReader;
+	private static Log log = LogFactory.getLog(DistributedGraphReader.class);
+
+	private TableReader rootReader;
 	/** maps table names to table readers */
 	private Map<String, TableReader> tableReaderMap = new HashMap<String, TableReader>();
 	/** maps qualified graph-root type names to table readers */
 	private Map<QName, TableReader> typeTableReaderMap = new HashMap<QName, TableReader>();
 	/** maps table readers to graph-root types */
 	private Map<TableReader, List<Type>> tableReaderTypeMap = new HashMap<TableReader, List<Type>>();
-	
+
 	// maps data objects to row readers
 	private Map<Integer, RowReader> rowReaderMap = new HashMap<Integer, RowReader>();
-	
+
 	private StateMarshalingContext marshallingContext;
-	
+
 	@SuppressWarnings("unused")
-	private DistributedGraphReader() {}
-	
+	private DistributedGraphReader() {
+	}
+
 	public DistributedGraphReader(Type rootType, List<Type> types,
 			StateMarshalingContext marshallingContext) {
-	    this.marshallingContext = marshallingContext;
-		PlasmaType root = (PlasmaType)rootType;
-	    
-	    TableConfig rootTable = CloudGraphConfig.getInstance().getTable(
-	    		root.getQualifiedName());
-	    
-	    TableReader tableReader = new GraphTableReader(rootTable,
-	    		this);
-	    this.tableReaderMap.put(tableReader.getTableConfig().getName(), 
-	    	tableReader);
-	    
+		this.marshallingContext = marshallingContext;
+		PlasmaType root = (PlasmaType) rootType;
+
+		TableConfig rootTable = CloudGraphConfig.getInstance().getTable(
+				root.getQualifiedName());
+
+		TableReader tableReader = new GraphTableReader(rootTable, this);
+		this.tableReaderMap.put(tableReader.getTableConfig().getName(),
+				tableReader);
+
 		this.rootReader = tableReader;
-	    this.typeTableReaderMap.put(((PlasmaType)rootType).getQualifiedName(), 
-	    		this.rootReader);
-	    List<Type> list = new ArrayList<Type>();
-	    this.tableReaderTypeMap.put(this.rootReader, list);
-	    list.add(rootType);
-		
+		this.typeTableReaderMap.put(((PlasmaType) rootType).getQualifiedName(),
+				this.rootReader);
+		List<Type> list = new ArrayList<Type>();
+		this.tableReaderTypeMap.put(this.rootReader, list);
+		list.add(rootType);
+
 		for (Type t : types) {
-		    PlasmaType type = (PlasmaType)t;
-		    TableConfig table = CloudGraphConfig.getInstance().findTable(
-				type.getQualifiedName());
-		    if (table == null)
-		    	continue; // not a graph root
-		    
-		    tableReader = this.tableReaderMap.get(table.getName());
-		    if (tableReader == null) {
-		        // create a new table reader if not added already, e.g.
-		    	// as root above or from a graph root type
-		    	// mapped to a table we have seen here
-		        tableReader = new GraphTableReader(table, this);
-		        this.tableReaderMap.put(tableReader.getTableConfig().getName(), 
-		    	    tableReader);
-		    }
-		    
-		    // always map root types 
-		    this.typeTableReaderMap.put(type.getQualifiedName(), tableReader);
-		    
-		    list = this.tableReaderTypeMap.get((TableOperation)tableReader);
-		    if (list == null) {
-		    	list = new ArrayList<Type>();
-		    	this.tableReaderTypeMap.put(tableReader, list);
-		    }
-		    if (!list.contains(type))
-		        list.add(type);
+			PlasmaType type = (PlasmaType) t;
+			TableConfig table = CloudGraphConfig.getInstance().findTable(
+					type.getQualifiedName());
+			if (table == null)
+				continue; // not a graph root
+
+			tableReader = this.tableReaderMap.get(table.getName());
+			if (tableReader == null) {
+				// create a new table reader if not added already, e.g.
+				// as root above or from a graph root type
+				// mapped to a table we have seen here
+				tableReader = new GraphTableReader(table, this);
+				this.tableReaderMap.put(tableReader.getTableConfig().getName(),
+						tableReader);
+			}
+
+			// always map root types
+			this.typeTableReaderMap.put(type.getQualifiedName(), tableReader);
+
+			list = this.tableReaderTypeMap.get((TableOperation) tableReader);
+			if (list == null) {
+				list = new ArrayList<Type>();
+				this.tableReaderTypeMap.put(tableReader, list);
+			}
+			if (!list.contains(type))
+				list.add(type);
 		}
-	}	
-	
+	}
+
 	/**
-	 * Returns the table reader for the given 
-	 * configured table name, or null of not exists.
-	 * @param tableName the name of the configured table. 
-	 * @return the table reader for the given 
-	 * configured table name, or null of not exists.
+	 * Returns the table reader for the given configured table name, or null of
+	 * not exists.
+	 * 
+	 * @param tableName
+	 *            the name of the configured table.
+	 * @return the table reader for the given configured table name, or null of
+	 *         not exists.
 	 */
 	@Override
 	public TableReader getTableReader(String tableName) {
@@ -144,180 +143,178 @@ public class DistributedGraphReader implements DistributedReader {
 	}
 
 	/**
-	 * Returns the table reader for the given 
-	 * qualified type name, or null if not exists.
-	 * @param qualifiedTypeName the qualified type name. 
-	 * @return the table reader for the given 
-	 * qualified type name, or null if not exists.
+	 * Returns the table reader for the given qualified type name, or null if
+	 * not exists.
+	 * 
+	 * @param qualifiedTypeName
+	 *            the qualified type name.
+	 * @return the table reader for the given qualified type name, or null if
+	 *         not exists.
 	 */
-    public TableReader getTableReader(QName qualifiedTypeName) 
-    {
-    	return this.typeTableReaderMap.get(qualifiedTypeName);
-    }
-    
-    /**
+	public TableReader getTableReader(QName qualifiedTypeName) {
+		return this.typeTableReaderMap.get(qualifiedTypeName);
+	}
+
+	/**
 	 * Adds the given table reader to the container
-	 * @param reader the table reader. 
+	 * 
+	 * @param reader
+	 *            the table reader.
 	 */
 	@Override
 	public void addTableReader(TableReader reader) {
 		String name = reader.getTableConfig().getName();
 		if (this.tableReaderMap.get(name) != null)
-			throw new OperationException("table reader for '" + 
-				name + "' already exists");
+			throw new OperationException("table reader for '" + name
+					+ "' already exists");
 		this.tableReaderMap.put(name, reader);
 	}
 
 	/**
-	 * Returns the count of table readers for this 
-	 * container.
-	 * @return the count of table readers for this 
-	 * container
+	 * Returns the count of table readers for this container.
+	 * 
+	 * @return the count of table readers for this container
 	 */
 	@Override
 	public int getTableReaderCount() {
 		return this.tableReaderMap.size();
 	}
 
-    /**
-     * Returns all table readers for the this container
-     * @return all table readers for the this container
-     */
-    public List<TableReader> getTableReaders() {
-    	List<TableReader> result = new ArrayList<TableReader>();
-    	result.addAll(this.tableReaderMap.values());
-    	return result;
-    }
-    
-    /**
-     * Returns the table reader associated with the
-     * data graph root. 
-     * @return the table reader associated with the
-     * data graph root.
-     */
-    public TableReader getRootTableReader() {
-    	return this.rootReader;
-    }
+	/**
+	 * Returns all table readers for the this container
+	 * 
+	 * @return all table readers for the this container
+	 */
+	public List<TableReader> getTableReaders() {
+		List<TableReader> result = new ArrayList<TableReader>();
+		result.addAll(this.tableReaderMap.values());
+		return result;
+	}
 
-    /**
-     * Sets the table reader associated with the
-     * data graph root. 
-     * @param reader the table reader
-     */
-    public void setRootTableReader(TableReader reader) {
-    	this.rootReader = reader;
-    	this.tableReaderMap.put(rootReader.getTableConfig().getName(), rootReader);
-    }
-    
-    
-    /**
-     * Returns the row reader associated with the given data object
-     * @param dataObject the data object
-     * @return the row reader associated with the given data object
-     * @throws IllegalArgumentException if the given data object
-     * is not associated with any row reader.
-     */
-    public RowReader getRowReader(DataObject dataObject) {
-    	RowReader result = rowReaderMap.get(dataObject);
-    	if (result == null)
-    		throw new IllegalArgumentException("the given data object of type "
-    		   + dataObject.getType()		
-    	       + " is not associated with any row reader");
-    	return result;
-    }
+	/**
+	 * Returns the table reader associated with the data graph root.
+	 * 
+	 * @return the table reader associated with the data graph root.
+	 */
+	public TableReader getRootTableReader() {
+		return this.rootReader;
+	}
 
-    public void mapRowReader(DataObject dataObject, 
-    		RowReader rowReader) {
-    	int key = dataObject.hashCode();
-    	RowReader existing = this.rowReaderMap.get(key);
-    	if (existing != null) {
-    		//throw new IllegalArgumentException
-    		log.warn("the given data object of type "
-    		   + dataObject.getType()		
-    	       + " is already associated with a row reader");
-    		return;
-    	}
-    	 
-    	rowReaderMap.put(key, rowReader);
-    }
+	/**
+	 * Sets the table reader associated with the data graph root.
+	 * 
+	 * @param reader
+	 *            the table reader
+	 */
+	public void setRootTableReader(TableReader reader) {
+		this.rootReader = reader;
+		this.tableReaderMap.put(rootReader.getTableConfig().getName(),
+				rootReader);
+	}
+
+	/**
+	 * Returns the row reader associated with the given data object
+	 * 
+	 * @param dataObject
+	 *            the data object
+	 * @return the row reader associated with the given data object
+	 * @throws IllegalArgumentException
+	 *             if the given data object is not associated with any row
+	 *             reader.
+	 */
+	public RowReader getRowReader(DataObject dataObject) {
+		RowReader result = rowReaderMap.get(dataObject);
+		if (result == null)
+			throw new IllegalArgumentException("the given data object of type "
+					+ dataObject.getType()
+					+ " is not associated with any row reader");
+		return result;
+	}
+
+	public void mapRowReader(DataObject dataObject, RowReader rowReader) {
+		int key = dataObject.hashCode();
+		RowReader existing = this.rowReaderMap.get(key);
+		if (existing != null) {
+			// throw new IllegalArgumentException
+			log.warn("the given data object of type " + dataObject.getType()
+					+ " is already associated with a row reader");
+			return;
+		}
+
+		rowReaderMap.put(key, rowReader);
+	}
 
 	@Override
 	public void mapRowReader(long dataObjectSequence, PlasmaType type,
 			RowReader rowReader) {
-		
+
 		int key = GraphRow.getHashCode(dataObjectSequence, type);
-    	RowReader existing = this.rowReaderMap.get(key);
-    	if (existing != null) {
-    		//throw new IllegalArgumentException
-    		log.warn("the given data object of type "
-    		   + key		
-    	       + " is already associated with a row reader");
-    		return;
-    	}
-    	 
-    	rowReaderMap.put(key, rowReader);
+		RowReader existing = this.rowReaderMap.get(key);
+		if (existing != null) {
+			// throw new IllegalArgumentException
+			log.warn("the given data object of type " + key
+					+ " is already associated with a row reader");
+			return;
+		}
+
+		rowReaderMap.put(key, rowReader);
 	}
-	
+
 	@Override
 	public void mapRowReader(String rowKey, RowReader rowReader) {
-    	int key = rowKey.hashCode();
-    	RowReader existing = this.rowReaderMap.get(key);
-    	if (existing != null) {
-    		//throw new IllegalArgumentException
-    		log.warn("the given row key "
-    		   + rowKey		
-    	       + " is already associated with a row reader");
-    		return;
-    	}
-    	 
-    	rowReaderMap.put(key, rowReader);
+		int key = rowKey.hashCode();
+		RowReader existing = this.rowReaderMap.get(key);
+		if (existing != null) {
+			// throw new IllegalArgumentException
+			log.warn("the given row key " + rowKey
+					+ " is already associated with a row reader");
+			return;
+		}
+
+		rowReaderMap.put(key, rowReader);
 	}
-	
-    /**
-     * Returns a list of types associated
-     * with the given table reader. 
-     * @param reader the table reader
-     * @return a list of types associated
-     * with the given table reader. 
-     */
-    @Override
+
+	/**
+	 * Returns a list of types associated with the given table reader.
+	 * 
+	 * @param reader
+	 *            the table reader
+	 * @return a list of types associated with the given table reader.
+	 */
+	@Override
 	public List<Type> getTypes(TableReader operation) {
 		return this.tableReaderTypeMap.get(operation);
 	}
-	
+
 	/**
-	 * Returns true if only one table operation exists
-	 * with only one associated (root) type for this
-	 * operation. 
-	 * @return true if only one table operation exists
-	 * with only one associated (root) type for this
-	 * operation. 
+	 * Returns true if only one table operation exists with only one associated
+	 * (root) type for this operation.
+	 * 
+	 * @return true if only one table operation exists with only one associated
+	 *         (root) type for this operation.
 	 */
-    public boolean hasSingleRootType() {
-        if (this.getTableReaderCount() == 1 &&
-        	this.getTypes(this.rootReader).size() == 1) {
-        	return true;
-        }
-        else
-        	return false;
-    }
-    
-    /**
-     * Frees resources associated with this reader and any
-     * component readers. 
-     */
-    public void clear() {
-    	this.rowReaderMap.clear();
-    	// table readers are created based entirely on metadata
-    	// i.e. selected types for a query
-    	for (TableReader tableReader : tableReaderMap.values())
-    		tableReader.clear();    	
-    }
+	public boolean hasSingleRootType() {
+		if (this.getTableReaderCount() == 1
+				&& this.getTypes(this.rootReader).size() == 1) {
+			return true;
+		} else
+			return false;
+	}
+
+	/**
+	 * Frees resources associated with this reader and any component readers.
+	 */
+	public void clear() {
+		this.rowReaderMap.clear();
+		// table readers are created based entirely on metadata
+		// i.e. selected types for a query
+		for (TableReader tableReader : tableReaderMap.values())
+			tableReader.clear();
+	}
 
 	@Override
 	public StateMarshalingContext getMarshallingContext() {
 		return this.marshallingContext;
 	}
-
 
 }

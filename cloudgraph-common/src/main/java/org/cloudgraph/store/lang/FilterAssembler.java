@@ -23,6 +23,7 @@ package org.cloudgraph.store.lang;
 
 /**
  * A query language filter assembler
+ * 
  * @author Scott Cinnamond
  * @since 0.6.2
  */

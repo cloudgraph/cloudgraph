@@ -30,10 +30,21 @@
             <version>1.6</version>
         </dependency>
 		<dependency>
+			<groupId>com.google.protobuf</groupId>
+			<artifactId>protobuf-java</artifactId>
+			<version>2.6.1</version>
+		</dependency>
+		<dependency>
 			<groupId>org.cloudgraph</groupId>
 			<artifactId>cloudgraph-common</artifactId>
 			<version>1.0.0</version>
 		</dependency>
+        <dependency>
+            <groupId>org.cloudgraph</groupId>
+            <artifactId>cloudgraph-test</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
 	</dependencies>
 	<build>
 		<finalName>cloudgraph-store</finalName>
@@ -58,22 +69,6 @@
 							<encoding>cp1252</encoding>
 				        </configuration>
 					</execution>
-					 <!--  
-					<execution>
-					    <id>generate-state</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-				        <configuration>
-							<schemaDirectory>${basedir}/src/main/resources</schemaDirectory>
-							<schemaFiles>cloudgraph-state.xsd</schemaFiles>
-							<bindingDirectory>${basedir}/src/main/resources</bindingDirectory>
-							<bindingFiles>cloudgraph-state-jaxb-bindings.xml</bindingFiles>
-							<staleFile>${project.build.directory}/jaxb2/.xjcStaleFlag-state</staleFile>
-				        </configuration>
-					</execution>
-					  -->
 				</executions>
 				<configuration>
 					<outputDirectory>${basedir}/target/generated-sources/java</outputDirectory>
@@ -82,6 +77,40 @@
 					<target>2.0</target>
 					<encoding>Cp1252</encoding>
 				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
+				<dependencies>
+					<dependency>
+						<groupId>com.sun</groupId>
+						<artifactId>tools</artifactId>
+						<version>1.7.0</version>
+						<scope>system</scope>
+						<systemPath>${java.home}/../lib/tools.jar</systemPath>
+					</dependency>
+				</dependencies>
+				  
+				<executions>
+ 					<execution>
+						<id>gen_protobuf_classes</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<mkdir dir="${basedir}/target/generated-sources/java" />
+								<exec executable="${basedir}/bin/protoc" failonerror="true">
+								    <arg value="--java_out=${basedir}/target/generated-sources/java" />
+								    <arg value="--proto_path=${basedir}/src/main/resources" />
+								    <arg value="${basedir}/src/main/resources/*.proto" />
+								</exec>
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+				  
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -156,6 +185,25 @@
 										</versionRange>
 										<goals>
 											<goal>generate</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.apache.maven.plugins
+										</groupId>
+										<artifactId>
+											maven-antrun-plugin
+										</artifactId>
+										<versionRange>
+											[1.7,)
+										</versionRange>
+										<goals>
+											<goal>run</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>

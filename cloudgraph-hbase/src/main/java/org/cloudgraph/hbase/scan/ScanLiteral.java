@@ -39,14 +39,12 @@ import org.plasma.sdo.PlasmaType;
 import org.plasma.sdo.helper.DataConverter;
 
 /**
- * A configuration driven, context rich abstract class 
- * where subclasses are 
- * data "flavor" and data type specific and used to abstract 
- * the complexities involved in assembling the various 
- * segments and fields of composite (scan start/stop) row keys 
- * under various relational and logical operator and
- * various configurable composite key-field hashing, formatting, padding 
- * and other features.
+ * A configuration driven, context rich abstract class where subclasses are data
+ * "flavor" and data type specific and used to abstract the complexities
+ * involved in assembling the various segments and fields of composite (scan
+ * start/stop) row keys under various relational and logical operator and
+ * various configurable composite key-field hashing, formatting, padding and
+ * other features.
  * 
  * @see org.cloudgraph.config.TableConfig
  * @author Scott Cinnamond
@@ -67,19 +65,19 @@ public abstract class ScanLiteral {
 	protected PlasmaProperty property;
 	protected Hashing hashing;
 	protected Padding padding;
-	
-	@SuppressWarnings("unused")
-	private ScanLiteral() {}
 
-	public ScanLiteral(String literal,
-			PlasmaType rootType,
+	@SuppressWarnings("unused")
+	private ScanLiteral() {
+	}
+
+	public ScanLiteral(String literal, PlasmaType rootType,
 			RelationalOperator relationalOperator,
 			UserDefinedRowKeyFieldConfig fieldConfig) {
 		super();
 		this.rootType = rootType;
 		this.relationalOperator = relationalOperator;
-		this.fieldConfig = fieldConfig;		
-		this.property = (PlasmaProperty)this.fieldConfig.getEndpointProperty();
+		this.fieldConfig = fieldConfig;
+		this.property = (PlasmaProperty) this.fieldConfig.getEndpointProperty();
 		this.literal = literal;
 
 		QName rootTypeQname = this.rootType.getQualifiedName();
@@ -87,11 +85,12 @@ public abstract class ScanLiteral {
 		Hash hash = this.keySupport.getHashAlgorithm(this.table);
 		this.charset = CloudGraphConfig.getInstance().getCharset();
 		this.hashing = new Hashing(hash, this.charset);
-		this.padding = new Padding(this.charset);		
+		this.padding = new Padding(this.charset);
 	}
 
 	/**
 	 * Returns the string literal
+	 * 
 	 * @return the string literal
 	 */
 	public final String getContent() {
@@ -100,6 +99,7 @@ public abstract class ScanLiteral {
 
 	/**
 	 * Returns the context relational operator.
+	 * 
 	 * @return the context relational operator.
 	 */
 	public final RelationalOperator getRelationalOperator() {
@@ -107,210 +107,193 @@ public abstract class ScanLiteral {
 	}
 
 	/**
-	 * Returns the composite row-key field configuration. 
+	 * Returns the composite row-key field configuration.
+	 * 
 	 * @return the composite row-key field configuration.
 	 */
 	public final UserDefinedRowKeyFieldConfig getFieldConfig() {
 		return fieldConfig;
 	}
-	
+
 	/**
-	 * Returns the HBase scan "start-row" composite row-key field 
-	 * bytes for this literal under the various relational, logical 
-	 * operator and other optionally configurable hashing, 
-	 * formatting and padding features.
-	 * @return the HBase scan "start-row" composite row-key field 
-	 * bytes for this literal under the various relational, logical 
-	 * operator and other optionally configurable hashing, 
-	 * formatting and padding features.
+	 * Returns the HBase scan "start-row" composite row-key field bytes for this
+	 * literal under the various relational, logical operator and other
+	 * optionally configurable hashing, formatting and padding features.
+	 * 
+	 * @return the HBase scan "start-row" composite row-key field bytes for this
+	 *         literal under the various relational, logical operator and other
+	 *         optionally configurable hashing, formatting and padding features.
 	 */
 	public byte[] getStartBytes() {
 		switch (this.relationalOperator.getValue()) {
-		case EQUALS:
-			return getEqualsStartBytes();
-		case GREATER_THAN:
-			return getGreaterThanStartBytes();
-		case GREATER_THAN_EQUALS:
-			return getGreaterThanEqualStartBytes();
-		case LESS_THAN:
-			return getLessThanStartBytes();
-		case LESS_THAN_EQUALS:
-			return getLessThanEqualStartBytes();
-		case NOT_EQUALS:
-		default:
-			throw new GraphServiceException("relational operator '"
-					+ this.relationalOperator.getValue().toString() 
-					+ "' not supported for integral row key fields");
-		}
-	}
-	
-	/**
-	 * Returns the HBase scan "stop-row" composite row-key field 
-	 * bytes for this literal under the various relational, logical 
-	 * operator and other optionally configurable hashing, 
-	 * formatting and padding features.
-	 * @return the HBase scan "stop-row" composite row-key field 
-	 * bytes for this literal under the various relational, logical 
-	 * operator and other optionally configurable hashing, 
-	 * formatting and padding features.
-	 */
-	public byte[] getStopBytes() {
-		switch (this.relationalOperator.getValue()) {
-		case EQUALS:
-			return getEqualsStopBytes();
-		case GREATER_THAN:
-			return getGreaterThanStopBytes();
-		case GREATER_THAN_EQUALS:
-			return getGreaterThanEqualStopBytes();
-		case LESS_THAN:
-			return getLessThanStopBytes();
-		case LESS_THAN_EQUALS:
-			return getLessThanEqualStopBytes();
-		case NOT_EQUALS:
-		default:
-			throw new GraphServiceException("relational operator '"
-					+ this.relationalOperator.getValue().toString() 
-					+ "' not supported for integral row key fields");
+			case EQUALS :
+				return getEqualsStartBytes();
+			case GREATER_THAN :
+				return getGreaterThanStartBytes();
+			case GREATER_THAN_EQUALS :
+				return getGreaterThanEqualStartBytes();
+			case LESS_THAN :
+				return getLessThanStartBytes();
+			case LESS_THAN_EQUALS :
+				return getLessThanEqualStartBytes();
+			case NOT_EQUALS :
+			default :
+				throw new GraphServiceException("relational operator '"
+						+ this.relationalOperator.getValue().toString()
+						+ "' not supported for integral row key fields");
 		}
 	}
 
 	/**
-	 * Returns the "start row" bytes 
-	 * used to represent "equals" relational operator 
-	 * under an HBase partial row-key scan for this literal under 
-	 * the various optionally configurable hashing, 
-	 * formatting and padding features.
-	 * @return the "start row" bytes 
-	 * used to represent "equals" relational operator 
-	 * under an HBase partial row-key scan for this literal under 
-	 * the various optionally configurable hashing, 
-	 * formatting and padding features.
+	 * Returns the HBase scan "stop-row" composite row-key field bytes for this
+	 * literal under the various relational, logical operator and other
+	 * optionally configurable hashing, formatting and padding features.
+	 * 
+	 * @return the HBase scan "stop-row" composite row-key field bytes for this
+	 *         literal under the various relational, logical operator and other
+	 *         optionally configurable hashing, formatting and padding features.
+	 */
+	public byte[] getStopBytes() {
+		switch (this.relationalOperator.getValue()) {
+			case EQUALS :
+				return getEqualsStopBytes();
+			case GREATER_THAN :
+				return getGreaterThanStopBytes();
+			case GREATER_THAN_EQUALS :
+				return getGreaterThanEqualStopBytes();
+			case LESS_THAN :
+				return getLessThanStopBytes();
+			case LESS_THAN_EQUALS :
+				return getLessThanEqualStopBytes();
+			case NOT_EQUALS :
+			default :
+				throw new GraphServiceException("relational operator '"
+						+ this.relationalOperator.getValue().toString()
+						+ "' not supported for integral row key fields");
+		}
+	}
+
+	/**
+	 * Returns the "start row" bytes used to represent "equals" relational
+	 * operator under an HBase partial row-key scan for this literal under the
+	 * various optionally configurable hashing, formatting and padding features.
+	 * 
+	 * @return the "start row" bytes used to represent "equals" relational
+	 *         operator under an HBase partial row-key scan for this literal
+	 *         under the various optionally configurable hashing, formatting and
+	 *         padding features.
 	 */
 	public abstract byte[] getEqualsStartBytes();
-	
+
 	/**
-	 * Returns the "stop row" bytes 
-	 * used to represent "equals" relational operator 
-	 * under an HBase partial row-key scan for this literal under 
-	 * the various optionally configurable hashing, 
-	 * formatting and padding features.
-	 * @return the "stop row" bytes 
-	 * used to represent "equals" relational operator 
-	 * under an HBase partial row-key scan for this literal under 
-	 * the various optionally configurable hashing, 
-	 * formatting and padding features.
+	 * Returns the "stop row" bytes used to represent "equals" relational
+	 * operator under an HBase partial row-key scan for this literal under the
+	 * various optionally configurable hashing, formatting and padding features.
+	 * 
+	 * @return the "stop row" bytes used to represent "equals" relational
+	 *         operator under an HBase partial row-key scan for this literal
+	 *         under the various optionally configurable hashing, formatting and
+	 *         padding features.
 	 */
 	public abstract byte[] getEqualsStopBytes();
-	
+
 	/**
-	 * Returns the "start row" bytes 
-	 * used to represent "greater than" relational operator 
-	 * under an HBase partial row-key scan for this literal under 
-	 * the various optionally configurable hashing, 
-	 * formatting and padding features.
-	 * @return the "start row" bytes 
-	 * used to represent "greater than" relational operator 
-	 * under an HBase partial row-key scan for this literal under 
-	 * the various optionally configurable hashing, 
-	 * formatting and padding features.
+	 * Returns the "start row" bytes used to represent "greater than" relational
+	 * operator under an HBase partial row-key scan for this literal under the
+	 * various optionally configurable hashing, formatting and padding features.
+	 * 
+	 * @return the "start row" bytes used to represent "greater than" relational
+	 *         operator under an HBase partial row-key scan for this literal
+	 *         under the various optionally configurable hashing, formatting and
+	 *         padding features.
 	 */
 	public abstract byte[] getGreaterThanStartBytes();
 
 	/**
-	 * Returns the "stop row" bytes 
-	 * used to represent "greater than" relational operator 
-	 * under an HBase partial row-key scan for this literal under 
-	 * the various optionally configurable hashing, 
-	 * formatting and padding features.
-	 * @return the "stop row" bytes 
-	 * used to represent "greater than" relational operator 
-	 * under an HBase partial row-key scan for this literal under 
-	 * the various optionally configurable hashing, 
-	 * formatting and padding features.
+	 * Returns the "stop row" bytes used to represent "greater than" relational
+	 * operator under an HBase partial row-key scan for this literal under the
+	 * various optionally configurable hashing, formatting and padding features.
+	 * 
+	 * @return the "stop row" bytes used to represent "greater than" relational
+	 *         operator under an HBase partial row-key scan for this literal
+	 *         under the various optionally configurable hashing, formatting and
+	 *         padding features.
 	 */
 	public abstract byte[] getGreaterThanStopBytes();
 
 	/**
-	 * Returns the "start row" bytes 
-	 * used to represent "greater than equals" relational operator 
-	 * under an HBase partial row-key scan for this literal under 
-	 * the various optionally configurable hashing, 
-	 * formatting and padding features.
-	 * @return the "start row" bytes 
-	 * used to represent "greater than equals" relational operator 
-	 * under an HBase partial row-key scan for this literal under 
-	 * the various optionally configurable hashing, 
-	 * formatting and padding features.
+	 * Returns the "start row" bytes used to represent "greater than equals"
+	 * relational operator under an HBase partial row-key scan for this literal
+	 * under the various optionally configurable hashing, formatting and padding
+	 * features.
+	 * 
+	 * @return the "start row" bytes used to represent "greater than equals"
+	 *         relational operator under an HBase partial row-key scan for this
+	 *         literal under the various optionally configurable hashing,
+	 *         formatting and padding features.
 	 */
 	public abstract byte[] getGreaterThanEqualStartBytes();
 
 	/**
-	 * Returns the "stop row" bytes 
-	 * used to represent "greater than equals" relational operator 
-	 * under an HBase partial row-key scan for this literal under 
-	 * the various optionally configurable hashing, 
-	 * formatting and padding features.
-	 * @return the "stop row" bytes 
-	 * used to represent "greater than equals" relational operator 
-	 * under an HBase partial row-key scan for this literal under 
-	 * the various optionally configurable hashing, 
-	 * formatting and padding features.
+	 * Returns the "stop row" bytes used to represent "greater than equals"
+	 * relational operator under an HBase partial row-key scan for this literal
+	 * under the various optionally configurable hashing, formatting and padding
+	 * features.
+	 * 
+	 * @return the "stop row" bytes used to represent "greater than equals"
+	 *         relational operator under an HBase partial row-key scan for this
+	 *         literal under the various optionally configurable hashing,
+	 *         formatting and padding features.
 	 */
 	public abstract byte[] getGreaterThanEqualStopBytes();
-	
+
 	/**
-	 * Returns the "start row" bytes 
-	 * used to represent "less than" relational operator 
-	 * under an HBase partial row-key scan for this literal under 
-	 * the various optionally configurable hashing, 
-	 * formatting and padding features.
-	 * @return the "start row" bytes 
-	 * used to represent "less than" relational operator 
-	 * under an HBase partial row-key scan for this literal under 
-	 * the various optionally configurable hashing, 
-	 * formatting and padding features.
-	 */	
+	 * Returns the "start row" bytes used to represent "less than" relational
+	 * operator under an HBase partial row-key scan for this literal under the
+	 * various optionally configurable hashing, formatting and padding features.
+	 * 
+	 * @return the "start row" bytes used to represent "less than" relational
+	 *         operator under an HBase partial row-key scan for this literal
+	 *         under the various optionally configurable hashing, formatting and
+	 *         padding features.
+	 */
 	public abstract byte[] getLessThanStartBytes();
-	
+
 	/**
-	 * Returns the "stop row" bytes 
-	 * used to represent "less than" relational operator 
-	 * under an HBase partial row-key scan for this literal under 
-	 * the various optionally configurable hashing, 
-	 * formatting and padding features.
-	 * @return the "stop row" bytes 
-	 * used to represent "less than" relational operator 
-	 * under an HBase partial row-key scan for this literal under 
-	 * the various optionally configurable hashing, 
-	 * formatting and padding features.
-	 */	
+	 * Returns the "stop row" bytes used to represent "less than" relational
+	 * operator under an HBase partial row-key scan for this literal under the
+	 * various optionally configurable hashing, formatting and padding features.
+	 * 
+	 * @return the "stop row" bytes used to represent "less than" relational
+	 *         operator under an HBase partial row-key scan for this literal
+	 *         under the various optionally configurable hashing, formatting and
+	 *         padding features.
+	 */
 	public abstract byte[] getLessThanStopBytes();
-	
+
 	/**
-	 * Returns the "start row" bytes 
-	 * used to represent "less than equals" relational operator 
-	 * under an HBase partial row-key scan for this literal under 
-	 * the various optionally configurable hashing, 
-	 * formatting and padding features.
-	 * @return the "start row" bytes 
-	 * used to represent "less than equals" relational operator 
-	 * under an HBase partial row-key scan for this literal under 
-	 * the various optionally configurable hashing, 
-	 * formatting and padding features.
-	 */	
+	 * Returns the "start row" bytes used to represent "less than equals"
+	 * relational operator under an HBase partial row-key scan for this literal
+	 * under the various optionally configurable hashing, formatting and padding
+	 * features.
+	 * 
+	 * @return the "start row" bytes used to represent "less than equals"
+	 *         relational operator under an HBase partial row-key scan for this
+	 *         literal under the various optionally configurable hashing,
+	 *         formatting and padding features.
+	 */
 	public abstract byte[] getLessThanEqualStartBytes();
 
 	/**
-	 * Returns the "stop row" bytes 
-	 * used to represent "less than equals" relational operator 
-	 * under an HBase partial row-key scan for this literal under 
-	 * the various optionally configurable hashing, 
-	 * formatting and padding features.
-	 * @return the "stop row" bytes 
-	 * used to represent "less than equals" relational operator 
-	 * under an HBase partial row-key scan for this literal under 
-	 * the various optionally configurable hashing, 
-	 * formatting and padding features.
-	 */	
+	 * Returns the "stop row" bytes used to represent "less than equals"
+	 * relational operator under an HBase partial row-key scan for this literal
+	 * under the various optionally configurable hashing, formatting and padding
+	 * features.
+	 * 
+	 * @return the "stop row" bytes used to represent "less than equals"
+	 *         relational operator under an HBase partial row-key scan for this
+	 *         literal under the various optionally configurable hashing,
+	 *         formatting and padding features.
+	 */
 	public abstract byte[] getLessThanEqualStopBytes();
 }

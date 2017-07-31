@@ -26,22 +26,21 @@ package org.cloudgraph.common;
  * @since 0.5
  */
 public class CloudGraphRuntimeException extends RuntimeException {
-    
+
 	private static final long serialVersionUID = 1L;
 	public CloudGraphRuntimeException() {
-        super();
-    }
+		super();
+	}
 
-    public CloudGraphRuntimeException(Throwable t) {
-        super(t);
-    }
-    public CloudGraphRuntimeException(String msg) {
-        super(msg);
-    }
+	public CloudGraphRuntimeException(Throwable t) {
+		super(t);
+	}
+	public CloudGraphRuntimeException(String msg) {
+		super(msg);
+	}
 
 	public CloudGraphRuntimeException(String message, Throwable cause) {
 		super(message, cause);
 	}
-    
-    
+
 }

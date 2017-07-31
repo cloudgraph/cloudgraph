@@ -67,7 +67,7 @@ import org.cloudgraph.recognizer.GraphRecognizerSyntaxTreeAssembler;
 import org.cloudgraph.state.SimpleStateMarshallingContext;
 import org.cloudgraph.state.StateMarshalingContext;
 import org.cloudgraph.state.StateNonValidatingDataBinding;
-import org.cloudgraph.store.key.GraphMetaField;
+import org.cloudgraph.store.key.GraphMetaKey;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.common.bind.DefaultValidationEventHandler;
 import org.plasma.config.PlasmaConfig;
@@ -164,7 +164,7 @@ public class GraphRecordRecognizer {
 		currentScan.setStartRow(firstRow);
 		currentScan.setAttribute(Scan.SCAN_ATTRIBUTES_METRICS_ENABLE,
 				Bytes.toBytes(Boolean.TRUE));
-		
+
 		this.scanner = this.table.getScanner(currentScan);
 		if (logScannerActivity) {
 			log.info("Current scan=" + currentScan.toString());
@@ -185,7 +185,7 @@ public class GraphRecordRecognizer {
 		Method m = null;
 		try {
 			m = context.getClass().getMethod("getCounter",
-					new Class[] { String.class, String.class });
+					new Class[]{String.class, String.class});
 		} catch (SecurityException e) {
 			throw new IOException("Failed test for getCounter", e);
 		} catch (NoSuchMethodException e) {
@@ -238,23 +238,29 @@ public class GraphRecordRecognizer {
 			String mappingXml = context.getConfiguration().get(
 					GraphInputFormat.TABLE_MAPPINGS);
 			if (mappingXml != null) {
-	            try {
+				try {
 					CloudGraphConfigDataBinding binding = new CloudGraphConfigDataBinding(
 							new CloudGraphConfigValidationEventHandler());
-			        CloudGraphConfiguration result = (CloudGraphConfiguration)binding.validate(mappingXml);
-			        for (org.cloudgraph.config.Table mapping : result.getTables()) {
-			        	for (org.cloudgraph.config.DataGraph graph : mapping.getDataGraphs())
-			    		    if (!PlasmaConfig.getInstance().hasSDONamespace(graph.getUri()))
-			    			    PlasmaConfig.getInstance().addDynamicSDONamespace(graph.getUri(), null);
-			        	loadMapping(mapping);
-			        }
+					CloudGraphConfiguration result = (CloudGraphConfiguration) binding
+							.validate(mappingXml);
+					for (org.cloudgraph.config.Table mapping : result
+							.getTables()) {
+						for (org.cloudgraph.config.DataGraph graph : mapping
+								.getDataGraphs())
+							if (!PlasmaConfig.getInstance().hasSDONamespace(
+									graph.getUri()))
+								PlasmaConfig.getInstance()
+										.addDynamicSDONamespace(graph.getUri(),
+												null);
+						loadMapping(mapping);
+					}
 				} catch (JAXBException e) {
 					throw new CloudGraphConfigurationException(e);
 				} catch (SAXException e) {
 					throw new CloudGraphConfigurationException(e);
-				}				
+				}
 			}
-			
+
 			PlasmaType type = getRootType(query);
 			Where where = query.findWhereClause();
 			SelectionCollector selectionCollector = null;
@@ -279,8 +285,8 @@ public class GraphRecordRecognizer {
 				throw new GraphServiceException(e);
 			}
 
-			DistributedGraphReader graphReader = new DistributedGraphReader(type,
-					selectionCollector.getTypes(), marshallingContext);
+			DistributedGraphReader graphReader = new DistributedGraphReader(
+					type, selectionCollector.getTypes(), marshallingContext);
 			this.rootTableReader = graphReader.getRootTableReader();
 
 			this.graphAssembler = createGraphAssembler(type, graphReader,
@@ -304,12 +310,12 @@ public class GraphRecordRecognizer {
 		}
 		restart(scan.getStartRow());
 	}
-	
-	private void loadMapping(org.cloudgraph.config.Table table)
-	{
+
+	private void loadMapping(org.cloudgraph.config.Table table) {
 		TableConfig tableCondig = new TableConfig(table);
-		if (CloudGraphConfig.getInstance().findTable(tableCondig.getQualifiedName()) == null)
-			CloudGraphConfig.getInstance().addTable(tableCondig);		
+		if (CloudGraphConfig.getInstance().findTable(
+				tableCondig.getQualifiedName()) == null)
+			CloudGraphConfig.getInstance().addTable(tableCondig);
 	}
 
 	/**
@@ -444,8 +450,8 @@ public class GraphRecordRecognizer {
 	 */
 	private PlasmaDataGraph recognize(Result resultRow) {
 		if (resultRow.containsColumn(rootTableReader.getTableConfig()
-				.getDataColumnFamilyNameBytes(),
-				GraphMetaField.__TSTN__.asBytes())) {
+				.getDataColumnFamilyNameBytes(), GraphMetaKey.TOMBSTONE
+				.codeAsBytes())) {
 			return null; // ignore toumbstone roots
 		}
 		PlasmaDataGraph graph = assemble(resultRow);
@@ -591,7 +597,7 @@ public class GraphRecordRecognizer {
 		String uri = from.getEntity().getNamespaceURI();
 		if (!PlasmaConfig.getInstance().hasSDONamespace(uri))
 			PlasmaConfig.getInstance().addDynamicSDONamespace(uri, null);
-		PlasmaType type = (PlasmaType) PlasmaTypeHelper.INSTANCE.getType(uri, 
+		PlasmaType type = (PlasmaType) PlasmaTypeHelper.INSTANCE.getType(uri,
 				from.getEntity().getName());
 		return type;
 	}
@@ -605,8 +611,8 @@ public class GraphRecordRecognizer {
 			graphAssembler = new GraphSliceAssembler(type, collector,
 					graphReader, snapshotDate);
 		} else {
-			graphAssembler = new GraphAssembler(type, collector,
-					graphReader, snapshotDate);
+			graphAssembler = new GraphAssembler(type, collector, graphReader,
+					snapshotDate);
 		}
 
 		return graphAssembler;

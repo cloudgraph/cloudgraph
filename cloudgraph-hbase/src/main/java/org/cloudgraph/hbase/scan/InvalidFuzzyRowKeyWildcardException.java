@@ -21,7 +21,6 @@
  */
 package org.cloudgraph.hbase.scan;
 
-
 /**
  * @author Scott Cinnamond
  * @since 0.5.3

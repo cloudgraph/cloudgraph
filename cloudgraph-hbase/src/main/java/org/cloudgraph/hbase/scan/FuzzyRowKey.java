@@ -24,18 +24,22 @@ package org.cloudgraph.hbase.scan;
 import org.apache.hadoop.hbase.filter.Filter;
 
 /**
- * Provides access to the key byte and fuzzy info byte
- * sequences applicable for HBase <a target="#" href="http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/filter/FuzzyRowFilter.html">FuzzyRowFilter</a>.
+ * Provides access to the key byte and fuzzy info byte sequences applicable for
+ * HBase <a target="#" href=
+ * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/filter/FuzzyRowFilter.html"
+ * >FuzzyRowFilter</a>.
+ * 
  * @author Scott Cinnamond
  * @since 0.5.3
  * @see FuzzyRowKeyLiteral
  */
 public interface FuzzyRowKey {
-    public byte[] getFuzzyKeyBytes();
-    public byte[] getFuzzyInfoBytes();
-    /**
-     * Returns the assembled filter, filter list or filter hierarchy root.
-     * @return the assembled filter, filter list or  or filter hierarchy root.
-     */
+	public byte[] getFuzzyKeyBytes();
+	public byte[] getFuzzyInfoBytes();
+	/**
+	 * Returns the assembled filter, filter list or filter hierarchy root.
+	 * 
+	 * @return the assembled filter, filter list or or filter hierarchy root.
+	 */
 	public Filter getFilter();
 }

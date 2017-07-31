@@ -35,66 +35,67 @@ import org.cloudgraph.query.expr.WildcardBinaryExpr;
 import org.plasma.sdo.PlasmaType;
 
 /**
- * A simple query {@link Expr expression} visitor which determines whether a graph 
- * recognizer is required, within the context of a binary (query) 
- * {@link Expr expression} syntax tree, encapsulating operator precedence
- * and other factors. 
+ * A simple query {@link Expr expression} visitor which determines whether a
+ * graph recognizer is required, within the context of a binary (query)
+ * {@link Expr expression} syntax tree, encapsulating operator precedence and
+ * other factors.
  * <p>
- * Visits the expression tree and for each expression determines whether the property and its path
- * are represented within the row key model for the current {@link DataGraphConfig graph} by a
- * user defined {@link UserDefinedRowKeyFieldConfig field}. If not, then the property and its
- * {@link Expr expression} are outside the row key and can't be represented by a scan. Therefore 
- * a recognizer is required.  
+ * Visits the expression tree and for each expression determines whether the
+ * property and its path are represented within the row key model for the
+ * current {@link DataGraphConfig graph} by a user defined
+ * {@link UserDefinedRowKeyFieldConfig field}. If not, then the property and its
+ * {@link Expr expression} are outside the row key and can't be represented by a
+ * scan. Therefore a recognizer is required.
  * </p>
  * 
  * @author Scott Cinnamond
  * @since 0.5.8
  * @see org.cloudgraph.query.expr.Expr
  * @see org.cloudgraph.query.expr.RelationalBinaryExpr
- * @see org.cloudgraph.query.expr.ExprVisitor 
- * @see org.cloudgraph.config.DataGraphConfig 
+ * @see org.cloudgraph.query.expr.ExprVisitor
+ * @see org.cloudgraph.config.DataGraphConfig
  * @see org.cloudgraph.config.UserDefinedRowKeyFieldConfig
- * @see org.cloudgraph.query.expr.LogicalBinaryExpr 
- * @see org.cloudgraph.query.expr.RelationalBinaryExpr 
- * @see org.cloudgraph.query.expr.WildcardBinaryExpr 
+ * @see org.cloudgraph.query.expr.LogicalBinaryExpr
+ * @see org.cloudgraph.query.expr.RelationalBinaryExpr
+ * @see org.cloudgraph.query.expr.WildcardBinaryExpr
  */
 public class GraphRecognizerDetector implements ExprVisitor {
 
-    private static Log log = LogFactory.getLog(GraphRecognizerDetector.class);
-    
+	private static Log log = LogFactory.getLog(GraphRecognizerDetector.class);
+
 	private PlasmaType rootType;
 	private DataGraphConfig graph;
 	private boolean queryRequiresGraphRecognizer = false;
-	
+
 	public GraphRecognizerDetector(PlasmaType rootType) {
 		this.rootType = rootType;
 		QName rootTypeQname = this.rootType.getQualifiedName();
-		this.graph = CloudGraphConfig.getInstance().getDataGraph(
-				rootTypeQname);
+		this.graph = CloudGraphConfig.getInstance().getDataGraph(rootTypeQname);
 	}
-	
+
 	public boolean isQueryRequiresGraphRecognizer() {
 		return queryRequiresGraphRecognizer;
 	}
-	
+
 	@Override
 	public void visit(Expr target, Expr source, int level) {
-	    if (target instanceof RelationalBinaryExpr) {
-	    	RelationalBinaryExpr expr = (RelationalBinaryExpr)target;
-			UserDefinedRowKeyFieldConfig fieldConfig = graph.getUserDefinedRowKeyField(expr.getPropertyPath());
+		if (target instanceof RelationalBinaryExpr) {
+			RelationalBinaryExpr expr = (RelationalBinaryExpr) target;
+			UserDefinedRowKeyFieldConfig fieldConfig = graph
+					.getUserDefinedRowKeyField(expr.getPropertyPath());
 			if (fieldConfig == null) {
-		        this.queryRequiresGraphRecognizer = true;
-		        return;			
+				this.queryRequiresGraphRecognizer = true;
+				return;
 			}
-	    }
-	    else if (target instanceof WildcardBinaryExpr) {
-	    	WildcardBinaryExpr expr = (WildcardBinaryExpr)target;
-			UserDefinedRowKeyFieldConfig fieldConfig = graph.getUserDefinedRowKeyField(expr.getPropertyPath());
+		} else if (target instanceof WildcardBinaryExpr) {
+			WildcardBinaryExpr expr = (WildcardBinaryExpr) target;
+			UserDefinedRowKeyFieldConfig fieldConfig = graph
+					.getUserDefinedRowKeyField(expr.getPropertyPath());
 			if (fieldConfig == null) {
-		        this.queryRequiresGraphRecognizer = true;
-	            return;			
+				this.queryRequiresGraphRecognizer = true;
+				return;
 			}
-	    }
+		}
 	}
-	
+
 }

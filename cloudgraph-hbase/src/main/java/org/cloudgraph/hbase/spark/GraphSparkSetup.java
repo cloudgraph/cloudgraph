@@ -26,6 +26,6 @@ public class GraphSparkSetup extends JobSetup {
 			selectionCollector = new SelectionCollector(query.getModel()
 					.getSelectClause(), type);
 		selectionCollector.setOnlyDeclaredProperties(false);
-		
+
 	}
 }

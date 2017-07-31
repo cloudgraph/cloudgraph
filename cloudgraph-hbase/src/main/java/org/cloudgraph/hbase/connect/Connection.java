@@ -23,8 +23,6 @@
 package org.cloudgraph.hbase.connect;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -46,11 +44,14 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
 /**
- * Connection wrapper. 
- * <p></p>
- * The new HBase Client API changes removed the existing connection pool implementation and placed 
- * the responsibility of managing the lifecycle of connections on the caller. A pool is necessary as 
- * creating connections to the cluster via. zookeeper is fairly expensive. 
+ * Connection wrapper.
+ * <p>
+ * </p>
+ * The new HBase Client API changes removed the existing connection pool
+ * implementation and placed the responsibility of managing the lifecycle of
+ * connections on the caller. A pool is necessary as creating connections to the
+ * cluster via. zookeeper is fairly expensive.
+ * 
  * @author Scott Cinnamond
  * @since 0.6.3
  */
@@ -60,19 +61,19 @@ public class Connection {
 	private ObjectPool<Connection> pool;
 	private LoadingCache<TableName, Table> tableCache;
 
-	public Connection(org.apache.hadoop.hbase.client.Connection conection, ObjectPool<Connection> pool) {
+	public Connection(org.apache.hadoop.hbase.client.Connection conection,
+			ObjectPool<Connection> pool) {
 		super();
 		this.con = conection;
-		this.pool = pool;		
-		this.tableCache = CacheBuilder.newBuilder()
-	        .maximumSize(10)  
-	    	.expireAfterAccess(30, TimeUnit.SECONDS)  
-	    	.build(new CacheLoader<TableName, Table>(){  	    	            
-               @Override
-               public Table load(TableName tableName) throws Exception {
-                  return con.getTable(tableName);
-               } 
-            });
+		this.pool = pool;
+		this.tableCache = CacheBuilder.newBuilder().maximumSize(10)
+				.expireAfterAccess(30, TimeUnit.SECONDS)
+				.build(new CacheLoader<TableName, Table>() {
+					@Override
+					public Table load(TableName tableName) throws Exception {
+						return con.getTable(tableName);
+					}
+				});
 	}
 
 	public void close() throws IOException {
@@ -82,9 +83,9 @@ public class Connection {
 			this.pool.returnObject(this);
 		} catch (Exception e) {
 			throw new GraphServiceException(e);
-		} 
+		}
 	}
-	
+
 	public void destroy() throws IOException {
 		for (Table table : this.tableCache.asMap().values())
 			table.close();
@@ -92,7 +93,7 @@ public class Connection {
 	public boolean isClosed() {
 		return con.isClosed();
 	}
-	
+
 	public void abort(String why, Throwable e) {
 		con.abort(why, e);
 	}
@@ -109,9 +110,8 @@ public class Connection {
 		boolean exists = false;
 		Table table = this.tableCache.getIfPresent(tableName);
 		if (table != null) {
-		    exists = true;	
-		}
-		else {
+			exists = true;
+		} else {
 			exists = getAdmin().tableExists(tableName);
 			if (exists) {
 				try {

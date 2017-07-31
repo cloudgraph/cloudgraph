@@ -21,13 +21,14 @@
  */
 package org.cloudgraph.hbase.scan;
 
-
 /**
- * Represents the literal for an individual field within a composite fuzzy 
- * row key scan using HBase <a target="#" href="http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/filter/FuzzyRowFilter.html">FuzzyRowFilter</a>, and provides 
- * access to the key byte and fuzzy info byte
- * sequences under various optionally configurable hashing, 
- * formatting, padding and other features.
+ * Represents the literal for an individual field within a composite fuzzy row
+ * key scan using HBase <a target="#" href=
+ * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/filter/FuzzyRowFilter.html"
+ * >FuzzyRowFilter</a>, and provides access to the key byte and fuzzy info byte
+ * sequences under various optionally configurable hashing, formatting, padding
+ * and other features.
+ * 
  * @author Scott Cinnamond
  * @since 0.5.3
  * @see PartialRowKey

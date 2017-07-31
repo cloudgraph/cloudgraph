@@ -22,13 +22,14 @@
 package org.cloudgraph.hbase.scan;
 
 /**
- * Represents a composite partial row key scan providing access
- * to the composite start and stop key bytes.     
+ * Represents a composite partial row key scan providing access to the composite
+ * start and stop key bytes.
+ * 
  * @author Scott Cinnamond
  * @since 0.5.1
  * @see PartialRowKeyLiteral
  */
 public interface PartialRowKey {
-    public byte[] getStartKey();
-    public byte[] getStopKey();
+	public byte[] getStartKey();
+	public byte[] getStopKey();
 }

@@ -27,13 +27,15 @@ import java.util.UUID;
 
 /**
  * Provides access to the operational, configuration and other state information
- * required for write operations on a single graph table. 
+ * required for write operations on a single graph table.
  * <p>
- * Acts as a container for one or more {@link RowWriter} elements
- * and encapsulates the HBase client <a target="#" href="http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/client/Put.html">Put</a> 
- * and <a target="#" href="http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/client/Delete.html">Delete</a>
- * operations for use in write operations across one or more graph rows within a
- * table. 
+ * Acts as a container for one or more {@link RowWriter} elements and
+ * encapsulates the HBase client <a target="#" href=
+ * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/client/Put.html"
+ * >Put</a> and <a target="#" href=
+ * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/client/Delete.html"
+ * >Delete</a> operations for use in write operations across one or more graph
+ * rows within a table.
  * </p>
  * 
  * @see org.cloudgraph.hbase.io.RowWriter
@@ -45,31 +47,35 @@ public interface TableWriter extends TableOperation {
 	public DistributedWriter getDistributedWriter();
 	@Deprecated
 	public void setDistributedWriter(
-			DistributedGraphWriter distributedGraphWriter);	
+			DistributedGraphWriter distributedGraphWriter);
 	/**
-	 * Returns the row writer context for the given UUID 
-	 * @param uuid the UUID string
-	 * @return the row writer context for the given UUID 
+	 * Returns the row writer context for the given UUID
+	 * 
+	 * @param uuid
+	 *            the UUID string
+	 * @return the row writer context for the given UUID
 	 */
 	public RowWriter getRowWriter(UUID uuid);
 
 	/**
-	 * Adds the given row writer context mapping it to the
-	 * given UUID.
-	 * @param uuid the UUID 
-	 * @param rowContext the row writer context
+	 * Adds the given row writer context mapping it to the given UUID.
+	 * 
+	 * @param uuid
+	 *            the UUID
+	 * @param rowContext
+	 *            the row writer context
 	 */
-	public void addRowWriter(UUID uuid, 
-			RowWriter rowContext);
-	
+	public void addRowWriter(UUID uuid, RowWriter rowContext);
+
 	/**
 	 * Returns all row writer context values for this table context.
+	 * 
 	 * @return all row writer context values for this table context.
 	 */
 	public List<RowWriter> getAllRowWriters();
-	
+
 	/**
-     * Closes tables and connections. 
-     */
-    public void close() throws IOException;
+	 * Closes tables and connections.
+	 */
+	public void close() throws IOException;
 }

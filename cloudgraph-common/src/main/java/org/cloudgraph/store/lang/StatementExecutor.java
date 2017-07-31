@@ -31,8 +31,8 @@ import org.plasma.sdo.access.provider.common.PropertyPair;
 import commonj.sdo.Property;
 
 /**
- * Common graph assembler functionality resulting from initial re-factoring and addition of parallel 
- * assembly across RDB and Cassandra services. 
+ * Common graph assembler functionality resulting from initial re-factoring and
+ * addition of parallel assembly across RDB and Cassandra services.
  * 
  * @author Scott Cinnamond
  * @since 0.6.2
@@ -60,6 +60,6 @@ public interface StatementExecutor {
 	public abstract void executeInsert(PlasmaType type, StringBuilder sql,
 			Map<String, PropertyPair> values);
 
-	public List<PropertyPair> executeInsertWithGeneratedKeys(PlasmaType type, StringBuilder sql, 
-			Map<String, PropertyPair> values);
+	public List<PropertyPair> executeInsertWithGeneratedKeys(PlasmaType type,
+			StringBuilder sql, Map<String, PropertyPair> values);
 }

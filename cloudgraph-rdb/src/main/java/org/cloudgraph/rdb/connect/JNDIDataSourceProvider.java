@@ -27,20 +27,29 @@ public class JNDIDataSourceProvider implements DataSourceProvder {
 
 	public JNDIDataSourceProvider() {
 		Properties props = new Properties();
-	    for (Property property : PlasmaConfig.getInstance().getDataAccessProvider(DataAccessProviderName.JDBC).getProperties()) {
-	    	props.put(property.getName(), property.getValue());
-	    }
+		for (Property property : PlasmaConfig.getInstance()
+				.getDataAccessProvider(DataAccessProviderName.JDBC)
+				.getProperties()) {
+			props.put(property.getName(), property.getValue());
+		}
 
-	    String datasourceName = props.getProperty(ConfigurationConstants.JDBC_DATASOURCE_NAME);
-	    if (datasourceName == null)
-	    	throw new DataAccessException("cannot lookup datasource - datasource name property '"
-	                + ConfigurationConstants.JDBC_DATASOURCE_NAME + "' not found in configuration for "
-	    			+ "data access provider '" + DataAccessProviderName.JDBC.name() + "' - a fully qualified JNDI name is required");
+		String datasourceName = props
+				.getProperty(ConfigurationConstants.JDBC_DATASOURCE_NAME);
+		if (datasourceName == null)
+			throw new DataAccessException(
+					"cannot lookup datasource - datasource name property '"
+							+ ConfigurationConstants.JDBC_DATASOURCE_NAME
+							+ "' not found in configuration for "
+							+ "data access provider '"
+							+ DataAccessProviderName.JDBC.name()
+							+ "' - a fully qualified JNDI name is required");
 		try {
 			Context initialContext = new InitialContext();
-			this.datasource = (DataSource) initialContext.lookup(datasourceName);
+			this.datasource = (DataSource) initialContext
+					.lookup(datasourceName);
 			if (this.datasource == null) {
-				throw new DataAccessException("cannot lookup datasource '" + datasourceName + "'");
+				throw new DataAccessException("cannot lookup datasource '"
+						+ datasourceName + "'");
 			}
 		} catch (NamingException ex) {
 			log.error("cannot lookup datasource '" + datasourceName + "'", ex);

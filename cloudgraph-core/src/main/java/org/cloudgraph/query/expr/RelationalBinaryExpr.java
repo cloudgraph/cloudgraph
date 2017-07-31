@@ -26,34 +26,38 @@ import org.plasma.query.model.Property;
 import org.plasma.query.model.RelationalOperator;
 
 /**
- * Represents an expression composed of two parts or terms
- * joined by a <a href="http://docs.plasma-sdo.org/api/org/plasma/query/model/RelationalOperator.html">relational</a> operator.
+ * Represents an expression composed of two parts or terms joined by a <a href=
+ * "http://docs.plasma-sdo.org/api/org/plasma/query/model/RelationalOperator.html"
+ * >relational</a> operator.
+ * 
  * @author Scott Cinnamond
  * @since 0.5.2
  */
 public interface RelationalBinaryExpr extends BinaryExpr {
 	/**
 	 * Returns the relational operator.
+	 * 
 	 * @return the relational operator.
 	 */
 	public RelationalOperator getOperator();
 	/**
 	 * Returns the property.
+	 * 
 	 * @return the property.
 	 */
 	public Property getProperty();
 
 	/**
-	 * Returns the string representation of the path qualified
-	 * property.
-	 * @return the string representation of the path qualified
-	 * property
+	 * Returns the string representation of the path qualified property.
+	 * 
+	 * @return the string representation of the path qualified property
 	 */
- 	public String getPropertyPath();
+	public String getPropertyPath();
 
- 	/**
- 	 * Returns the query literal
- 	 * @return the query literal
- 	 */
+	/**
+	 * Returns the query literal
+	 * 
+	 * @return the query literal
+	 */
 	public Literal getLiteral();
 }

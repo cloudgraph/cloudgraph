@@ -46,8 +46,12 @@ import org.apache.hadoop.util.ReflectionUtils;
  * @author Scott Cinnamond
  * @since 0.6.0
  */
-public class GraphXmlOutputFormat extends
-		FileOutputFormat<LongWritable, GraphWritable> implements Configurable, GraphXml {
+public class GraphXmlOutputFormat
+		extends
+			FileOutputFormat<LongWritable, GraphWritable>
+		implements
+			Configurable,
+			GraphXml {
 
 	/** The configuration. */
 	private Configuration conf = null;

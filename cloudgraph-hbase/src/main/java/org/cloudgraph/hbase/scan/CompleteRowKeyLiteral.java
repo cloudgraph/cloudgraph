@@ -21,13 +21,12 @@
  */
 package org.cloudgraph.hbase.scan;
 
-
 /**
- * Represents the literal for an individual field within a composite  
- * row key and provides access to the key byte sequence for 
- * various supported relational operators under a row-key 
- * 'Get' operation for various optionally configurable hashing, 
- * formatting, padding and other features.
+ * Represents the literal for an individual field within a composite row key and
+ * provides access to the key byte sequence for various supported relational
+ * operators under a row-key 'Get' operation for various optionally configurable
+ * hashing, formatting, padding and other features.
+ * 
  * @author Scott Cinnamond
  * @since 0.5.5
  * @see CompleteRowKeyScan
@@ -36,17 +35,15 @@ package org.cloudgraph.hbase.scan;
 public interface CompleteRowKeyLiteral {
 
 	/**
-	 * Returns the bytes 
-	 * used to represent an "equals" relational operator 
-	 * for a specific composite row key field, under an HBase 'Get' operation for 
-	 * the various optionally configurable hashing, 
-	 * formatting and padding features.
-	 * @return the bytes 
-	 * used to represent an "equals" relational operator 
-	 * for a specific composite row key field, under an HBase 'Get' operation for 
-	 * the various optionally configurable hashing, 
-	 * formatting and padding features.
+	 * Returns the bytes used to represent an "equals" relational operator for a
+	 * specific composite row key field, under an HBase 'Get' operation for the
+	 * various optionally configurable hashing, formatting and padding features.
+	 * 
+	 * @return the bytes used to represent an "equals" relational operator for a
+	 *         specific composite row key field, under an HBase 'Get' operation
+	 *         for the various optionally configurable hashing, formatting and
+	 *         padding features.
 	 */
 	public byte[] getEqualsBytes();
-	
+
 }

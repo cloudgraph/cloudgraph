@@ -27,15 +27,12 @@ import org.cloudgraph.store.service.GraphServiceException;
  * @author Scott Cinnamond
  * @since 0.5
  */
-public class RDBServiceException extends GraphServiceException
-{
-    private static final long serialVersionUID = 1L;
-    public RDBServiceException(String message)
-    {
-        super(message);
-    }
-    public RDBServiceException(Throwable t)
-    {
-        super(t);
-    }
+public class RDBServiceException extends GraphServiceException {
+	private static final long serialVersionUID = 1L;
+	public RDBServiceException(String message) {
+		super(message);
+	}
+	public RDBServiceException(Throwable t) {
+		super(t);
+	}
 }

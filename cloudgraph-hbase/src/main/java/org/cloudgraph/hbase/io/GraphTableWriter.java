@@ -40,29 +40,29 @@ import org.cloudgraph.hbase.connect.HBaseConnectionManager;
 import org.cloudgraph.state.GraphTable;
 
 /**
- * The operational, configuration and other state information
- * required for write operations on a single graph table. 
+ * The operational, configuration and other state information required for write
+ * operations on a single graph table.
  * <p>
- * Acts as a container for one or more {@link RowWriter} elements
- * and encapsulates the HBase client <a target="#" href="http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/client/Put.html">Put</a> 
- * and <a target="#" href="http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/client/Delete.html">Delete</a>
- * operations for use in write operations across one or more graph rows within a
- * table. 
+ * Acts as a container for one or more {@link RowWriter} elements and
+ * encapsulates the HBase client <a target="#" href=
+ * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/client/Put.html"
+ * >Put</a> and <a target="#" href=
+ * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/client/Delete.html"
+ * >Delete</a> operations for use in write operations across one or more graph
+ * rows within a table.
  * </p>
  * 
  * @see org.cloudgraph.hbase.io.RowWriter
  * @author Scott Cinnamond
  * @since 0.5.1
  */
-public class GraphTableWriter extends GraphTable 
-    implements TableWriter 
-{
-    private static Log log = LogFactory.getLog(GraphTableWriter.class);
-    private Connection connection;
-    private Table table;   
-    /** maps data object UUIDs to row writers */
-    private Map<String, RowWriter> rowContextMap = new HashMap<String, RowWriter>();
-    private DistributedGraphWriter distributedGraphWriter;
+public class GraphTableWriter extends GraphTable implements TableWriter {
+	private static Log log = LogFactory.getLog(GraphTableWriter.class);
+	private Connection connection;
+	private Table table;
+	/** maps data object UUIDs to row writers */
+	private Map<String, RowWriter> rowContextMap = new HashMap<String, RowWriter>();
+	private DistributedGraphWriter distributedGraphWriter;
 
 	public GraphTableWriter(TableConfig table) {
 		super(table);
@@ -73,7 +73,7 @@ public class GraphTableWriter extends GraphTable
 		super(table);
 		this.distributedGraphWriter = distributedOperation;
 	}
-	
+
 	@Override
 	public DistributedWriter getDistributedWriter() {
 		return this.distributedGraphWriter;
@@ -113,12 +113,12 @@ public class GraphTableWriter extends GraphTable
 		}
 		return this.table;
 	}
-	
 	/**
-	 * Returns whether there is an active HBase table pooled connection
-	 * for this context. 
-	 * @return whether there is an active HBase table pooled connection
-	 * for this context.
+	 * Returns whether there is an active HBase table pooled connection for this
+	 * context.
+	 * 
+	 * @return whether there is an active HBase table pooled connection for this
+	 *         context.
 	 */
 	public boolean hasConnection() {
 		return this.connection != null;
@@ -130,7 +130,7 @@ public class GraphTableWriter extends GraphTable
 
 	@Override
 	public void addRowWriter(UUID uuid, RowWriter rowContext) {
-		rowContextMap.put(uuid.toString(), rowContext);		
+		rowContextMap.put(uuid.toString(), rowContext);
 	}
 
 	@Override
@@ -141,38 +141,38 @@ public class GraphTableWriter extends GraphTable
 	}
 
 	/**
-	 * Returns the distributed context associated with this table
-	 * operation context. 
-	 * @return the distributed context associated with this table
-	 * operation context. 
+	 * Returns the distributed context associated with this table operation
+	 * context.
+	 * 
+	 * @return the distributed context associated with this table operation
+	 *         context.
 	 */
 	@Override
 	public DistributedOperation getDistributedOperation() {
 		return this.distributedGraphWriter;
 	}
-	
-//	/**
-//	 * Sets the distributed context associated with this table
-//	 * operation context. 
-//	 * @param distributedOperation the operation
-//	 */
-//	@Override
-//	public void setDistributedOperation(DistributedOperation distributedOperation) {
-//		this.distributedGraphWriter = distributedOperation;
-//	}
-	
+
+	// /**
+	// * Sets the distributed context associated with this table
+	// * operation context.
+	// * @param distributedOperation the operation
+	// */
+	// @Override
+	// public void setDistributedOperation(DistributedOperation
+	// distributedOperation) {
+	// this.distributedGraphWriter = distributedOperation;
+	// }
+
 	@Override
 	public void close() throws IOException {
 		try {
 			// don't close table here, let the connection
 			// deal with resources it controls
 			if (this.connection != null)
-		        this.connection.close();
-		}
-		catch (IOException e) {
+				this.connection.close();
+		} catch (IOException e) {
 			log.error(e.getMessage(), e);
-		}
-		finally {
+		} finally {
 			this.table = null;
 			this.connection = null;
 		}

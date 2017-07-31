@@ -36,47 +36,47 @@ import commonj.sdo.DataGraph;
 import commonj.sdo.Type;
 
 /**
- * String SDO datatype specific partial row-key scan operations test. 
+ * String SDO datatype specific partial row-key scan operations test.
+ * 
  * @author Scott Cinnamond
  * @since 0.5.1
  */
 
 public abstract class StringScanTest extends DataTypeGraphModelTest {
-    private static Log log = LogFactory.getLog(StringScanTest.class);
-    protected long WAIT_TIME = 1;
-    protected String USERNAME = "string_test";
+	private static Log log = LogFactory.getLog(StringScanTest.class);
+	protected long WAIT_TIME = 1;
+	protected String USERNAME = "string_test";
 
-    
-    protected QStringNode createSelect(String name)
-    {
-    	QStringNode root = QStringNode.newQuery();
-    	Expression predicate = root.name().eq(name);
-    	root.select(root.wildcard());
-    	root.select(root.child(predicate).wildcard());
-    	root.select(root.child(predicate).child().wildcard());
-    	root.select(root.child(predicate).child().child().wildcard());
-    	root.select(root.child(predicate).child().child().child().wildcard());
-    	return root;
-    }
-    
-    protected QStringNode createSelect()
-    {
-    	QStringNode root = QStringNode.newQuery();
-    	root.select(root.wildcard());
-    	root.select(root.child().wildcard());
-    	root.select(root.child().child().wildcard());
-    	root.select(root.child().child().child().wildcard());
-    	root.select(root.child().child().child().child().wildcard());
-    	return root;
-    }
-    
-    protected StringNode createGraph(long rootId, long id, Date now, String prefix) {
-        DataGraph dataGraph = PlasmaDataFactory.INSTANCE.createDataGraph();
-        dataGraph.getChangeSummary().beginLogging(); // log changes from this point
-    	Type rootType = PlasmaTypeHelper.INSTANCE.getType(StringNode.class);
-    	StringNode root = (StringNode)dataGraph.createRootObject(rootType);
-    	fillNode(root, rootId, id, now, prefix, 0, 0);
-    	fillGraph(root, id, now, prefix);
-        return root;
-    }
+	protected QStringNode createSelect(String name) {
+		QStringNode root = QStringNode.newQuery();
+		Expression predicate = root.name().eq(name);
+		root.select(root.wildcard());
+		root.select(root.child(predicate).wildcard());
+		root.select(root.child(predicate).child().wildcard());
+		root.select(root.child(predicate).child().child().wildcard());
+		root.select(root.child(predicate).child().child().child().wildcard());
+		return root;
+	}
+
+	protected QStringNode createSelect() {
+		QStringNode root = QStringNode.newQuery();
+		root.select(root.wildcard());
+		root.select(root.child().wildcard());
+		root.select(root.child().child().wildcard());
+		root.select(root.child().child().child().wildcard());
+		root.select(root.child().child().child().child().wildcard());
+		return root;
+	}
+
+	protected StringNode createGraph(long rootId, long id, Date now,
+			String prefix) {
+		DataGraph dataGraph = PlasmaDataFactory.INSTANCE.createDataGraph();
+		dataGraph.getChangeSummary().beginLogging(); // log changes from this
+														// point
+		Type rootType = PlasmaTypeHelper.INSTANCE.getType(StringNode.class);
+		StringNode root = (StringNode) dataGraph.createRootObject(rootType);
+		fillNode(root, rootId, id, now, prefix, 0, 0);
+		fillGraph(root, id, now, prefix);
+		return root;
+	}
 }

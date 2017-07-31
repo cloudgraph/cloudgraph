@@ -24,29 +24,35 @@ package org.cloudgraph.query.expr;
 import org.plasma.query.model.LogicalOperator;
 
 /**
- * Contains default functionality for <a href="http://docs.plasma-sdo.org/api/org/plasma/query/model/LogicalOperator.html">logical</a> 
- * binary query expressions.   
+ * Contains default functionality for <a href=
+ * "http://docs.plasma-sdo.org/api/org/plasma/query/model/LogicalOperator.html"
+ * >logical</a> binary query expressions.
+ * 
  * @author Scott Cinnamond
  * @since 0.5.2
  * @see Expr
  * @see ExprVisitor
  * @see EvaluationContext
  */
-public class DefaultLogicalBinaryExpr extends DefaultBinaryExpr 
-    implements LogicalBinaryExpr {
+public class DefaultLogicalBinaryExpr extends DefaultBinaryExpr
+		implements
+			LogicalBinaryExpr {
 	private Expr left;
 	private Expr right;
 	private LogicalOperator oper;
 	/**
-	 * Constructs a composite expression based on the given
-	 * terms and <a href="http://docs.plasma-sdo.org/api/org/plasma/query/model/LogicalOperator.html">logical</a>
-	 * operator.
-	 * @param left the "left" expression term
-	 * @param right the "right" expression term
-	 * @param oper the logical operator
+	 * Constructs a composite expression based on the given terms and <a href=
+	 * "http://docs.plasma-sdo.org/api/org/plasma/query/model/LogicalOperator.html"
+	 * >logical</a> operator.
+	 * 
+	 * @param left
+	 *            the "left" expression term
+	 * @param right
+	 *            the "right" expression term
+	 * @param oper
+	 *            the logical operator
 	 */
-	public DefaultLogicalBinaryExpr(Expr left, Expr right,
-			LogicalOperator oper) {
+	public DefaultLogicalBinaryExpr(Expr left, Expr right, LogicalOperator oper) {
 		super(left, right);
 		if (oper == null)
 			throw new IllegalArgumentException("expected arg 'oper'");
@@ -54,45 +60,50 @@ public class DefaultLogicalBinaryExpr extends DefaultBinaryExpr
 		this.right = right;
 		this.oper = oper;
 	}
-	
+
 	/**
 	 * Returns the operator for the expression.
+	 * 
 	 * @return the operator for the expression.
 	 */
 	public LogicalOperator getOperator() {
 		return oper;
 	}
-	
+
 	/**
-	 * Returns a "truth" value for the expression based
-	 * on an evaluation of the <a href="http://docs.plasma-sdo.org/api/org/plasma/query/model/LogicalOperator.html">logical</a>
-	 * operator within the given context. 
-	 * @param context the context
-	 * @return "truth" value for the expression based
-	 * on an evaluation of the <a href="http://docs.plasma-sdo.org/api/org/plasma/query/model/LogicalOperator.html">logical</a>
-	 * operator within the given context. 
+	 * Returns a "truth" value for the expression based on an evaluation of the
+	 * <a href=
+	 * "http://docs.plasma-sdo.org/api/org/plasma/query/model/LogicalOperator.html"
+	 * >logical</a> operator within the given context.
+	 * 
+	 * @param context
+	 *            the context
+	 * @return "truth" value for the expression based on an evaluation of the <a
+	 *         href=
+	 *         "http://docs.plasma-sdo.org/api/org/plasma/query/model/LogicalOperator.html"
+	 *         >logical</a> operator within the given context.
 	 */
 	@Override
 	public boolean evaluate(EvaluationContext context) {
 		boolean leftTrue = left.evaluate(context);
 		boolean rightTrue = right.evaluate(context);
-		
+
 		boolean result = false;
 		switch (oper.getValue()) {
-		case AND:
-			result = leftTrue && rightTrue;
-			break;
-		case OR:
-			result = leftTrue || rightTrue;
-			break;
-		case NOT:
-		default:
-			throw new IllegalStateException("unexpected logical operator, "
-					+ oper.getValue());
+			case AND :
+				result = leftTrue && rightTrue;
+				break;
+			case OR :
+				result = leftTrue || rightTrue;
+				break;
+			case NOT :
+			default :
+				throw new IllegalStateException("unexpected logical operator, "
+						+ oper.getValue());
 		}
 		return result;
 	}
-	
+
 	public String toString() {
 		StringBuilder buf = new StringBuilder();
 		buf.append(this.getClass().getSimpleName());

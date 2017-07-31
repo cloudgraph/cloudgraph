@@ -22,9 +22,10 @@
 package org.cloudgraph.hbase.io;
 
 /**
- * Thrown where an attempt is made to add a data object to a new or existing edge where the edge
- * base type or subtype have already been established and the given type
- * does not match. 
+ * Thrown where an attempt is made to add a data object to a new or existing
+ * edge where the edge base type or subtype have already been established and
+ * the given type does not match.
+ * 
  * @author Scott Cinnamond
  * @since 1.0.0
  */

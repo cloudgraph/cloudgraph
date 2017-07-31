@@ -22,8 +22,8 @@
 package org.cloudgraph.query.expr;
 
 /**
- * Base interface providing context information passed
- * to an {@link Expr expression} syntax tree. 
+ * Base interface providing context information passed to an {@link Expr
+ * expression} syntax tree.
  * 
  * @author Scott Cinnamond
  * @since 0.5.2

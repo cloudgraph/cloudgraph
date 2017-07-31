@@ -43,9 +43,9 @@ public class PooledStateManager implements StateMarshalingContext {
 	private PooledStateManager() {
 		GenericObjectPoolConfig config = new GenericObjectPoolConfig();
 		config.setMaxTotal(40);
-		config.setMinIdle(40);       	
-		context = new PooledStateMarshallingContext(
-    			config, new StateDataBindingFactory());
+		config.setMinIdle(40);
+		context = new PooledStateMarshallingContext(config,
+				new StateDataBindingFactory());
 	}
 
 	public static PooledStateManager getInstance() {

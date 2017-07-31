@@ -25,7 +25,6 @@ import org.cloudgraph.config.UserDefinedRowKeyFieldConfig;
 import org.plasma.query.model.LogicalOperatorValues;
 import org.plasma.query.model.RelationalOperatorValues;
 
-
 /**
  * @author Scott Cinnamond
  * @since 0.5.3
@@ -44,19 +43,16 @@ public class ImbalancedOperatorMappingException extends ScanException {
 	public ImbalancedOperatorMappingException(Throwable t) {
 		super(t);
 	}
-	
-	public ImbalancedOperatorMappingException(RelationalOperatorValues left, 
+
+	public ImbalancedOperatorMappingException(RelationalOperatorValues left,
 			LogicalOperatorValues operator, RelationalOperatorValues right,
 			UserDefinedRowKeyFieldConfig field) {
-		super("relational operator '" 
-			    + left 
-			    + "' linked through logical operator '" 
-	            + operator
-	            + "' to relational operator '" 
-			    + right 
-			    + "' for row key field property, "
-			    + field.getEndpointProperty().getContainingType().toString() 
-			    + "." + field.getEndpointProperty().getName());
+		super("relational operator '" + left
+				+ "' linked through logical operator '" + operator
+				+ "' to relational operator '" + right
+				+ "' for row key field property, "
+				+ field.getEndpointProperty().getContainingType().toString()
+				+ "." + field.getEndpointProperty().getName());
 	}
 
 }

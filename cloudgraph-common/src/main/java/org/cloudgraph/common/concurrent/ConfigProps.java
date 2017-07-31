@@ -22,15 +22,16 @@
 package org.cloudgraph.common.concurrent;
 
 /**
-* @author Scott Cinnamond
-* @since 0.6.2
-*/
+ * @author Scott Cinnamond
+ * @since 0.6.2
+ */
 public class ConfigProps {
 	private int minThreadPoolSize;
 	private int maxThreadPoolSize;
 	private int maxThreadDepth;
 	@SuppressWarnings("unused")
-	private ConfigProps() {}
+	private ConfigProps() {
+	}
 	public ConfigProps(int minThreadPoolSize, int maxThreadPoolSize,
 			int maxThreadDepth) {
 		super();
@@ -46,5 +47,5 @@ public class ConfigProps {
 	}
 	public int getMaxThreadDepth() {
 		return maxThreadDepth;
-	}	
+	}
 }

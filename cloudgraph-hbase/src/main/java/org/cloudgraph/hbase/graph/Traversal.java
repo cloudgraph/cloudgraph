@@ -27,9 +27,11 @@ import org.plasma.sdo.PlasmaDataObject;
 import org.plasma.sdo.PlasmaProperty;
 
 /**
- * Encapsulates minimal recursive graph traversal information for use in concurrent
- * contexts, such as where a traversal is needed but the initialization data must be
- * captured and stored, and a traversal from a given subroot, initiated later.  
+ * Encapsulates minimal recursive graph traversal information for use in
+ * concurrent contexts, such as where a traversal is needed but the
+ * initialization data must be captured and stored, and a traversal from a given
+ * subroot, initiated later.
+ * 
  * @author Scott Cinnamond
  * @since 0.6.2
  */
@@ -42,13 +44,15 @@ public class Traversal {
 	private RowReader rowReader;
 	private int level;
 	private boolean concurrent;
-	
+
 	@SuppressWarnings("unused")
-	private Traversal() {}
-	 
-	public Traversal(PlasmaDataObject subroot, long subrootSequence, EdgeReader collection, PlasmaDataObject source,
-			PlasmaProperty sourceProperty,
-			RowReader rowReader, boolean concurrent, int level) {
+	private Traversal() {
+	}
+
+	public Traversal(PlasmaDataObject subroot, long subrootSequence,
+			EdgeReader collection, PlasmaDataObject source,
+			PlasmaProperty sourceProperty, RowReader rowReader,
+			boolean concurrent, int level) {
 		super();
 		this.subroot = subroot;
 		this.subrootSequence = subrootSequence;
@@ -62,7 +66,7 @@ public class Traversal {
 	public PlasmaDataObject getSubroot() {
 		return subroot;
 	}
-	
+
 	public long getSubrootSequence() {
 		return subrootSequence;
 	}
@@ -87,6 +91,5 @@ public class Traversal {
 	public boolean isConcurrent() {
 		return concurrent;
 	}
-	
-}
 
+}

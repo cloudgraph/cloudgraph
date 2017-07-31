@@ -34,54 +34,57 @@ import org.plasma.query.model.WildcardOperator;
 import org.plasma.sdo.PlasmaType;
 
 /**
- * A binary expression tree assembler which constructs an operator 
- * precedence map, then {@link org.cloudgraph.query.expr.ExpresionVisitorSupport visits} (traverses) 
- * the given predicate expression syntax tree depth-first 
- * using an adapted shunting-yard algorithm and assembles a 
- * resulting binary tree structure with expression nodes specific
- * for detecting i.e. recognizing a data graph. In typical usage 
- * scenarios, a single expression tree is assembled once, and 
- * then used to evaluate any number of data graphs.
+ * A binary expression tree assembler which constructs an operator precedence
+ * map, then {@link org.cloudgraph.query.expr.ExpresionVisitorSupport visits}
+ * (traverses) the given predicate expression syntax tree depth-first using an
+ * adapted shunting-yard algorithm and assembles a resulting binary tree
+ * structure with expression nodes specific for detecting i.e. recognizing a
+ * data graph. In typical usage scenarios, a single expression tree is assembled
+ * once, and then used to evaluate any number of data graphs.
  * <p>
- * The adapted shunting-yard algorithm in general uses a stack of 
- * operators and operands, and as new binary tree nodes are detected and 
- * created they are pushed onto the operand stack based on operator precedence.
- * The resulting binary expression tree reflects the syntax of the
- * underlying query expression including the precedence of its operators.
+ * The adapted shunting-yard algorithm in general uses a stack of operators and
+ * operands, and as new binary tree nodes are detected and created they are
+ * pushed onto the operand stack based on operator precedence. The resulting
+ * binary expression tree reflects the syntax of the underlying query expression
+ * including the precedence of its operators.
  * </p>
- *   
+ * 
  * @author Scott Cinnamond
  * @since 0.5.3
  * 
  * @see ExprAssembler
  * @see DefaultBinaryExprTreeAssembler
  */
-public class GraphRecognizerSyntaxTreeAssembler extends DefaultBinaryExprTreeAssembler 
-{
+public class GraphRecognizerSyntaxTreeAssembler
+		extends
+			DefaultBinaryExprTreeAssembler {
 	protected DataGraphConfig graphConfig;
-	
+
 	/**
-	 * Constructs an assembler based on the given predicate
-	 * data graph configuration and graph root type.
-	 * @param predicate the predicate
-	 * @param rootType the graph root type
+	 * Constructs an assembler based on the given predicate data graph
+	 * configuration and graph root type.
+	 * 
+	 * @param predicate
+	 *            the predicate
+	 * @param rootType
+	 *            the graph root type
 	 */
 	public GraphRecognizerSyntaxTreeAssembler(Where predicate,
 			PlasmaType rootType) {
 		super(predicate, rootType);
 	}
-	
+
 	@Override
 	public RelationalBinaryExpr createRelationalBinaryExpr(Property property,
 			Literal literal, RelationalOperator operator) {
-	    return new GraphRecognizerRelationalBinaryExpr(
-	    		property, literal, operator);
+		return new GraphRecognizerRelationalBinaryExpr(property, literal,
+				operator);
 	}
-		
+
 	@Override
 	public WildcardBinaryExpr createWildcardBinaryExpr(Property property,
 			Literal literal, WildcardOperator operator) {
-	    return new GraphRecognizerWildcardBinaryExpr(
-	    		property, literal, operator);
+		return new GraphRecognizerWildcardBinaryExpr(property, literal,
+				operator);
 	}
 }

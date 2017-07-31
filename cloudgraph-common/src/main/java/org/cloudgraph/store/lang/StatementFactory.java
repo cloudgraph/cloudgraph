@@ -34,8 +34,8 @@ import commonj.sdo.Property;
 import commonj.sdo.Type;
 
 /**
- * Common graph assembler functionality resulting from initial re-factoring and addition of parallel 
- * assembly across RDB and Cassandra services. 
+ * Common graph assembler functionality resulting from initial re-factoring and
+ * addition of parallel assembly across RDB and Cassandra services.
  * 
  * @author Scott Cinnamond
  * @since 0.6.2
@@ -62,10 +62,12 @@ public interface StatementFactory {
 	public abstract StringBuilder createDelete(PlasmaType type,
 			Map<String, PropertyPair> values);
 
-	public abstract PlasmaProperty getOppositePriKeyProperty(Property targetProperty);
-	public abstract boolean hasUpdatableProperties(Map<String, PropertyPair> values);
-	
-	public abstract FilterAssembler createFilterAssembler(Where where, Type targetType);
-	
-	
+	public abstract PlasmaProperty getOppositePriKeyProperty(
+			Property targetProperty);
+	public abstract boolean hasUpdatableProperties(
+			Map<String, PropertyPair> values);
+
+	public abstract FilterAssembler createFilterAssembler(Where where,
+			Type targetType);
+
 }

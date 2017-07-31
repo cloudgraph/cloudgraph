@@ -67,24 +67,24 @@ import org.cloudgraph.mapreduce.GraphWritable;
 
 /**
  * A graph based input-specification for MapReduce jobs which splits an
- * underlying root table by region and by the scans resulting from a given
- * <a href="http://plasma-sdo.org/org/plasma/query/Query.html">query</a>, then
+ * underlying root table by region and by the scans resulting from a given <a
+ * href="http://plasma-sdo.org/org/plasma/query/Query.html">query</a>, then
  * provides graph record {@link GraphRecordReader readers} for each <a href=
  * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/mapreduce/TableSplit.html"
  * >split</a> which assemble and serve data graphs to client {@link GraphMapper
  * mapper} extensions.
  * <p>
  * Data graphs are assembled within a record {@link GraphRecordReader reader}
- * based on the detailed selection criteria within a given
- * <a href="http://plasma-sdo.org/org/plasma/query/Query.html">query</a>, and
- * may be passed to a {@link GraphRecordRecognizer recognizer} and potentially
+ * based on the detailed selection criteria within a given <a
+ * href="http://plasma-sdo.org/org/plasma/query/Query.html">query</a>, and may
+ * be passed to a {@link GraphRecordRecognizer recognizer} and potentially
  * screened from client {@link GraphMapper mappers} potentially illuminating
  * business logic dedicated to identifying specific records.
  * </p>
  * <p>
  * A graph recognizer is used only when query expressions are present which
- * reference properties not found in the row key model for a target
- * <a href="http://plasma-sdo.org/commonj/sdo/DataGraph.html">graph</a>.
+ * reference properties not found in the row key model for a target <a
+ * href="http://plasma-sdo.org/commonj/sdo/DataGraph.html">graph</a>.
  * </p>
  * 
  * @see org.apache.hadoop.hbase.mapreduce.TableSplit
@@ -94,26 +94,33 @@ import org.cloudgraph.mapreduce.GraphWritable;
  * @author Scott Cinnamond
  * @since 0.5.8
  */
-public class GraphInputFormat extends InputFormat<ImmutableBytesWritable, GraphWritable>implements Configurable {
+public class GraphInputFormat
+		extends
+			InputFormat<ImmutableBytesWritable, GraphWritable>
+		implements
+			Configurable {
 
 	static final Log log = LogFactory.getLog(GraphInputFormat.class);
 
 	/**
 	 * Serialized query which encapsulates meta data which drives the creation
-	 * is one or more scans against any number of tables, starting with the root. 
+	 * is one or more scans against any number of tables, starting with the
+	 * root.
 	 */
 	public static final String QUERY = "cloudgraph.hbase.mapreduce.query";
 
 	/**
-	 * Serialized store mappings or configuration which links physical tables with any number of
-	 * data graphs/mappings. This data is typically packaged into a jar in an e.g. cloudgraph-config.xml 
-	 * file, but where these mappings are dynamic and loaded at runtime, the job (spark,mapreduce) child  
-	 * VM's must have access to and load this mapping dynamically. 
-	 * The mapping must be serialized as XML and be marshalled and be unmarshallable using the
-	 * root {@link CloudGraphConfiguration} which may have any number of table mapping elements. 
+	 * Serialized store mappings or configuration which links physical tables
+	 * with any number of data graphs/mappings. This data is typically packaged
+	 * into a jar in an e.g. cloudgraph-config.xml file, but where these
+	 * mappings are dynamic and loaded at runtime, the job (spark,mapreduce)
+	 * child VM's must have access to and load this mapping dynamically. The
+	 * mapping must be serialized as XML and be marshalled and be unmarshallable
+	 * using the root {@link CloudGraphConfiguration} which may have any number
+	 * of table mapping elements.
 	 */
 	public static final String TABLE_MAPPINGS = "cloudgraph.hbase.mapreduce.tablemappings";
-	
+
 	/**
 	 * Boolean property indicating whether a graph recognizer is necessary for
 	 * the current query
@@ -183,7 +190,8 @@ public class GraphInputFormat extends InputFormat<ImmutableBytesWritable, GraphW
 		TableName tableName = TableName.valueOf(conf.get(ROOT_TABLE));
 		try {
 			// table = new HTable(new Configuration(conf), tableName);
-			Connection con = ConnectionFactory.createConnection(new Configuration(conf));
+			Connection con = ConnectionFactory
+					.createConnection(new Configuration(conf));
 			this.table = con.getTable(tableName);
 			this.regionLocator = con.getRegionLocator(tableName);
 			this.admin = con.getAdmin();
@@ -194,28 +202,34 @@ public class GraphInputFormat extends InputFormat<ImmutableBytesWritable, GraphW
 
 		String[] rawScans = conf.getStrings(SCANS);
 		if (rawScans.length <= 0) {
-			throw new IllegalArgumentException("There must be at least 1 scan configuration set to : " + SCANS);
+			throw new IllegalArgumentException(
+					"There must be at least 1 scan configuration set to : "
+							+ SCANS);
 		}
 		List<Scan> scans = new ArrayList<Scan>();
 
 		for (int i = 0; i < rawScans.length; i++) {
 			try {
-				Scan scan = GraphMapReduceSetup.convertStringToScan(rawScans[i]);
+				Scan scan = GraphMapReduceSetup
+						.convertStringToScan(rawScans[i]);
 				setConf(scan, configuration);
 				scans.add(scan);
 			} catch (IOException e) {
-				throw new RuntimeException("Failed to convert Scan : " + rawScans[i] + " to string", e);
+				throw new RuntimeException("Failed to convert Scan : "
+						+ rawScans[i] + " to string", e);
 			}
 		}
 		this.setScans(scans);
 	}
 
-	private void setConf(Scan scan, Configuration configuration) throws NumberFormatException, IOException {
+	private void setConf(Scan scan, Configuration configuration)
+			throws NumberFormatException, IOException {
 		if (conf.get(SCAN_TIMESTAMP) != null) {
 			scan.setTimeStamp(Long.parseLong(conf.get(SCAN_TIMESTAMP)));
 		}
 
-		if (conf.get(SCAN_TIMERANGE_START) != null && conf.get(SCAN_TIMERANGE_END) != null) {
+		if (conf.get(SCAN_TIMERANGE_START) != null
+				&& conf.get(SCAN_TIMERANGE_END) != null) {
 			scan.setTimeRange(Long.parseLong(conf.get(SCAN_TIMERANGE_START)),
 					Long.parseLong(conf.get(SCAN_TIMERANGE_END)));
 		}
@@ -233,44 +247,55 @@ public class GraphInputFormat extends InputFormat<ImmutableBytesWritable, GraphW
 	}
 
 	@Override
-	public List<InputSplit> getSplits(JobContext context) throws IOException, InterruptedException {
+	public List<InputSplit> getSplits(JobContext context) throws IOException,
+			InterruptedException {
 		if (scans.isEmpty()) {
 			throw new IOException("No scans were provided.");
 		}
 
 		try {
-			RegionSizeCalculator sizeCalculator = new RegionSizeCalculator(regionLocator, admin);
+			RegionSizeCalculator sizeCalculator = new RegionSizeCalculator(
+					regionLocator, admin);
 			Pair<byte[][], byte[][]> keys = getStartEndKeys();
 			// if potentially a single split (or table is empty?)
-			if (keys == null || keys.getFirst() == null || keys.getFirst().length == 0) {
-				HRegionLocation regLoc = regionLocator.getRegionLocation(HConstants.EMPTY_BYTE_ARRAY, false);
+			if (keys == null || keys.getFirst() == null
+					|| keys.getFirst().length == 0) {
+				HRegionLocation regLoc = regionLocator.getRegionLocation(
+						HConstants.EMPTY_BYTE_ARRAY, false);
 				if (null == regLoc) {
 					throw new IOException("Expecting at least one region.");
 				}
 				List<InputSplit> splits = new ArrayList<InputSplit>(1);
-				long regionSize = sizeCalculator.getRegionSize(regLoc.getRegionInfo().getRegionName());
+				long regionSize = sizeCalculator.getRegionSize(regLoc
+						.getRegionInfo().getRegionName());
 				Scan scan = scans.get(0);
 				if (scans.size() > 1)
-				    log.warn("single split with multiple scans - ignoring other than first scan");	 
-				
-				TableSplit split = new TableSplit(table.getName(), scan, HConstants.EMPTY_BYTE_ARRAY,
+					log.warn("single split with multiple scans - ignoring other than first scan");
+
+				TableSplit split = new TableSplit(table.getName(), scan,
 						HConstants.EMPTY_BYTE_ARRAY,
-						regLoc.getHostnamePort().split(Addressing.HOSTNAME_PORT_SEPARATOR)[0], regionSize);
+						HConstants.EMPTY_BYTE_ARRAY, regLoc.getHostnamePort()
+								.split(Addressing.HOSTNAME_PORT_SEPARATOR)[0],
+						regionSize);
 				splits.add(split);
 				return splits;
 			}
 
-			List<InputSplit> splits = new ArrayList<InputSplit>(keys.getFirst().length);
+			List<InputSplit> splits = new ArrayList<InputSplit>(
+					keys.getFirst().length);
 			for (Scan scan : scans) {
 
 				for (int i = 0; i < keys.getFirst().length; i++) {
-					if (!includeRegionInSplit(keys.getFirst()[i], keys.getSecond()[i])) {
+					if (!includeRegionInSplit(keys.getFirst()[i],
+							keys.getSecond()[i])) {
 						continue;
 					}
-					HRegionLocation location = regionLocator.getRegionLocation(keys.getFirst()[i], false);
+					HRegionLocation location = regionLocator.getRegionLocation(
+							keys.getFirst()[i], false);
 					// The below InetSocketAddress creation does a name
 					// resolution.
-					InetSocketAddress isa = new InetSocketAddress(location.getHostname(), location.getPort());
+					InetSocketAddress isa = new InetSocketAddress(
+							location.getHostname(), location.getPort());
 					if (isa.isUnresolved()) {
 						log.warn("Failed resolve " + isa);
 					}
@@ -279,32 +304,44 @@ public class GraphInputFormat extends InputFormat<ImmutableBytesWritable, GraphW
 					try {
 						regionLocation = reverseDNS(regionAddress);
 					} catch (NamingException e) {
-						log.warn("Cannot resolve the host name for " + regionAddress + " because of " + e);
+						log.warn("Cannot resolve the host name for "
+								+ regionAddress + " because of " + e);
 						regionLocation = location.getHostname();
 					}
 
 					byte[] startRow = scan.getStartRow();
 					byte[] stopRow = scan.getStopRow();
 					// determine if the given start an stop key fall into the
-					// region. 
-					if ((startRow.length == 0 || keys.getSecond()[i].length == 0
-							|| Bytes.compareTo(startRow, keys.getSecond()[i]) < 0)
-							&& (stopRow.length == 0 || Bytes.compareTo(stopRow, keys.getFirst()[i]) > 0)) {
-						byte[] splitStart = startRow.length == 0 || Bytes.compareTo(keys.getFirst()[i], startRow) >= 0
-								? keys.getFirst()[i] : startRow;
-						byte[] splitStop = (stopRow.length == 0 || Bytes.compareTo(keys.getSecond()[i], stopRow) <= 0)
-								&& keys.getSecond()[i].length > 0 ? keys.getSecond()[i] : stopRow;
+					// region.
+					if ((startRow.length == 0
+							|| keys.getSecond()[i].length == 0 || Bytes
+							.compareTo(startRow, keys.getSecond()[i]) < 0)
+							&& (stopRow.length == 0 || Bytes.compareTo(stopRow,
+									keys.getFirst()[i]) > 0)) {
+						byte[] splitStart = startRow.length == 0
+								|| Bytes.compareTo(keys.getFirst()[i], startRow) >= 0
+								? keys.getFirst()[i]
+								: startRow;
+						byte[] splitStop = (stopRow.length == 0 || Bytes
+								.compareTo(keys.getSecond()[i], stopRow) <= 0)
+								&& keys.getSecond()[i].length > 0 ? keys
+								.getSecond()[i] : stopRow;
 
-						byte[] regionName = location.getRegionInfo().getRegionName();
-						long regionSize = sizeCalculator.getRegionSize(regionName);
-						
-						TableSplit split = new TableSplit(table.getName(), 
-								scan, // must include the scan as it may have various filters
+						byte[] regionName = location.getRegionInfo()
+								.getRegionName();
+						long regionSize = sizeCalculator
+								.getRegionSize(regionName);
+
+						TableSplit split = new TableSplit(
+								table.getName(),
+								scan, // must include the scan as it may have
+										// various filters
 								splitStart, splitStop, regionLocation,
 								regionSize);
 						splits.add(split);
 						if (log.isDebugEnabled()) {
-							log.debug("getSplits: split -> " + i + " -> " + split);
+							log.debug("getSplits: split -> " + i + " -> "
+									+ split);
 						}
 					}
 				}
@@ -314,22 +351,26 @@ public class GraphInputFormat extends InputFormat<ImmutableBytesWritable, GraphW
 			closeAll();
 		}
 	}
-	
+
 	/**
 	 * Uses {@link InetAddress} in case of {@link DNS} lookup failure.
-	 * @param ipAddr the address
+	 * 
+	 * @param ipAddr
+	 *            the address
 	 * @return the reverse address
 	 * @throws NamingException
 	 * @throws UnknownHostException
 	 */
-	public String reverseDNS(InetAddress ipAddr) throws NamingException, UnknownHostException {
+	public String reverseDNS(InetAddress ipAddr) throws NamingException,
+			UnknownHostException {
 		String hostName = this.reverseDNSCache.get(ipAddr);
 		if (hostName == null) {
 			String ipAddressString = null;
 			try {
 				ipAddressString = DNS.reverseDns(ipAddr, null);
 			} catch (Exception e) {
-				ipAddressString = InetAddress.getByName(ipAddr.getHostAddress()).getHostName();
+				ipAddressString = InetAddress
+						.getByName(ipAddr.getHostAddress()).getHostName();
 			}
 			if (ipAddressString == null)
 				throw new UnknownHostException("No host found for " + ipAddr);
@@ -360,12 +401,14 @@ public class GraphInputFormat extends InputFormat<ImmutableBytesWritable, GraphW
 	}
 
 	@Override
-	public RecordReader<ImmutableBytesWritable, GraphWritable> createRecordReader(InputSplit split,
-			TaskAttemptContext context) throws IOException, InterruptedException {
+	public RecordReader<ImmutableBytesWritable, GraphWritable> createRecordReader(
+			InputSplit split, TaskAttemptContext context) throws IOException,
+			InterruptedException {
 		if (table == null) {
-			throw new IOException("Cannot create a record reader because of a"
-					+ " previous error. Please look at the previous logs lines from"
-					+ " the task's full log for more details.");
+			throw new IOException(
+					"Cannot create a record reader because of a"
+							+ " previous error. Please look at the previous logs lines from"
+							+ " the task's full log for more details.");
 		}
 		TableSplit tSplit = (TableSplit) split;
 		GraphRecordReader reader = this.graphRecordReader;
@@ -376,12 +419,12 @@ public class GraphInputFormat extends InputFormat<ImmutableBytesWritable, GraphW
 		Scan sc = tSplit.getScan();
 		log.debug("SCAN: " + sc.toString());
 		if (sc.getFilter() != null) {
-			log.info("SPLIT FILTER: " + FilterUtil.printFilterTree(sc.getFilter()));
-		}
-		else {
+			log.info("SPLIT FILTER: "
+					+ FilterUtil.printFilterTree(sc.getFilter()));
+		} else {
 			log.info("split scan has no filter");
 		}
-		
+
 		sc.setStartRow(tSplit.getStartRow());
 		sc.setStopRow(tSplit.getEndRow());
 		reader.setScan(sc);
@@ -418,7 +461,8 @@ public class GraphInputFormat extends InputFormat<ImmutableBytesWritable, GraphW
 	 * @return true, if this region needs to be included as part of the input
 	 *         (default).
 	 */
-	protected boolean includeRegionInSplit(final byte[] startKey, final byte[] endKey) {
+	protected boolean includeRegionInSplit(final byte[] startKey,
+			final byte[] endKey) {
 		return true;
 	}
 

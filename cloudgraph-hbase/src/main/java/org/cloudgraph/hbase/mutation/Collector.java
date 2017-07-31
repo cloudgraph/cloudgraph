@@ -32,7 +32,8 @@ import commonj.sdo.DataGraph;
 
 public interface Collector {
 
-	void collect(DataGraph dataGraph, PlasmaDataObject dataObject, DistributedWriter graphWriter, TableWriter context,
+	void collect(DataGraph dataGraph, PlasmaDataObject dataObject,
+			DistributedWriter graphWriter, TableWriter context,
 			RowWriter rowContext) throws IOException, IllegalAccessException;
 
 }

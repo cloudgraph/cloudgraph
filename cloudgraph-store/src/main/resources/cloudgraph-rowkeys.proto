@@ -1,0 +1,9 @@
+package org.cloudgraph.state.proto;
+
+option optimize_for = SPEED;
+option java_outer_classname="RowKeysProto";
+
+message RowKeys {
+  repeated string rowKey = 1;
+}
+

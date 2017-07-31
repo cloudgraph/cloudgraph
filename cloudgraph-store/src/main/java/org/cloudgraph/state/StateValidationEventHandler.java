@@ -31,50 +31,54 @@ import org.plasma.common.bind.BindingValidationEventHandler;
 
 /**
  * State parsing (JAXB) event handler.
+ * 
  * @author Scott Cinnamond
  * @since 0.5
  */
-public class StateValidationEventHandler implements BindingValidationEventHandler {
-	
-    private static Log log = LogFactory.getLog(StateValidationEventHandler.class);
-    private int errorCount;
-    private boolean cumulative = true;
-	
+public class StateValidationEventHandler
+		implements
+			BindingValidationEventHandler {
+
+	private static Log log = LogFactory
+			.getLog(StateValidationEventHandler.class);
+	private int errorCount;
+	private boolean cumulative = true;
+
 	public int getErrorCount() {
 		return errorCount;
 	}
 
-	public StateValidationEventHandler() {}	
+	public StateValidationEventHandler() {
+	}
 	public StateValidationEventHandler(boolean cumulative) {
 		this.cumulative = cumulative;
-	}	
-	
-    public boolean handleEvent(ValidationEvent ve) {
-        boolean result = this.cumulative;
-        this.errorCount++;        
-        ValidationEventLocator vel = ve.getLocator();
-        
-        String message = "Line:Col:Offset[" + vel.getLineNumber() + ":" + vel.getColumnNumber() + ":" 
-            + String.valueOf(vel.getOffset())
-            + "] - " + ve.getMessage();
-        
-        switch (ve.getSeverity()) {
-        case ValidationEvent.WARNING:
-            log.warn(message);
-            break;
-        case ValidationEvent.ERROR:
-        case ValidationEvent.FATAL_ERROR:
-            log.fatal(message);
-            throw new CloudGraphConfigurationException(message);
-        default:
-            log.error(message);
-        }
-        return result;
-    }
-    
-    public void reset()
-    {
-    	this.errorCount = 0;
-    }
+	}
+
+	public boolean handleEvent(ValidationEvent ve) {
+		boolean result = this.cumulative;
+		this.errorCount++;
+		ValidationEventLocator vel = ve.getLocator();
+
+		String message = "Line:Col:Offset[" + vel.getLineNumber() + ":"
+				+ vel.getColumnNumber() + ":" + String.valueOf(vel.getOffset())
+				+ "] - " + ve.getMessage();
+
+		switch (ve.getSeverity()) {
+			case ValidationEvent.WARNING :
+				log.warn(message);
+				break;
+			case ValidationEvent.ERROR :
+			case ValidationEvent.FATAL_ERROR :
+				log.fatal(message);
+				throw new CloudGraphConfigurationException(message);
+			default :
+				log.error(message);
+		}
+		return result;
+	}
+
+	public void reset() {
+		this.errorCount = 0;
+	}
 
 }

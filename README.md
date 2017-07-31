@@ -63,13 +63,9 @@ Add the following dependencies to any Apache Maven POM files (or your build syst
 For the CloudGraph HBase data store library use the following artefact.
 
 &lt;dependency&gt;
-
 &lt;groupId&gt;org.cloudgraph&lt;/groupId&gt;
-
 &lt;artifactId&gt;cloudgraph-hbase&lt;/artifactId&gt;
-
-&lt;version&gt;0.6.6&lt;/version&gt;
-
+&lt;version&gt;1.0.1&lt;/version&gt;
 &lt;/dependency&gt;
 
 **CloudGraph MAPRDB**
@@ -77,13 +73,9 @@ For the CloudGraph HBase data store library use the following artefact.
 For the CloudGraph MAPRDB data store library use the following artefact.
 
 &lt;dependency&gt;
-
 &lt;groupId&gt;org.cloudgraph&lt;/groupId&gt;
-
 &lt;artifactId&gt;cloudgraph-maprdb&lt;/artifactId&gt;
-
-&lt;version&gt;0.6.6&lt;/version&gt;
-
+&lt;version&gt;1.0.1&lt;/version&gt;
 &lt;/dependency&gt;
 
 **CloudGraph RDB**
@@ -91,13 +83,9 @@ For the CloudGraph MAPRDB data store library use the following artefact.
 For the CloudGraph RDB data store library use the following artefact.
 
 &lt;dependency&gt;
-
 &lt;groupId&gt;org.cloudgraph&lt;/groupId&gt;
-
 &lt;artifactId&gt;cloudgraph-rdb&lt;/artifactId&gt;
-
-&lt;version&gt;0.6.6&lt;/version&gt;
-
+&lt;version&gt;1.0.1&lt;/version&gt;
 &lt;/dependency&gt;
 
 **Detailed Documentation**

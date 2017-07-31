@@ -27,17 +27,16 @@ import org.apache.hadoop.hbase.KeyValue;
 import org.cloudgraph.query.expr.EvaluationContext;
 
 /**
- * Context which supports the evaluation and 
- * "recognition" of a given data graph entity 
- * sequence value by a binary expression tree, within
- * the context of the expression syntax and a given
- * HBase <a href="http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/KeyValue.html">KeyValue</a> 
- * map. 
+ * Context which supports the evaluation and "recognition" of a given data graph
+ * entity sequence value by a binary expression tree, within the context of the
+ * expression syntax and a given HBase <a href=
+ * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/KeyValue.html"
+ * >KeyValue</a> map.
  * <p>
- * A sequence uniquely identifies an data graph entity within a 
- * local or distributed data graph and is mapped internally
- * to provide global uniqueness.   
+ * A sequence uniquely identifies an data graph entity within a local or
+ * distributed data graph and is mapped internally to provide global uniqueness.
  * </p>
+ * 
  * @author Scott Cinnamond
  * @since 0.5.2
  * 
@@ -46,46 +45,50 @@ import org.cloudgraph.query.expr.EvaluationContext;
  */
 public class EdgeRecognizerContext implements EvaluationContext {
 
-    private Map<String, KeyValue> keyMap;
-    private Long sequence;
-    
-    /**
-     * Constructs an empty context.
-     */
-    public EdgeRecognizerContext() {    	
-    }
-    
-    /**
-     * Returns the HBase <a href="http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/KeyValue.html">KeyValue</a>
-     * specific for the current sequence. 
-     * @return the HBase <a href="http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/KeyValue.html">KeyValue</a>
-     * specific for the current sequence. 
-     */
+	private Map<String, KeyValue> keyMap;
+	private Long sequence;
+
+	/**
+	 * Constructs an empty context.
+	 */
+	public EdgeRecognizerContext() {
+	}
+
+	/**
+	 * Returns the HBase <a href=
+	 * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/KeyValue.html"
+	 * >KeyValue</a> specific for the current sequence.
+	 * 
+	 * @return the HBase <a href=
+	 *         "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/KeyValue.html"
+	 *         >KeyValue</a> specific for the current sequence.
+	 */
 	public Map<String, KeyValue> getKeyMap() {
 		return keyMap;
 	}
-	
-	
-    /**
-     * Sets the HBase <a href="http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/KeyValue.html">KeyValue</a>
-     * specific for the current sequence. 
-     */
+
+	/**
+	 * Sets the HBase <a href=
+	 * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/KeyValue.html"
+	 * >KeyValue</a> specific for the current sequence.
+	 */
 	public void setKeyMap(Map<String, KeyValue> keyMap) {
 		this.keyMap = keyMap;
 	}
-	
+
 	/**
-	 * Returns the current sequence. 
+	 * Returns the current sequence.
+	 * 
 	 * @return the current sequence.
 	 */
 	public Long getSequence() {
 		return sequence;
 	}
-	
+
 	/**
-	 * Sets the current sequence. 
+	 * Sets the current sequence.
 	 */
 	public void setSequence(Long sequence) {
 		this.sequence = sequence;
-	}    
+	}
 }

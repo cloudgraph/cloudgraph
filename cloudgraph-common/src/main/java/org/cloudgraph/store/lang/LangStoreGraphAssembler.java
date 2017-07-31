@@ -28,14 +28,17 @@ import org.plasma.sdo.access.provider.common.PropertyPair;
 
 /**
  * A graph assembler specific to query language driven data stores.
+ * 
  * @author Scott Cinnamond
  * @since 0.6.2
  */
 public interface LangStoreGraphAssembler extends DataGraphAssembler {
 	/**
-	 * Initiates the assembly of a data graph based on the 
-	 * given property key value pair results list. 
-	 * @param results the results list
+	 * Initiates the assembly of a data graph based on the given property key
+	 * value pair results list.
+	 * 
+	 * @param results
+	 *            the results list
 	 * 
 	 * @see DataGraphAssembler.getDataGraph()
 	 */

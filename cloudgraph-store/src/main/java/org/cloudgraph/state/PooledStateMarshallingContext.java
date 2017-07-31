@@ -27,8 +27,8 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 
 /**
- * Marshalling context which uses new commons pool2 for pooling of
- * non validating data binding instances. 
+ * Marshalling context which uses new commons pool2 for pooling of non
+ * validating data binding instances.
  * 
  * @author Scott Cinnamond
  * @since 0.6.2
@@ -37,19 +37,24 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
  * @see StateMarshalingContext
  */
 public class PooledStateMarshallingContext implements StateMarshalingContext {
-    private static Log log = LogFactory.getLog(PooledStateMarshallingContext.class);
+	private static Log log = LogFactory
+			.getLog(PooledStateMarshallingContext.class);
 	private GenericObjectPool<StateNonValidatingDataBinding> pool;
-	
+
 	@SuppressWarnings("unused")
-	private PooledStateMarshallingContext() {}
-	public PooledStateMarshallingContext(GenericObjectPoolConfig config, 
+	private PooledStateMarshallingContext() {
+	}
+	public PooledStateMarshallingContext(GenericObjectPoolConfig config,
 			StateDataBindingFactory factory) {
 		if (log.isDebugEnabled())
-		    log.debug("initializing data binding pool...");
-		this.pool = new GenericObjectPool<StateNonValidatingDataBinding>(factory);
+			log.debug("initializing data binding pool...");
+		this.pool = new GenericObjectPool<StateNonValidatingDataBinding>(
+				factory);
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.cloudgraph.state.StateMarshalingContext#getBinding()
 	 */
 	@Override
@@ -60,13 +65,17 @@ public class PooledStateMarshallingContext implements StateMarshalingContext {
 			throw new StateException(e);
 		}
 	}
-	
-	/* (non-Javadoc)
-	 * @see org.cloudgraph.state.StateMarshalingContext#returnDataBinding(org.cloudgraph.state.NonValidatingDataBinding)
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.cloudgraph.state.StateMarshalingContext#returnDataBinding(org.cloudgraph
+	 * .state.NonValidatingDataBinding)
 	 */
 	@Override
 	public void returnBinding(NonValidatingDataBinding binding) {
-		this.pool.returnObject((StateNonValidatingDataBinding)binding);
+		this.pool.returnObject((StateNonValidatingDataBinding) binding);
 	}
-	
+
 }

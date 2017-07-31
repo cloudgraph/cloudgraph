@@ -23,13 +23,14 @@ package org.cloudgraph.common;
 
 /**
  * Common interface for assemblers.
+ * 
  * @author Scott Cinnamond
  * @since 0.5
  */
 public interface Assembler {
-	
+
 	/**
-	 * Frees associated resources 
+	 * Frees associated resources
 	 */
-    public void clear();
+	public void clear();
 }

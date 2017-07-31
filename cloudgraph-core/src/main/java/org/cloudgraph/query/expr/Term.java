@@ -22,10 +22,10 @@
 package org.cloudgraph.query.expr;
 
 /**
- * Base interface representing any query term within
- * an expression.  
+ * Base interface representing any query term within an expression.
+ * 
  * @author Scott Cinnamond
  * @since 0.5.2
  */
-public interface Term extends org.plasma.query.Term{
+public interface Term extends org.plasma.query.Term {
 }

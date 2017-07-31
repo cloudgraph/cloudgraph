@@ -9,20 +9,23 @@ import org.plasma.sdo.core.NullValue;
 import commonj.sdo.ChangeSummary.Setting;
 
 /**
- * Collects old value (settings) for a given data type and property. 
- * As an entire history of modifications is sent from the client, for each property
- * modification, collect a unique set of values to get a single collection
- * of original values set to the client. Use this set to compare against
- * actual values in a data store.  
+ * Collects old value (settings) for a given data type and property. As an
+ * entire history of modifications is sent from the client, for each property
+ * modification, collect a unique set of values to get a single collection of
+ * original values set to the client. Use this set to compare against actual
+ * values in a data store.
  * 
- * <p></p>
- * Note: the client edge collection can be the results from a slice query
- * where not all the collection results are returned.   
+ * <p>
+ * </p>
+ * Note: the client edge collection can be the results from a slice query where
+ * not all the collection results are returned.
  * 
- * <p><p>
- * Below is an example (in XML representation) of a modification where
- * the property was changed more than once as a result of multiple 
- * delete operations.  
+ * <p>
+ * <p>
+ * Below is an example (in XML representation) of a modification where the
+ * property was changed more than once as a result of multiple delete
+ * operations.
+ * 
  * <pre>
  * <ChangeSummary logging="true>
  *   <modified type="Actor" path="#/namespace:" id="5b33afbc-621f-4119-a029-ac262c4b4dea">

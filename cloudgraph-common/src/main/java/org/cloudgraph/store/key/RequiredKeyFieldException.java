@@ -21,7 +21,6 @@
  */
 package org.cloudgraph.store.key;
 
-
 /**
  * @author Scott Cinnamond
  * @since 0.7.0

@@ -26,32 +26,37 @@ import org.plasma.query.model.Property;
 import org.plasma.query.model.RelationalOperator;
 
 /**
- * Contains default functionality for 
- * <a href="http://docs.plasma-sdo.org/api/org/plasma/query/model/RelationalOperator.html">relational</a> 
- * binary query expressions.   
+ * Contains default functionality for <a href=
+ * "http://docs.plasma-sdo.org/api/org/plasma/query/model/RelationalOperator.html"
+ * >relational</a> binary query expressions.
+ * 
  * @author Scott Cinnamond
  * @since 0.5.2
  * @see Expr
  * @see ExprVisitor
  * @see EvaluationContext
  */
-public class DefaultRelationalBinaryExpr extends DefaultBinaryExpr 
-    implements RelationalBinaryExpr {
-    protected Property property;
-    protected String propertyPath;
-    protected Literal literal;
-    protected RelationalOperator operator;
-    
+public class DefaultRelationalBinaryExpr extends DefaultBinaryExpr
+		implements
+			RelationalBinaryExpr {
+	protected Property property;
+	protected String propertyPath;
+	protected Literal literal;
+	protected RelationalOperator operator;
+
 	/**
-	 * Constructs a composite expression based on the given
-	 * terms and <a href="http://docs.plasma-sdo.org/api/org/plasma/query/model/RelationalOperator.html">relational</a>
-	 * operator.
-	 * @param left the "left" expression term
-	 * @param right the "right" expression term
-	 * @param oper the logical operator
+	 * Constructs a composite expression based on the given terms and <a href=
+	 * "http://docs.plasma-sdo.org/api/org/plasma/query/model/RelationalOperator.html"
+	 * >relational</a> operator.
+	 * 
+	 * @param left
+	 *            the "left" expression term
+	 * @param right
+	 *            the "right" expression term
+	 * @param oper
+	 *            the logical operator
 	 */
-	public DefaultRelationalBinaryExpr(Property property,
-			Literal literal, 
+	public DefaultRelationalBinaryExpr(Property property, Literal literal,
 			RelationalOperator operator) {
 		super(property, literal);
 		if (property == null)
@@ -63,30 +68,35 @@ public class DefaultRelationalBinaryExpr extends DefaultBinaryExpr
 		this.operator = operator;
 		this.propertyPath = createPropertyPath(this.property);
 	}
-	
+
 	/**
-	 * Returns a "truth" value for the expression based
-	 * on an evaluation of the <a href="http://docs.plasma-sdo.org/api/org/plasma/query/model/RelationalOperator.html">relational</a>
-	 * operator within the given context. 
-	 * @param context the context
-	 * @return "truth" value for the expression based
-	 * on an evaluation of the <a href="http://docs.plasma-sdo.org/api/org/plasma/query/model/RelationalOperator.html">relational</a>
-	 * operator within the given context. 
+	 * Returns a "truth" value for the expression based on an evaluation of the
+	 * <a href=
+	 * "http://docs.plasma-sdo.org/api/org/plasma/query/model/RelationalOperator.html"
+	 * >relational</a> operator within the given context.
+	 * 
+	 * @param context
+	 *            the context
+	 * @return "truth" value for the expression based on an evaluation of the <a
+	 *         href=
+	 *         "http://docs.plasma-sdo.org/api/org/plasma/query/model/RelationalOperator.html"
+	 *         >relational</a> operator within the given context.
 	 */
 	@Override
 	public boolean evaluate(EvaluationContext context) {
 		return true;
 	}
-	
+
 	/**
 	 * Returns the operator for the expression.
+	 * 
 	 * @return the operator for the expression.
 	 */
 	@Override
 	public RelationalOperator getOperator() {
 		return this.operator;
 	}
-	
+
 	@Override
 	public Property getProperty() {
 		return property;
@@ -114,5 +124,5 @@ public class DefaultRelationalBinaryExpr extends DefaultBinaryExpr
 		buf.append("]");
 		return buf.toString();
 	}
-    
+
 }

@@ -31,17 +31,19 @@ import org.plasma.common.bind.NonValidatingUnmarshaler;
 import org.xml.sax.SAXException;
 
 /**
- * State JAXB concurrent non-validating Binding delegate which simply
- * wraps the underlying delegate methods in synchronized blocks.
+ * State JAXB concurrent non-validating Binding delegate which simply wraps the
+ * underlying delegate methods in synchronized blocks.
  * 
  * @author Scott Cinnamond
  * @since 0.6.2
  */
-public class ConcurrentNonValidatingDataBinding implements NonValidatingDataBinding {
+public class ConcurrentNonValidatingDataBinding
+		implements
+			NonValidatingDataBinding {
 
 	private NonValidatingUnmarshaler unmarshaler;
 
-	public static Class<?>[] FACTORIES = { org.cloudgraph.state.ObjectFactory.class, };
+	public static Class<?>[] FACTORIES = {org.cloudgraph.state.ObjectFactory.class,};
 
 	public ConcurrentNonValidatingDataBinding() throws JAXBException,
 			SAXException {
@@ -52,21 +54,21 @@ public class ConcurrentNonValidatingDataBinding implements NonValidatingDataBind
 	public Class<?>[] getObjectFactories() {
 		return FACTORIES;
 	}
-    @Override
+	@Override
 	public String marshal(Object root) throws JAXBException {
 		synchronized (this) {
 			return unmarshaler.marshal(root);
 		}
 	}
 
-    @Override
+	@Override
 	public void marshal(Object root, OutputStream stream) throws JAXBException {
 		synchronized (this) {
 			unmarshaler.marshal(root, stream);
 		}
 	}
 
-    @Override
+	@Override
 	public void marshal(Object root, OutputStream stream,
 			boolean formattedOutput) throws JAXBException {
 		synchronized (this) {
@@ -74,14 +76,14 @@ public class ConcurrentNonValidatingDataBinding implements NonValidatingDataBind
 		}
 	}
 
-    @Override
+	@Override
 	public Object unmarshal(String xml) throws JAXBException {
 		synchronized (this) {
 			return unmarshaler.unmarshal(xml);
 		}
 	}
 
-    @Override
+	@Override
 	public Object unmarshal(InputStream stream) throws JAXBException {
 		synchronized (this) {
 			return unmarshaler.unmarshal(stream);

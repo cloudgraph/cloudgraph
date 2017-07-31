@@ -16,48 +16,38 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 
 /**
- * INPUT: 
- * Unique-Id Space-Seperated-Keywords 
- * ---------------------------------------
- * 12718 Ferrari Audi Alpina
- * 93729 Alpina Chrysler
- * 92837 BMW Acura Audi 
- * 09283 Audi Cadillac
- * 97283 Acura Cadillac Alpina
- * 92837 BMW Alpina
- * 19203 Cadillac Buick BMW
+ * INPUT: Unique-Id Space-Seperated-Keywords
+ * --------------------------------------- 12718 Ferrari Audi Alpina 93729
+ * Alpina Chrysler 92837 BMW Acura Audi 09283 Audi Cadillac 97283 Acura Cadillac
+ * Alpina 92837 BMW Alpina 19203 Cadillac Buick BMW
  * 
- * OUTPUT: 
- * Keyword  Space-Seperated-Unique-Ids
- * ---------------------------------------
- * Acura	97283 92837
- * Alpina	97283 92837 12718 93729
- * Audi	92837 09283 12718
- * BMW	92837 19203 92837
- * Buick	19203
- * Cadillac	09283 97283 19203
- * Chrysler	93729
- * Ferrari	12718
+ * OUTPUT: Keyword Space-Seperated-Unique-Ids
+ * --------------------------------------- Acura 97283 92837 Alpina 97283 92837
+ * 12718 93729 Audi 92837 09283 12718 BMW 92837 19203 92837 Buick 19203 Cadillac
+ * 09283 97283 19203 Chrysler 93729 Ferrari 12718
  */
 public class InvertedIndex {
 
-	public static class InvertedIndexMapper extends
-			Mapper<LongWritable, Text, Text, Text> {
+	public static class InvertedIndexMapper
+			extends
+				Mapper<LongWritable, Text, Text, Text> {
 		private Text id = new Text();
 		private Text outkey = new Text();
 
 		public void map(LongWritable key, Text value, Context context)
 				throws IOException, InterruptedException {
 			String[] values = value.toString().split("\\s+");
-			id.set(values[0]); 
-			for (int i = 1; i < values.length; i++) { 
+			id.set(values[0]);
+			for (int i = 1; i < values.length; i++) {
 				outkey.set(values[i]);
-			    context.write(outkey, id); 
+				context.write(outkey, id);
 			}
 		}
 	}
 
-	public static class InvertedIndexReducer extends Reducer<Text, Text, Text, Text> {
+	public static class InvertedIndexReducer
+			extends
+				Reducer<Text, Text, Text, Text> {
 		private Text result = new Text();
 
 		public void reduce(Text key, Iterable<Text> values, Context context)

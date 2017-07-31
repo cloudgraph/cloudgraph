@@ -31,28 +31,29 @@ import org.cloudgraph.hbase.io.TableWriter;
 import commonj.sdo.DataGraph;
 
 /**
- * Traverses the change summary for one or more data graphs and collects changes in the form
- * of HBase row mutations.
+ * Traverses the change summary for one or more data graphs and collects changes
+ * in the form of HBase row mutations.
  * <p>
- * For each graph: 
- * - performs any change summary ordering
- * - collects table writers based on graph metadata and configuration information
- * - assembles table writers for the graph into a single graph writer composed of table writers, which are
- * composed of row writers
- * - passes each changed object (created, modified, deleted) along with the graph writer to logic
- * within this class.    
- * - marshals out the state for each changed row after all changes complete in to the state column
- * - for each row, detects if the root object is deleted, and then adds a toumbsone column  
+ * For each graph: - performs any change summary ordering - collects table
+ * writers based on graph metadata and configuration information - assembles
+ * table writers for the graph into a single graph writer composed of table
+ * writers, which are composed of row writers - passes each changed object
+ * (created, modified, deleted) along with the graph writer to logic within this
+ * class. - marshals out the state for each changed row after all changes
+ * complete in to the state column - for each row, detects if the root object is
+ * deleted, and then adds a toumbsone column
  * </p>
- *  
+ * 
  * @author Scott Cinnamond
  * @since 0.5.8
  */
 public interface MutationCollector {
 
-	public Map<TableWriter, List<Row>> collectChanges(DataGraph dataGraph) throws IOException, IllegalAccessException;
+	public Map<TableWriter, List<Row>> collectChanges(DataGraph dataGraph)
+			throws IOException, IllegalAccessException;
 
-	public Map<TableWriter, List<Row>> collectChanges(DataGraph[] dataGraphs) throws IOException, IllegalAccessException;
+	public Map<TableWriter, List<Row>> collectChanges(DataGraph[] dataGraphs)
+			throws IOException, IllegalAccessException;
 
 	public void close();
 

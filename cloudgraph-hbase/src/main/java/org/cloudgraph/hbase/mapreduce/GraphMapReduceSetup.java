@@ -104,8 +104,8 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import commonj.sdo.Type;
 
 /**
- * Mapreduce Job setup utility for {@link GraphMapper} and {@link GraphReducer} and 
- * extensions.
+ * Mapreduce Job setup utility for {@link GraphMapper} and {@link GraphReducer}
+ * and extensions.
  */
 @SuppressWarnings("unchecked")
 public class GraphMapReduceSetup extends JobSetup {
@@ -115,7 +115,8 @@ public class GraphMapReduceSetup extends JobSetup {
 	 * Use this before submitting a graph map job. It will appropriately set up
 	 * the job.
 	 * 
-	 * @param query The query defining the {@link GraphMapper} input graphs. 
+	 * @param query
+	 *            The query defining the {@link GraphMapper} input graphs.
 	 * @param mapper
 	 *            The mapper class to use.
 	 * @param outputKeyClass
@@ -141,7 +142,8 @@ public class GraphMapReduceSetup extends JobSetup {
 	 * Use this before submitting a graph map job. It will appropriately set up
 	 * the job.
 	 * 
-	 * @param query The query defining the {@link GraphMapper} input graphs. 
+	 * @param query
+	 *            The query defining the {@link GraphMapper} input graphs.
 	 * @param mapper
 	 *            The mapper class to use.
 	 * @param outputKeyClass
@@ -210,26 +212,26 @@ public class GraphMapReduceSetup extends JobSetup {
 		conf.set(GraphInputFormat.QUERY, marshal(query));
 		conf.set(GraphInputFormat.ROOT_TABLE, graphReader.getRootTableReader()
 				.getTableName());
-		
-	    List<String> scanStrings = new ArrayList<String>();
 
-	    for (Scan scan : scans) {
-	    	scan.setAttribute(Scan.SCAN_ATTRIBUTES_TABLE_NAME, 
-	    		Bytes.toBytes(graphReader.getRootTableReader().getTableName()));
-	        scanStrings.add(convertScanToString(scan));
-	    }
-	    conf.setStrings(GraphInputFormat.SCANS,
-	          scanStrings.toArray(new String[scanStrings.size()]));
-		
+		List<String> scanStrings = new ArrayList<String>();
+
+		for (Scan scan : scans) {
+			scan.setAttribute(Scan.SCAN_ATTRIBUTES_TABLE_NAME, Bytes
+					.toBytes(graphReader.getRootTableReader().getTableName()));
+			scanStrings.add(convertScanToString(scan));
+		}
+		conf.setStrings(GraphInputFormat.SCANS,
+				scanStrings.toArray(new String[scanStrings.size()]));
 
 		if (addDependencyJars) {
 			addDependencyJars(job);
 		}
 		initCredentials(job);
 	}
-	
-	private static List<Scan> createScans(From from, Where where, PlasmaType type,
-			Filter columnFilter, Configuration conf) throws IOException {
+
+	private static List<Scan> createScans(From from, Where where,
+			PlasmaType type, Filter columnFilter, Configuration conf)
+			throws IOException {
 
 		List<Scan> result = new ArrayList<Scan>();
 		if (where == null) {
@@ -238,9 +240,9 @@ public class GraphMapReduceSetup extends JobSetup {
 			result.add(scan);
 			return result;
 		}
-		
-		ScanRecognizerSyntaxTreeAssembler recognizerAssembler = 
-			new ScanRecognizerSyntaxTreeAssembler(where, type);
+
+		ScanRecognizerSyntaxTreeAssembler recognizerAssembler = new ScanRecognizerSyntaxTreeAssembler(
+				where, type);
 		Expr scanRecognizerRootExpr = recognizerAssembler.getResult();
 		if (LOG.isDebugEnabled()) {
 			ExprPrinter printer = new ExprPrinter();
@@ -249,21 +251,21 @@ public class GraphMapReduceSetup extends JobSetup {
 		}
 		ScanCollector scanCollector = new ScanCollector(type);
 		scanRecognizerRootExpr.accept(scanCollector);
-		List<PartialRowKey> partialScans = scanCollector.getPartialRowKeyScans();
+		List<PartialRowKey> partialScans = scanCollector
+				.getPartialRowKeyScans();
 		List<FuzzyRowKey> fuzzyScans = scanCollector.getFuzzyRowKeyScans();
 		List<CompleteRowKey> completeKeys = scanCollector.getCompleteRowKeys();
 		if (!scanCollector.isQueryRequiresGraphRecognizer()) {
 			conf.setBoolean(GraphInputFormat.RECOGNIZER, false);
 			scanRecognizerRootExpr = null;
-		}
-		else {
+		} else {
 			conf.setBoolean(GraphInputFormat.RECOGNIZER, true);
 		}
 
 		if (completeKeys.size() > 0)
-			throw new GraphServiceException(
-					"expected no complete key values");
-		//FIXME: table split by region entirely based on partial key start stop bytes
+			throw new GraphServiceException("expected no complete key values");
+		// FIXME: table split by region entirely based on partial key start stop
+		// bytes
 		for (FuzzyRowKey fuzzyKey : fuzzyScans) {
 			Scan scan = createScan(fuzzyKey, columnFilter);
 			result.add(scan);
@@ -272,58 +274,58 @@ public class GraphMapReduceSetup extends JobSetup {
 			Scan scan = createScan(partialKey, columnFilter);
 			result.add(scan);
 		}
-		
-		if (result.size() == 0)
-		{
+
+		if (result.size() == 0) {
 			Scan scan = createDefaultScan(from, type, columnFilter);
 			result.add(scan);
 		}
 
 		return result;
 	}
-	
-	private static Scan createDefaultScan(From from, PlasmaType type, Filter columnFilter) {
+
+	private static Scan createDefaultScan(From from, PlasmaType type,
+			Filter columnFilter) {
 		Scan scan;
-		
-		PartialRowKeyScanAssembler scanAssembler = new PartialRowKeyScanAssembler(type);
+
+		PartialRowKeyScanAssembler scanAssembler = new PartialRowKeyScanAssembler(
+				type);
 		scanAssembler.assemble();
 		byte[] startKey = scanAssembler.getStartKey();
 		if (startKey != null && startKey.length > 0) {
-            LOG.warn("using default graph partial "
-            		+ "key scan - could result in very large results set");
-            scan = createScan(scanAssembler, columnFilter);
-		}
-		else {
+			LOG.warn("using default graph partial "
+					+ "key scan - could result in very large results set");
+			scan = createScan(scanAssembler, columnFilter);
+		} else {
 			Float sample = from.getRandomSample();
 			if (sample == null) {
-	            FilterList rootFilter = new FilterList(
-	        			FilterList.Operator.MUST_PASS_ALL);
-	            scan = new Scan();
-	            rootFilter.addFilter(columnFilter);
-	            scan.setFilter(rootFilter);        
-			    LOG.warn("query resulted in no filters or scans - using full table scan - " 
-        	            + "could result in very large results set");
+				FilterList rootFilter = new FilterList(
+						FilterList.Operator.MUST_PASS_ALL);
+				scan = new Scan();
+				rootFilter.addFilter(columnFilter);
+				scan.setFilter(rootFilter);
+				LOG.warn("query resulted in no filters or scans - using full table scan - "
+						+ "could result in very large results set");
+			} else {
+				FilterList rootFilter = new FilterList(
+						FilterList.Operator.MUST_PASS_ALL);
+				RandomRowFilter rowFilter = new RandomRowFilter(sample);
+				rootFilter.addFilter(rowFilter);
+				rootFilter.addFilter(columnFilter);
+				scan = new Scan();
+				scan.setFilter(rootFilter);
+				LOG.warn("using random-sample scan (" + sample + ") - "
+						+ "could result in very large results set");
 			}
-    		else {
-	            FilterList rootFilter = new FilterList(
-	        			FilterList.Operator.MUST_PASS_ALL);
-	   			RandomRowFilter rowFilter = new RandomRowFilter(sample);
-	   			rootFilter.addFilter(rowFilter);
-	            rootFilter.addFilter(columnFilter);
-  			    scan = new Scan();
-    			scan.setFilter(rootFilter);     
-     			LOG.warn("using random-sample scan ("+sample+") - " 
-        	            + "could result in very large results set");
-    		}
 		}
-		return scan;		
+		return scan;
 	}
 
 	/**
 	 * Use this before submitting a graph map job. It will appropriately set up
 	 * the job.
 	 * 
-	 * @param query The query defining the {@link GraphMapper} input graphs. 
+	 * @param query
+	 *            The query defining the {@link GraphMapper} input graphs.
 	 * @param mapper
 	 *            The mapper class to use.
 	 * @param outputKeyClass
@@ -348,76 +350,85 @@ public class GraphMapReduceSetup extends JobSetup {
 				job, addDependencyJars, GraphInputFormat.class);
 	}
 
-	  public static void initCredentials(Job job) throws IOException {
-		    UserProvider userProvider = UserProvider.instantiate(job.getConfiguration());
-		    if (userProvider.isHadoopSecurityEnabled()) {
-		      // propagate delegation related props from launcher job to MR job
-		      if (System.getenv("HADOOP_TOKEN_FILE_LOCATION") != null) {
-		        job.getConfiguration().set("mapreduce.job.credentials.binary",
-		                                   System.getenv("HADOOP_TOKEN_FILE_LOCATION"));
-		      }
-		    }
+	public static void initCredentials(Job job) throws IOException {
+		UserProvider userProvider = UserProvider.instantiate(job
+				.getConfiguration());
+		if (userProvider.isHadoopSecurityEnabled()) {
+			// propagate delegation related props from launcher job to MR job
+			if (System.getenv("HADOOP_TOKEN_FILE_LOCATION") != null) {
+				job.getConfiguration().set("mapreduce.job.credentials.binary",
+						System.getenv("HADOOP_TOKEN_FILE_LOCATION"));
+			}
+		}
 
-		    if (userProvider.isHBaseSecurityEnabled()) {
-		      try {
-		        // init credentials for remote cluster
-		        String quorumAddress = job.getConfiguration().get(TableOutputFormat.QUORUM_ADDRESS);
-		        User user = userProvider.getCurrent();
-		        if (quorumAddress != null) {
-		          Configuration peerConf = HBaseConfiguration.createClusterConf(job.getConfiguration(),
-		              quorumAddress, TableOutputFormat.OUTPUT_CONF_PREFIX);
-		          Connection peerConn = ConnectionFactory.createConnection(peerConf);
-		          try {
-		            TokenUtil.addTokenForJob(peerConn, user, job);
-		          } finally {
-		            peerConn.close();
-		          }
-		        }
+		if (userProvider.isHBaseSecurityEnabled()) {
+			try {
+				// init credentials for remote cluster
+				String quorumAddress = job.getConfiguration().get(
+						TableOutputFormat.QUORUM_ADDRESS);
+				User user = userProvider.getCurrent();
+				if (quorumAddress != null) {
+					Configuration peerConf = HBaseConfiguration
+							.createClusterConf(job.getConfiguration(),
+									quorumAddress,
+									TableOutputFormat.OUTPUT_CONF_PREFIX);
+					Connection peerConn = ConnectionFactory
+							.createConnection(peerConf);
+					try {
+						TokenUtil.addTokenForJob(peerConn, user, job);
+					} finally {
+						peerConn.close();
+					}
+				}
 
-		        Connection conn = ConnectionFactory.createConnection(job.getConfiguration());
-		        try {
-		          TokenUtil.addTokenForJob(conn, user, job);
-		        } finally {
-		          conn.close();
-		        }
-		      } catch (InterruptedException ie) {
-		        LOG.info("Interrupted obtaining user authentication token");
-		        Thread.currentThread().interrupt();
-		      }
-		    }
-		  }
+				Connection conn = ConnectionFactory.createConnection(job
+						.getConfiguration());
+				try {
+					TokenUtil.addTokenForJob(conn, user, job);
+				} finally {
+					conn.close();
+				}
+			} catch (InterruptedException ie) {
+				LOG.info("Interrupted obtaining user authentication token");
+				Thread.currentThread().interrupt();
+			}
+		}
+	}
 
-	  /**
-	   * Writes the given scan into a Base64 encoded string.
-	   *
-	   * @param scan  The scan to write out.
-	   * @return The scan saved in a Base64 encoded string.
-	   * @throws IOException When writing the scan fails.
-	   */
-	  static String convertScanToString(Scan scan) throws IOException {
-	    ClientProtos.Scan proto = ProtobufUtil.toScan(scan);
-	    return Base64.encodeBytes(proto.toByteArray());
-	  }
+	/**
+	 * Writes the given scan into a Base64 encoded string.
+	 *
+	 * @param scan
+	 *            The scan to write out.
+	 * @return The scan saved in a Base64 encoded string.
+	 * @throws IOException
+	 *             When writing the scan fails.
+	 */
+	static String convertScanToString(Scan scan) throws IOException {
+		ClientProtos.Scan proto = ProtobufUtil.toScan(scan);
+		return Base64.encodeBytes(proto.toByteArray());
+	}
 
-	  /**
-	   * Converts the given Base64 string back into a Scan instance.
-	   *
-	   * @param base64  The scan details.
-	   * @return The newly created Scan instance.
-	   * @throws IOException When reading the scan instance fails.
-	   */
-	  static Scan convertStringToScan(String base64) throws IOException {
-	    byte [] decoded = Base64.decode(base64);
-	    ClientProtos.Scan scan;
-	    try {
-	      scan = ClientProtos.Scan.parseFrom(decoded);
-	    } catch (InvalidProtocolBufferException ipbe) {
-	      throw new IOException(ipbe);
-	    }
+	/**
+	 * Converts the given Base64 string back into a Scan instance.
+	 *
+	 * @param base64
+	 *            The scan details.
+	 * @return The newly created Scan instance.
+	 * @throws IOException
+	 *             When reading the scan instance fails.
+	 */
+	static Scan convertStringToScan(String base64) throws IOException {
+		byte[] decoded = Base64.decode(base64);
+		ClientProtos.Scan scan;
+		try {
+			scan = ClientProtos.Scan.parseFrom(decoded);
+		} catch (InvalidProtocolBufferException ipbe) {
+			throw new IOException(ipbe);
+		}
 
-	    return ProtobufUtil.toScan(scan);
-	  }
-	
+		return ProtobufUtil.toScan(scan);
+	}
 
 	/**
 	 * Use this before submitting a graph reduce job. It will appropriately set
@@ -541,7 +552,7 @@ public class GraphMapReduceSetup extends JobSetup {
 
 		Configuration conf = job.getConfiguration();
 		HBaseConfiguration.merge(conf, HBaseConfiguration.create(conf));
-		
+
 		PlasmaType type = getRootType(query);
 
 		Where where = query.getModel().findWhereClause();
@@ -569,37 +580,32 @@ public class GraphMapReduceSetup extends JobSetup {
 
 		DistributedGraphReader graphReader = new DistributedGraphReader(type,
 				selectionCollector.getTypes(), marshallingContext);
-		
-		//job.setOutputFormatClass(GraphOutputFormat.class);
+
+		// job.setOutputFormatClass(GraphOutputFormat.class);
 		if (reducer != null)
 			job.setReducerClass(reducer);
-		
+
 		/*
-		conf.set(TableOutputFormat.OUTPUT_TABLE, graphReader.getRootTableReader().getTableName());
-		
-		// If passed a quorum/ensemble address, pass it on to TableOutputFormat.
-		if (quorumAddress != null) {
-			// Calling this will validate the format
-			ZKUtil.transformClusterKey(quorumAddress);
-			conf.set(TableOutputFormat.QUORUM_ADDRESS, quorumAddress);
-		}
-		if (serverClass != null && serverImpl != null) {
-			conf.set(TableOutputFormat.REGION_SERVER_CLASS, serverClass);
-			conf.set(TableOutputFormat.REGION_SERVER_IMPL, serverImpl);
-		}
-		job.setOutputKeyClass(ImmutableBytesWritable.class);
-		job.setOutputValueClass(Writable.class);
-		if (partitioner == HRegionPartitioner.class) {
-			job.setPartitionerClass(HRegionPartitioner.class);
-			HTable outputTable = new HTable(conf, graphReader.getRootTableReader().getTableName());
-			int regions = outputTable.getRegionsInfo().size();
-			if (job.getNumReduceTasks() > regions) {
-				job.setNumReduceTasks(outputTable.getRegionsInfo().size());
-			}
-		} else if (partitioner != null) {
-			job.setPartitionerClass(partitioner);
-		}
-		*/
+		 * conf.set(TableOutputFormat.OUTPUT_TABLE,
+		 * graphReader.getRootTableReader().getTableName());
+		 * 
+		 * // If passed a quorum/ensemble address, pass it on to
+		 * TableOutputFormat. if (quorumAddress != null) { // Calling this will
+		 * validate the format ZKUtil.transformClusterKey(quorumAddress);
+		 * conf.set(TableOutputFormat.QUORUM_ADDRESS, quorumAddress); } if
+		 * (serverClass != null && serverImpl != null) {
+		 * conf.set(TableOutputFormat.REGION_SERVER_CLASS, serverClass);
+		 * conf.set(TableOutputFormat.REGION_SERVER_IMPL, serverImpl); }
+		 * job.setOutputKeyClass(ImmutableBytesWritable.class);
+		 * job.setOutputValueClass(Writable.class); if (partitioner ==
+		 * HRegionPartitioner.class) {
+		 * job.setPartitionerClass(HRegionPartitioner.class); HTable outputTable
+		 * = new HTable(conf, graphReader.getRootTableReader().getTableName());
+		 * int regions = outputTable.getRegionsInfo().size(); if
+		 * (job.getNumReduceTasks() > regions) {
+		 * job.setNumReduceTasks(outputTable.getRegionsInfo().size()); } } else
+		 * if (partitioner != null) { job.setPartitionerClass(partitioner); }
+		 */
 
 		if (addDependencyJars) {
 			addDependencyJars(job);

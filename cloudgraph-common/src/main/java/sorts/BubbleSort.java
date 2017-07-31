@@ -7,27 +7,25 @@ package sorts;
  */
 
 /**
- * Bubble sort algorithm
- * Time Complexity: O(n*n)
- * Memory Complexity: O(1)
- * Stable: yes
+ * Bubble sort algorithm Time Complexity: O(n*n) Memory Complexity: O(1) Stable:
+ * yes
  */
 
-public class BubbleSort extends Sorter{
-    
-    @Override
-    public <T extends Comparable<? super T>> void sort(T[] a){
-        boolean swapped = true;
-        int i = a.length-1;
-        while(swapped && i>=0){
-            swapped = false;
-            for(int j = 0; j < i; j++){
-                if(a[j].compareTo(a[j+1]) > 0){
-                    swap(a,j,j+1);
-                    swapped = true;
-                }
-            }
-            i--;
-        }
-    }
+public class BubbleSort extends Sorter {
+
+	@Override
+	public <T extends Comparable<? super T>> void sort(T[] a) {
+		boolean swapped = true;
+		int i = a.length - 1;
+		while (swapped && i >= 0) {
+			swapped = false;
+			for (int j = 0; j < i; j++) {
+				if (a[j].compareTo(a[j + 1]) > 0) {
+					swap(a, j, j + 1);
+					swapped = true;
+				}
+			}
+			i--;
+		}
+	}
 }

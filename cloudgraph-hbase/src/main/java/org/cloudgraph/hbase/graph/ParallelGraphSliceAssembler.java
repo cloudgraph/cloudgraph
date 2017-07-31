@@ -40,24 +40,23 @@ import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
 
 /**
- * Assembles a data graph in parallel where one or more collections may be "sliced" 
- * based on path predicates within the <a target="#"
+ * Assembles a data graph in parallel where one or more collections may be
+ * "sliced" based on path predicates within the <a target="#"
  * href="http://plasma-sdo.org/org/plasma/query/collector/Selection.html"
- * >"selection graph"</a>. 
+ * >"selection graph"</a>.
  * <p>
- * Edges within a collection are "recognized" as members of a slice based on
- * a binary expression syntax tree assembled from the path
- * predicate describing the slice. While a path predicate may be quite complex resulting in
- * any number of logical, relational or wildcard binary expressions, a single 
- * slice syntax tree is used to evaluate any number of edges within a 
- * collection. Where edge opposite graph nodes are found within the current row, an 
- * edge recognizer is used, but where edge opposite graph nodes are found "outside" the 
- * current row, a graph recognizer is used.   
+ * Edges within a collection are "recognized" as members of a slice based on a
+ * binary expression syntax tree assembled from the path predicate describing
+ * the slice. While a path predicate may be quite complex resulting in any
+ * number of logical, relational or wildcard binary expressions, a single slice
+ * syntax tree is used to evaluate any number of edges within a collection.
+ * Where edge opposite graph nodes are found within the current row, an edge
+ * recognizer is used, but where edge opposite graph nodes are found "outside"
+ * the current row, a graph recognizer is used.
  * </p>
  * <p>
- * Parallel processing proceeds as a breadth-first
- * traversal and subgraph tasks are dynamically added based on thread availability
- * within a shared <a href=
+ * Parallel processing proceeds as a breadth-first traversal and subgraph tasks
+ * are dynamically added based on thread availability within a shared <a href=
  * "https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ThreadPoolExecutor.html"
  * >thread pool</a>.
  * </p>
@@ -75,8 +74,7 @@ import org.plasma.sdo.PlasmaType;
  * {@link ParallelGraphSliceAssembler#assemble(Result resultRow)} method which
  * recursively reads HBase keys and values re-constituting the data graph. The
  * assembly traversal is driven by HBase column values representing the original
- * edges or containment structure of the graph.
- * </p>
+ * edges or containment structure of the graph. </p>
  * <p>
  * Since every column key in HBase must be unique, and a data graph may contain
  * any number of nodes, a column key factory is used both to persist as well as
@@ -99,10 +97,10 @@ import org.plasma.sdo.PlasmaType;
  */
 public class ParallelGraphSliceAssembler extends DistributedAssembler {
 	/**
-	 * Thread pool shared by all tasks created by this assembler.  
+	 * Thread pool shared by all tasks created by this assembler.
 	 */
-    private ThreadPoolExecutor executorService;	
-    private ConfigProps config;
+	private ThreadPoolExecutor executorService;
+	private ConfigProps config;
 
 	/**
 	 * Constructor.
@@ -115,38 +113,42 @@ public class ParallelGraphSliceAssembler extends DistributedAssembler {
 	 * @param snapshotDate
 	 *            the query snapshot date which is populated into every data
 	 *            object in the result data graph.
-	 * @param distributedReader the distributed reader
-	 * @param minPoolSize the minimum or core size of the underlying thread pool used for
-	 * all tasks executed under this assembler           
-	 * @param maxPoolSize the maximum size of the underlying thread pool used for
-	 * all tasks executed under this assembler           
+	 * @param distributedReader
+	 *            the distributed reader
+	 * @param minPoolSize
+	 *            the minimum or core size of the underlying thread pool used
+	 *            for all tasks executed under this assembler
+	 * @param maxPoolSize
+	 *            the maximum size of the underlying thread pool used for all
+	 *            tasks executed under this assembler
 	 */
-	public ParallelGraphSliceAssembler(PlasmaType rootType, Selection selection,
-			DistributedReader distributedReader, Timestamp snapshotDate,
-			ConfigProps config) {
+	public ParallelGraphSliceAssembler(PlasmaType rootType,
+			Selection selection, DistributedReader distributedReader,
+			Timestamp snapshotDate, ConfigProps config) {
 		super(rootType, selection, distributedReader, snapshotDate);
-		
+
 		this.executorService = new ThreadPoolExecutor(
 				config.getMinThreadPoolSize(), config.getMaxThreadPoolSize(),
-	            0L, TimeUnit.MILLISECONDS,
-	            new LinkedBlockingQueue<Runnable>(),
-	            new ThreadPoolExecutor.CallerRunsPolicy());
+				0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
+				new ThreadPoolExecutor.CallerRunsPolicy());
 		this.config = config;
 	}
 
 	/**
-	 * Creates a single task and begins the traversal from root in the
-	 * current thread. 
-	 */ 
+	 * Creates a single task and begins the traversal from root in the current
+	 * thread.
+	 */
 	@Override
-	protected void assemble(PlasmaDataObject target, long targetSequence, EdgeReader sourceCollection,
-			PlasmaDataObject source, PlasmaProperty sourceProperty, 
-			RowReader rowReader, int level) throws IOException {
+	protected void assemble(PlasmaDataObject target, long targetSequence,
+			EdgeReader sourceCollection, PlasmaDataObject source,
+			PlasmaProperty sourceProperty, RowReader rowReader, int level)
+			throws IOException {
 
-		ParallelSliceSubgraphTask task = new ParallelSliceSubgraphTask(target, targetSequence,
-				this.selection, this.snapshotDate, this.distributedReader, sourceCollection,
-				source, sourceProperty, rowReader, level, 0, this.executorService,
+		ParallelSliceSubgraphTask task = new ParallelSliceSubgraphTask(target,
+				targetSequence, this.selection, this.snapshotDate,
+				this.distributedReader, sourceCollection, source,
+				sourceProperty, rowReader, level, 0, this.executorService,
 				this.config);
-		task.assemble(); // in current thread. 
+		task.assemble(); // in current thread.
 	}
 }

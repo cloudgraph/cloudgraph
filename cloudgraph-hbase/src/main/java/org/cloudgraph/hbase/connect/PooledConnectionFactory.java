@@ -31,18 +31,23 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.client.ConnectionFactory;
 
 /**
- * Connection factory which creates pooled connections. 
- * <p></p>
- * The new HBase Client API changes removed the existing connection pool implementation and placed 
- * the responsibility of managing the lifecycle of connections on the caller. A pool is necessary as 
- * creating connections to the cluster via. zookeeper is fairly expensive. 
+ * Connection factory which creates pooled connections.
+ * <p>
+ * </p>
+ * The new HBase Client API changes removed the existing connection pool
+ * implementation and placed the responsibility of managing the lifecycle of
+ * connections on the caller. A pool is necessary as creating connections to the
+ * cluster via. zookeeper is fairly expensive.
+ * 
  * @author Scott Cinnamond
  * @since 0.6.3
  */
-public class PooledConnectionFactory extends BasePooledObjectFactory<Connection> {
+public class PooledConnectionFactory
+		extends
+			BasePooledObjectFactory<Connection> {
 	private static Log log = LogFactory.getLog(PooledConnectionFactory.class);
 
-    private Configuration config;
+	private Configuration config;
 	private ObjectPool<Connection> pool;
 
 	public PooledConnectionFactory(Configuration config) {
@@ -56,47 +61,45 @@ public class PooledConnectionFactory extends BasePooledObjectFactory<Connection>
 
 	@Override
 	public Connection create() throws Exception {
-		org.apache.hadoop.hbase.client.Connection con = ConnectionFactory.createConnection(config);
+		org.apache.hadoop.hbase.client.Connection con = ConnectionFactory
+				.createConnection(config);
 		if (log.isDebugEnabled())
 			log.debug("creating new hbase connection" + con);
 		return new Connection(con, this.pool);
 	}
 
 	@Override
-	public PooledObject<Connection> wrap(
-			Connection con) {
-		return new DefaultPooledObject<Connection>(con);	
+	public PooledObject<Connection> wrap(Connection con) {
+		return new DefaultPooledObject<Connection>(con);
 	}
-	
+
 	@Override
-	public void destroyObject(PooledObject<Connection> p)
-        throws Exception  {
+	public void destroyObject(PooledObject<Connection> p) throws Exception {
 		if (log.isDebugEnabled())
 			log.debug("destroying connection" + p.getObject());
 		p.getObject().destroy();
 		super.destroyObject(p);
-    	
-    }
-	
-    @Override
-    public boolean validateObject(PooledObject<Connection> p) {
+
+	}
+
+	@Override
+	public boolean validateObject(PooledObject<Connection> p) {
 		if (log.isDebugEnabled())
 			log.debug("validating connection" + p.getObject());
 		return super.validateObject(p);
-    }
+	}
 
-    @Override
-    public void activateObject(PooledObject<Connection> p) throws Exception {
+	@Override
+	public void activateObject(PooledObject<Connection> p) throws Exception {
 		if (log.isDebugEnabled())
 			log.debug("activate connection" + p.getObject());
 		super.activateObject(p);
-    }
+	}
 
-    @Override
-    public void passivateObject(PooledObject<Connection> p)
-        throws Exception {
+	@Override
+	public void passivateObject(PooledObject<Connection> p) throws Exception {
 		if (log.isDebugEnabled())
 			log.debug("passivate connection" + p.getObject());
 		super.passivateObject(p);
-    }
+	}
 }

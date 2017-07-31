@@ -21,10 +21,10 @@
  */
 package org.cloudgraph.store.key;
 
-
 /**
- * Used when data for a composite row or column key field 
- * exceeds the defined size of the field.  
+ * Used when data for a composite row or column key field exceeds the defined
+ * size of the field.
+ * 
  * @author Scott Cinnamond
  * @since 0.5.3
  */

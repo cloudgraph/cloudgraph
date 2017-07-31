@@ -49,8 +49,9 @@ import commonj.sdo.helper.XMLDocument;
  * @author Scott Cinnamond
  * @since 0.6.0
  */
-public class GraphXmlRecordWriter extends
-		RecordWriter<LongWritable, GraphWritable> {
+public class GraphXmlRecordWriter
+		extends
+			RecordWriter<LongWritable, GraphWritable> {
 	static final Log log = LogFactory.getLog(GraphXmlRecordWriter.class);
 	private static final String utf8 = "UTF-8";
 	private static final byte[] newline;
@@ -63,31 +64,33 @@ public class GraphXmlRecordWriter extends
 		}
 	}
 	protected DataOutputStream out;
-  	private String rootNamespaceUri;
-  	private String rootNamespacePrefix;
-  	private DefaultOptions marshalOptions; 
-  	private Method getCounter = null;
-  	private TaskAttemptContext context;
-  	private Configuration configuration;
+	private String rootNamespaceUri;
+	private String rootNamespacePrefix;
+	private DefaultOptions marshalOptions;
+	private Method getCounter = null;
+	private TaskAttemptContext context;
+	private Configuration configuration;
 	private long totalGraphMarshalTime;
-	
-    public GraphXmlRecordWriter(DataOutputStream out, TaskAttemptContext job) {
-    	this.context = job;
-    	this.configuration = job.getConfiguration();
+
+	public GraphXmlRecordWriter(DataOutputStream out, TaskAttemptContext job) {
+		this.context = job;
+		this.configuration = job.getConfiguration();
 		this.out = out;
-        try {
+		try {
 			this.getCounter = Counters.retrieveGetCounterWithStringsParams(job);
 		} catch (IOException e) {
 		}
-        
-        this.rootNamespaceUri = configuration.get(GraphXmlInputFormat.ROOT_ELEM_NAMESPACE_URI);
-        this.rootNamespacePrefix = configuration.get(GraphXmlInputFormat.ROOT_ELEM_NAMESPACE_PREFIX, "ns1");
-        
-        this.marshalOptions = new DefaultOptions(this.rootNamespaceUri);
-        this.marshalOptions.setRootNamespacePrefix(this.rootNamespacePrefix);
-        this.marshalOptions.setValidate(false);
-        this.marshalOptions.setFailOnValidationError(false);
-    }
+
+		this.rootNamespaceUri = configuration
+				.get(GraphXmlInputFormat.ROOT_ELEM_NAMESPACE_URI);
+		this.rootNamespacePrefix = configuration.get(
+				GraphXmlInputFormat.ROOT_ELEM_NAMESPACE_PREFIX, "ns1");
+
+		this.marshalOptions = new DefaultOptions(this.rootNamespaceUri);
+		this.marshalOptions.setRootNamespacePrefix(this.rootNamespacePrefix);
+		this.marshalOptions.setValidate(false);
+		this.marshalOptions.setFailOnValidationError(false);
+	}
 
 	@Override
 	public void close(TaskAttemptContext job) throws IOException,
@@ -98,15 +101,16 @@ public class GraphXmlRecordWriter extends
 	@Override
 	public void write(LongWritable arg0, GraphWritable graph)
 			throws IOException, InterruptedException {
-				 
-		out.write(serializeGraph(graph.getDataGraph()));		 
+
+		out.write(serializeGraph(graph.getDataGraph()));
 		out.write(newline);
-		
+
 		updateCounters();
 	}
-	
+
 	/**
 	 * Updates various job counters.
+	 * 
 	 * @throws IOException
 	 */
 	private void updateCounters() throws IOException {
@@ -114,25 +118,27 @@ public class GraphXmlRecordWriter extends
 		if (this.getCounter == null) {
 			return;
 		}
-		
+
 		try {
-		    
-		    ((Counter) this.getCounter.invoke(context,
-		    		Counters.CLOUDGRAPH_COUNTER_GROUP_NAME, Counters.CLOUDGRAPH_COUNTER_NAME_TOT_GRAPH_XML_MARSHAL_TIME))
-				.increment(this.totalGraphMarshalTime);		    
-		    
+
+			((Counter) this.getCounter
+					.invoke(context,
+							Counters.CLOUDGRAPH_COUNTER_GROUP_NAME,
+							Counters.CLOUDGRAPH_COUNTER_NAME_TOT_GRAPH_XML_MARSHAL_TIME))
+					.increment(this.totalGraphMarshalTime);
+
 		} catch (Exception e) {
 			log.debug("can't update counter."
 					+ StringUtils.stringifyException(e));
 		}
 	}
-	
+
 	private byte[] serializeGraph(DataGraph graph) throws IOException {
 		long before = System.currentTimeMillis();
 		DefaultOptions options = new DefaultOptions(graph.getRootObject()
 				.getType().getURI());
 		options.setRootNamespacePrefix(this.rootNamespacePrefix);
-		options.setPrettyPrint(false);  
+		options.setPrettyPrint(false);
 		XMLDocument doc = PlasmaXMLHelper.INSTANCE.createDocument(
 				graph.getRootObject(),
 				graph.getRootObject().getType().getURI(), null);
@@ -140,10 +146,9 @@ public class GraphXmlRecordWriter extends
 		PlasmaXMLHelper.INSTANCE.save(doc, os, options);
 		os.flush();
 		long after = System.currentTimeMillis();
-		
-		this.totalGraphMarshalTime = after - before;		
+
+		this.totalGraphMarshalTime = after - before;
 		return os.toByteArray();
 	}
-	
 
 }
