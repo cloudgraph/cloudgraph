@@ -4,6 +4,10 @@ option optimize_for = SPEED;
 option java_outer_classname="RowKeysProto";
 
 message RowKeys {
-  repeated string rowKey = 1;
+  repeated RowKey rowKey = 1;
+}
+
+message RowKey {
+  required string key = 1;
 }
 

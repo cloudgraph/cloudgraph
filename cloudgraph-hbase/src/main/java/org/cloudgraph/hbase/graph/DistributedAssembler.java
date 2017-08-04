@@ -37,6 +37,7 @@ import org.cloudgraph.hbase.io.DistributedReader;
 import org.cloudgraph.hbase.io.EdgeReader;
 import org.cloudgraph.hbase.io.RowReader;
 import org.cloudgraph.hbase.io.TableReader;
+import org.cloudgraph.store.key.GraphColumnKeyFactory;
 import org.cloudgraph.store.key.GraphMetaKey;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.query.collector.Selection;
@@ -98,7 +99,7 @@ public abstract class DistributedAssembler extends DefaultAssembler implements H
   @Override
   public void assemble(Result resultRow) {
 
-    this.root = createRoot(this.rootKeyFactory, resultRow);
+    this.root = createRoot(this.getKeyFactory(this.rootType), resultRow);
 
     RowReader rowReader = this.rootTableReader.createRowReader(this.root, resultRow);
 
@@ -210,9 +211,9 @@ public abstract class DistributedAssembler extends DefaultAssembler implements H
     }
 
     // need to reconstruct the original graph, so need original UUID
-    UUID uuid = this.fetchRootUUID(childTableReader, this.rootKeyFactory, subType, childResult);
-    PlasmaType childType = this.fetchRootType(childTableReader, this.rootKeyFactory, subType,
-        childResult);
+    GraphColumnKeyFactory keyFactory = this.getKeyFactory(subType);
+    UUID uuid = this.fetchRootUUID(childTableReader, keyFactory, subType, childResult);
+    PlasmaType childType = this.fetchRootType(childTableReader, keyFactory, subType, childResult);
 
     // create a child object using UUID from external row root
     PlasmaDataObject child = createChild(source, sourceProperty, uuid, childType);

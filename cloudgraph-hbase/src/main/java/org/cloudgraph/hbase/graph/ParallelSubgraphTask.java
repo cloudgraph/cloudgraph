@@ -40,6 +40,7 @@ import org.cloudgraph.hbase.io.OperationException;
 import org.cloudgraph.hbase.io.RowReader;
 import org.cloudgraph.hbase.io.TableReader;
 import org.cloudgraph.store.key.EntityMetaKey;
+import org.cloudgraph.store.key.GraphColumnKeyFactory;
 import org.cloudgraph.store.key.GraphMetaKey;
 import org.cloudgraph.store.service.GraphServiceException;
 //import org.cloudgraph.state.GraphState.Edge;
@@ -370,14 +371,15 @@ class ParallelSubgraphTask extends DefaultSubgraphTask implements SubgraphTask {
       PlasmaType subType = collection.getSubType();
       if (subType == null)
         subType = collection.getBaseType();
-      byte[] uuidQual = this.rootKeyFactory.createColumnKey(subType, EntityMetaKey.UUID);
+      GraphColumnKeyFactory keyFactory = this.getKeyFactory(subType);
+      byte[] uuidQual = keyFactory.createColumnKey(subType, EntityMetaKey.UUID);
       // need to reconstruct the original graph, so need original UUID
       byte[] rootUuid = childResult.getValue(
           Bytes.toBytes(childTableReader.getTableConfig().getDataColumnFamilyName()), uuidQual);
       if (rootUuid == null)
         throw new GraphServiceException("expected column: "
             + childTableReader.getTableConfig().getDataColumnFamilyName() + ":"
-            + EntityMetaKey.UUID);
+            + Bytes.toString(uuidQual));
 
       String uuidStr = null;
       uuidStr = new String(rootUuid, childTableReader.getTableConfig().getCharset());

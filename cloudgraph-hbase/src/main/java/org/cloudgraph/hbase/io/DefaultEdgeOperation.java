@@ -18,6 +18,7 @@ import org.cloudgraph.config.DataGraphConfig;
 import org.cloudgraph.config.TableConfig;
 import org.cloudgraph.hbase.service.ColumnMap;
 import org.cloudgraph.state.StateException;
+import org.cloudgraph.state.proto.RowKeysProto.RowKey;
 import org.cloudgraph.state.proto.RowKeysProto.RowKeys;
 import org.cloudgraph.store.key.RequiredKeyFieldException;
 import org.plasma.sdo.PlasmaProperty;
@@ -221,11 +222,13 @@ public abstract class DefaultEdgeOperation implements EdgeOperation {
   }
 
   protected byte[] encodeRowKeys() {
-    RowKeys.Builder builder = RowKeys.newBuilder();
+    RowKeys.Builder rowKeysBuilder = RowKeys.newBuilder();
     for (String key : rowKeys) {
-      builder.addRowKey(key);
+      RowKey.Builder rowKeyBuilder = RowKey.newBuilder();
+      rowKeyBuilder.setKey(key);
+      rowKeysBuilder.addRowKey(rowKeyBuilder);
     }
-    RowKeys keys = builder.build();
+    RowKeys keys = rowKeysBuilder.build();
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     byte[] bytes = null;
     try {
@@ -250,8 +253,8 @@ public abstract class DefaultEdgeOperation implements EdgeOperation {
       result.mergeDelimitedFrom(bais);
       RowKeys keys = result.build();
       this.rowKeys = new ArrayList<>(keys.getRowKeyCount());
-      for (String token : keys.getRowKeyList())
-        this.rowKeys.add(token);
+      for (RowKey rowKey : keys.getRowKeyList())
+        this.rowKeys.add(rowKey.getKey());
     } catch (IOException e) {
       throw new StateException(e);
     } finally {
