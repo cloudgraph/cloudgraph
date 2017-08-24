@@ -19,7 +19,7 @@ import org.plasma.query.model.Literal;
 import org.plasma.query.model.LogicalOperator;
 import org.plasma.query.model.Property;
 import org.plasma.query.model.RelationalOperator;
-import org.plasma.query.model.WildcardOperator;
+import org.plasma.query.model.PredicateOperator;
 
 /**
  * A factory oriented interface used to create various {@link Expr expression}
@@ -73,7 +73,7 @@ public interface ExprAssembler {
    *         >wildcard</a> operator.
    */
   public WildcardBinaryExpr createWildcardBinaryExpr(Property property, Literal literal,
-      WildcardOperator operator);
+      PredicateOperator operator);
 
   /**
    * Creates and returns a logical binary expression based on the given terms

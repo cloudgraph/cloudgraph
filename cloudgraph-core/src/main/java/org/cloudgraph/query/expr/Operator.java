@@ -21,7 +21,7 @@ import java.util.Map;
 import org.plasma.query.model.GroupOperator;
 import org.plasma.query.model.LogicalOperator;
 import org.plasma.query.model.RelationalOperator;
-import org.plasma.query.model.WildcardOperator;
+import org.plasma.query.model.PredicateOperator;
 
 /**
  * Encapsulates a single operator and associated precedence evaluation and other
@@ -92,7 +92,7 @@ public class Operator implements Comparable<Operator> {
    * @param precedenceMap
    *          the precedence map
    */
-  public Operator(WildcardOperator oper, Map<Object, Integer> precedenceMap) {
+  public Operator(PredicateOperator oper, Map<Object, Integer> precedenceMap) {
     this(precedenceMap);
     this.oper = oper;
     this.operValue = oper.getValue();

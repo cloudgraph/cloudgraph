@@ -32,8 +32,8 @@ import org.cloudgraph.query.expr.ExprVisitor;
 import org.cloudgraph.query.expr.LogicalBinaryExpr;
 import org.cloudgraph.query.expr.RelationalBinaryExpr;
 import org.cloudgraph.query.expr.WildcardBinaryExpr;
-import org.plasma.query.model.LogicalOperatorValues;
-import org.plasma.query.model.RelationalOperatorValues;
+import org.plasma.query.model.LogicalOperatorName;
+import org.plasma.query.model.RelationalOperatorName;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
 
@@ -212,7 +212,7 @@ public class ScanCollector implements ExprVisitor {
 
       for (Map<UserDefinedRowKeyFieldConfig, List<ScanLiteral>> existingMap : literals) {
         if (source == null
-            || source.getOperator().getValue().ordinal() == LogicalOperatorValues.AND.ordinal()) {
+            || source.getOperator().getValue().ordinal() == LogicalOperatorName.AND.ordinal()) {
           List<ScanLiteral> list = existingMap.get(fieldConfig);
           if (list == null) {
             list = new ArrayList<ScanLiteral>();
@@ -222,25 +222,25 @@ public class ScanCollector implements ExprVisitor {
             ScanLiteral existingLiteral = list.get(0);
             // FIXME: 2 and-ed wildcard expressions cause a NPE here
             // as there is no relational operator in a WC
-            RelationalOperatorValues existingOperator = existingLiteral.getRelationalOperator()
+            RelationalOperatorName existingOperator = existingLiteral.getRelationalOperator()
                 .getValue();
             switch (scanLiteral.getRelationalOperator().getValue()) {
             case GREATER_THAN:
             case GREATER_THAN_EQUALS:
-              if (existingOperator.ordinal() != RelationalOperatorValues.LESS_THAN.ordinal()
-                  && existingOperator.ordinal() != RelationalOperatorValues.LESS_THAN_EQUALS
+              if (existingOperator.ordinal() != RelationalOperatorName.LESS_THAN.ordinal()
+                  && existingOperator.ordinal() != RelationalOperatorName.LESS_THAN_EQUALS
                       .ordinal())
                 throw new ImbalancedOperatorMappingException(scanLiteral.getRelationalOperator()
-                    .getValue(), LogicalOperatorValues.AND, existingOperator, fieldConfig);
+                    .getValue(), LogicalOperatorName.AND, existingOperator, fieldConfig);
               list.add(scanLiteral);
               break;
             case LESS_THAN:
             case LESS_THAN_EQUALS:
-              if (existingOperator.ordinal() != RelationalOperatorValues.GREATER_THAN.ordinal()
-                  && existingOperator.ordinal() != RelationalOperatorValues.GREATER_THAN_EQUALS
+              if (existingOperator.ordinal() != RelationalOperatorName.GREATER_THAN.ordinal()
+                  && existingOperator.ordinal() != RelationalOperatorName.GREATER_THAN_EQUALS
                       .ordinal())
                 throw new ImbalancedOperatorMappingException(scanLiteral.getRelationalOperator()
-                    .getValue(), LogicalOperatorValues.AND, existingOperator, fieldConfig);
+                    .getValue(), LogicalOperatorName.AND, existingOperator, fieldConfig);
               list.add(scanLiteral);
               break;
             case EQUALS:
@@ -248,19 +248,19 @@ public class ScanCollector implements ExprVisitor {
             default:
               throw new IllegalOperatorMappingException("relational operator '"
                   + scanLiteral.getRelationalOperator().getValue()
-                  + "' linked through logical operator '" + LogicalOperatorValues.AND
+                  + "' linked through logical operator '" + LogicalOperatorName.AND
                   + "to row key field property, "
                   + fieldConfig.getEndpointProperty().getContainingType().toString() + "."
                   + fieldConfig.getEndpointProperty().getName());
             }
           } else {
             throw new IllegalOperatorMappingException("logical operator '"
-                + LogicalOperatorValues.AND + "' mapped more than 2 times "
+                + LogicalOperatorName.AND + "' mapped more than 2 times "
                 + "to row key field property, "
                 + fieldConfig.getEndpointProperty().getContainingType().toString() + "."
                 + fieldConfig.getEndpointProperty().getName());
           }
-        } else if (source.getOperator().getValue().ordinal() == LogicalOperatorValues.OR.ordinal()) {
+        } else if (source.getOperator().getValue().ordinal() == LogicalOperatorName.OR.ordinal()) {
           List<ScanLiteral> list = existingMap.get(fieldConfig);
           if (list == null) {
             if (foundField)

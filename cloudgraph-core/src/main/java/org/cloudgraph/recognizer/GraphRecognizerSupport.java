@@ -30,8 +30,8 @@ import org.plasma.query.model.AbstractPathElement;
 import org.plasma.query.model.Path;
 import org.plasma.query.model.PathElement;
 import org.plasma.query.model.Property;
-import org.plasma.query.model.RelationalOperatorValues;
-import org.plasma.query.model.WildcardOperatorValues;
+import org.plasma.query.model.RelationalOperatorName;
+import org.plasma.query.model.PredicateOperatorName;
 import org.plasma.query.model.WildcardPathElement;
 import org.plasma.sdo.DataType;
 import org.plasma.sdo.PlasmaProperty;
@@ -155,7 +155,7 @@ public class GraphRecognizerSupport {
    *         literal and relational operator
    */
   public boolean evaluate(PlasmaProperty property, Object propertyValue,
-      RelationalOperatorValues operator, String literal) {
+      RelationalOperatorName operator, String literal) {
     DataType dataType = DataType.valueOf(property.getType().getName());
     boolean result = true;
 
@@ -219,7 +219,7 @@ public class GraphRecognizerSupport {
    *         literal and wildcard operator
    */
   public boolean evaluate(PlasmaProperty property, Object propertyValue,
-      WildcardOperatorValues operator, String literal) {
+      PredicateOperatorName operator, String literal) {
     boolean result = true;
 
     switch (property.getDataFlavor()) {
@@ -243,13 +243,13 @@ public class GraphRecognizerSupport {
     return result;
   }
 
-  private boolean evaluate(Date propertyValue, RelationalOperatorValues operator, Date literalValue) {
+  private boolean evaluate(Date propertyValue, RelationalOperatorName operator, Date literalValue) {
     int comp = propertyValue.compareTo(literalValue);
     return evaluate(operator, comp);
   }
 
   @SuppressWarnings("rawtypes")
-  private boolean evaluate(Number propertyValue, RelationalOperatorValues operator,
+  private boolean evaluate(Number propertyValue, RelationalOperatorName operator,
       Number literalValue) {
     if (this.numberComparator == null)
       this.numberComparator = new NumberComparator();
@@ -258,7 +258,7 @@ public class GraphRecognizerSupport {
     return evaluate(operator, comp);
   }
 
-  private boolean evaluate(Boolean propertyValue, RelationalOperatorValues operator,
+  private boolean evaluate(Boolean propertyValue, RelationalOperatorName operator,
       Boolean literalValue) {
     if (this.booleanComparator == null)
       this.booleanComparator = new BooleanComparator();
@@ -266,7 +266,7 @@ public class GraphRecognizerSupport {
     return evaluate(operator, comp);
   }
 
-  private boolean evaluate(String propertyValue, RelationalOperatorValues operator,
+  private boolean evaluate(String propertyValue, RelationalOperatorName operator,
       String literalValue) {
     try {
       int comp = propertyValue.compareTo(literalValue);
@@ -276,8 +276,7 @@ public class GraphRecognizerSupport {
     }
   }
 
-  private boolean evaluate(String propertyValue, WildcardOperatorValues operator,
-      String literalValue) {
+  private boolean evaluate(String propertyValue, PredicateOperatorName operator, String literalValue) {
     if (this.wildcardLiteralPattern == null) {
       String pattern = wildcardToRegex(literalValue);
       this.wildcardLiteralPattern = Pattern.compile(pattern);
@@ -322,7 +321,7 @@ public class GraphRecognizerSupport {
     return (s.toString());
   }
 
-  private boolean evaluate(RelationalOperatorValues operator, int comp) {
+  private boolean evaluate(RelationalOperatorName operator, int comp) {
     switch (operator) {
     case EQUALS:
       return comp == 0;

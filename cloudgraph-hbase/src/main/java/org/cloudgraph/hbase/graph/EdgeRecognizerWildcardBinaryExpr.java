@@ -23,7 +23,7 @@ import org.cloudgraph.query.expr.EvaluationContext;
 import org.cloudgraph.query.expr.WildcardBinaryExpr;
 import org.plasma.query.model.Literal;
 import org.plasma.query.model.Property;
-import org.plasma.query.model.WildcardOperator;
+import org.plasma.query.model.PredicateOperator;
 
 /**
  * An {@link WildcardBinaryExpr} implementation which uses a specific evaluation
@@ -55,7 +55,7 @@ public class EdgeRecognizerWildcardBinaryExpr extends DefaultWildcardBinaryExpr 
    * @see EdgeRecognizerContext
    */
   public EdgeRecognizerWildcardBinaryExpr(Property property, String columnQualifierPrefix,
-      Literal literal, WildcardOperator operator) {
+      Literal literal, PredicateOperator operator) {
     super(property, literal, operator);
     this.columnQualifierPrefix = columnQualifierPrefix;
   }

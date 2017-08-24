@@ -21,7 +21,7 @@ import org.apache.hadoop.hbase.filter.CompareFilter;
 import org.plasma.query.QueryException;
 import org.plasma.query.model.GroupOperator;
 import org.plasma.query.model.RelationalOperator;
-import org.plasma.query.model.WildcardOperator;
+import org.plasma.query.model.PredicateOperator;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
 import org.plasma.sdo.access.DataAccessException;
@@ -52,7 +52,7 @@ public abstract class PredicateVisitor extends FilterHierarchyAssembler {
   protected PlasmaProperty contextProperty;
   protected CompareFilter.CompareOp contextHBaseCompareOp;
   protected boolean contextOpWildcard;
-  protected WildcardOperator contextWildcardOperator;
+  protected PredicateOperator contextWildcardOperator;
 
   protected PredicateVisitor(PlasmaType rootType) {
     super(rootType);

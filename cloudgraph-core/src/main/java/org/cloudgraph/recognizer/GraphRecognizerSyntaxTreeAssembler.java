@@ -24,7 +24,7 @@ import org.plasma.query.model.Literal;
 import org.plasma.query.model.Property;
 import org.plasma.query.model.RelationalOperator;
 import org.plasma.query.model.Where;
-import org.plasma.query.model.WildcardOperator;
+import org.plasma.query.model.PredicateOperator;
 import org.plasma.sdo.PlasmaType;
 
 /**
@@ -73,7 +73,7 @@ public class GraphRecognizerSyntaxTreeAssembler extends DefaultBinaryExprTreeAss
 
   @Override
   public WildcardBinaryExpr createWildcardBinaryExpr(Property property, Literal literal,
-      WildcardOperator operator) {
+      PredicateOperator operator) {
     return new GraphRecognizerWildcardBinaryExpr(property, literal, operator);
   }
 }

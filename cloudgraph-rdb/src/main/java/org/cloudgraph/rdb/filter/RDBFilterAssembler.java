@@ -38,9 +38,8 @@ import org.plasma.query.model.PathElement;
 import org.plasma.query.model.Property;
 import org.plasma.query.model.Query;
 import org.plasma.query.model.QueryConstants;
-import org.plasma.query.model.SubqueryOperator;
 import org.plasma.query.model.Where;
-import org.plasma.query.model.WildcardOperator;
+import org.plasma.query.model.PredicateOperator;
 import org.plasma.query.model.WildcardPathElement;
 import org.plasma.query.visitor.Traversal;
 import org.plasma.sdo.PlasmaProperty;
@@ -139,7 +138,7 @@ public class RDBFilterAssembler extends SQLQueryFilterAssembler implements Query
     // log.trace("visit Expression");
     // THIS NEEDS REFACTOING
     for (int i = 0; i < expression.getTerms().size(); i++) {
-      SubqueryOperator subqueryOper = expression.getTerms().get(i).getSubqueryOperator();
+      PredicateOperator subqueryOper = expression.getTerms().get(i).getPredicateOperator();
       if (subqueryOper != null) {
         // log.info("found subquery expression");
         Property property = expression.getTerms().get(i - 1).getProperty();
@@ -152,7 +151,7 @@ public class RDBFilterAssembler extends SQLQueryFilterAssembler implements Query
     }
   }
 
-  protected void assembleSubquery(Property property, SubqueryOperator oper, Query query) {
+  protected void assembleSubquery(Property property, PredicateOperator oper, Query query) {
     From from = query.getFromClause();
     Type type = PlasmaTypeHelper.INSTANCE.getType(from.getEntity().getNamespaceURI(), from
         .getEntity().getName());
@@ -198,7 +197,8 @@ public class RDBFilterAssembler extends SQLQueryFilterAssembler implements Query
     }
   }
 
-  protected void processWildcardExpression(Property property, WildcardOperator oper, Literal literal) {
+  protected void processWildcardExpression(Property property, PredicateOperator oper,
+      Literal literal) {
     String content = literal.getValue().trim();
     content = content.replace(WILDCARD, "%");
     start(property);

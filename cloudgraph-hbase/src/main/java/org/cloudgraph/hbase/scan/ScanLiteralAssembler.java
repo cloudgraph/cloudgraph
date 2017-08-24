@@ -33,9 +33,9 @@ import org.plasma.query.model.Path;
 import org.plasma.query.model.PathElement;
 import org.plasma.query.model.Property;
 import org.plasma.query.model.RelationalOperator;
-import org.plasma.query.model.RelationalOperatorValues;
+import org.plasma.query.model.RelationalOperatorName;
 import org.plasma.query.model.Where;
-import org.plasma.query.model.WildcardOperator;
+import org.plasma.query.model.PredicateOperator;
 import org.plasma.query.model.WildcardPathElement;
 import org.plasma.query.visitor.DefaultQueryVisitor;
 import org.plasma.sdo.PlasmaProperty;
@@ -58,7 +58,7 @@ public class ScanLiteralAssembler extends DefaultQueryVisitor {
   protected String contextPropertyPath;
   protected RelationalOperator contextRelationalOperator;
   protected LogicalOperator contextLogicalOperator;
-  protected WildcardOperator contextWildcardOperator;
+  protected PredicateOperator contextWildcardOperator;
   protected DataGraphConfig graph;
   protected TableConfig table;
   protected ScanLiterals partialKeyScanLiterals = new ScanLiterals();
@@ -174,11 +174,11 @@ public class ScanLiteralAssembler extends DefaultQueryVisitor {
         // partial scan does not accommodate 'not equals' as it scans
         // for
         // contiguous set of row keys
-        if (this.contextRelationalOperator.getValue().ordinal() != RelationalOperatorValues.NOT_EQUALS
+        if (this.contextRelationalOperator.getValue().ordinal() != RelationalOperatorName.NOT_EQUALS
             .ordinal())
           this.partialKeyScanLiterals.addLiteral(scanLiteral);
         // fuzzy only does 'equals' and wildcards
-        if (this.contextRelationalOperator.getValue().ordinal() == RelationalOperatorValues.EQUALS
+        if (this.contextRelationalOperator.getValue().ordinal() == RelationalOperatorName.EQUALS
             .ordinal())
           this.fuzzyKeyScanLiterals.addLiteral(scanLiteral);
       } else if (this.contextWildcardOperator != null) {
@@ -219,7 +219,7 @@ public class ScanLiteralAssembler extends DefaultQueryVisitor {
     super.start(operator);
   }
 
-  public void start(WildcardOperator operator) {
+  public void start(PredicateOperator operator) {
     switch (operator.getValue()) {
     default:
       this.contextRelationalOperator = null;

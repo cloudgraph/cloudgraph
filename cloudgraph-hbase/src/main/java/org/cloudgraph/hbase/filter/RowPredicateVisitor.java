@@ -37,7 +37,7 @@ import org.plasma.query.model.Path;
 import org.plasma.query.model.PathElement;
 import org.plasma.query.model.Property;
 import org.plasma.query.model.Term;
-import org.plasma.query.model.WildcardOperator;
+import org.plasma.query.model.PredicateOperator;
 import org.plasma.query.model.WildcardPathElement;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
@@ -103,7 +103,7 @@ public class RowPredicateVisitor extends PredicateVisitor {
     }
 
     for (Term term : expression.getTerms())
-      if (term.getSubqueryOperator() != null)
+      if (term.getPredicateOperator() != null)
         throw new GraphFilterException("subqueries for row filters not yet supported");
   }
 
@@ -157,7 +157,7 @@ public class RowPredicateVisitor extends PredicateVisitor {
     super.start(property);
   }
 
-  public void start(WildcardOperator operator) {
+  public void start(PredicateOperator operator) {
     switch (operator.getValue()) {
     case LIKE:
       this.contextHBaseCompareOp = CompareFilter.CompareOp.EQUAL;

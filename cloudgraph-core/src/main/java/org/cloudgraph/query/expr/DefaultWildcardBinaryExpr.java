@@ -17,7 +17,7 @@ package org.cloudgraph.query.expr;
 
 import org.plasma.query.model.Literal;
 import org.plasma.query.model.Property;
-import org.plasma.query.model.WildcardOperator;
+import org.plasma.query.model.PredicateOperator;
 
 /**
  * Contains default functionality for <a href=
@@ -33,7 +33,7 @@ import org.plasma.query.model.WildcardOperator;
 public class DefaultWildcardBinaryExpr extends DefaultBinaryExpr implements WildcardBinaryExpr {
   protected Property property;
   protected Literal literal;
-  protected WildcardOperator operator;
+  protected PredicateOperator operator;
   protected String propertyPath;
 
   /**
@@ -50,7 +50,7 @@ public class DefaultWildcardBinaryExpr extends DefaultBinaryExpr implements Wild
    * @param contextProperty
    *          the context or graph traversal path endpoint property
    */
-  public DefaultWildcardBinaryExpr(Property property, Literal literal, WildcardOperator operator) {
+  public DefaultWildcardBinaryExpr(Property property, Literal literal, PredicateOperator operator) {
     super(property, literal);
     if (property == null)
       throw new IllegalArgumentException("expected arg 'property'");
@@ -86,7 +86,7 @@ public class DefaultWildcardBinaryExpr extends DefaultBinaryExpr implements Wild
    * @return the operator for the expression.
    */
   @Override
-  public WildcardOperator getOperator() {
+  public PredicateOperator getOperator() {
     return this.operator;
   }
 

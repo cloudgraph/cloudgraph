@@ -87,8 +87,7 @@ public class RDBOrderingAssembler extends DefaultQueryVisitor implements QueryCo
     }
 
     if (property.getDirection() == null
-        || property.getDirection().ordinal() == org.plasma.query.model.SortDirectionValues.ASC
-            .ordinal())
+        || property.getDirection().ordinal() == org.plasma.query.model.SortDirection.ASC.ordinal())
       orderingDeclaration.append(" ASC");
     else
       orderingDeclaration.append(" DESC");

@@ -30,7 +30,7 @@ import org.plasma.query.model.GroupOperator;
 import org.plasma.query.model.LogicalOperator;
 import org.plasma.query.model.RelationalOperator;
 import org.plasma.query.model.Where;
-import org.plasma.query.model.WildcardOperator;
+import org.plasma.query.model.PredicateOperator;
 import org.plasma.query.visitor.DefaultQueryVisitor;
 import org.plasma.sdo.PlasmaType;
 
@@ -189,7 +189,7 @@ public class ScanContext extends DefaultQueryVisitor {
 
   /**
    * Process the traversal start event for a query
-   * {@link org.plasma.query.model.WildcardOperator WildcardOperator} within an
+   * {@link org.plasma.query.model.PredicateOperator WildcardOperator} within an
    * {@link org.plasma.query.model.Expression expression} creating context
    * information useful for determining an HBase scan strategy.
    * 
@@ -198,7 +198,7 @@ public class ScanContext extends DefaultQueryVisitor {
    * @throws GraphServiceException
    *           if an unknown wild card operator is encountered.
    */
-  public void start(WildcardOperator operator) {
+  public void start(PredicateOperator operator) {
     switch (operator.getValue()) {
     case LIKE:
       break;

@@ -12,7 +12,7 @@ See https://github.com/terrameta/cloudgraph/issues.
 
 
 Major Changes
-1.) POM only update to accommodate underlying dependency changes
+[Issue #4] - Plasma Upgrade
 
 Bugs
 

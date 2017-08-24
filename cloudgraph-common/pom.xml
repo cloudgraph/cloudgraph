@@ -2,14 +2,14 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<properties>
-		<cloudgraph.version>1.0.2</cloudgraph.version>
+		<cloudgraph.version>1.0.3</cloudgraph.version>
 		<plasma.version>1.2.9</plasma.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
     <parent>
         <groupId>org.cloudgraph</groupId>
         <artifactId>cloudgraph</artifactId>
-        <version>1.0.2</version>
+        <version>1.0.3</version>
     </parent>
 	<groupId>org.cloudgraph</groupId>
 	<artifactId>cloudgraph-common</artifactId>

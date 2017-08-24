@@ -16,8 +16,8 @@
 package org.cloudgraph.hbase.scan;
 
 import org.cloudgraph.config.UserDefinedRowKeyFieldConfig;
-import org.plasma.query.model.LogicalOperatorValues;
-import org.plasma.query.model.RelationalOperatorValues;
+import org.plasma.query.model.LogicalOperatorName;
+import org.plasma.query.model.RelationalOperatorName;
 
 /**
  * @author Scott Cinnamond
@@ -38,9 +38,8 @@ public class ImbalancedOperatorMappingException extends ScanException {
     super(t);
   }
 
-  public ImbalancedOperatorMappingException(RelationalOperatorValues left,
-      LogicalOperatorValues operator, RelationalOperatorValues right,
-      UserDefinedRowKeyFieldConfig field) {
+  public ImbalancedOperatorMappingException(RelationalOperatorName left,
+      LogicalOperatorName operator, RelationalOperatorName right, UserDefinedRowKeyFieldConfig field) {
     super("relational operator '" + left + "' linked through logical operator '" + operator
         + "' to relational operator '" + right + "' for row key field property, "
         + field.getEndpointProperty().getContainingType().toString() + "."

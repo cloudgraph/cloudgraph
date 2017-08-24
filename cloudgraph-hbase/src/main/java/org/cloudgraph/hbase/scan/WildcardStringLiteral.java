@@ -18,7 +18,7 @@ package org.cloudgraph.hbase.scan;
 import org.cloudgraph.config.UserDefinedRowKeyFieldConfig;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.query.Wildcard;
-import org.plasma.query.model.WildcardOperator;
+import org.plasma.query.model.PredicateOperator;
 import org.plasma.sdo.PlasmaType;
 
 /**
@@ -37,15 +37,15 @@ public class WildcardStringLiteral extends StringLiteral implements WildcardPart
     FuzzyRowKeyLiteral {
 
   @Deprecated
-  private WildcardOperator wildcardOperator;
+  private PredicateOperator wildcardOperator;
 
   public WildcardStringLiteral(String literal, PlasmaType rootType,
-      WildcardOperator wildcardOperator, UserDefinedRowKeyFieldConfig fieldConfig) {
+      PredicateOperator wildcardOperator, UserDefinedRowKeyFieldConfig fieldConfig) {
     super(literal, rootType, null, fieldConfig);
     this.wildcardOperator = wildcardOperator;
   }
 
-  public WildcardOperator getWildcardOperator() {
+  public PredicateOperator getWildcardOperator() {
     return wildcardOperator;
   }
 

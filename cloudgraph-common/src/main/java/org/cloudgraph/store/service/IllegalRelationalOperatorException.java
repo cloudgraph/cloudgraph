@@ -15,7 +15,7 @@
  */
 package org.cloudgraph.store.service;
 
-import org.plasma.query.model.RelationalOperatorValues;
+import org.plasma.query.model.RelationalOperatorName;
 
 /**
  * @author Scott Cinnamond
@@ -24,7 +24,7 @@ import org.plasma.query.model.RelationalOperatorValues;
 public class IllegalRelationalOperatorException extends GraphServiceException {
   private static final long serialVersionUID = 1L;
 
-  public IllegalRelationalOperatorException(RelationalOperatorValues operator, int fieldSeqNum,
+  public IllegalRelationalOperatorException(RelationalOperatorName operator, int fieldSeqNum,
       String fieldPath) {
     super(
         "relational operator ("
@@ -42,7 +42,7 @@ public class IllegalRelationalOperatorException extends GraphServiceException {
     super(t);
   }
 
-  private static String toUserString(RelationalOperatorValues operator) {
+  private static String toUserString(RelationalOperatorName operator) {
     switch (operator) {
     case EQUALS:
       return "equals";

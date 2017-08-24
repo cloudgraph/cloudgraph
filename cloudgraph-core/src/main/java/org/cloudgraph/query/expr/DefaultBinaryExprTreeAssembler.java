@@ -29,19 +29,19 @@ import org.plasma.query.bind.PlasmaQueryDataBinding;
 import org.plasma.query.model.AbstractPathElement;
 import org.plasma.query.model.Expression;
 import org.plasma.query.model.GroupOperator;
-import org.plasma.query.model.GroupOperatorValues;
+import org.plasma.query.model.GroupOperatorName;
 import org.plasma.query.model.Literal;
 import org.plasma.query.model.LogicalOperator;
-import org.plasma.query.model.LogicalOperatorValues;
+import org.plasma.query.model.LogicalOperatorName;
 import org.plasma.query.model.Path;
 import org.plasma.query.model.PathElement;
 import org.plasma.query.model.Property;
 import org.plasma.query.model.RelationalOperator;
-import org.plasma.query.model.RelationalOperatorValues;
+import org.plasma.query.model.RelationalOperatorName;
 import org.plasma.query.model.Term;
 import org.plasma.query.model.Where;
-import org.plasma.query.model.WildcardOperator;
-import org.plasma.query.model.WildcardOperatorValues;
+import org.plasma.query.model.PredicateOperator;
+import org.plasma.query.model.PredicateOperatorName;
 import org.plasma.query.model.WildcardPathElement;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
@@ -120,17 +120,17 @@ public abstract class DefaultBinaryExprTreeAssembler extends ExpresionVisitorSup
     this.rootType = rootType;
     this.predicate = predicate;
 
-    precedenceMap.put(LogicalOperatorValues.OR, 0);
-    precedenceMap.put(LogicalOperatorValues.AND, 1);
-    precedenceMap.put(WildcardOperatorValues.LIKE, 2);
-    precedenceMap.put(RelationalOperatorValues.EQUALS, 2);
-    precedenceMap.put(RelationalOperatorValues.NOT_EQUALS, 2);
-    precedenceMap.put(RelationalOperatorValues.GREATER_THAN, 2);
-    precedenceMap.put(RelationalOperatorValues.GREATER_THAN_EQUALS, 2);
-    precedenceMap.put(RelationalOperatorValues.LESS_THAN, 2);
-    precedenceMap.put(RelationalOperatorValues.LESS_THAN_EQUALS, 2);
-    precedenceMap.put(GroupOperatorValues.LP_1, 3);
-    precedenceMap.put(GroupOperatorValues.RP_1, 4);
+    precedenceMap.put(LogicalOperatorName.OR, 0);
+    precedenceMap.put(LogicalOperatorName.AND, 1);
+    precedenceMap.put(PredicateOperatorName.LIKE, 2);
+    precedenceMap.put(RelationalOperatorName.EQUALS, 2);
+    precedenceMap.put(RelationalOperatorName.NOT_EQUALS, 2);
+    precedenceMap.put(RelationalOperatorName.GREATER_THAN, 2);
+    precedenceMap.put(RelationalOperatorName.GREATER_THAN_EQUALS, 2);
+    precedenceMap.put(RelationalOperatorName.LESS_THAN, 2);
+    precedenceMap.put(RelationalOperatorName.LESS_THAN_EQUALS, 2);
+    precedenceMap.put(GroupOperatorName.LP_1, 3);
+    precedenceMap.put(GroupOperatorName.RP_1, 4);
   }
 
   /**
@@ -213,8 +213,8 @@ public abstract class DefaultBinaryExprTreeAssembler extends ExpresionVisitorSup
       Operator oper = this.operators.pop();
       if (oper.getOperator() instanceof RelationalOperator)
         expr = createRelationalBinaryExpr(prop, literal, (RelationalOperator) oper.getOperator());
-      else if (oper.getOperator() instanceof WildcardOperator) {
-        expr = createWildcardBinaryExpr(prop, literal, (WildcardOperator) oper.getOperator());
+      else if (oper.getOperator() instanceof PredicateOperator) {
+        expr = createWildcardBinaryExpr(prop, literal, (PredicateOperator) oper.getOperator());
       } else
         throw new IllegalStateException("unknown operator, " + oper.toString());
     } else if (this.operands.peek() instanceof Expr) {
@@ -268,14 +268,14 @@ public abstract class DefaultBinaryExprTreeAssembler extends ExpresionVisitorSup
     }
     // assemble a node based on operator precedence
     else if (term.getGroupOperator() != null || term.getLogicalOperator() != null
-        || term.getRelationalOperator() != null || term.getWildcardOperator() != null) {
+        || term.getRelationalOperator() != null || term.getPredicateOperator() != null) {
       Operator oper = null;
       if (term.getGroupOperator() != null)
         oper = new Operator(term.getGroupOperator(), this.precedenceMap);
       else if (term.getLogicalOperator() != null)
         oper = new Operator(term.getLogicalOperator(), this.precedenceMap);
-      else if (term.getWildcardOperator() != null)
-        oper = new Operator(term.getWildcardOperator(), this.precedenceMap);
+      else if (term.getPredicateOperator() != null)
+        oper = new Operator(term.getPredicateOperator(), this.precedenceMap);
       else
         oper = new Operator(term.getRelationalOperator(), this.precedenceMap);
 
@@ -332,10 +332,10 @@ public abstract class DefaultBinaryExprTreeAssembler extends ExpresionVisitorSup
   private boolean isGroupPair(Operator right, Operator left) {
     if (right.getOperator() instanceof GroupOperator) {
       GroupOperator groupRight = (GroupOperator) right.getOperator();
-      if (groupRight.getValue().ordinal() == GroupOperatorValues.RP_1.ordinal()) {
+      if (groupRight.getValue().ordinal() == GroupOperatorName.RP_1.ordinal()) {
         if (left.getOperator() instanceof GroupOperator) {
           GroupOperator groupLeft = (GroupOperator) left.getOperator();
-          if (groupLeft.getValue().ordinal() == GroupOperatorValues.LP_1.ordinal()) {
+          if (groupLeft.getValue().ordinal() == GroupOperatorName.LP_1.ordinal()) {
             return true;
           }
         }
@@ -389,7 +389,7 @@ public abstract class DefaultBinaryExprTreeAssembler extends ExpresionVisitorSup
    */
   @Override
   public WildcardBinaryExpr createWildcardBinaryExpr(Property property, Literal literal,
-      WildcardOperator operator) {
+      PredicateOperator operator) {
     return new DefaultWildcardBinaryExpr(property, literal, operator);
   }
 
@@ -454,10 +454,8 @@ public abstract class DefaultBinaryExprTreeAssembler extends ExpresionVisitorSup
   private String getTermClassName(Term term) {
     if (term.getWildcardProperty() != null)
       return term.getWildcardProperty().getClass().getSimpleName();
-    else if (term.getSubqueryOperator() != null)
-      return term.getSubqueryOperator().getClass().getSimpleName();
-    else if (term.getWildcardOperator() != null)
-      return term.getWildcardOperator().getClass().getSimpleName();
+    else if (term.getPredicateOperator() != null)
+      return term.getPredicateOperator().getClass().getSimpleName();
     else if (term.getEntity() != null)
       return term.getEntity().getClass().getSimpleName();
     else if (term.getExpression() != null)

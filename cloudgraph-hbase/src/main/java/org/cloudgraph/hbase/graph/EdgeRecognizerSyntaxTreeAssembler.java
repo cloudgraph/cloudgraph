@@ -29,7 +29,7 @@ import org.plasma.query.model.LogicalOperator;
 import org.plasma.query.model.Property;
 import org.plasma.query.model.RelationalOperator;
 import org.plasma.query.model.Where;
-import org.plasma.query.model.WildcardOperator;
+import org.plasma.query.model.PredicateOperator;
 import org.plasma.sdo.PlasmaType;
 
 /**
@@ -102,7 +102,7 @@ public class EdgeRecognizerSyntaxTreeAssembler extends PathPredicateBinaryExprTr
 
   @Override
   public WildcardBinaryExpr createWildcardBinaryExpr(Property property, Literal literal,
-      WildcardOperator operator) {
+      PredicateOperator operator) {
     String qual = Bytes.toString(this.contextQueryProperty.getPhysicalNameBytes());
     String delim = this.graphConfig.getColumnKeySequenceDelimiter();
     String qualPrefix = qual + delim;

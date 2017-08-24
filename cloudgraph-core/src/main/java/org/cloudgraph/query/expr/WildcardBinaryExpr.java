@@ -17,7 +17,7 @@ package org.cloudgraph.query.expr;
 
 import org.plasma.query.model.Literal;
 import org.plasma.query.model.Property;
-import org.plasma.query.model.WildcardOperator;
+import org.plasma.query.model.PredicateOperator;
 
 /**
  * Represents an expression composed of two parts or terms joined by a <a href=
@@ -33,7 +33,7 @@ public interface WildcardBinaryExpr extends BinaryExpr {
    * 
    * @return the wildcard operator.
    */
-  public WildcardOperator getOperator();
+  public PredicateOperator getOperator();
 
   /**
    * Returns the property.

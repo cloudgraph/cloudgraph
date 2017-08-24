@@ -20,7 +20,7 @@ import java.util.List;
 
 import org.plasma.query.model.Expression;
 import org.plasma.query.model.Literal;
-import org.plasma.query.model.LogicalOperatorValues;
+import org.plasma.query.model.LogicalOperatorName;
 import org.plasma.query.model.QueryConstants;
 import org.plasma.query.model.Term;
 import org.plasma.query.visitor.DefaultQueryVisitor;
@@ -86,7 +86,7 @@ public abstract class ExpresionVisitorSupport extends DefaultQueryVisitor {
    * @return a count of logical operators which match the given logical operator
    *         found within the child expressions for the given expression.
    */
-  protected int getLogicalOperatorCount(Expression expression, LogicalOperatorValues operator) {
+  protected int getLogicalOperatorCount(Expression expression, LogicalOperatorName operator) {
     int result = 0;
     for (Term term : expression.getTerms())
       if (term.getLogicalOperator() != null) {
@@ -106,7 +106,7 @@ public abstract class ExpresionVisitorSupport extends DefaultQueryVisitor {
    */
   protected boolean hasWildcard(Expression expression) {
     for (int i = 0; i < expression.getTerms().size(); i++) {
-      if (expression.getTerms().get(i).getWildcardOperator() != null) {
+      if (expression.getTerms().get(i).getPredicateOperator() != null) {
         Literal literal = expression.getTerms().get(i + 1).getLiteral();
         if (literal.getValue().indexOf(QueryConstants.WILDCARD) >= 0) // otherwise
           // we
