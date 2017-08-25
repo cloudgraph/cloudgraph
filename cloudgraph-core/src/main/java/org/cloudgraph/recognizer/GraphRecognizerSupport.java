@@ -121,22 +121,8 @@ public class GraphRecognizerSupport {
    *          the graph root type
    * @return the SDO property endpoint
    */
-  public PlasmaProperty getEndpoint(Property property, PlasmaType rootType) {
-    Path path = property.getPath();
-    PlasmaType targetType = rootType;
-    if (path != null)
-      for (int i = 0; i < path.getPathNodes().size(); i++) {
-        AbstractPathElement pathElem = path.getPathNodes().get(i).getPathElement();
-        if (pathElem instanceof WildcardPathElement)
-          throw new GraphServiceException(
-              "wildcard path elements applicable for 'Select' clause paths only, not 'Where' clause paths");
-        String elem = ((PathElement) pathElem).getValue();
-        PlasmaProperty prop = (PlasmaProperty) targetType.getProperty(elem);
-        targetType = (PlasmaType) prop.getType(); // traverse
-      }
-
-    PlasmaProperty endpointProp = (PlasmaProperty) targetType.getProperty(property.getName());
-    return endpointProp;
+  public Endpoint getEndpoint(Property property, PlasmaType rootType) {
+    return new Endpoint(property, rootType);
   }
 
   /**

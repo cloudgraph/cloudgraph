@@ -56,6 +56,10 @@ public class DefaultWildcardBinaryExpr extends DefaultBinaryExpr implements Wild
       throw new IllegalArgumentException("expected arg 'property'");
     if (literal == null)
       throw new IllegalArgumentException("expected arg 'literal'");
+    if (operator == null)
+      throw new IllegalArgumentException("expected arg 'operator'");
+    if (operator.getValue() == null)
+      throw new IllegalArgumentException("expected arg 'operator' with value");
     this.property = property;
     this.literal = literal;
     this.operator = operator;

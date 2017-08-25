@@ -74,6 +74,6 @@ public class KeyValue {
   }
 
   public String toString() {
-    return this.prop.getName() + "/" + String.valueOf(this.value);
+    return this.prop + "/" + String.valueOf(this.value);
   }
 }

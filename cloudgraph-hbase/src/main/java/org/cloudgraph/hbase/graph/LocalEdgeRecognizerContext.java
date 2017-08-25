@@ -27,8 +27,9 @@ import org.cloudgraph.query.expr.EvaluationContext;
  * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/KeyValue.html"
  * >KeyValue</a> map.
  * <p>
- * A sequence uniquely identifies an data graph entity within a local or
- * distributed data graph and is mapped internally to provide global uniqueness.
+ * A sequence uniquely identifies an data graph entity within a local data graph
+ * and is used to construct qualifier filters to return specific sequence-based
+ * column qualifiers and associated column values.
  * </p>
  * 
  * @author Scott Cinnamond
@@ -37,7 +38,7 @@ import org.cloudgraph.query.expr.EvaluationContext;
  * @see org.cloudgraph.hbase.graph.HBaseGraphAssembler
  * @see org.cloudgraph.hbase.graph.GraphSliceSupport
  */
-public class EdgeRecognizerContext implements EvaluationContext {
+public class LocalEdgeRecognizerContext implements EvaluationContext {
 
   private Map<String, KeyValue> keyMap;
   private Long sequence;
@@ -45,7 +46,7 @@ public class EdgeRecognizerContext implements EvaluationContext {
   /**
    * Constructs an empty context.
    */
-  public EdgeRecognizerContext() {
+  public LocalEdgeRecognizerContext() {
   }
 
   /**

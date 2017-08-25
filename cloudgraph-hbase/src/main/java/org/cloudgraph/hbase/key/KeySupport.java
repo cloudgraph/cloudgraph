@@ -33,6 +33,7 @@ import org.cloudgraph.hbase.scan.StringLiteral;
 import org.cloudgraph.hbase.service.CloudGraphContext;
 import org.cloudgraph.store.key.KeyValue;
 import org.plasma.sdo.PlasmaDataObject;
+import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
 
 import commonj.sdo.DataGraph;
@@ -70,19 +71,13 @@ public class KeySupport {
 
   public KeyValue findKeyValue(UserDefinedRowKeyFieldConfig fieldConfig, List<KeyValue> pairs) {
 
-    commonj.sdo.Property fieldProperty = fieldConfig.getEndpointProperty();
-    commonj.sdo.Type fieldPropertyType = fieldProperty.getContainingType();
+    PlasmaProperty fieldProperty = fieldConfig.getEndpointProperty();
 
     for (KeyValue keyValue : pairs) {
-      if (keyValue.getProp().getName().equals(fieldConfig.getEndpointProperty().getName())) {
-        if (keyValue.getProp().getContainingType().getName().equals(fieldPropertyType.getName())) {
-          if (keyValue.getProp().getContainingType().getURI().equals(fieldPropertyType.getURI())) {
-            if (fieldConfig.getPropertyPath() != null) {
-              if (keyValue.getPropertyPath() != null
-                  && keyValue.getPropertyPath().equals(fieldConfig.getPropertyPath())) {
-                return keyValue;
-              }
-            }
+      if (keyValue.getProp().equals(fieldProperty)) {
+        if (fieldConfig.getPropertyPath() != null && keyValue.getPropertyPath() != null) {
+          if (keyValue.getPropertyPath().equals(fieldConfig.getPropertyPath())) {
+            return keyValue;
           }
         }
       }

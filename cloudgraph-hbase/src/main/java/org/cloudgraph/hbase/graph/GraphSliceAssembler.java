@@ -65,8 +65,8 @@ import commonj.sdo.Property;
  * are re-created with the original UUID values.
  * </p>
  * 
- * @see EdgeRecognizerSyntaxTreeAssembler
- * @see EdgeRecognizerContext
+ * @see LocalEdgeRecognizerSyntaxTreeAssembler
+ * @see LocalEdgeRecognizerContext
  * @see GraphRecognizerSyntaxTreeAssembler
  * @see GraphRecognizerContext
  * @see GraphSliceSupport

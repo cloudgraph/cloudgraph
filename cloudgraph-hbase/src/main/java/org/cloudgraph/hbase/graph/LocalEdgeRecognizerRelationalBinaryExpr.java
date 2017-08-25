@@ -18,25 +18,31 @@ package org.cloudgraph.hbase.graph;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.KeyValue;
-import org.cloudgraph.query.expr.DefaultWildcardBinaryExpr;
+import org.cloudgraph.query.expr.DefaultRelationalBinaryExpr;
 import org.cloudgraph.query.expr.EvaluationContext;
-import org.cloudgraph.query.expr.WildcardBinaryExpr;
+import org.cloudgraph.query.expr.RelationalBinaryExpr;
 import org.plasma.query.model.Literal;
 import org.plasma.query.model.Property;
-import org.plasma.query.model.PredicateOperator;
+import org.plasma.query.model.RelationalOperator;
 
 /**
- * An {@link WildcardBinaryExpr} implementation which uses a specific evaluation
- * {@link EdgeRecognizerContext context} to locate or recognize a given sequence
- * based column qualifier within the context of the expression.
+ * An {@link RelationalBinaryExpr} implementation which uses a specific
+ * evaluation {@link LocalEdgeRecognizerContext context} to locate or recognize
+ * a given sequence based column qualifier within the context of the expression.
+ * 
+ * <p>
+ * A sequence uniquely identifies an data graph entity within a local data graph
+ * and is used to construct qualifier filters to return specific sequence-based
+ * column qualifiers and associated column values.
+ * </p>
  * 
  * @author Scott Cinnamond
  * @since 0.5.2
- * @see EdgeRecognizerContext
+ * @see LocalEdgeRecognizerContext
  */
-public class EdgeRecognizerWildcardBinaryExpr extends DefaultWildcardBinaryExpr implements
-    WildcardBinaryExpr {
-  private static Log log = LogFactory.getLog(EdgeRecognizerWildcardBinaryExpr.class);
+public class LocalEdgeRecognizerRelationalBinaryExpr extends DefaultRelationalBinaryExpr implements
+    RelationalBinaryExpr {
+  private static Log log = LogFactory.getLog(LocalEdgeRecognizerRelationalBinaryExpr.class);
   private String columnQualifierPrefix;
 
   /**
@@ -51,35 +57,37 @@ public class EdgeRecognizerWildcardBinaryExpr extends DefaultWildcardBinaryExpr 
    * @param literal
    *          the "right" literal term
    * @param operator
-   *          the wildcard operator
-   * @see EdgeRecognizerContext
+   *          the relational operator
+   * @see LocalEdgeRecognizerContext
    */
-  public EdgeRecognizerWildcardBinaryExpr(Property property, String columnQualifierPrefix,
-      Literal literal, PredicateOperator operator) {
+  public LocalEdgeRecognizerRelationalBinaryExpr(Property property, String columnQualifierPrefix,
+      Literal literal, RelationalOperator operator) {
     super(property, literal, operator);
     this.columnQualifierPrefix = columnQualifierPrefix;
   }
 
   /**
    * Returns a "truth" value for the expression using a specific evaluation
-   * {@link EdgeRecognizerContext context} to locate or recognize a given
+   * {@link LocalEdgeRecognizerContext context} to locate or recognize a given
    * sequence based column qualifier within the context of the expression.
    * 
    * @param context
    * @return a "truth" value for the expression using a specific evaluation
-   *         {@link EdgeRecognizerContext context} to locate or recognize a
+   *         {@link LocalEdgeRecognizerContext context} to locate or recognize a
    *         given sequence based column qualifier within the context of the
    *         expression.
-   * @see EdgeRecognizerContext
+   * @see LocalEdgeRecognizerContext
    */
   @Override
   public boolean evaluate(EvaluationContext context) {
-    EdgeRecognizerContext ctx = (EdgeRecognizerContext) context;
+    LocalEdgeRecognizerContext ctx = (LocalEdgeRecognizerContext) context;
+    // FIXME: use Array copy
     String qualifier = this.columnQualifierPrefix + String.valueOf(ctx.getSequence());
     KeyValue value = ctx.getKeyMap().get(qualifier);
+
     boolean found = value != null;
     if (log.isDebugEnabled())
-      log.debug("evaluate: " + found + " '" + qualifier + "' in map ");
+      log.debug("evaluate: " + found + " '" + qualifier + "' in map " + ctx.getKeyMap().keySet());
     return found;
   }
 

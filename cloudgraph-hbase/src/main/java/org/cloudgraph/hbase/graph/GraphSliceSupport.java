@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.bind.JAXBException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.KeyValue;
@@ -58,14 +60,18 @@ import org.cloudgraph.query.expr.ExprPrinter;
 import org.cloudgraph.recognizer.GraphRecognizerContext;
 import org.cloudgraph.recognizer.GraphRecognizerSyntaxTreeAssembler;
 import org.cloudgraph.store.service.GraphServiceException;
+import org.plasma.common.bind.DefaultValidationEventHandler;
+import org.plasma.query.bind.PlasmaQueryDataBinding;
 import org.plasma.query.collector.Selection;
 import org.plasma.query.collector.SelectionCollector;
+import org.plasma.query.model.Query;
 import org.plasma.query.model.Where;
 import org.plasma.sdo.PlasmaDataGraph;
 import org.plasma.sdo.PlasmaType;
 import org.plasma.sdo.core.CoreConstants;
 import org.plasma.sdo.helper.PlasmaXMLHelper;
 import org.plasma.sdo.xml.DefaultOptions;
+import org.xml.sax.SAXException;
 
 import commonj.sdo.Property;
 import commonj.sdo.helper.XMLDocument;
@@ -121,9 +127,60 @@ class GraphSliceSupport {
    * @see SelectionCollector
    * @see Selection
    */
+
+  /**
+   * Filters results in two stages, first constructs an edge recognizer which
+   * interrogates each row key in the given edge collection to determine if it
+   * satisfies the given predicate tree. This step is performed in memory only,
+   * no RPC calls are needed. This for the filtered results performs a graph
+   * assembly for each external edge, then uses a graph recognizer to determine
+   * if the assembled graph satisfies the given predicate tree
+   * 
+   * @param contextType
+   *          the current type
+   * @param collection
+   *          the edge collection
+   * @param where
+   *          the predicate structure
+   * @param rowReader
+   *          the row reader
+   * @param tableReader
+   *          the table reader
+   * @return the filtered results
+   * @throws IOException
+   * @throws IllegalStateException
+   *           if the edge collection is not external
+   */
   public Map<String, Result> filter(PlasmaType contextType, EdgeOperation collection, Where where,
       RowReader rowReader, TableReader tableReader) throws IOException {
     Map<String, Result> results = new HashMap<String, Result>();
+
+    if (!collection.isExternal())
+      throw new IllegalStateException("expected external edge collection not, " + collection);
+
+    if (log.isDebugEnabled())
+      log(where);
+    List<String> edgeFilteredRowKeys = new ArrayList<>();
+    ExternalEdgeRecognizerSyntaxTreeAssembler edgeSyntaxAssembler = new ExternalEdgeRecognizerSyntaxTreeAssembler(
+        where, rowReader.getDataGraph(), contextType, rowReader.getRootType());
+    Expr edgeRecognizerRootExpr = edgeSyntaxAssembler.getResult();
+    if (log.isDebugEnabled()) {
+      ExprPrinter printer = new ExprPrinter();
+      edgeRecognizerRootExpr.accept(printer);
+      log.debug("Edge Recognizer: " + printer.toString());
+    }
+    ExternalEdgeRecognizerContext edgeRecogniserContext = new ExternalEdgeRecognizerContext(
+        contextType);
+    for (String rowKey : collection.getRowKeys()) {
+      edgeRecogniserContext.setRowKey(rowKey);
+      if (edgeRecognizerRootExpr.evaluate(edgeRecogniserContext))
+        edgeFilteredRowKeys.add(rowKey);
+    }
+    if (log.isDebugEnabled())
+      log.debug("recognized " + edgeFilteredRowKeys.size() + " out of "
+          + collection.getRowKeys().size() + " external edges");
+    if (edgeFilteredRowKeys.size() == 0)
+      return results; // no edges recognized
 
     SelectionCollector selectionCollector = new SelectionCollector(where, contextType);
 
@@ -247,10 +304,10 @@ class GraphSliceSupport {
     // if (!multiDescendantProperties) {
     // assemble a recognizer once for
     // all results. Then only evaluate each result.
-    EdgeRecognizerSyntaxTreeAssembler assembler = new EdgeRecognizerSyntaxTreeAssembler(where,
-        graphConfig, contextType, rootType);
+    LocalEdgeRecognizerSyntaxTreeAssembler assembler = new LocalEdgeRecognizerSyntaxTreeAssembler(
+        where, graphConfig, contextType, rootType);
     Expr recogniser = assembler.getResult();
-    EdgeRecognizerContext context = new EdgeRecognizerContext();
+    LocalEdgeRecognizerContext context = new LocalEdgeRecognizerContext();
     for (Long seq : buckets.keySet()) {
       Map<String, KeyValue> seqMap = buckets.get(seq);
       context.setSequence(seq);
@@ -634,4 +691,17 @@ class GraphSliceSupport {
     return xml;
   }
 
+  protected void log(Where predicates) {
+    String xml = "";
+    PlasmaQueryDataBinding binding;
+    try {
+      binding = new PlasmaQueryDataBinding(new DefaultValidationEventHandler());
+      xml = binding.marshal(predicates);
+    } catch (JAXBException e) {
+      log.debug(e);
+    } catch (SAXException e) {
+      log.debug(e);
+    }
+    log.debug("query: " + xml);
+  }
 }

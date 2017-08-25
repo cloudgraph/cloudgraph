@@ -15,7 +15,6 @@
  */
 package org.cloudgraph.hbase.graph;
 
-import org.apache.hadoop.hbase.util.Bytes;
 import org.cloudgraph.config.DataGraphConfig;
 import org.cloudgraph.hbase.expr.PathPredicateBinaryExprTreeAssembler;
 import org.cloudgraph.query.expr.DefaultLogicalBinaryExpr;
@@ -26,10 +25,10 @@ import org.cloudgraph.query.expr.RelationalBinaryExpr;
 import org.cloudgraph.query.expr.WildcardBinaryExpr;
 import org.plasma.query.model.Literal;
 import org.plasma.query.model.LogicalOperator;
+import org.plasma.query.model.PredicateOperator;
 import org.plasma.query.model.Property;
 import org.plasma.query.model.RelationalOperator;
 import org.plasma.query.model.Where;
-import org.plasma.query.model.PredicateOperator;
 import org.plasma.sdo.PlasmaType;
 
 /**
@@ -47,28 +46,15 @@ import org.plasma.sdo.PlasmaType;
  * binary expression tree reflects the syntax of the underlying query expression
  * including the precedence of its operators.
  * </p>
- * <p>
- * The use of binary expression tree evaluation for post processing of graph
- * edge results is necessary in columnar data stores, as an entity with multiple
- * properties is necessarily persisted across multiple columns. And while these
- * data stores provide many useful column oriented filters, the capability to
- * select an entity based on complex criteria which spans several columns is
- * generally not supported, as such filters are column oriented. Yet even for
- * simple queries (e.g. "where entity.c1 = 'foo' and entity.c2 = 'bar'") column
- * c1 and its value exists in one cell and column c2 exists in another table
- * cell. Since columnar data store filters cannot generally span columns, both
- * cells must be returned and the results post processed within the context of
- * the binary expression tree.
- * </p>
  * 
  * @author Scott Cinnamond
- * @since 0.5.2
+ * @since 1.0.4
  * 
- * @see EdgeRecognizerRelationalBinaryExpr
- * @see EdgeRecognizerWildcardBinaryExpr
+ * @see ExternalEdgeRecognizerRelationalBinaryExpr
+ * @see ExternalEdgeRecognizerWildcardBinaryExpr
  * @see ExprAssembler
  */
-public class EdgeRecognizerSyntaxTreeAssembler extends PathPredicateBinaryExprTreeAssembler {
+public class ExternalEdgeRecognizerSyntaxTreeAssembler extends PathPredicateBinaryExprTreeAssembler {
   protected DataGraphConfig graphConfig;
 
   /**
@@ -84,7 +70,7 @@ public class EdgeRecognizerSyntaxTreeAssembler extends PathPredicateBinaryExprTr
    * @param graphConfig
    *          the graph config
    */
-  public EdgeRecognizerSyntaxTreeAssembler(Where predicate, DataGraphConfig graphConfig,
+  public ExternalEdgeRecognizerSyntaxTreeAssembler(Where predicate, DataGraphConfig graphConfig,
       PlasmaType edgeType, PlasmaType rootType) {
     super(predicate, edgeType, rootType);
     this.graphConfig = graphConfig;
@@ -93,20 +79,13 @@ public class EdgeRecognizerSyntaxTreeAssembler extends PathPredicateBinaryExprTr
   @Override
   public RelationalBinaryExpr createRelationalBinaryExpr(Property property, Literal literal,
       RelationalOperator operator) {
-
-    String qual = Bytes.toString(this.contextQueryProperty.getPhysicalNameBytes());
-    String delim = this.graphConfig.getColumnKeySequenceDelimiter();
-    String qualPrefix = qual + delim;
-    return new EdgeRecognizerRelationalBinaryExpr(property, qualPrefix, literal, operator);
+    return new ExternalEdgeRecognizerRelationalBinaryExpr(property, literal, operator);
   }
 
   @Override
   public WildcardBinaryExpr createWildcardBinaryExpr(Property property, Literal literal,
       PredicateOperator operator) {
-    String qual = Bytes.toString(this.contextQueryProperty.getPhysicalNameBytes());
-    String delim = this.graphConfig.getColumnKeySequenceDelimiter();
-    String qualPrefix = qual + delim;
-    return new EdgeRecognizerWildcardBinaryExpr(property, qualPrefix, literal, operator);
+    return new ExternalEdgeRecognizerWildcardBinaryExpr(property, literal, operator);
   }
 
   @Override

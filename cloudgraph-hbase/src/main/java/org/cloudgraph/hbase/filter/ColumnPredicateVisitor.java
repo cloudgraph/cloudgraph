@@ -129,8 +129,16 @@ public class ColumnPredicateVisitor extends PredicateVisitor {
     }
 
     for (Term term : expression.getTerms())
-      if (term.getPredicateOperator() != null)
-        throw new GraphFilterException("subqueries for row filters not yet supported");
+      if (term.getPredicateOperator() != null) {
+        switch (term.getPredicateOperator().getValue()) {
+        case IN:
+        case NOT_IN:
+        case EXISTS:
+        case NOT_EXISTS:
+          throw new GraphFilterException("subqueries for row filters not yet supported");
+        default:
+        }
+      }
   }
 
   /**

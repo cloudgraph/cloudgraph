@@ -44,7 +44,7 @@ import org.plasma.sdo.PlasmaType;
 public class GraphRecognizerRelationalBinaryExpr extends DefaultRelationalBinaryExpr implements
     RelationalBinaryExpr {
   private static Log log = LogFactory.getLog(GraphRecognizerRelationalBinaryExpr.class);
-  protected PlasmaProperty endpointProperty;
+  protected Endpoint endpoint;
   protected GraphRecognizerSupport recognizer = new GraphRecognizerSupport();
 
   /**
@@ -83,15 +83,15 @@ public class GraphRecognizerRelationalBinaryExpr extends DefaultRelationalBinary
 
     PlasmaDataGraph graph = ctx.getGraph();
 
-    if (this.endpointProperty == null)
-      this.endpointProperty = this.recognizer.getEndpoint(this.property, (PlasmaType) graph
-          .getRootObject().getType());
+    if (this.endpoint == null)
+      this.endpoint = this.recognizer.getEndpoint(this.property, (PlasmaType) graph.getRootObject()
+          .getType());
 
     List<Object> values = new ArrayList<Object>();
     this.recognizer.collect(graph.getRootObject(), this.property, this.property.getPath(), 0,
         values);
     for (Object value : values) {
-      if (this.recognizer.evaluate(this.endpointProperty, value, this.operator.getValue(),
+      if (this.recognizer.evaluate(this.endpoint.getProperty(), value, this.operator.getValue(),
           this.literal.getValue())) {
         if (log.isDebugEnabled())
           log.debug(this.toString() + " evaluate true: " + String.valueOf(value));
