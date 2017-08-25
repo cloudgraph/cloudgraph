@@ -209,7 +209,7 @@ class GraphSliceSupport {
     Filter columnFilter = columnFilterAssembler.getFilter();
 
     List<Get> gets = new ArrayList<Get>();
-    for (String childRowKey : collection.getRowKeys()) {
+    for (String childRowKey : edgeFilteredRowKeys) {
       // byte[] childRowKey =
       // rowReader.getGraphState().getRowKey(edge.getUuid()); // use local
       // edge UUID
