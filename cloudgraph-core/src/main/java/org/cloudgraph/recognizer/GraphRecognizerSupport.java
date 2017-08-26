@@ -15,7 +15,6 @@
  */
 package org.cloudgraph.recognizer;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -25,13 +24,12 @@ import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.cloudgraph.store.service.GraphServiceException;
-import org.plasma.query.Wildcard;
 import org.plasma.query.model.AbstractPathElement;
 import org.plasma.query.model.Path;
 import org.plasma.query.model.PathElement;
+import org.plasma.query.model.PredicateOperatorName;
 import org.plasma.query.model.Property;
 import org.plasma.query.model.RelationalOperatorName;
-import org.plasma.query.model.PredicateOperatorName;
 import org.plasma.query.model.WildcardPathElement;
 import org.plasma.sdo.DataType;
 import org.plasma.sdo.PlasmaProperty;

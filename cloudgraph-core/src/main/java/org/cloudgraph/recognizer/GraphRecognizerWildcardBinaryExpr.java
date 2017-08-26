@@ -24,10 +24,9 @@ import org.cloudgraph.query.expr.DefaultWildcardBinaryExpr;
 import org.cloudgraph.query.expr.EvaluationContext;
 import org.cloudgraph.query.expr.WildcardBinaryExpr;
 import org.plasma.query.model.Literal;
-import org.plasma.query.model.Property;
 import org.plasma.query.model.PredicateOperator;
+import org.plasma.query.model.Property;
 import org.plasma.sdo.PlasmaDataGraph;
-import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
 
 /**

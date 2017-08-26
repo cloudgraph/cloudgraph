@@ -21,10 +21,10 @@ import org.cloudgraph.query.expr.ExprAssembler;
 import org.cloudgraph.query.expr.RelationalBinaryExpr;
 import org.cloudgraph.query.expr.WildcardBinaryExpr;
 import org.plasma.query.model.Literal;
+import org.plasma.query.model.PredicateOperator;
 import org.plasma.query.model.Property;
 import org.plasma.query.model.RelationalOperator;
 import org.plasma.query.model.Where;
-import org.plasma.query.model.PredicateOperator;
 import org.plasma.sdo.PlasmaType;
 
 /**

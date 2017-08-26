@@ -15,7 +15,6 @@
  */
 package org.cloudgraph.recognizer;
 
-import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.query.model.AbstractPathElement;
 import org.plasma.query.model.Path;
 import org.plasma.query.model.PathElement;
@@ -34,6 +33,7 @@ import org.plasma.sdo.PlasmaType;
 public class Endpoint {
   private PlasmaProperty property;
   private String path;
+  private int hashCode = 0;
 
   @SuppressWarnings("unused")
   private Endpoint() {
@@ -84,12 +84,14 @@ public class Endpoint {
   }
 
   public int hashCode() {
+    if (hashCode != 0)
+      return hashCode;
     final int prime = 31;
-    int result = 1;
+    int hashCode = 1;
     if (this.path != null)
-      result = prime * result + this.path.hashCode();
-    result = prime * result + this.property.getId().hashCode();
-    return result;
+      hashCode = prime * hashCode + this.path.hashCode();
+    hashCode = prime * hashCode + this.property.getId().hashCode();
+    return hashCode;
   }
 
   public boolean equals(Object other) {
