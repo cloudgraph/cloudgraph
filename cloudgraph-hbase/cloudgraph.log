@@ -2404,3 +2404,458 @@ java.io.IOException: Could not locate executable null\bin\winutils.exe in the Ha
 25 Aug 2017 15:30:50,121 WARN  [main] graph.DistributedAssembler ignoring toubstone result row 'TP                              |Politics                        |d4fe66a6-7e34-421a-b900-0ee708e0b3b7'
 25 Aug 2017 15:30:54,002 WARN  [main] scan.ScanCollector no user defined row-key field for query path 'blog/topic/name' - deferring to graph recogniser post processor
 25 Aug 2017 15:30:54,002 WARN  [main] scan.ScanCollector no user defined row-key field for query path 'blog/topic/name' - deferring to graph recogniser post processor
+01 Sep 2017 09:03:18,207 INFO  [main] fuml.Fuml loading artifact, PlasmaSDO.profile_v1_1.uml
+01 Sep 2017 09:03:18,221 INFO  [main] config.FumlConfiguration initializing...
+01 Sep 2017 09:03:18,223 INFO  [main] config.FumlConfigDataBinding loading schema chain...
+01 Sep 2017 09:03:18,282 INFO  [main] config.FumlConfiguration loading configuration, DefaultFumlConfig.xml
+01 Sep 2017 09:03:18,351 FATAL [main] bind.DefaultValidationEventHandler Line:Col:Offset[164:21:-1] - cvc-complex-type.2.4.b: The content of element 'cfg:Configuration' is not complete. One of '{LibraryConfiguration}' is expected.
+01 Sep 2017 09:03:18,443 INFO  [main] model.InMemoryRepository initializing...
+01 Sep 2017 09:03:18,447 INFO  [main] repository.RepositoryConfigDataBinding loading schema chain...
+01 Sep 2017 09:03:18,521 INFO  [main] model.PrimitiveTypesAssembler initializing...
+01 Sep 2017 09:03:18,543 INFO  [main] model.InfrastructureAssembler initializing...
+01 Sep 2017 09:03:18,587 INFO  [main] model.SuperstructureAssembler initializing...
+01 Sep 2017 09:03:18,615 INFO  [main] model.fUML_SyntaxAssembler initializing...
+01 Sep 2017 09:03:18,621 INFO  [main] model.InMemoryRepository performing package merge...
+01 Sep 2017 09:03:18,651 INFO  [main] model.InMemoryRepository cacheing classifier attributes and operations...
+01 Sep 2017 09:03:18,680 INFO  [main] library.Library initializing...
+01 Sep 2017 09:03:19,216 INFO  [main] fuml.Fuml loading artifact, PlasmaSDODataTypes_v1_1.uml
+01 Sep 2017 09:03:19,392 INFO  [main] fuml.Fuml loading artifact, datatypes.uml
+01 Sep 2017 09:03:19,607 INFO  [main] fuml.Fuml loading artifact, social-graph.uml
+01 Sep 2017 09:03:19,951 WARN  [main] config.UserDefinedRowKeyFieldConfig expected value contraint total-digits for integral property, {http://cloudgraph.org/test/datatypes}Node.rootId - row key fields are fixed length and integral properties used in row key fields should be annotated with a value constraint with the total-digits set - defaulting to max size for datatype, Long.
+01 Sep 2017 09:03:19,953 WARN  [main] config.UserDefinedRowKeyFieldConfig expected value contraint total-digits for integral property, {http://cloudgraph.org/test/datatypes}Node.rootId - row key fields are fixed length and integral properties used in row key fields should be annotated with a value constraint with the total-digits set - defaulting to max size for datatype, Long.
+01 Sep 2017 09:03:19,954 WARN  [main] config.UserDefinedRowKeyFieldConfig expected value contraint total-digits for integral property, {http://cloudgraph.org/test/datatypes}Node.rootId - row key fields are fixed length and integral properties used in row key fields should be annotated with a value constraint with the total-digits set - defaulting to max size for datatype, Long.
+01 Sep 2017 09:03:19,954 WARN  [main] config.UserDefinedRowKeyFieldConfig expected value contraint total-digits for integral property, {http://cloudgraph.org/test/datatypes}Node.intField - row key fields are fixed length and integral properties used in row key fields should be annotated with a value constraint with the total-digits set - defaulting to max size for datatype, Int.
+01 Sep 2017 09:03:19,955 WARN  [main] config.UserDefinedRowKeyFieldConfig expected value contraint total-digits for integral property, {http://cloudgraph.org/test/datatypes}Node.rootId - row key fields are fixed length and integral properties used in row key fields should be annotated with a value constraint with the total-digits set - defaulting to max size for datatype, Long.
+01 Sep 2017 09:03:19,956 WARN  [main] config.UserDefinedRowKeyFieldConfig expected value contraint total-digits for integral property, {http://cloudgraph.org/test/datatypes}Node.longField - row key fields are fixed length and integral properties used in row key fields should be annotated with a value constraint with the total-digits set - defaulting to max size for datatype, Long.
+01 Sep 2017 09:03:19,957 WARN  [main] config.UserDefinedRowKeyFieldConfig expected value contraint total-digits for integral property, {http://cloudgraph.org/test/datatypes}Node.rootId - row key fields are fixed length and integral properties used in row key fields should be annotated with a value constraint with the total-digits set - defaulting to max size for datatype, Long.
+01 Sep 2017 09:03:19,958 WARN  [main] config.UserDefinedRowKeyFieldConfig expected value contraint total-digits for integral property, {http://cloudgraph.org/test/datatypes}Node.rootId - row key fields are fixed length and integral properties used in row key fields should be annotated with a value constraint with the total-digits set - defaulting to max size for datatype, Long.
+01 Sep 2017 09:03:20,219 ERROR [main] util.Shell Failed to locate the winutils binary in the hadoop binary path
+java.io.IOException: Could not locate executable null\bin\winutils.exe in the Hadoop binaries.
+	at org.apache.hadoop.util.Shell.getQualifiedBinPath(Shell.java:379)
+	at org.apache.hadoop.util.Shell.getWinUtilsPath(Shell.java:394)
+	at org.apache.hadoop.util.Shell.<clinit>(Shell.java:387)
+	at org.apache.hadoop.util.StringUtils.<clinit>(StringUtils.java:80)
+	at org.apache.hadoop.conf.Configuration.getBoolean(Configuration.java:1437)
+	at org.apache.hadoop.hbase.HBaseConfiguration.checkDefaultsVersion(HBaseConfiguration.java:67)
+	at org.apache.hadoop.hbase.HBaseConfiguration.addHbaseResources(HBaseConfiguration.java:81)
+	at org.apache.hadoop.hbase.HBaseConfiguration.create(HBaseConfiguration.java:96)
+	at org.cloudgraph.hbase.service.CloudGraphContext.<init>(CloudGraphContext.java:57)
+	at org.cloudgraph.hbase.service.CloudGraphContext.initInstance(CloudGraphContext.java:85)
+	at org.cloudgraph.hbase.service.CloudGraphContext.instance(CloudGraphContext.java:79)
+	at org.cloudgraph.hbase.connect.HBaseConnectionManager.<init>(HBaseConnectionManager.java:64)
+	at org.cloudgraph.hbase.connect.HBaseConnectionManager.initInstance(HBaseConnectionManager.java:85)
+	at org.cloudgraph.hbase.connect.HBaseConnectionManager.instance(HBaseConnectionManager.java:79)
+	at org.cloudgraph.hbase.io.GraphTableWriter.getTable(GraphTableWriter.java:83)
+	at org.cloudgraph.hbase.io.GraphRowWriter.createSequenceMapping(GraphRowWriter.java:231)
+	at org.cloudgraph.hbase.io.GraphRowWriter.getSequenceMapping(GraphRowWriter.java:86)
+	at org.cloudgraph.hbase.io.GraphRowWriter.newSequence(GraphRowWriter.java:359)
+	at org.cloudgraph.hbase.io.GraphEdgeWriter.getOrCreateSequence(GraphEdgeWriter.java:590)
+	at org.cloudgraph.hbase.io.GraphEdgeWriter.addAll(GraphEdgeWriter.java:403)
+	at org.cloudgraph.hbase.mutation.Create.collect(Create.java:107)
+	at org.cloudgraph.hbase.mutation.GraphMutationCollector.create(GraphMutationCollector.java:264)
+	at org.cloudgraph.hbase.mutation.GraphMutationCollector.collectChanges(GraphMutationCollector.java:128)
+	at org.cloudgraph.hbase.service.GraphDispatcher.commit(GraphDispatcher.java:106)
+	at org.cloudgraph.hbase.service.HBaseGraphService.commit(HBaseGraphService.java:181)
+	at org.plasma.sdo.access.client.PojoDataAccessClient.commit(PojoDataAccessClient.java:150)
+	at org.plasma.sdo.access.client.SDODataAccessClient.commit(SDODataAccessClient.java:140)
+	at org.cloudgraph.hbase.scan.DatePartialRowKeyScanTest.testExclusive(DatePartialRowKeyScanTest.java:148)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at junit.framework.TestCase.runTest(TestCase.java:154)
+	at junit.framework.TestCase.runBare(TestCase.java:127)
+	at junit.framework.TestResult$1.protect(TestResult.java:106)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.framework.TestResult.run(TestResult.java:109)
+	at junit.framework.TestCase.run(TestCase.java:118)
+	at junit.framework.TestSuite.runTest(TestSuite.java:208)
+	at junit.framework.TestSuite.run(TestSuite.java:203)
+	at junit.extensions.TestDecorator.basicRun(TestDecorator.java:22)
+	at junit.extensions.TestSetup$1.protect(TestSetup.java:19)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.extensions.TestSetup.run(TestSetup.java:23)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.maven.surefire.junit.JUnitTestSet.execute(JUnitTestSet.java:95)
+	at org.apache.maven.surefire.junit.JUnit3Provider.executeTestSet(JUnit3Provider.java:121)
+	at org.apache.maven.surefire.junit.JUnit3Provider.invoke(JUnit3Provider.java:98)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray(ReflectionUtils.java:189)
+	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:165)
+	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:85)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
+01 Sep 2017 09:03:20,302 WARN  [main] util.NativeCodeLoader Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+01 Sep 2017 09:03:46,689 INFO  [main] bind.PlasmaQueryDataBinding loading schema chain...
+01 Sep 2017 09:03:52,056 WARN  [main] scan.FuzzyRowKeyScanAssembler expected single literal for user defined field - ignoring
+01 Sep 2017 09:04:15,616 INFO  [main] fuml.Fuml loading artifact, PlasmaSDO.profile_v1_1.uml
+01 Sep 2017 09:04:15,629 INFO  [main] config.FumlConfiguration initializing...
+01 Sep 2017 09:04:15,631 INFO  [main] config.FumlConfigDataBinding loading schema chain...
+01 Sep 2017 09:04:15,693 INFO  [main] config.FumlConfiguration loading configuration, DefaultFumlConfig.xml
+01 Sep 2017 09:04:15,714 FATAL [main] bind.DefaultValidationEventHandler Line:Col:Offset[164:21:-1] - cvc-complex-type.2.4.b: The content of element 'cfg:Configuration' is not complete. One of '{LibraryConfiguration}' is expected.
+01 Sep 2017 09:04:15,777 INFO  [main] model.InMemoryRepository initializing...
+01 Sep 2017 09:04:15,792 INFO  [main] repository.RepositoryConfigDataBinding loading schema chain...
+01 Sep 2017 09:04:15,826 INFO  [main] model.PrimitiveTypesAssembler initializing...
+01 Sep 2017 09:04:15,851 INFO  [main] model.InfrastructureAssembler initializing...
+01 Sep 2017 09:04:15,902 INFO  [main] model.SuperstructureAssembler initializing...
+01 Sep 2017 09:04:15,934 INFO  [main] model.fUML_SyntaxAssembler initializing...
+01 Sep 2017 09:04:15,939 INFO  [main] model.InMemoryRepository performing package merge...
+01 Sep 2017 09:04:15,972 INFO  [main] model.InMemoryRepository cacheing classifier attributes and operations...
+01 Sep 2017 09:04:15,999 INFO  [main] library.Library initializing...
+01 Sep 2017 09:04:16,567 INFO  [main] fuml.Fuml loading artifact, PlasmaSDODataTypes_v1_1.uml
+01 Sep 2017 09:04:16,690 INFO  [main] fuml.Fuml loading artifact, datatypes.uml
+01 Sep 2017 09:04:16,888 INFO  [main] fuml.Fuml loading artifact, social-graph.uml
+01 Sep 2017 09:04:17,152 WARN  [main] config.UserDefinedRowKeyFieldConfig expected value contraint total-digits for integral property, {http://cloudgraph.org/test/datatypes}Node.rootId - row key fields are fixed length and integral properties used in row key fields should be annotated with a value constraint with the total-digits set - defaulting to max size for datatype, Long.
+01 Sep 2017 09:04:17,153 WARN  [main] config.UserDefinedRowKeyFieldConfig expected value contraint total-digits for integral property, {http://cloudgraph.org/test/datatypes}Node.rootId - row key fields are fixed length and integral properties used in row key fields should be annotated with a value constraint with the total-digits set - defaulting to max size for datatype, Long.
+01 Sep 2017 09:04:17,154 WARN  [main] config.UserDefinedRowKeyFieldConfig expected value contraint total-digits for integral property, {http://cloudgraph.org/test/datatypes}Node.rootId - row key fields are fixed length and integral properties used in row key fields should be annotated with a value constraint with the total-digits set - defaulting to max size for datatype, Long.
+01 Sep 2017 09:04:17,154 WARN  [main] config.UserDefinedRowKeyFieldConfig expected value contraint total-digits for integral property, {http://cloudgraph.org/test/datatypes}Node.intField - row key fields are fixed length and integral properties used in row key fields should be annotated with a value constraint with the total-digits set - defaulting to max size for datatype, Int.
+01 Sep 2017 09:04:17,155 WARN  [main] config.UserDefinedRowKeyFieldConfig expected value contraint total-digits for integral property, {http://cloudgraph.org/test/datatypes}Node.rootId - row key fields are fixed length and integral properties used in row key fields should be annotated with a value constraint with the total-digits set - defaulting to max size for datatype, Long.
+01 Sep 2017 09:04:17,155 WARN  [main] config.UserDefinedRowKeyFieldConfig expected value contraint total-digits for integral property, {http://cloudgraph.org/test/datatypes}Node.longField - row key fields are fixed length and integral properties used in row key fields should be annotated with a value constraint with the total-digits set - defaulting to max size for datatype, Long.
+01 Sep 2017 09:04:17,156 WARN  [main] config.UserDefinedRowKeyFieldConfig expected value contraint total-digits for integral property, {http://cloudgraph.org/test/datatypes}Node.rootId - row key fields are fixed length and integral properties used in row key fields should be annotated with a value constraint with the total-digits set - defaulting to max size for datatype, Long.
+01 Sep 2017 09:04:17,156 WARN  [main] config.UserDefinedRowKeyFieldConfig expected value contraint total-digits for integral property, {http://cloudgraph.org/test/datatypes}Node.rootId - row key fields are fixed length and integral properties used in row key fields should be annotated with a value constraint with the total-digits set - defaulting to max size for datatype, Long.
+01 Sep 2017 09:04:17,305 ERROR [main] util.Shell Failed to locate the winutils binary in the hadoop binary path
+java.io.IOException: Could not locate executable null\bin\winutils.exe in the Hadoop binaries.
+	at org.apache.hadoop.util.Shell.getQualifiedBinPath(Shell.java:379)
+	at org.apache.hadoop.util.Shell.getWinUtilsPath(Shell.java:394)
+	at org.apache.hadoop.util.Shell.<clinit>(Shell.java:387)
+	at org.apache.hadoop.util.StringUtils.<clinit>(StringUtils.java:80)
+	at org.apache.hadoop.conf.Configuration.getBoolean(Configuration.java:1437)
+	at org.apache.hadoop.hbase.HBaseConfiguration.checkDefaultsVersion(HBaseConfiguration.java:67)
+	at org.apache.hadoop.hbase.HBaseConfiguration.addHbaseResources(HBaseConfiguration.java:81)
+	at org.apache.hadoop.hbase.HBaseConfiguration.create(HBaseConfiguration.java:96)
+	at org.cloudgraph.hbase.service.CloudGraphContext.<init>(CloudGraphContext.java:57)
+	at org.cloudgraph.hbase.service.CloudGraphContext.initInstance(CloudGraphContext.java:85)
+	at org.cloudgraph.hbase.service.CloudGraphContext.instance(CloudGraphContext.java:79)
+	at org.cloudgraph.hbase.connect.HBaseConnectionManager.<init>(HBaseConnectionManager.java:64)
+	at org.cloudgraph.hbase.connect.HBaseConnectionManager.initInstance(HBaseConnectionManager.java:85)
+	at org.cloudgraph.hbase.connect.HBaseConnectionManager.instance(HBaseConnectionManager.java:79)
+	at org.cloudgraph.hbase.io.GraphTableWriter.getTable(GraphTableWriter.java:83)
+	at org.cloudgraph.hbase.io.GraphRowWriter.createSequenceMapping(GraphRowWriter.java:231)
+	at org.cloudgraph.hbase.io.GraphRowWriter.getSequenceMapping(GraphRowWriter.java:86)
+	at org.cloudgraph.hbase.io.GraphRowWriter.newSequence(GraphRowWriter.java:359)
+	at org.cloudgraph.hbase.io.GraphEdgeWriter.getOrCreateSequence(GraphEdgeWriter.java:590)
+	at org.cloudgraph.hbase.io.GraphEdgeWriter.addAll(GraphEdgeWriter.java:403)
+	at org.cloudgraph.hbase.mutation.Create.collect(Create.java:107)
+	at org.cloudgraph.hbase.mutation.GraphMutationCollector.create(GraphMutationCollector.java:264)
+	at org.cloudgraph.hbase.mutation.GraphMutationCollector.collectChanges(GraphMutationCollector.java:128)
+	at org.cloudgraph.hbase.service.GraphDispatcher.commit(GraphDispatcher.java:106)
+	at org.cloudgraph.hbase.service.HBaseGraphService.commit(HBaseGraphService.java:181)
+	at org.plasma.sdo.access.client.PojoDataAccessClient.commit(PojoDataAccessClient.java:150)
+	at org.plasma.sdo.access.client.SDODataAccessClient.commit(SDODataAccessClient.java:140)
+	at org.cloudgraph.hbase.scan.StringFuzzyRowKeyScanTest.testWildcard(StringFuzzyRowKeyScanTest.java:54)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at junit.framework.TestCase.runTest(TestCase.java:154)
+	at junit.framework.TestCase.runBare(TestCase.java:127)
+	at junit.framework.TestResult$1.protect(TestResult.java:106)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.framework.TestResult.run(TestResult.java:109)
+	at junit.framework.TestCase.run(TestCase.java:118)
+	at junit.framework.TestSuite.runTest(TestSuite.java:208)
+	at junit.framework.TestSuite.run(TestSuite.java:203)
+	at junit.extensions.TestDecorator.basicRun(TestDecorator.java:22)
+	at junit.extensions.TestSetup$1.protect(TestSetup.java:19)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.extensions.TestSetup.run(TestSetup.java:23)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.maven.surefire.junit.JUnitTestSet.execute(JUnitTestSet.java:95)
+	at org.apache.maven.surefire.junit.JUnit3Provider.executeTestSet(JUnit3Provider.java:121)
+	at org.apache.maven.surefire.junit.JUnit3Provider.invoke(JUnit3Provider.java:98)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray(ReflectionUtils.java:189)
+	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:165)
+	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:85)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
+01 Sep 2017 09:04:17,359 WARN  [main] util.NativeCodeLoader Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+01 Sep 2017 09:04:31,582 INFO  [main] bind.PlasmaQueryDataBinding loading schema chain...
+01 Sep 2017 09:04:33,565 INFO  [main] fuml.Fuml loading artifact, PlasmaSDO.profile_v1_1.uml
+01 Sep 2017 09:04:33,578 INFO  [main] config.FumlConfiguration initializing...
+01 Sep 2017 09:04:33,580 INFO  [main] config.FumlConfigDataBinding loading schema chain...
+01 Sep 2017 09:04:33,641 INFO  [main] config.FumlConfiguration loading configuration, DefaultFumlConfig.xml
+01 Sep 2017 09:04:33,667 FATAL [main] bind.DefaultValidationEventHandler Line:Col:Offset[164:21:-1] - cvc-complex-type.2.4.b: The content of element 'cfg:Configuration' is not complete. One of '{LibraryConfiguration}' is expected.
+01 Sep 2017 09:04:33,743 INFO  [main] model.InMemoryRepository initializing...
+01 Sep 2017 09:04:33,745 INFO  [main] repository.RepositoryConfigDataBinding loading schema chain...
+01 Sep 2017 09:04:33,780 INFO  [main] model.PrimitiveTypesAssembler initializing...
+01 Sep 2017 09:04:33,801 INFO  [main] model.InfrastructureAssembler initializing...
+01 Sep 2017 09:04:33,858 INFO  [main] model.SuperstructureAssembler initializing...
+01 Sep 2017 09:04:33,889 INFO  [main] model.fUML_SyntaxAssembler initializing...
+01 Sep 2017 09:04:33,894 INFO  [main] model.InMemoryRepository performing package merge...
+01 Sep 2017 09:04:33,925 INFO  [main] model.InMemoryRepository cacheing classifier attributes and operations...
+01 Sep 2017 09:04:33,951 INFO  [main] library.Library initializing...
+01 Sep 2017 09:04:34,532 INFO  [main] fuml.Fuml loading artifact, PlasmaSDODataTypes_v1_1.uml
+01 Sep 2017 09:04:34,666 INFO  [main] fuml.Fuml loading artifact, datatypes.uml
+01 Sep 2017 09:04:34,878 INFO  [main] fuml.Fuml loading artifact, social-graph.uml
+01 Sep 2017 09:04:35,132 WARN  [main] config.UserDefinedRowKeyFieldConfig expected value contraint total-digits for integral property, {http://cloudgraph.org/test/datatypes}Node.rootId - row key fields are fixed length and integral properties used in row key fields should be annotated with a value constraint with the total-digits set - defaulting to max size for datatype, Long.
+01 Sep 2017 09:04:35,133 WARN  [main] config.UserDefinedRowKeyFieldConfig expected value contraint total-digits for integral property, {http://cloudgraph.org/test/datatypes}Node.rootId - row key fields are fixed length and integral properties used in row key fields should be annotated with a value constraint with the total-digits set - defaulting to max size for datatype, Long.
+01 Sep 2017 09:04:35,133 WARN  [main] config.UserDefinedRowKeyFieldConfig expected value contraint total-digits for integral property, {http://cloudgraph.org/test/datatypes}Node.rootId - row key fields are fixed length and integral properties used in row key fields should be annotated with a value constraint with the total-digits set - defaulting to max size for datatype, Long.
+01 Sep 2017 09:04:35,134 WARN  [main] config.UserDefinedRowKeyFieldConfig expected value contraint total-digits for integral property, {http://cloudgraph.org/test/datatypes}Node.intField - row key fields are fixed length and integral properties used in row key fields should be annotated with a value constraint with the total-digits set - defaulting to max size for datatype, Int.
+01 Sep 2017 09:04:35,134 WARN  [main] config.UserDefinedRowKeyFieldConfig expected value contraint total-digits for integral property, {http://cloudgraph.org/test/datatypes}Node.rootId - row key fields are fixed length and integral properties used in row key fields should be annotated with a value constraint with the total-digits set - defaulting to max size for datatype, Long.
+01 Sep 2017 09:04:35,135 WARN  [main] config.UserDefinedRowKeyFieldConfig expected value contraint total-digits for integral property, {http://cloudgraph.org/test/datatypes}Node.longField - row key fields are fixed length and integral properties used in row key fields should be annotated with a value constraint with the total-digits set - defaulting to max size for datatype, Long.
+01 Sep 2017 09:04:35,135 WARN  [main] config.UserDefinedRowKeyFieldConfig expected value contraint total-digits for integral property, {http://cloudgraph.org/test/datatypes}Node.rootId - row key fields are fixed length and integral properties used in row key fields should be annotated with a value constraint with the total-digits set - defaulting to max size for datatype, Long.
+01 Sep 2017 09:04:35,136 WARN  [main] config.UserDefinedRowKeyFieldConfig expected value contraint total-digits for integral property, {http://cloudgraph.org/test/datatypes}Node.rootId - row key fields are fixed length and integral properties used in row key fields should be annotated with a value constraint with the total-digits set - defaulting to max size for datatype, Long.
+01 Sep 2017 09:04:35,299 ERROR [main] util.Shell Failed to locate the winutils binary in the hadoop binary path
+java.io.IOException: Could not locate executable null\bin\winutils.exe in the Hadoop binaries.
+	at org.apache.hadoop.util.Shell.getQualifiedBinPath(Shell.java:379)
+	at org.apache.hadoop.util.Shell.getWinUtilsPath(Shell.java:394)
+	at org.apache.hadoop.util.Shell.<clinit>(Shell.java:387)
+	at org.apache.hadoop.util.StringUtils.<clinit>(StringUtils.java:80)
+	at org.apache.hadoop.conf.Configuration.getBoolean(Configuration.java:1437)
+	at org.apache.hadoop.hbase.HBaseConfiguration.checkDefaultsVersion(HBaseConfiguration.java:67)
+	at org.apache.hadoop.hbase.HBaseConfiguration.addHbaseResources(HBaseConfiguration.java:81)
+	at org.apache.hadoop.hbase.HBaseConfiguration.create(HBaseConfiguration.java:96)
+	at org.cloudgraph.hbase.service.CloudGraphContext.<init>(CloudGraphContext.java:57)
+	at org.cloudgraph.hbase.service.CloudGraphContext.initInstance(CloudGraphContext.java:85)
+	at org.cloudgraph.hbase.service.CloudGraphContext.instance(CloudGraphContext.java:79)
+	at org.cloudgraph.hbase.connect.HBaseConnectionManager.<init>(HBaseConnectionManager.java:64)
+	at org.cloudgraph.hbase.connect.HBaseConnectionManager.initInstance(HBaseConnectionManager.java:85)
+	at org.cloudgraph.hbase.connect.HBaseConnectionManager.instance(HBaseConnectionManager.java:79)
+	at org.cloudgraph.hbase.io.GraphTableWriter.getTable(GraphTableWriter.java:83)
+	at org.cloudgraph.hbase.io.GraphRowWriter.createSequenceMapping(GraphRowWriter.java:231)
+	at org.cloudgraph.hbase.io.GraphRowWriter.getSequenceMapping(GraphRowWriter.java:86)
+	at org.cloudgraph.hbase.io.GraphRowWriter.newSequence(GraphRowWriter.java:359)
+	at org.cloudgraph.hbase.io.GraphEdgeWriter.getOrCreateSequence(GraphEdgeWriter.java:590)
+	at org.cloudgraph.hbase.io.GraphEdgeWriter.addAll(GraphEdgeWriter.java:403)
+	at org.cloudgraph.hbase.mutation.Create.collect(Create.java:107)
+	at org.cloudgraph.hbase.mutation.GraphMutationCollector.create(GraphMutationCollector.java:264)
+	at org.cloudgraph.hbase.mutation.GraphMutationCollector.collectChanges(GraphMutationCollector.java:128)
+	at org.cloudgraph.hbase.service.GraphDispatcher.commit(GraphDispatcher.java:106)
+	at org.cloudgraph.hbase.service.HBaseGraphService.commit(HBaseGraphService.java:181)
+	at org.plasma.sdo.access.client.PojoDataAccessClient.commit(PojoDataAccessClient.java:150)
+	at org.plasma.sdo.access.client.SDODataAccessClient.commit(SDODataAccessClient.java:140)
+	at org.cloudgraph.hbase.scan.StringRowKeyGetTest.testEqual(StringRowKeyGetTest.java:54)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at junit.framework.TestCase.runTest(TestCase.java:154)
+	at junit.framework.TestCase.runBare(TestCase.java:127)
+	at junit.framework.TestResult$1.protect(TestResult.java:106)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.framework.TestResult.run(TestResult.java:109)
+	at junit.framework.TestCase.run(TestCase.java:118)
+	at junit.framework.TestSuite.runTest(TestSuite.java:208)
+	at junit.framework.TestSuite.run(TestSuite.java:203)
+	at junit.extensions.TestDecorator.basicRun(TestDecorator.java:22)
+	at junit.extensions.TestSetup$1.protect(TestSetup.java:19)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.extensions.TestSetup.run(TestSetup.java:23)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.maven.surefire.junit.JUnitTestSet.execute(JUnitTestSet.java:95)
+	at org.apache.maven.surefire.junit.JUnit3Provider.executeTestSet(JUnit3Provider.java:121)
+	at org.apache.maven.surefire.junit.JUnit3Provider.invoke(JUnit3Provider.java:98)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray(ReflectionUtils.java:189)
+	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:165)
+	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:85)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
+01 Sep 2017 09:04:35,353 WARN  [main] util.NativeCodeLoader Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+01 Sep 2017 09:04:47,780 INFO  [main] bind.PlasmaQueryDataBinding loading schema chain...
+01 Sep 2017 09:04:49,240 INFO  [main] fuml.Fuml loading artifact, PlasmaSDO.profile_v1_1.uml
+01 Sep 2017 09:04:49,252 INFO  [main] config.FumlConfiguration initializing...
+01 Sep 2017 09:04:49,254 INFO  [main] config.FumlConfigDataBinding loading schema chain...
+01 Sep 2017 09:04:49,316 INFO  [main] config.FumlConfiguration loading configuration, DefaultFumlConfig.xml
+01 Sep 2017 09:04:49,339 FATAL [main] bind.DefaultValidationEventHandler Line:Col:Offset[164:21:-1] - cvc-complex-type.2.4.b: The content of element 'cfg:Configuration' is not complete. One of '{LibraryConfiguration}' is expected.
+01 Sep 2017 09:04:49,414 INFO  [main] model.InMemoryRepository initializing...
+01 Sep 2017 09:04:49,416 INFO  [main] repository.RepositoryConfigDataBinding loading schema chain...
+01 Sep 2017 09:04:49,461 INFO  [main] model.PrimitiveTypesAssembler initializing...
+01 Sep 2017 09:04:49,479 INFO  [main] model.InfrastructureAssembler initializing...
+01 Sep 2017 09:04:49,528 INFO  [main] model.SuperstructureAssembler initializing...
+01 Sep 2017 09:04:49,561 INFO  [main] model.fUML_SyntaxAssembler initializing...
+01 Sep 2017 09:04:49,565 INFO  [main] model.InMemoryRepository performing package merge...
+01 Sep 2017 09:04:49,596 INFO  [main] model.InMemoryRepository cacheing classifier attributes and operations...
+01 Sep 2017 09:04:49,621 INFO  [main] library.Library initializing...
+01 Sep 2017 09:04:50,170 INFO  [main] fuml.Fuml loading artifact, PlasmaSDODataTypes_v1_1.uml
+01 Sep 2017 09:04:50,299 INFO  [main] fuml.Fuml loading artifact, datatypes.uml
+01 Sep 2017 09:04:50,494 INFO  [main] fuml.Fuml loading artifact, social-graph.uml
+01 Sep 2017 09:04:50,869 ERROR [main] util.Shell Failed to locate the winutils binary in the hadoop binary path
+java.io.IOException: Could not locate executable null\bin\winutils.exe in the Hadoop binaries.
+	at org.apache.hadoop.util.Shell.getQualifiedBinPath(Shell.java:379)
+	at org.apache.hadoop.util.Shell.getWinUtilsPath(Shell.java:394)
+	at org.apache.hadoop.util.Shell.<clinit>(Shell.java:387)
+	at org.apache.hadoop.util.StringUtils.<clinit>(StringUtils.java:80)
+	at org.apache.hadoop.conf.Configuration.getBoolean(Configuration.java:1437)
+	at org.apache.hadoop.hbase.HBaseConfiguration.checkDefaultsVersion(HBaseConfiguration.java:67)
+	at org.apache.hadoop.hbase.HBaseConfiguration.addHbaseResources(HBaseConfiguration.java:81)
+	at org.apache.hadoop.hbase.HBaseConfiguration.create(HBaseConfiguration.java:96)
+	at org.cloudgraph.hbase.service.CloudGraphContext.<init>(CloudGraphContext.java:57)
+	at org.cloudgraph.hbase.service.CloudGraphContext.initInstance(CloudGraphContext.java:85)
+	at org.cloudgraph.hbase.service.CloudGraphContext.instance(CloudGraphContext.java:79)
+	at org.cloudgraph.hbase.connect.HBaseConnectionManager.<init>(HBaseConnectionManager.java:64)
+	at org.cloudgraph.hbase.connect.HBaseConnectionManager.initInstance(HBaseConnectionManager.java:85)
+	at org.cloudgraph.hbase.connect.HBaseConnectionManager.instance(HBaseConnectionManager.java:79)
+	at org.cloudgraph.hbase.io.GraphTableWriter.getTable(GraphTableWriter.java:83)
+	at org.cloudgraph.hbase.io.GraphRowWriter.createSequenceMapping(GraphRowWriter.java:231)
+	at org.cloudgraph.hbase.io.GraphRowWriter.getSequenceMapping(GraphRowWriter.java:86)
+	at org.cloudgraph.hbase.io.GraphRowWriter.newSequence(GraphRowWriter.java:359)
+	at org.cloudgraph.hbase.io.GraphEdgeWriter.getOrCreateSequence(GraphEdgeWriter.java:590)
+	at org.cloudgraph.hbase.io.GraphEdgeWriter.addAll(GraphEdgeWriter.java:403)
+	at org.cloudgraph.hbase.mutation.Create.collect(Create.java:107)
+	at org.cloudgraph.hbase.mutation.GraphMutationCollector.create(GraphMutationCollector.java:264)
+	at org.cloudgraph.hbase.mutation.GraphMutationCollector.collectChanges(GraphMutationCollector.java:128)
+	at org.cloudgraph.hbase.service.GraphDispatcher.commit(GraphDispatcher.java:106)
+	at org.cloudgraph.hbase.service.HBaseGraphService.commit(HBaseGraphService.java:181)
+	at org.plasma.sdo.access.client.PojoDataAccessClient.commit(PojoDataAccessClient.java:150)
+	at org.plasma.sdo.access.client.SDODataAccessClient.commit(SDODataAccessClient.java:140)
+	at org.cloudgraph.hbase.social.SocialGraphWideRowTest.testDeletePhotos(SocialGraphWideRowTest.java:260)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at junit.framework.TestCase.runTest(TestCase.java:154)
+	at junit.framework.TestCase.runBare(TestCase.java:127)
+	at junit.framework.TestResult$1.protect(TestResult.java:106)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.framework.TestResult.run(TestResult.java:109)
+	at junit.framework.TestCase.run(TestCase.java:118)
+	at junit.framework.TestSuite.runTest(TestSuite.java:208)
+	at junit.framework.TestSuite.run(TestSuite.java:203)
+	at junit.extensions.TestDecorator.basicRun(TestDecorator.java:22)
+	at junit.extensions.TestSetup$1.protect(TestSetup.java:19)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.extensions.TestSetup.run(TestSetup.java:23)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.maven.surefire.junit.JUnitTestSet.execute(JUnitTestSet.java:95)
+	at org.apache.maven.surefire.junit.JUnit3Provider.executeTestSet(JUnit3Provider.java:121)
+	at org.apache.maven.surefire.junit.JUnit3Provider.invoke(JUnit3Provider.java:98)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray(ReflectionUtils.java:189)
+	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:165)
+	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:85)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
+01 Sep 2017 09:04:50,917 WARN  [main] util.NativeCodeLoader Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+01 Sep 2017 09:05:07,041 INFO  [main] bind.PlasmaQueryDataBinding loading schema chain...
+01 Sep 2017 09:05:11,296 WARN  [main] fuml.FumlRelationCache potential circular reference: http://cloudgraph.org/test/socialgraph/actor#Topic.child->http://cloudgraph.org/test/socialgraph/actor#Topic
+01 Sep 2017 09:05:18,072 INFO  [main] fuml.Fuml loading artifact, PlasmaSDO.profile_v1_1.uml
+01 Sep 2017 09:05:18,087 INFO  [main] config.FumlConfiguration initializing...
+01 Sep 2017 09:05:18,089 INFO  [main] config.FumlConfigDataBinding loading schema chain...
+01 Sep 2017 09:05:18,152 INFO  [main] config.FumlConfiguration loading configuration, DefaultFumlConfig.xml
+01 Sep 2017 09:05:18,178 FATAL [main] bind.DefaultValidationEventHandler Line:Col:Offset[164:21:-1] - cvc-complex-type.2.4.b: The content of element 'cfg:Configuration' is not complete. One of '{LibraryConfiguration}' is expected.
+01 Sep 2017 09:05:18,251 INFO  [main] model.InMemoryRepository initializing...
+01 Sep 2017 09:05:18,252 INFO  [main] repository.RepositoryConfigDataBinding loading schema chain...
+01 Sep 2017 09:05:18,291 INFO  [main] model.PrimitiveTypesAssembler initializing...
+01 Sep 2017 09:05:18,316 INFO  [main] model.InfrastructureAssembler initializing...
+01 Sep 2017 09:05:18,366 INFO  [main] model.SuperstructureAssembler initializing...
+01 Sep 2017 09:05:18,394 INFO  [main] model.fUML_SyntaxAssembler initializing...
+01 Sep 2017 09:05:18,399 INFO  [main] model.InMemoryRepository performing package merge...
+01 Sep 2017 09:05:18,437 INFO  [main] model.InMemoryRepository cacheing classifier attributes and operations...
+01 Sep 2017 09:05:18,463 INFO  [main] library.Library initializing...
+01 Sep 2017 09:05:19,043 INFO  [main] fuml.Fuml loading artifact, PlasmaSDODataTypes_v1_1.uml
+01 Sep 2017 09:05:19,181 INFO  [main] fuml.Fuml loading artifact, datatypes.uml
+01 Sep 2017 09:05:19,378 INFO  [main] fuml.Fuml loading artifact, social-graph.uml
+01 Sep 2017 09:05:19,869 ERROR [main] util.Shell Failed to locate the winutils binary in the hadoop binary path
+java.io.IOException: Could not locate executable null\bin\winutils.exe in the Hadoop binaries.
+	at org.apache.hadoop.util.Shell.getQualifiedBinPath(Shell.java:379)
+	at org.apache.hadoop.util.Shell.getWinUtilsPath(Shell.java:394)
+	at org.apache.hadoop.util.Shell.<clinit>(Shell.java:387)
+	at org.apache.hadoop.util.StringUtils.<clinit>(StringUtils.java:80)
+	at org.apache.hadoop.conf.Configuration.getBoolean(Configuration.java:1437)
+	at org.apache.hadoop.hbase.HBaseConfiguration.checkDefaultsVersion(HBaseConfiguration.java:67)
+	at org.apache.hadoop.hbase.HBaseConfiguration.addHbaseResources(HBaseConfiguration.java:81)
+	at org.apache.hadoop.hbase.HBaseConfiguration.create(HBaseConfiguration.java:96)
+	at org.cloudgraph.hbase.service.CloudGraphContext.<init>(CloudGraphContext.java:57)
+	at org.cloudgraph.hbase.service.CloudGraphContext.initInstance(CloudGraphContext.java:85)
+	at org.cloudgraph.hbase.service.CloudGraphContext.instance(CloudGraphContext.java:79)
+	at org.cloudgraph.hbase.connect.HBaseConnectionManager.<init>(HBaseConnectionManager.java:64)
+	at org.cloudgraph.hbase.connect.HBaseConnectionManager.initInstance(HBaseConnectionManager.java:85)
+	at org.cloudgraph.hbase.connect.HBaseConnectionManager.instance(HBaseConnectionManager.java:79)
+	at org.cloudgraph.hbase.io.GraphTableWriter.getTable(GraphTableWriter.java:83)
+	at org.cloudgraph.hbase.io.GraphRowWriter.createSequenceMapping(GraphRowWriter.java:231)
+	at org.cloudgraph.hbase.io.GraphRowWriter.getSequenceMapping(GraphRowWriter.java:86)
+	at org.cloudgraph.hbase.io.GraphRowWriter.newSequence(GraphRowWriter.java:359)
+	at org.cloudgraph.hbase.io.GraphEdgeWriter.getOrCreateSequence(GraphEdgeWriter.java:590)
+	at org.cloudgraph.hbase.io.GraphEdgeWriter.addAll(GraphEdgeWriter.java:403)
+	at org.cloudgraph.hbase.mutation.Create.collect(Create.java:107)
+	at org.cloudgraph.hbase.mutation.GraphMutationCollector.create(GraphMutationCollector.java:264)
+	at org.cloudgraph.hbase.mutation.GraphMutationCollector.collectChanges(GraphMutationCollector.java:128)
+	at org.cloudgraph.hbase.service.GraphDispatcher.commit(GraphDispatcher.java:106)
+	at org.cloudgraph.hbase.service.HBaseGraphService.commit(HBaseGraphService.java:181)
+	at org.plasma.sdo.access.client.PojoDataAccessClient.commit(PojoDataAccessClient.java:150)
+	at org.plasma.sdo.access.client.SDODataAccessClient.commit(SDODataAccessClient.java:140)
+	at org.cloudgraph.hbase.slice.DatePredicateSliceTest.testBetween(DatePredicateSliceTest.java:100)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at junit.framework.TestCase.runTest(TestCase.java:154)
+	at junit.framework.TestCase.runBare(TestCase.java:127)
+	at junit.framework.TestResult$1.protect(TestResult.java:106)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.framework.TestResult.run(TestResult.java:109)
+	at junit.framework.TestCase.run(TestCase.java:118)
+	at junit.framework.TestSuite.runTest(TestSuite.java:208)
+	at junit.framework.TestSuite.run(TestSuite.java:203)
+	at junit.extensions.TestDecorator.basicRun(TestDecorator.java:22)
+	at junit.extensions.TestSetup$1.protect(TestSetup.java:19)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.extensions.TestSetup.run(TestSetup.java:23)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.maven.surefire.junit.JUnitTestSet.execute(JUnitTestSet.java:95)
+	at org.apache.maven.surefire.junit.JUnit3Provider.executeTestSet(JUnit3Provider.java:121)
+	at org.apache.maven.surefire.junit.JUnit3Provider.invoke(JUnit3Provider.java:98)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray(ReflectionUtils.java:189)
+	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:165)
+	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:85)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
+01 Sep 2017 09:05:19,949 WARN  [main] util.NativeCodeLoader Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+01 Sep 2017 09:05:32,174 INFO  [main] slice.DatePredicateSliceTest Sat Sep 02 09:05:49 MST 2017
+01 Sep 2017 09:05:32,189 INFO  [main] slice.DatePredicateSliceTest Tue Sep 05 09:05:49 MST 2017
+01 Sep 2017 09:05:44,499 INFO  [main] bind.PlasmaQueryDataBinding loading schema chain...
+01 Sep 2017 09:05:57,240 WARN  [main] fuml.FumlRelationCache potential circular reference: http://cloudgraph.org/test/socialgraph/actor#Topic.child->http://cloudgraph.org/test/socialgraph/actor#Topic
+01 Sep 2017 09:06:05,243 WARN  [main] graph.DistributedAssembler ignoring toubstone result row 'AC                              |fol1504281960153test.com        '
+01 Sep 2017 09:06:05,705 WARN  [main] graph.DistributedAssembler ignoring toubstone result row 'TP                              |Politics                        |c28c1511-1059-4b16-be95-aacd075e9314'
+01 Sep 2017 09:06:05,891 WARN  [main] graph.DistributedAssembler ignoring toubstone result row 'TP                              |Politics                        |c28c1511-1059-4b16-be95-aacd075e9314'
+01 Sep 2017 09:06:26,140 WARN  [main] key.CompositeRowKeyReader ignoring predefined field config(0), TYPE
+01 Sep 2017 09:06:26,141 WARN  [main] key.CompositeRowKeyReader ignoring predefined field config(2), UUID
+01 Sep 2017 09:06:26,141 WARN  [main] key.CompositeRowKeyReader ignoring predefined field config(0), TYPE
+01 Sep 2017 09:06:26,142 WARN  [main] key.CompositeRowKeyReader ignoring predefined field config(2), UUID
+01 Sep 2017 09:06:27,721 WARN  [main] key.CompositeRowKeyReader ignoring predefined field config(0), TYPE
+01 Sep 2017 09:06:27,721 WARN  [main] key.CompositeRowKeyReader ignoring predefined field config(2), UUID
+01 Sep 2017 09:06:27,722 WARN  [main] key.CompositeRowKeyReader ignoring predefined field config(0), TYPE
+01 Sep 2017 09:06:27,723 WARN  [main] key.CompositeRowKeyReader ignoring predefined field config(2), UUID
+01 Sep 2017 09:06:37,145 WARN  [main] key.CompositeRowKeyReader ignoring predefined field config(0), TYPE
+01 Sep 2017 09:06:37,146 WARN  [main] key.CompositeRowKeyReader ignoring predefined field config(2), UUID
+01 Sep 2017 09:06:37,146 WARN  [main] key.CompositeRowKeyReader ignoring predefined field config(0), TYPE
+01 Sep 2017 09:06:37,146 WARN  [main] key.CompositeRowKeyReader ignoring predefined field config(2), UUID
+01 Sep 2017 09:06:38,811 WARN  [main] key.CompositeRowKeyReader ignoring predefined field config(0), TYPE
+01 Sep 2017 09:06:38,811 WARN  [main] key.CompositeRowKeyReader ignoring predefined field config(2), UUID
+01 Sep 2017 09:06:38,812 WARN  [main] key.CompositeRowKeyReader ignoring predefined field config(0), TYPE
+01 Sep 2017 09:06:38,812 WARN  [main] key.CompositeRowKeyReader ignoring predefined field config(2), UUID
+01 Sep 2017 09:06:43,756 WARN  [main] scan.ScanCollector no user defined row-key field for query path 'blog/topic/name' - deferring to graph recogniser post processor
+01 Sep 2017 09:06:43,757 WARN  [main] scan.ScanCollector no user defined row-key field for query path 'blog/topic/name' - deferring to graph recogniser post processor
