@@ -74,6 +74,10 @@ public class KeyValue {
   }
 
   public String toString() {
-    return this.prop + "/" + String.valueOf(this.value);
+
+    if (this.propertyPath != null)
+      return this.propertyPath + ":" + this.prop + "/" + String.valueOf(this.value);
+    else
+      return this.prop + "/" + String.valueOf(this.value);
   }
 }

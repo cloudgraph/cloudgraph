@@ -162,7 +162,7 @@ public class GraphSliceAssembler extends DistributedAssembler {
           if (!tableConfig.getName().equals(externalTableReader.getTableConfig().getName()))
             log.debug("switching row context from table: '" + tableConfig.getName()
                 + "' to table: '" + externalTableReader.getTableConfig().getName() + "'");
-        Map<String, Result> resultRows = null;
+        HashSet<String> resultRows = null;
         if (prop.isMany() && where != null) {
           resultRows = this.slice.filter(childType, edgeReader, where, rowReader,
               externalTableReader);
@@ -212,18 +212,9 @@ public class GraphSliceAssembler extends DistributedAssembler {
   // each edge is a new root in the target table
   // so need a new row reader for each
   private void assembleExternalEdges(PlasmaDataObject target, long targetSequence,
-      PlasmaProperty prop, EdgeReader collection, RowReader rowReader,
-      Map<String, Result> resultRows, TableReader childTableReader, int level) throws IOException {
-    int i = 0;
+      PlasmaProperty prop, EdgeReader collection, RowReader rowReader, HashSet<String> resultRows,
+      TableReader childTableReader, int level) throws IOException {
     for (String childRowKey : collection.getRowKeys()) {
-      // need to look up an existing row reader based on the root UUID of
-      // the external graph
-      // or the row key, and the row key is all we have in the local graph
-      // state. The edge UUID
-      // is a local graph UUID.
-      // byte[] childRowKey =
-      // rowReader.getGraphState().getRowKey(edge.getUuid()); // use local
-      // edge UUID
       RowReader existingChildRowReader = childTableReader.getRowReader(childRowKey);
       if (existingChildRowReader != null) {
         // we've seen this child before so his data is complete, just
@@ -234,23 +225,11 @@ public class GraphSliceAssembler extends DistributedAssembler {
         continue;
       }
       // String childRowKeyStr = new String(childRowKey, this.charset);
-      if (resultRows != null && resultRows.get(childRowKey) == null)
+      if (resultRows != null && !resultRows.contains(childRowKey))
         continue; // not found in predicate
-
-      // // create a row reader for every external edge
-      // Result childResult = fetchGraph(childRowKey, childTableReader,
-      // edge.getType());
-      // if
-      // (childResult.containsColumn(rootTableReader.getTableConfig().getDataColumnFamilyNameBytes(),
-      // GraphMetadata.TOUMBSTONE_COLUMN_NAME_BYTES)) {
-      // log.warn("ignoring toubstone result row '" +
-      // childRowKey + "'");
-      // continue; // ignore toumbstone edge
-      // }
 
       this.assembleExternalEdge(childRowKey, collection, childTableReader, target, targetSequence,
           prop, level);
-      i++;
     }
   }
 

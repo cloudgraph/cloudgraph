@@ -75,7 +75,9 @@ public class ExternalEdgeRecognizerRelationalBinaryExpr extends DefaultRelationa
    * For external edges, we have only the row key fields to evaluate and the
    * predicate tree may contain predicates with properties which target fields
    * anywhere in the target graph including properties outside the row key. So
-   * for external edge evaluators always return true when a value is not found.
+   * for external edge evaluators always return true when a value is not found,
+   * but indicate the row evaluation was not complete so downstream actions can
+   * be taken.
    * </p>
    * 
    * @param context
@@ -106,7 +108,11 @@ public class ExternalEdgeRecognizerRelationalBinaryExpr extends DefaultRelationa
         return false;
       }
     }
-    return true; // for external edges
+    // for external edges, we return true when the
+    // row field is not found but indicate
+    // the row evaluation was not complete.
+    ctx.setRowEvaluatedCompletely(false);
+    return true;
   }
 
 }

@@ -17,6 +17,7 @@ package org.cloudgraph.hbase.graph;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -161,7 +162,7 @@ class ParallelSliceSubgraphTask extends DefaultSubgraphTask implements SubgraphT
           if (!tableConfig.getName().equals(externalTableReader.getTableConfig().getName()))
             log.debug("switching row context from table: '" + tableConfig.getName()
                 + "' to table: '" + externalTableReader.getTableConfig().getName() + "'");
-        Map<String, Result> resultRows = null;
+        HashSet<String> resultRows = null;
         if (prop.isMany() && where != null) {
           resultRows = this.sliceSupport.filter(childType, edgeReader, where, rowReader,
               externalTableReader);
@@ -249,21 +250,12 @@ class ParallelSliceSubgraphTask extends DefaultSubgraphTask implements SubgraphT
    * @throws IOException
    */
   protected void assembleExternalEdges(PlasmaDataObject target, long targetSequence,
-      PlasmaProperty prop, EdgeReader collection, RowReader rowReader,
-      Map<String, Result> resultRows, TableReader childTableReader, int level) throws IOException {
+      PlasmaProperty prop, EdgeReader collection, RowReader rowReader, HashSet<String> resultRows,
+      TableReader childTableReader, int level) throws IOException {
     for (String childRowKey : collection.getRowKeys()) {
       Result childResult = null;
 
-      // need to look up an existing row reader based on the root UUID of
-      // the external graph
-      // or the row key, and the row key is all we have in the local graph
-      // state. The edge UUID
-      // is a local graph UUID.
-      // childRowKey =
-      // rowReader.getGraphState().getRowKey(edge.getUuid()); // use local
-      // edge UUID
-      // String childRowKeyStr = Bytes.toString(childRowKey);
-      if (resultRows != null && resultRows.get(childRowKey) == null)
+      if (resultRows != null && !resultRows.contains(childRowKey))
         continue; // not found in predicate
 
       // see if this row is locked during fetch, and wait for it

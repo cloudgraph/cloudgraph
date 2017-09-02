@@ -39,6 +39,11 @@ import org.plasma.sdo.PlasmaType;
 public class ExternalEdgeRecognizerContext implements EvaluationContext {
 
   private CompositeRowKeyReader rowKeyReader;
+  /**
+   * Whether the row contains all fields represented in the predicate
+   * expressions and all predicates were evaluated successfully.
+   */
+  private boolean rowEvaluatedCompletely;
 
   /**
    * Constructs an empty context.
@@ -47,8 +52,9 @@ public class ExternalEdgeRecognizerContext implements EvaluationContext {
     this.rowKeyReader = new CompositeRowKeyReader(contextType);
   }
 
-  public void setRowKey(String rowKey) {
-    this.rowKeyReader.load(rowKey);
+  public void read(String rowKey) {
+    this.rowKeyReader.read(rowKey);
+    this.rowEvaluatedCompletely = true;
   }
 
   public Object getValue(Endpoint endpoint) {
@@ -57,6 +63,14 @@ public class ExternalEdgeRecognizerContext implements EvaluationContext {
 
   public PlasmaType getContextType() {
     return this.rowKeyReader.getContextType();
+  }
+
+  public boolean isRowEvaluatedCompletely() {
+    return rowEvaluatedCompletely;
+  }
+
+  void setRowEvaluatedCompletely(boolean rowEvaluatedCompletely) {
+    this.rowEvaluatedCompletely = rowEvaluatedCompletely;
   }
 
 }

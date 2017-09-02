@@ -48,6 +48,7 @@ public class CompositeRowKeyReader {
   private DataGraphConfig graph;
   private PlasmaType contextType;
   private String rowKeyFeildDelimRegexp;
+  private Map<Integer, Endpoint> endpointMap;
   private Map<Endpoint, KeyValue> valueMap;
 
   @SuppressWarnings("unused")
@@ -61,6 +62,7 @@ public class CompositeRowKeyReader {
     this.charset = table.getCharset();
 
     this.valueMap = new HashMap<>();
+    this.endpointMap = new HashMap<>();
     this.rowKeyFeildDelimRegexp = this.graph.getColumnKeyFieldDelimiter();
     if (this.rowKeyFeildDelimRegexp.length() == 1) {
       char c = this.rowKeyFeildDelimRegexp.charAt(0);
@@ -82,7 +84,7 @@ public class CompositeRowKeyReader {
     return contextType;
   }
 
-  public void load(String rowKey) {
+  public void read(String rowKey) {
     this.valueMap.clear();
     String[] tokens = rowKey.split(this.rowKeyFeildDelimRegexp);
     for (int i = 0; i < tokens.length; i++) {
@@ -100,12 +102,16 @@ public class CompositeRowKeyReader {
             + endpointProp + " - continuing");
         continue;
       }
+      Endpoint endpoint = this.endpointMap.get(i);
+      if (endpoint == null) {
+        endpoint = new Endpoint(endpointProp, userDefinedKeyField.getPropertyPath());
+        this.endpointMap.put(i, endpoint);
+      }
       String stringValue = tokens[i].trim();
       Object value = HBaseDataConverter.INSTANCE.fromBytes(endpointProp,
           stringValue.getBytes(this.charset));
       KeyValue kv = new KeyValue(endpointProp, value);
       kv.setPropertyPath(userDefinedKeyField.getPropertyPath());
-      Endpoint endpoint = new Endpoint(endpointProp, userDefinedKeyField.getPropertyPath());
       this.valueMap.put(endpoint, kv);
     }
   }

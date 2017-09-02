@@ -132,7 +132,7 @@ class GraphSliceSupport {
    * Filters results in two stages, first constructs an edge recognizer which
    * interrogates each row key in the given edge collection to determine if it
    * satisfies the given predicate tree. This step is performed in memory only,
-   * no RPC calls are needed. This for the filtered results performs a graph
+   * no RPC calls are needed. Then for the filtered results performs a graph
    * assembly for each external edge, then uses a graph recognizer to determine
    * if the assembled graph satisfies the given predicate tree
    * 
@@ -151,16 +151,16 @@ class GraphSliceSupport {
    * @throws IllegalStateException
    *           if the edge collection is not external
    */
-  public Map<String, Result> filter(PlasmaType contextType, EdgeOperation collection, Where where,
+  public HashSet<String> filter(PlasmaType contextType, EdgeOperation collection, Where where,
       RowReader rowReader, TableReader tableReader) throws IOException {
-    Map<String, Result> results = new HashMap<String, Result>();
+    HashSet<String> results = new HashSet<>((int) collection.getCount());
 
     if (!collection.isExternal())
       throw new IllegalStateException("expected external edge collection not, " + collection);
 
     if (log.isDebugEnabled())
       log(where);
-    List<String> edgeFilteredRowKeys = new ArrayList<>();
+    List<String> graphEvalRowKeys = new ArrayList<>();
     ExternalEdgeRecognizerSyntaxTreeAssembler edgeSyntaxAssembler = new ExternalEdgeRecognizerSyntaxTreeAssembler(
         where, rowReader.getDataGraph(), contextType, rowReader.getRootType());
     Expr edgeRecognizerRootExpr = edgeSyntaxAssembler.getResult();
@@ -172,15 +172,19 @@ class GraphSliceSupport {
     ExternalEdgeRecognizerContext edgeRecogniserContext = new ExternalEdgeRecognizerContext(
         contextType);
     for (String rowKey : collection.getRowKeys()) {
-      edgeRecogniserContext.setRowKey(rowKey);
-      if (edgeRecognizerRootExpr.evaluate(edgeRecogniserContext))
-        edgeFilteredRowKeys.add(rowKey);
+      edgeRecogniserContext.read(rowKey);
+      if (edgeRecognizerRootExpr.evaluate(edgeRecogniserContext)) {
+        if (!edgeRecogniserContext.isRowEvaluatedCompletely())
+          graphEvalRowKeys.add(rowKey);
+        else
+          results.add(rowKey);
+      }
     }
     if (log.isDebugEnabled())
-      log.debug("recognized " + edgeFilteredRowKeys.size() + " out of "
+      log.debug("recognized " + graphEvalRowKeys.size() + results.size() + " out of "
           + collection.getRowKeys().size() + " external edges");
-    if (edgeFilteredRowKeys.size() == 0)
-      return results; // no edges recognized
+    if (graphEvalRowKeys.size() == 0)
+      return results; // no edges recognized or all recognized by row key alone
 
     SelectionCollector selectionCollector = new SelectionCollector(where, contextType);
 
@@ -209,11 +213,11 @@ class GraphSliceSupport {
     Filter columnFilter = columnFilterAssembler.getFilter();
 
     List<Get> gets = new ArrayList<Get>();
-    for (String childRowKey : edgeFilteredRowKeys) {
+    for (String rowKey : graphEvalRowKeys) {
       // byte[] childRowKey =
       // rowReader.getGraphState().getRowKey(edge.getUuid()); // use local
       // edge UUID
-      Get get = new Get(Bytes.toBytes(childRowKey));
+      Get get = new Get(Bytes.toBytes(rowKey));
       get.setFilter(columnFilter);
       gets.add(get);
     }
@@ -250,7 +254,7 @@ class GraphSliceSupport {
       }
 
       String rowKey = new String(resultRow.getRow(), charset);
-      results.put(rowKey, resultRow);
+      results.add(rowKey);
       rowIndex++;
     }
 
