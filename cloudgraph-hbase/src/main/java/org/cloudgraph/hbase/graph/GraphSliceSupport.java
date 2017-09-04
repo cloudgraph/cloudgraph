@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
 //import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -57,6 +58,7 @@ import org.cloudgraph.hbase.io.TableReader;
 import org.cloudgraph.hbase.util.FilterUtil;
 import org.cloudgraph.query.expr.Expr;
 import org.cloudgraph.query.expr.ExprPrinter;
+import org.cloudgraph.recognizer.Endpoint;
 import org.cloudgraph.recognizer.GraphRecognizerContext;
 import org.cloudgraph.recognizer.GraphRecognizerSyntaxTreeAssembler;
 import org.cloudgraph.store.service.GraphServiceException;
@@ -66,7 +68,9 @@ import org.plasma.query.collector.Selection;
 import org.plasma.query.collector.SelectionCollector;
 import org.plasma.query.model.Query;
 import org.plasma.query.model.Where;
+import org.plasma.sdo.Key;
 import org.plasma.sdo.PlasmaDataGraph;
+import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
 import org.plasma.sdo.core.CoreConstants;
 import org.plasma.sdo.helper.PlasmaXMLHelper;
@@ -143,6 +147,7 @@ class GraphSliceSupport {
     CellConverter cellConverter = new CellConverter(contextType, tableReader.getTableConfig());
     ExternalEdgeRecognizerContext edgeRecogniserContext = new ExternalEdgeRecognizerContext(
         contextType);
+    boolean complete = rowKeysHaveSelection(contextType, edgeRecogniserContext.getEndpoints());
     for (String rowKey : edgeReader.getRowKeys()) {
       edgeRecogniserContext.read(rowKey);
       if (edgeRecognizerRootExpr.evaluate(edgeRecogniserContext)) {
@@ -150,6 +155,7 @@ class GraphSliceSupport {
           graphEvalRowKeys.add(rowKey);
         } else {
           CellValues cellValues = cellConverter.convert(rowKey, edgeRecogniserContext.getValues());
+          cellValues.setCompleteSelection(complete);
           results.add(cellValues);
         }
       }
@@ -230,11 +236,49 @@ class GraphSliceSupport {
       }
 
       String rowKey = new String(resultRow.getRow(), charset);
-      results.add(new CellValues(rowKey));
+      CellValues values = new CellValues(rowKey);
+      values.setCompleteSelection(false);
+      results.add(values);
       rowIndex++;
     }
 
     return results;
+  }
+
+  /**
+   * 
+   * @param contextType
+   * @param endpoints
+   * @return
+   */
+  private boolean rowKeysHaveSelection(PlasmaType contextType, Collection<Endpoint> endpoints) {
+
+    boolean hasRootContextUuid = false;
+    for (Endpoint endpoint : endpoints) {
+      Key key = endpoint.getProperty().getKey();
+      if (key != null && key.getIsUuid() != null && key.getIsUuid().booleanValue()) {
+        if (endpoint.getProperty().getContainingType().equals(contextType)) {
+          hasRootContextUuid = true;
+          break;
+        }
+      }
+    }
+    if (!hasRootContextUuid)
+      return false;
+
+    for (Property prop : this.selection.getProperties(contextType)) {
+      PlasmaProperty plasmaProp = (PlasmaProperty) prop;
+      boolean found = false;
+      for (Endpoint endpoint : endpoints) {
+        if (endpoint.getProperty().equals(plasmaProp)) {
+          found = true;
+          break;
+        }
+      }
+      if (!found)
+        return false;
+    }
+    return true;
   }
 
   /**

@@ -352,7 +352,7 @@ public abstract class DefaultEdgeOperation implements EdgeOperation {
     this.collectionBaseType = (PlasmaType) PlasmaTypeHelper.INSTANCE.getType(tokens[0], tokens[1]);
   }
 
-  private byte[] encodeType(PlasmaType type) {
+  public static byte[] encodeType(PlasmaType type) {
     byte[] uriPhysicalName = type.getURIPhysicalNameBytes();
     byte[] uri = type.getURIBytes();
     byte[] physicalName = type.getPhysicalNameBytes();

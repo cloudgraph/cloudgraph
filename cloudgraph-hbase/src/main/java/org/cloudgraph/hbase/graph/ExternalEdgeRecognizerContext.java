@@ -64,6 +64,10 @@ public class ExternalEdgeRecognizerContext implements EvaluationContext {
     return this.rowKeyReader.getValue(endpoint);
   }
 
+  public Collection<Endpoint> getEndpoints() {
+    return rowKeyReader.getEndpoints();
+  }
+
   public Collection<KeyValue> getValues() {
     return this.rowKeyReader.getValues();
   }

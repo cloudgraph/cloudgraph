@@ -62,7 +62,7 @@ public class CompositeRowKeyReader {
   private DataGraphConfig graph;
   private PlasmaType contextType;
   private String rowKeyFeildDelimRegexp;
-  private Map<Integer, Endpoint> endpointMap;
+  private Map<UserDefinedRowKeyFieldConfig, Endpoint> endpointMap;
   private Map<Endpoint, KeyValue> valueMap;
 
   @SuppressWarnings("unused")
@@ -86,6 +86,37 @@ public class CompositeRowKeyReader {
         rowKeyFeildDelimRegexp = "\\" + String.valueOf(c);
       }
     }
+
+    construct();
+  }
+
+  private void construct() {
+    for (KeyFieldConfig keyField : this.graph.getRowKeyFields()) {
+      if (PreDefinedKeyFieldConfig.class.isAssignableFrom(keyField.getClass())) {
+        if (log.isDebugEnabled())
+          log.debug("ignoring predefined field config, "
+              + ((PreDefinedKeyFieldConfig) keyField).getName());
+        continue;
+      }
+      UserDefinedRowKeyFieldConfig userDefinedKeyField = (UserDefinedRowKeyFieldConfig) keyField;
+      PlasmaProperty endpointProp = userDefinedKeyField.getEndpointProperty();
+      if (keyField.isHash()) {
+        log.warn("cannot unmarshal hashed row key field for table, " + this.table.getName()
+            + ", with graph, " + this.graph + ", and endpoint property, " + endpointProp
+            + " - continuing");
+        continue;
+      }
+      Endpoint endpoint = this.endpointMap.get(userDefinedKeyField);
+      if (endpoint == null) {
+        endpoint = new Endpoint(endpointProp, userDefinedKeyField.getPropertyPath());
+        this.endpointMap.put(userDefinedKeyField, endpoint);
+      }
+    }
+
+  }
+
+  public Collection<Endpoint> getEndpoints() {
+    return this.endpointMap.values();
   }
 
   public TableConfig getTable() {
@@ -120,10 +151,6 @@ public class CompositeRowKeyReader {
         continue;
       }
       Endpoint endpoint = this.endpointMap.get(i);
-      if (endpoint == null) {
-        endpoint = new Endpoint(endpointProp, userDefinedKeyField.getPropertyPath());
-        this.endpointMap.put(i, endpoint);
-      }
       String stringValue = tokens[i].trim();
       Object value = HBaseDataConverter.INSTANCE.fromBytes(endpointProp,
           stringValue.getBytes(this.charset));

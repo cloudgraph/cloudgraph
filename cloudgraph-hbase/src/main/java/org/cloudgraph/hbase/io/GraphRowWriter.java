@@ -463,6 +463,10 @@ public class GraphRowWriter extends DefaultRowOperation implements RowWriter {
 
   @Override
   public byte[] encodeType(PlasmaType type) {
+    return encode(type);
+  }
+
+  public static byte[] encode(PlasmaType type) {
     byte[] uriPhysicalName = type.getURIPhysicalNameBytes();
     byte[] uri = type.getURIBytes();
     byte[] physicalName = type.getPhysicalNameBytes();
@@ -477,5 +481,4 @@ public class GraphRowWriter extends DefaultRowOperation implements RowWriter {
       return org.cloudgraph.common.Bytes.concat(uri, Bytes.toBytes(ROOT_TYPE_DELIM), name);
     }
   }
-
 }

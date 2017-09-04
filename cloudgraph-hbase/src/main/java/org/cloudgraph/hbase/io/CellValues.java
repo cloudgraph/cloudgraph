@@ -52,6 +52,11 @@ public class CellValues {
   // Note: byte[] uses object identity for equals and hashCode
   // so can't be an effective map key
   private Map<String, Map<String, byte[]>> familyMap;
+  /**
+   * Whether the complete graph selection for context type is found within the
+   * cell values
+   */
+  boolean completeSelection = false;
 
   @SuppressWarnings("unused")
   private CellValues() {
@@ -66,6 +71,14 @@ public class CellValues {
   public CellValues(String rowKey) {
     this.rowKey = rowKey;
     this.familyMap = new HashMap<>();
+  }
+
+  public boolean isCompleteSelection() {
+    return completeSelection;
+  }
+
+  public void setCompleteSelection(boolean completeSelection) {
+    this.completeSelection = completeSelection;
   }
 
   public void addAll(Result row) {

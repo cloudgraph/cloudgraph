@@ -198,8 +198,8 @@ public abstract class DistributedAssembler extends DefaultAssembler implements H
 
     // need to reconstruct the original graph, so need original UUID
     GraphColumnKeyFactory keyFactory = this.getKeyFactory(subType);
-    UUID uuid = this.findRootUUID(childTableReader, keyFactory, subType, childValues);
-    if (uuid != null) {
+    if (childValues.isCompleteSelection()) {
+      UUID uuid = this.fetchRootUUID(childTableReader, keyFactory, subType, childValues);
       PlasmaType childType = this.fetchRootType(childTableReader, keyFactory, subType, childValues);
       child = createChild(source, sourceProperty, uuid, childType);
       childRowReader = childTableReader.createRowReader(child, childValues);
@@ -210,7 +210,7 @@ public abstract class DistributedAssembler extends DefaultAssembler implements H
         log.warn("ignoring toubstone result row '" + childValues.getRowKey() + "'");
         return; // ignore toumbstone edge
       }
-      uuid = this.fetchRootUUID(childTableReader, keyFactory, subType, childResult);
+      UUID uuid = this.fetchRootUUID(childTableReader, keyFactory, subType, childResult);
       PlasmaType childType = this.fetchRootType(childTableReader, keyFactory, subType, childResult);
       child = createChild(source, sourceProperty, uuid, childType);
       childRowReader = childTableReader.createRowReader(child, childResult);
