@@ -107,7 +107,7 @@ public interface TableReader extends TableOperation {
    *           if an existing row reader is already mapped for the given data
    *           object UUID
    */
-  public RowReader createRowReader(DataObject dataObject, Result resultRow)
+  public RowReader createRowReader(DataObject dataObject, CellValues resultRow)
       throws IllegalArgumentException;
 
   /**

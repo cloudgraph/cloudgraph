@@ -24,11 +24,11 @@ import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
 
 /**
- * An property qualified by its path from the root of a graph root or type and
- * its unique identifier.
+ * An property qualified by its path from the root of a graph, its type and its
+ * unique identifier.
  * 
  * @author Scott Cinnamond
- * @version 1.0.4
+ * @since 1.0.4
  */
 public class Endpoint {
   private PlasmaProperty property;

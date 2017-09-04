@@ -27,6 +27,7 @@ import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.cloudgraph.common.CloudGraphConstants;
 import org.cloudgraph.common.concurrent.GraphMetricVisitor;
+import org.cloudgraph.hbase.io.CellValues;
 import org.cloudgraph.hbase.io.DistributedReader;
 import org.cloudgraph.hbase.io.EdgeReader;
 import org.cloudgraph.hbase.io.RowReader;
@@ -91,7 +92,7 @@ public abstract class DistributedAssembler extends DefaultAssembler implements H
    *          the HBase client result (row).
    */
   @Override
-  public void assemble(Result resultRow) {
+  public void assemble(CellValues resultRow) {
 
     this.root = createRoot(this.getKeyFactory(this.rootType), resultRow);
 
@@ -177,74 +178,54 @@ public abstract class DistributedAssembler extends DefaultAssembler implements H
     if (!childRowReader.contains(child, childSequence, (PlasmaType) child.getType()))
       childRowReader.addDataObject(child, childSequence, (PlasmaType) child.getType());
 
-    // childRowReader.addDataObject(child);
-    // add it after minimally created with UUID
-
     assemble(child, childSequence, collection, source, sourceProperty, childRowReader, level + 1);
 
-    // assemble(child, childSequence, target, prop, childRowReader,
-    // level+1);
   }
 
-  protected void assembleExternalEdge(String childRowKey, EdgeReader collection,
-  /* RowReader childRowReader, */TableReader childTableReader, PlasmaDataObject source,
-      long sourceSequence, PlasmaProperty sourceProperty, int level) throws IOException {
+  protected void assembleExternalEdge(CellValues childValues, EdgeReader edgeReader,
+      TableReader childTableReader, PlasmaDataObject source, long sourceSequence,
+      PlasmaProperty sourceProperty, int level) throws IOException {
 
     if (log.isDebugEnabled())
       log.debug("traverse: (" + sourceProperty + ") ");
 
-    PlasmaType subType = collection.getSubType();
+    PlasmaType subType = edgeReader.getSubType();
     if (subType == null)
-      subType = collection.getBaseType();
+      subType = edgeReader.getBaseType();
 
-    Result childResult = fetchGraph(Bytes.toBytes(childRowKey), childTableReader, subType);
-    if (childResult.containsColumn(rootTableReader.getTableConfig().getDataColumnFamilyNameBytes(),
-        GraphMetaKey.TOMBSTONE.codeAsBytes())) {
-      log.warn("ignoring toubstone result row '" + childRowKey + "'");
-      return; // ignore toumbstone edge
-    }
+    PlasmaDataObject child = null;
+    RowReader childRowReader = null;
 
     // need to reconstruct the original graph, so need original UUID
     GraphColumnKeyFactory keyFactory = this.getKeyFactory(subType);
-    UUID uuid = this.fetchRootUUID(childTableReader, keyFactory, subType, childResult);
-    PlasmaType childType = this.fetchRootType(childTableReader, keyFactory, subType, childResult);
+    UUID uuid = this.findRootUUID(childTableReader, keyFactory, subType, childValues);
+    if (uuid != null) {
+      PlasmaType childType = this.fetchRootType(childTableReader, keyFactory, subType, childValues);
+      child = createChild(source, sourceProperty, uuid, childType);
+      childRowReader = childTableReader.createRowReader(child, childValues);
+    } else {
+      CellValues childResult = fetchGraph(childValues.getRowKeyAsBytes(), childTableReader, subType);
+      if (childResult.containsColumn(rootTableReader.getTableConfig()
+          .getDataColumnFamilyNameBytes(), GraphMetaKey.TOMBSTONE.codeAsBytes())) {
+        log.warn("ignoring toubstone result row '" + childValues.getRowKey() + "'");
+        return; // ignore toumbstone edge
+      }
+      uuid = this.fetchRootUUID(childTableReader, keyFactory, subType, childResult);
+      PlasmaType childType = this.fetchRootType(childTableReader, keyFactory, subType, childResult);
+      child = createChild(source, sourceProperty, uuid, childType);
+      childRowReader = childTableReader.createRowReader(child, childResult);
+    }
 
-    // create a child object using UUID from external row root
-    PlasmaDataObject child = createChild(source, sourceProperty, uuid, childType);
     if (log.isDebugEnabled())
       log.debug("initialized external child: " + child);
 
-    RowReader childRowReader = childTableReader.createRowReader(child, childResult);
-    this.distributedReader.mapRowReader(childRowKey, childRowReader);
+    this.distributedReader.mapRowReader(childValues.getRowKey(), childRowReader);
 
-    // add after minimal assembly
-    // childRowReader.addDataObject(child);
-
-    assemble(child, CloudGraphConstants.ROOT_SEQUENCE, collection, source, sourceProperty,
+    // assemble after minimal object created
+    assemble(child, CloudGraphConstants.ROOT_SEQUENCE, edgeReader, source, sourceProperty,
         childRowReader, level + 1);
 
   }
-
-  //
-  // /**
-  // * Peeks at the first edge and determines whether
-  // * an external edge collection
-  // * @param edges the state edges
-  // * @param rowReader the reader
-  // * @return whether
-  // * an external edge collection
-  // * @throws IOException
-  // */
-  // protected boolean isExternal(Edge[] edges, RowReader rowReader) throws
-  // IOException {
-  // if (edges.length > 0) {
-  // return rowReader.getGraphState().findRowKey(
-  // edges[0].getUuid()) != null;
-  // }
-  // else {
-  // return false;
-  // }
-  // }
 
   /**
    * Resets the assembler.

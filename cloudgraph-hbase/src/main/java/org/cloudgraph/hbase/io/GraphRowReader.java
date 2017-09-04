@@ -24,7 +24,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.cloudgraph.hbase.key.StatefullColumnKeyFactory;
-import org.cloudgraph.hbase.service.ColumnMap;
 import org.cloudgraph.state.ProtoSequenceGenerator;
 import org.cloudgraph.store.key.GraphMetaKey;
 import org.cloudgraph.store.service.ToumbstoneRowException;
@@ -54,14 +53,14 @@ public class GraphRowReader extends DefaultRowOperation implements RowReader {
 
   private static Log log = LogFactory.getLog(GraphRowReader.class);
 
-  private ColumnMap row;
+  private CellValues row;
   private TableReader tableReader;
   private Map<Integer, EdgeReader> edgeReaderMap = new HashMap<Integer, EdgeReader>();
 
-  public GraphRowReader(byte[] rowKey, Result result, DataObject rootDataObject,
+  public GraphRowReader(byte[] rowKey, CellValues result, DataObject rootDataObject,
       TableReader tableReader) {
     super(rowKey, rootDataObject);
-    this.row = new ColumnMap(result);
+    this.row = result;
     this.tableReader = tableReader;
     byte[] state = this.row.getColumnValue(this.tableReader.getTableConfig()
         .getDataColumnFamilyNameBytes(), GraphMetaKey.SEQUENCE_MAPPING.codeAsBytes());
@@ -91,7 +90,7 @@ public class GraphRowReader extends DefaultRowOperation implements RowReader {
   }
 
   @Override
-  public ColumnMap getRow() {
+  public CellValues getRow() {
     return this.row;
   }
 

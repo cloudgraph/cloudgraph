@@ -28,6 +28,7 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.cloudgraph.common.concurrent.ConfigProps;
 import org.cloudgraph.common.concurrent.SubgraphTask;
 import org.cloudgraph.config.TableConfig;
+import org.cloudgraph.hbase.io.CellValues;
 import org.cloudgraph.hbase.io.DistributedReader;
 import org.cloudgraph.hbase.io.EdgeReader;
 import org.cloudgraph.hbase.io.OperationException;
@@ -280,7 +281,7 @@ class ParallelSubgraphTask extends DefaultSubgraphTask implements SubgraphTask {
       PlasmaProperty prop, EdgeReader collection, RowReader rowReader,
       TableReader childTableReader, int level) throws IOException {
     for (String childRowKey : collection.getRowKeys()) {
-      Result childResult = null;
+      CellValues childResult = null;
 
       // need to look up an existing row reader based on the root UUID of
       // the external graph
@@ -368,7 +369,7 @@ class ParallelSubgraphTask extends DefaultSubgraphTask implements SubgraphTask {
       GraphColumnKeyFactory keyFactory = this.getKeyFactory(subType);
       byte[] uuidQual = keyFactory.createColumnKey(subType, EntityMetaKey.UUID);
       // need to reconstruct the original graph, so need original UUID
-      byte[] rootUuid = childResult.getValue(
+      byte[] rootUuid = childResult.getColumnValue(
           Bytes.toBytes(childTableReader.getTableConfig().getDataColumnFamilyName()), uuidQual);
       if (rootUuid == null)
         throw new GraphServiceException("expected column: "

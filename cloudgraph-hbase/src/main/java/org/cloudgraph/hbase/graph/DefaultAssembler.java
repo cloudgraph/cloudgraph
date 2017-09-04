@@ -40,6 +40,7 @@ import org.cloudgraph.config.Config;
 import org.cloudgraph.config.DataGraphConfig;
 import org.cloudgraph.config.TableConfig;
 import org.cloudgraph.hbase.filter.GraphFetchColumnFilterAssembler;
+import org.cloudgraph.hbase.io.CellValues;
 import org.cloudgraph.hbase.io.EdgeOperation;
 import org.cloudgraph.hbase.io.EdgeReader;
 import org.cloudgraph.hbase.io.RowReader;
@@ -138,10 +139,10 @@ public abstract class DefaultAssembler {
     return result;
   }
 
-  protected PlasmaDataObject createRoot(GraphColumnKeyFactory keyFactory, Result resultRow) {
+  protected PlasmaDataObject createRoot(GraphColumnKeyFactory keyFactory, CellValues resultRow) {
     // build the graph
     PlasmaDataGraph dataGraph = PlasmaDataFactory.INSTANCE.createDataGraph();
-    dataGraph.setId(resultRow.getRow());
+    dataGraph.setId(resultRow.getRowKey());
     PlasmaDataObject rootObject = (PlasmaDataObject) dataGraph.createRootObject(this.rootType);
     CoreNode rootNode = (CoreNode) rootObject;
 
@@ -151,7 +152,7 @@ public abstract class DefaultAssembler {
         Thread.currentThread().getName());
 
     byte[] uuidQual = keyFactory.createColumnKey(this.rootType, EntityMetaKey.UUID);
-    byte[] rootUuid = resultRow.getValue(
+    byte[] rootUuid = resultRow.getColumnValue(
         Bytes.toBytes(this.rootTableReader.getTableConfig().getDataColumnFamilyName()), uuidQual);
     if (rootUuid == null)
       throw new GraphServiceException("expected column: "
@@ -249,16 +250,30 @@ public abstract class DefaultAssembler {
     return UUID.fromString(uuidStr);
   }
 
-  protected UUID fetchRootUUID(TableReader childTableReader, GraphColumnKeyFactory keyFactory,
-      PlasmaType subType, Result childResult) {
+  protected UUID findRootUUID(TableReader childTableReader, GraphColumnKeyFactory keyFactory,
+      PlasmaType subType, CellValues childResult) {
 
     byte[] uuidQual = keyFactory.createColumnKey(subType, EntityMetaKey.UUID);
-    byte[] rootUuid = childResult.getValue(childTableReader.getTableConfig()
+    byte[] rootUuid = childResult.getColumnValue(childTableReader.getTableConfig()
+        .getDataColumnFamilyNameBytes(), uuidQual);
+    if (rootUuid != null) {
+      String uuidStr = null;
+      uuidStr = new String(rootUuid, childTableReader.getTableConfig().getCharset());
+      UUID uuid = UUID.fromString(uuidStr);
+      return uuid;
+    }
+    return null;
+  }
+
+  protected UUID fetchRootUUID(TableReader childTableReader, GraphColumnKeyFactory keyFactory,
+      PlasmaType subType, CellValues childResult) {
+
+    byte[] uuidQual = keyFactory.createColumnKey(subType, EntityMetaKey.UUID);
+    byte[] rootUuid = childResult.getColumnValue(childTableReader.getTableConfig()
         .getDataColumnFamilyNameBytes(), uuidQual);
     if (rootUuid == null)
       throw new GraphServiceException("expected column: " + Bytes.toString(uuidQual) + " for row '"
-          + Bytes.toString(childResult.getRow()) + "' in table: "
-          + childTableReader.getTableConfig().getName());
+          + childResult.getRowKey() + "' in table: " + childTableReader.getTableConfig().getName());
     String uuidStr = null;
     uuidStr = new String(rootUuid, childTableReader.getTableConfig().getCharset());
     UUID uuid = UUID.fromString(uuidStr);
@@ -266,20 +281,36 @@ public abstract class DefaultAssembler {
   }
 
   protected PlasmaType fetchRootType(TableReader childTableReader,
-      GraphColumnKeyFactory keyFactory, PlasmaType subType, Result childResult) throws IOException {
+      GraphColumnKeyFactory keyFactory, PlasmaType subType, CellValues childResult)
+      throws IOException {
     byte[] typeQual = keyFactory.createColumnKey(subType, EntityMetaKey.TYPE);
-    byte[] rootType = childResult.getValue(childTableReader.getTableConfig()
+    byte[] rootType = childResult.getColumnValue(childTableReader.getTableConfig()
         .getDataColumnFamilyNameBytes(), typeQual);
     if (rootType == null)
       throw new GraphServiceException("expected column: " + Bytes.toString(typeQual) + " for row '"
-          + Bytes.toString(childResult.getRow()) + "' in table: "
-          + childTableReader.getTableConfig().getName());
+          + childResult.getRowKey() + "' in table: " + childTableReader.getTableConfig().getName());
     String[] tokens = Bytes.toString(rootType).split(GraphRow.ROOT_TYPE_DELIM);
     PlasmaType result = (PlasmaType) PlasmaTypeHelper.INSTANCE.findTypeByPhysicalName(tokens[0],
         tokens[1]);
     if (result == null)
       throw new GraphServiceException("no type found for '" + Bytes.toString(rootType) + "'");
     return result;
+  }
+
+  protected PlasmaType findRootType(TableReader childTableReader, GraphColumnKeyFactory keyFactory,
+      PlasmaType subType, CellValues childResult) throws IOException {
+    byte[] typeQual = keyFactory.createColumnKey(subType, EntityMetaKey.TYPE);
+    byte[] rootType = childResult.getColumnValue(childTableReader.getTableConfig()
+        .getDataColumnFamilyNameBytes(), typeQual);
+    if (rootType != null) {
+      String[] tokens = Bytes.toString(rootType).split(GraphRow.ROOT_TYPE_DELIM);
+      PlasmaType result = (PlasmaType) PlasmaTypeHelper.INSTANCE.findTypeByPhysicalName(tokens[0],
+          tokens[1]);
+      if (result == null)
+        throw new GraphServiceException("no type found for '" + Bytes.toString(rootType) + "'");
+      return result;
+    }
+    return null;
   }
 
   protected PlasmaType fetchType(PlasmaType type, long targetSequence, EdgeReader edgeReader,
@@ -341,7 +372,7 @@ public abstract class DefaultAssembler {
   }
 
   protected byte[] getMetaDataColumnValue(PlasmaType type, EntityMetaKey keyField,
-      TableConfig tableConfig, Result result, RowReader rowReader) throws IOException {
+      TableConfig tableConfig, CellValues result, RowReader rowReader) throws IOException {
     byte[] family = tableConfig.getDataColumnFamilyNameBytes();
     byte[] qualifier = rowReader.getColumnKeyFactory().createColumnKey(type, keyField);
 
@@ -350,7 +381,7 @@ public abstract class DefaultAssembler {
           + Bytes.toString(qualifier));
     }
 
-    return result.getValue(family, qualifier);
+    return result.getColumnValue(family, qualifier);
   }
 
   protected byte[] findMetaDataColumnValue(PlasmaType type, PlasmaProperty property, long sequence,
@@ -574,7 +605,7 @@ public abstract class DefaultAssembler {
    *           if a remote or network exception occurs.
    * @see GraphFetchColumnFilterAssembler
    */
-  protected Result fetchGraph(byte[] rowKey, TableReader tableReader, PlasmaType type)
+  protected CellValues fetchGraph(byte[] rowKey, TableReader tableReader, PlasmaType type)
       throws IOException {
     Get row = new Get(rowKey);
     FilterList rootFilter = new FilterList(FilterList.Operator.MUST_PASS_ALL);
@@ -592,16 +623,9 @@ public abstract class DefaultAssembler {
     if (result == null || result.isEmpty())
       throw new GraphServiceException("expected result from table "
           + tableReader.getTableConfig().getName() + " for row '" + new String(rowKey) + "'");
-    if (log.isTraceEnabled()) {
-      log.trace("row: " + new String(result.getRow()));
-      for (KeyValue keyValue : result.list()) {
-        log.trace("\tkey: " + new String(keyValue.getQualifier()) + "\tvalue: "
-            + new String(keyValue.getValue()));
-      }
-    }
     long after = System.currentTimeMillis();
     if (log.isDebugEnabled())
       log.debug("assembled 1 results (" + String.valueOf(after - before) + ")");
-    return result;
+    return new CellValues(result);
   }
 }

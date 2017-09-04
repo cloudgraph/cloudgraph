@@ -18,7 +18,6 @@ package org.cloudgraph.hbase.io;
 
 import java.io.IOException;
 
-import org.cloudgraph.hbase.service.ColumnMap;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
 
@@ -38,7 +37,7 @@ import org.plasma.sdo.PlasmaType;
  * @since 0.5.1
  */
 public interface RowReader extends RowOperation {
-  public ColumnMap getRow();
+  public CellValues getRow();
 
   public TableReader getTableReader();
 

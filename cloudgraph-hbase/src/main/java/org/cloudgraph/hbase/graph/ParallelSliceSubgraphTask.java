@@ -18,6 +18,7 @@ package org.cloudgraph.hbase.graph;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -30,6 +31,7 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.cloudgraph.common.concurrent.ConfigProps;
 import org.cloudgraph.common.concurrent.SubgraphTask;
 import org.cloudgraph.config.TableConfig;
+import org.cloudgraph.hbase.io.CellValues;
 import org.cloudgraph.hbase.io.DistributedReader;
 import org.cloudgraph.hbase.io.EdgeReader;
 import org.cloudgraph.hbase.io.RowReader;
@@ -162,7 +164,7 @@ class ParallelSliceSubgraphTask extends DefaultSubgraphTask implements SubgraphT
           if (!tableConfig.getName().equals(externalTableReader.getTableConfig().getName()))
             log.debug("switching row context from table: '" + tableConfig.getName()
                 + "' to table: '" + externalTableReader.getTableConfig().getName() + "'");
-        HashSet<String> resultRows = null;
+        List<CellValues> resultRows = null;
         if (prop.isMany() && where != null) {
           resultRows = this.sliceSupport.filter(childType, edgeReader, where, rowReader,
               externalTableReader);
@@ -250,16 +252,16 @@ class ParallelSliceSubgraphTask extends DefaultSubgraphTask implements SubgraphT
    * @throws IOException
    */
   protected void assembleExternalEdges(PlasmaDataObject target, long targetSequence,
-      PlasmaProperty prop, EdgeReader collection, RowReader rowReader, HashSet<String> resultRows,
+      PlasmaProperty prop, EdgeReader collection, RowReader rowReader, List<CellValues> resultRows,
       TableReader childTableReader, int level) throws IOException {
-    for (String childRowKey : collection.getRowKeys()) {
-      Result childResult = null;
+    for (CellValues childValues : resultRows) {
+      CellValues childResult = null;
 
-      if (resultRows != null && !resultRows.contains(childRowKey))
+      if (resultRows != null && !resultRows.contains(childValues.getRowKey()))
         continue; // not found in predicate
 
       // see if this row is locked during fetch, and wait for it
-      Object rowLock = fetchLocks.get(childRowKey);
+      Object rowLock = fetchLocks.get(childValues.getRowKey());
       if (rowLock != null) {
         synchronized (rowLock) {
           try {
@@ -270,7 +272,7 @@ class ParallelSliceSubgraphTask extends DefaultSubgraphTask implements SubgraphT
         }
       }
 
-      RowReader existingChildRowReader = childTableReader.getRowReader(childRowKey);
+      RowReader existingChildRowReader = childTableReader.getRowReader(childValues.getRowKey());
       if (existingChildRowReader != null) {
         // If assembled this row root before,
         // just link it. The data is already complete.
@@ -293,17 +295,17 @@ class ParallelSliceSubgraphTask extends DefaultSubgraphTask implements SubgraphT
       // The second thread may be arriving at this node from another
       // property/edge and
       // therefore need to link from another edge above.
-      fetchLocks.put(childRowKey, new Object());
+      fetchLocks.put(childValues.getRowKey(), new Object());
 
       if (log.isDebugEnabled())
-        log.debug("fetch external row: " + prop.toString() + " (" + childRowKey + ")");
+        log.debug("fetch external row: " + prop.toString() + " (" + childValues.getRowKey() + ")");
 
-      childResult = fetchGraph(Bytes.toBytes(childRowKey), childTableReader,
+      childResult = fetchGraph(Bytes.toBytes(childValues.getRowKey()), childTableReader,
           collection.getBaseType());
 
       if (childResult.containsColumn(rootTableReader.getTableConfig()
           .getDataColumnFamilyNameBytes(), GraphMetaKey.TOMBSTONE.codeAsBytes())) {
-        log.warn("ignoring toubstone result row '" + childRowKey + "'");
+        log.warn("ignoring toubstone result row '" + childValues.getRowKey() + "'");
         continue; // ignore toumbstone edge
       }
 
@@ -313,7 +315,7 @@ class ParallelSliceSubgraphTask extends DefaultSubgraphTask implements SubgraphT
       GraphColumnKeyFactory keyFactory = this.getKeyFactory(subType);
       byte[] uuidQual = keyFactory.createColumnKey(subType, EntityMetaKey.UUID);
       // need to reconstruct the original graph, so need original UUID
-      byte[] rootUuid = childResult.getValue(
+      byte[] rootUuid = childResult.getColumnValue(
           Bytes.toBytes(childTableReader.getTableConfig().getDataColumnFamilyName()), uuidQual);
       if (rootUuid == null)
         throw new GraphServiceException("expected column: "
@@ -335,7 +337,7 @@ class ParallelSliceSubgraphTask extends DefaultSubgraphTask implements SubgraphT
         childRowReader = childTableReader.createRowReader(child, childResult);
       }
       synchronized (this.distributedReader) {
-        this.distributedReader.mapRowReader(childRowKey, childRowReader);
+        this.distributedReader.mapRowReader(childValues.getRowKey(), childRowReader);
       }
 
       synchronized (target) {
@@ -346,7 +348,7 @@ class ParallelSliceSubgraphTask extends DefaultSubgraphTask implements SubgraphT
       traversals.add(new Traversal(child, -1, collection, target, prop, childRowReader, true,
           level + 1));
 
-      rowLock = fetchLocks.remove(childRowKey);
+      rowLock = fetchLocks.remove(childValues.getRowKey());
       synchronized (rowLock) {
         rowLock.notifyAll();
       }

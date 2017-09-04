@@ -16,6 +16,8 @@
 package org.cloudgraph.hbase.io;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -23,6 +25,8 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.cloudgraph.config.CloudGraphConfig;
 import org.cloudgraph.config.DataGraphConfig;
 import org.cloudgraph.config.TableConfig;
+import org.cloudgraph.hbase.graph.CellConverter;
+import org.cloudgraph.hbase.key.CompositeRowKeyReader;
 import org.cloudgraph.store.key.EdgeMetaKey;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
@@ -145,6 +149,22 @@ public class GraphEdgeReader extends DefaultEdgeOperation implements EdgeReader 
       this.decodeDefaultSubType(subtypesBytes);
     }
 
+  }
+
+  @Override
+  public List<CellValues> getRowValues() {
+    List<CellValues> result = new ArrayList<>(this.getRowKeys().size());
+    PlasmaType subType = this.collectionBaseType;
+    if (this.getSubType() != null)
+      subType = this.getSubType();
+    CompositeRowKeyReader rowKeyReader = new CompositeRowKeyReader(subType);
+    CellConverter cellConverter = new CellConverter(subType, this.tableConfig);
+    for (String rowKey : this.getRowKeys()) {
+      rowKeyReader.read(rowKey);
+      result.add(cellConverter.convert(rowKey, rowKeyReader.getValues()));
+    }
+
+    return result;
   }
 
 }

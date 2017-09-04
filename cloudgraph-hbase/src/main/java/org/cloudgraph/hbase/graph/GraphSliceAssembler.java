@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.sql.Timestamp;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.client.Result;
 import org.cloudgraph.config.TableConfig;
+import org.cloudgraph.hbase.io.CellValues;
 import org.cloudgraph.hbase.io.DistributedReader;
 import org.cloudgraph.hbase.io.EdgeReader;
 import org.cloudgraph.hbase.io.RowReader;
@@ -134,9 +136,6 @@ public class GraphSliceAssembler extends DistributedAssembler {
           this.slice
               .loadBySequenceList(sequences, childProperies, childType, rowReader, edgeReader);
         } else {
-          // sequences =
-          // this.slice.fetchSequences((PlasmaType)prop.getType(),
-          // rowReader);
           // preload properties for the NEXT level into the current
           // row so we have something to assemble
           sequences = new HashSet<Long>();
@@ -146,15 +145,11 @@ public class GraphSliceAssembler extends DistributedAssembler {
               level + 1);
           this.slice
               .loadBySequenceList(sequences, childProperies, childType, rowReader, edgeReader);
-          // this.slice.load(childProperies,
-          // childType, rowReader);
         }
 
         assembleEdges(target, targetSequence, prop, edgeReader, sequences, rowReader,
             rowReader.getTableReader(), rowReader, level);
       } else {
-        // String childTable =
-        // rowReader.getGraphState().getRowKeyTable(edges[0].getUuid());
         String childTable = edgeReader.getTable();
         TableReader externalTableReader = distributedReader.getTableReader(childTable);
 
@@ -162,10 +157,12 @@ public class GraphSliceAssembler extends DistributedAssembler {
           if (!tableConfig.getName().equals(externalTableReader.getTableConfig().getName()))
             log.debug("switching row context from table: '" + tableConfig.getName()
                 + "' to table: '" + externalTableReader.getTableConfig().getName() + "'");
-        HashSet<String> resultRows = null;
-        if (prop.isMany() && where != null) {
+        List<CellValues> resultRows = null;
+        if (where != null) {
           resultRows = this.slice.filter(childType, edgeReader, where, rowReader,
               externalTableReader);
+        } else {
+          resultRows = edgeReader.getRowValues();
         }
         assembleExternalEdges(target, targetSequence, prop, edgeReader, rowReader, resultRows,
             externalTableReader, level);
@@ -182,7 +179,6 @@ public class GraphSliceAssembler extends DistributedAssembler {
       if (subType == null)
         subType = edgeReader.getBaseType();
 
-      // UUID uuid = UUID.fromString(edge.getUuid());
       if (childRowReader.contains(sequence, subType)) {
         // we've seen this child before so his data is complete, just
         // link
@@ -192,15 +188,9 @@ public class GraphSliceAssembler extends DistributedAssembler {
         continue;
       }
 
-      // if (sequences != null && !sequences.contains(sequence))
-      // continue; // screen out edges
-
       if (log.isDebugEnabled())
         log.debug("local edge: " + target.getType().getURI() + "#" + target.getType().getName()
             + "->" + prop.getName() + " (" + sequence + ")");
-      // // create a child object
-      // PlasmaDataObject child = createChild(target, prop, edge);
-      // childRowReader.addDataObject(child);
 
       this.assembleEdge(sequence, edgeReader, childRowReader, target, targetSequence, prop, level);
     }
@@ -212,10 +202,11 @@ public class GraphSliceAssembler extends DistributedAssembler {
   // each edge is a new root in the target table
   // so need a new row reader for each
   private void assembleExternalEdges(PlasmaDataObject target, long targetSequence,
-      PlasmaProperty prop, EdgeReader collection, RowReader rowReader, HashSet<String> resultRows,
+      PlasmaProperty prop, EdgeReader collection, RowReader rowReader, List<CellValues> resultRows,
       TableReader childTableReader, int level) throws IOException {
-    for (String childRowKey : collection.getRowKeys()) {
-      RowReader existingChildRowReader = childTableReader.getRowReader(childRowKey);
+    for (CellValues childValues : resultRows) {
+      // for (String childRowKey : collection.getRowKeys()) {
+      RowReader existingChildRowReader = childTableReader.getRowReader(childValues.getRowKey());
       if (existingChildRowReader != null) {
         // we've seen this child before so his data is complete, just
         // link
@@ -225,10 +216,10 @@ public class GraphSliceAssembler extends DistributedAssembler {
         continue;
       }
       // String childRowKeyStr = new String(childRowKey, this.charset);
-      if (resultRows != null && !resultRows.contains(childRowKey))
-        continue; // not found in predicate
+      // if (resultRows != null && !resultRows.contains(childRowKey))
+      // continue; // not found in predicate
 
-      this.assembleExternalEdge(childRowKey, collection, childTableReader, target, targetSequence,
+      this.assembleExternalEdge(childValues, collection, childTableReader, target, targetSequence,
           prop, level);
     }
   }

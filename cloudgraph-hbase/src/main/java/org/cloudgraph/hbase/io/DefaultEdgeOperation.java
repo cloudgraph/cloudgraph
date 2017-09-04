@@ -31,7 +31,6 @@ import org.apache.hadoop.hbase.client.Result;
 import org.cloudgraph.config.CloudGraphConfig;
 import org.cloudgraph.config.DataGraphConfig;
 import org.cloudgraph.config.TableConfig;
-import org.cloudgraph.hbase.service.ColumnMap;
 import org.cloudgraph.state.StateException;
 import org.cloudgraph.state.proto.RowKeysProto.RowKey;
 import org.cloudgraph.state.proto.RowKeysProto.RowKeys;
@@ -379,7 +378,7 @@ public abstract class DefaultEdgeOperation implements EdgeOperation {
     return org.cloudgraph.common.Bytes.concat(fields);
   }
 
-  protected byte[] fetchValue(byte[] family, byte[] qualifier, ColumnMap row) {
+  protected byte[] fetchValue(byte[] family, byte[] qualifier, CellValues row) {
     if (!row.containsColumn(family, qualifier)) {
       throw new RequiredKeyFieldException("expected column qualifier '" + new String(qualifier)
           + "' for reference property, " + sourceProp);
@@ -388,7 +387,7 @@ public abstract class DefaultEdgeOperation implements EdgeOperation {
     return row.getColumnValue(family, qualifier);
   }
 
-  protected byte[] findValue(byte[] family, byte[] qualifier, ColumnMap row) {
+  protected byte[] findValue(byte[] family, byte[] qualifier, CellValues row) {
     if (!row.containsColumn(family, qualifier)) {
       return null;
     }

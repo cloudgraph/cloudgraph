@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.client.Result;
 import org.cloudgraph.config.TableConfig;
+import org.cloudgraph.hbase.io.CellValues;
 import org.cloudgraph.hbase.io.DistributedReader;
 import org.cloudgraph.hbase.io.EdgeReader;
 import org.cloudgraph.hbase.io.OperationException;
@@ -205,10 +206,10 @@ public class GraphAssembler extends DistributedAssembler {
   protected void assembleExternalEdges(PlasmaDataObject source, long sourceSequence,
       PlasmaProperty sourceProp, EdgeReader collection, RowReader rowReader,
       TableReader childTableReader, int level) throws IOException {
-    for (String childRowKey : collection.getRowKeys()) {
+    for (CellValues childValues : collection.getRowValues()) {
       if (log.isDebugEnabled())
         log.debug("reading external edge: " + source.getType() + "->" + sourceProp.getName()
-            + "key ('" + childRowKey + "')");
+            + "key ('" + childValues.getRowKey() + "')");
       // need to look up an existing row reader based on the root UUID of
       // the external graph
       // or the row key, and the row key is all we have in the local graph
@@ -217,19 +218,20 @@ public class GraphAssembler extends DistributedAssembler {
       // byte[] childRowKey =
       // rowReader.getGraphState().getRowKey(edge.getUuid()); // use local
       // edge UUID
-      RowReader existingChildRowReader = childTableReader.getRowReader(childRowKey);
+      RowReader existingChildRowReader = childTableReader.getRowReader(childValues.getRowKey());
       if (existingChildRowReader != null) {
         // If assembled this row root before,
         // just link it. The data is already complete.
         PlasmaDataObject existingChild = (PlasmaDataObject) existingChildRowReader
             .getRootDataObject();
         if (log.isDebugEnabled())
-          log.debug("linking existing external child (key: " + childRowKey + "): " + existingChild);
+          log.debug("linking existing external child (key: " + childValues.getRowKey() + "): "
+              + existingChild);
         link(existingChild, source, sourceProp);
         continue;
       }
 
-      this.assembleExternalEdge(childRowKey, collection, childTableReader, source, sourceSequence,
+      this.assembleExternalEdge(childValues, collection, childTableReader, source, sourceSequence,
           sourceProp, level);
     }
   }

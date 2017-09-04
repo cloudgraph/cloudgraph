@@ -4,11 +4,11 @@
   <parent>
       <groupId>org.cloudgraph</groupId>
       <artifactId>cloudgraph</artifactId>
-      <version>1.0.5</version>
+      <version>1.0.6</version>
   </parent>
   <groupId>org.cloudgraph</groupId>
   <artifactId>cloudgraph-docs</artifactId>
-  <version>1.0.5</version>
+  <version>1.0.6</version>
   <packaging>jar</packaging>
   <name>CloudGraph Docs</name>  
   <description>CloudGraph(tm) is a suite of Service Data Object (SDO) 2.1 services designed for relational and big-table style "cloud" databases, such as HBase and others.</description>
@@ -53,7 +53,7 @@
                   <configuration>                                            
                     <target>                                                 
                       <property name="compile_classpath" refid="maven.compile.classpath"/>
-                      <property name="release_suffix" value="1.0.5"/>
+                      <property name="release_suffix" value="1.0.6"/>
                       <path id="cp">                                                                                                                                                                                                                             
                          <pathelement path="${compile_classpath}"/>                                                                                                                                                                                                  
                       </path>	                                                                                                                                                                                                                                       
@@ -132,7 +132,7 @@
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.5</version>
+					<version>1.0.6</version>
 					<configuration>
 						<lifecycleMappingMetadata>
 							<pluginExecutions>

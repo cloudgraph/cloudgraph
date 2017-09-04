@@ -16,6 +16,7 @@
 package org.cloudgraph.hbase.key;
 
 import java.nio.charset.Charset;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,12 +39,25 @@ import org.plasma.sdo.PlasmaType;
 import commonj.sdo.Property;
 
 /**
+ * Reads and parses row keys into {@link KeyValue} elements where the values can
+ * then be found using a given {@link Endpoint} and used for syntax tree
+ * evaluation, for example.
+ * <p>
+ * </p>
+ * For a collection of row keys, for every key in the collection, a client will
+ * read a single row key, then collect its values. Endpoints are created on the
+ * first row key and used for all additional keys.
+ * 
+ * @author Scott Cinnamond
+ * @since 1.0.4
+ * 
+ * @see Endpoint
+ * @see KeyValue
  * 
  */
 public class CompositeRowKeyReader {
   private static final Log log = LogFactory.getLog(CompositeRowKeyReader.class);
   private Charset charset;
-  private KeySupport keySupport = new KeySupport();
   private TableConfig table;
   private DataGraphConfig graph;
   private PlasmaType contextType;
@@ -56,6 +70,8 @@ public class CompositeRowKeyReader {
   }
 
   public CompositeRowKeyReader(PlasmaType contextType) {
+    if (contextType == null)
+      throw new IllegalArgumentException("expected arg contextType");
     this.contextType = contextType;
     this.table = CloudGraphConfig.getInstance().getTable(this.contextType);
     this.graph = CloudGraphConfig.getInstance().getDataGraph(this.contextType.getQualifiedName());
@@ -90,8 +106,9 @@ public class CompositeRowKeyReader {
     for (int i = 0; i < tokens.length; i++) {
       KeyFieldConfig keyField = this.graph.getRowKeyFields().get(i);
       if (PreDefinedKeyFieldConfig.class.isAssignableFrom(keyField.getClass())) {
-        log.warn("ignoring predefined field config(" + i + "), "
-            + ((PreDefinedKeyFieldConfig) keyField).getName());
+        if (log.isDebugEnabled())
+          log.debug("ignoring predefined field config(" + i + "), "
+              + ((PreDefinedKeyFieldConfig) keyField).getName());
         continue;
       }
       UserDefinedRowKeyFieldConfig userDefinedKeyField = (UserDefinedRowKeyFieldConfig) keyField;
@@ -121,6 +138,10 @@ public class CompositeRowKeyReader {
     if (kv != null)
       return kv.getValue();
     return null;
+  }
+
+  public Collection<KeyValue> getValues() {
+    return this.valueMap.values();
   }
 
   private boolean isSpecialRegexChar(char c) {

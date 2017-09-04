@@ -16,6 +16,7 @@
 package org.cloudgraph.hbase.graph;
 
 import org.apache.hadoop.hbase.client.Result;
+import org.cloudgraph.hbase.io.CellValues;
 import org.plasma.sdo.access.DataGraphAssembler;
 
 /**
@@ -46,6 +47,6 @@ public interface HBaseGraphAssembler extends DataGraphAssembler {
    * @param resultRow
    *          the HBase client result (row).
    */
-  public void assemble(Result resultRow);
+  public void assemble(CellValues resultRow);
 
 }

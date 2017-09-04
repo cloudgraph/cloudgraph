@@ -49,6 +49,7 @@ import org.cloudgraph.config.UserDefinedRowKeyFieldConfig;
 import org.cloudgraph.hbase.graph.GraphAssembler;
 import org.cloudgraph.hbase.graph.GraphSliceAssembler;
 import org.cloudgraph.hbase.graph.HBaseGraphAssembler;
+import org.cloudgraph.hbase.io.CellValues;
 import org.cloudgraph.hbase.io.DistributedGraphReader;
 import org.cloudgraph.hbase.io.DistributedReader;
 import org.cloudgraph.hbase.io.TableReader;
@@ -453,7 +454,7 @@ public class GraphRecordRecognizer {
    */
   private PlasmaDataGraph assemble(Result resultRow) {
     this.graphAssembler.clear();
-    this.graphAssembler.assemble(resultRow);
+    this.graphAssembler.assemble(new CellValues(resultRow));
     PlasmaDataGraph result = graphAssembler.getDataGraph();
     CoreDataObject root = (CoreDataObject) result.getRootObject();
     Long time = (Long) root.getValue(CloudGraphConstants.GRAPH_ASSEMBLY_TIME);

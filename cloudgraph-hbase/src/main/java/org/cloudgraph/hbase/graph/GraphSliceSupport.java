@@ -47,9 +47,9 @@ import org.cloudgraph.hbase.filter.HBaseFilterAssembler;
 import org.cloudgraph.hbase.filter.PredicateFilterAssembler;
 import org.cloudgraph.hbase.filter.PredicateUtil;
 import org.cloudgraph.hbase.filter.StatefullBinaryPrefixColumnFilterAssembler;
+import org.cloudgraph.hbase.io.CellValues;
 import org.cloudgraph.hbase.io.DistributedGraphReader;
 import org.cloudgraph.hbase.io.DistributedReader;
-import org.cloudgraph.hbase.io.EdgeOperation;
 import org.cloudgraph.hbase.io.EdgeReader;
 import org.cloudgraph.hbase.io.RowReader;
 import org.cloudgraph.hbase.io.TableOperation;
@@ -100,36 +100,7 @@ class GraphSliceSupport {
   }
 
   /**
-   * Creates and executes a "sub-graph" filter based on the given state-edges
-   * and path predicate and then excludes appropriate results based on a
-   * {@link GraphRecognizerSyntaxTreeAssembler binary syntax tree} assembled
-   * from the same path predicate. Each sub-graph must first be assembled to do
-   * any evaluation, but a single syntax tree instance evaluates every sub-graph
-   * (potentially thousands/millions) resulting from the given edge collection.
-   * The graph {@link Selection selection criteria} is based not on the primary
-   * graph selection but only on the properties found in the given path
-   * predicate, so the assembly is only/exactly as extensive as required by the
-   * predicate. Any sub-graphs assembled may themselves be "distributed" graphs.
-   * 
-   * @param contextType
-   *          the current type
-   * @param edges
-   *          the state edge set
-   * @param where
-   *          the path predicate
-   * @param rowReader
-   *          the row reader
-   * @param tableReader
-   *          the table reader
-   * @return the results filtered results
-   * @throws IOException
-   * @see GraphRecognizerSyntaxTreeAssembler
-   * @see SelectionCollector
-   * @see Selection
-   */
-
-  /**
-   * Filters results in two stages, first constructs an edge recognizer which
+   * Filters edges in two stages, first constructs an edge recognizer which
    * interrogates each row key in the given edge collection to determine if it
    * satisfies the given predicate tree. This step is performed in memory only,
    * no RPC calls are needed. Then for the filtered results performs a graph
@@ -138,7 +109,7 @@ class GraphSliceSupport {
    * 
    * @param contextType
    *          the current type
-   * @param collection
+   * @param edgeReader
    *          the edge collection
    * @param where
    *          the predicate structure
@@ -151,12 +122,12 @@ class GraphSliceSupport {
    * @throws IllegalStateException
    *           if the edge collection is not external
    */
-  public HashSet<String> filter(PlasmaType contextType, EdgeOperation collection, Where where,
+  public List<CellValues> filter(PlasmaType contextType, EdgeReader edgeReader, Where where,
       RowReader rowReader, TableReader tableReader) throws IOException {
-    HashSet<String> results = new HashSet<>((int) collection.getCount());
+    List<CellValues> results = new ArrayList<>((int) edgeReader.getCount());
 
-    if (!collection.isExternal())
-      throw new IllegalStateException("expected external edge collection not, " + collection);
+    if (!edgeReader.isExternal())
+      throw new IllegalStateException("expected external edge collection not, " + edgeReader);
 
     if (log.isDebugEnabled())
       log(where);
@@ -169,33 +140,36 @@ class GraphSliceSupport {
       edgeRecognizerRootExpr.accept(printer);
       log.debug("Edge Recognizer: " + printer.toString());
     }
+    CellConverter cellConverter = new CellConverter(contextType, tableReader.getTableConfig());
     ExternalEdgeRecognizerContext edgeRecogniserContext = new ExternalEdgeRecognizerContext(
         contextType);
-    for (String rowKey : collection.getRowKeys()) {
+    for (String rowKey : edgeReader.getRowKeys()) {
       edgeRecogniserContext.read(rowKey);
       if (edgeRecognizerRootExpr.evaluate(edgeRecogniserContext)) {
-        if (!edgeRecogniserContext.isRowEvaluatedCompletely())
+        if (!edgeRecogniserContext.isRowEvaluatedCompletely()) {
           graphEvalRowKeys.add(rowKey);
-        else
-          results.add(rowKey);
+        } else {
+          CellValues cellValues = cellConverter.convert(rowKey, edgeRecogniserContext.getValues());
+          results.add(cellValues);
+        }
       }
     }
     if (log.isDebugEnabled())
       log.debug("recognized " + graphEvalRowKeys.size() + results.size() + " out of "
-          + collection.getRowKeys().size() + " external edges");
+          + edgeReader.getRowKeys().size() + " external edges");
     if (graphEvalRowKeys.size() == 0)
       return results; // no edges recognized or all recognized by row key alone
 
-    SelectionCollector selectionCollector = new SelectionCollector(where, contextType);
+    SelectionCollector predicateSelection = new SelectionCollector(where, contextType);
 
     // create a new reader as the existing one may have cached data objects
     // already
     // linked to the parent graph. Cannot link to sub-graph as well.
     DistributedReader existingReader = (DistributedReader) tableReader.getDistributedOperation();
     DistributedGraphReader sliceGraphReader = new DistributedGraphReader(contextType,
-        selectionCollector.getTypes(), existingReader.getMarshallingContext());
+        predicateSelection.getTypes(), existingReader.getMarshallingContext());
 
-    HBaseGraphAssembler graphAssembler = new GraphAssembler(contextType, selectionCollector,
+    HBaseGraphAssembler graphAssembler = new GraphAssembler(contextType, predicateSelection,
         sliceGraphReader, snapshotDate);
 
     GraphRecognizerSyntaxTreeAssembler recognizerAssembler = new GraphRecognizerSyntaxTreeAssembler(
@@ -209,7 +183,8 @@ class GraphSliceSupport {
 
     // column filter
     HBaseFilterAssembler columnFilterAssembler = new GraphFetchColumnFilterAssembler(
-        this.selection, contextType);
+        predicateSelection, contextType); // use predicate selection not entire
+                                          // graph selection
     Filter columnFilter = columnFilterAssembler.getFilter();
 
     List<Get> gets = new ArrayList<Get>();
@@ -238,8 +213,9 @@ class GraphSliceSupport {
           throw new IllegalStateException("got no result for row for '" + rowStr
               + "' for mulit-get operation - indicates row noes not exist");
       }
-
-      graphAssembler.assemble(resultRow);
+      // Assemble a predicate slice graph where the edge is root
+      // Can be any size and have both local and external edges
+      graphAssembler.assemble(new CellValues(resultRow));
       PlasmaDataGraph assembledGraph = graphAssembler.getDataGraph();
       graphAssembler.clear();
 
@@ -254,7 +230,7 @@ class GraphSliceSupport {
       }
 
       String rowKey = new String(resultRow.getRow(), charset);
-      results.add(rowKey);
+      results.add(new CellValues(rowKey));
       rowIndex++;
     }
 
@@ -319,68 +295,8 @@ class GraphSliceSupport {
       if (recogniser.evaluate(context))
         sequences.add(seq);
     }
-    // }
-    // else {
-    // otherwise multi-column filter (above)
-    // for (Integer seq : buckets.keySet())
-    // sequences.add(seq);
-    // }
     return sequences;
   }
-
-  // public Set<Integer> fetchSequences(PlasmaType contextType, long
-  // contextSequence,
-  // PlasmaProperty property, RowReader rowReader) throws IOException {
-  //
-  // PlasmaType rootType = (PlasmaType)rowReader.getRootType();
-  // DataGraphConfig graphConfig =
-  // CloudGraphConfig.getInstance().getDataGraph(
-  // rootType.getQualifiedName());
-  // Get get = new Get(rowReader.getRowKey());
-  //
-  // FilterList filterList = new FilterList(
-  // FilterList.Operator.MUST_PASS_ONE);
-  // byte[] key = rowReader.getColumnKeyFactory().createColumnKey(contextType,
-  // contextSequence, property, KeyMetaField._SEQ_);
-  // QualifierFilter qualFilter = new QualifierFilter(
-  // CompareFilter.CompareOp.EQUAL,
-  // new BinaryPrefixComparator(key));
-  // get.setFilter(filterList);
-  //
-  // //Filter filter = filterAssembler.getFilter();
-  // //get.setFilter(filter);
-  //
-  // Result result = fetchResult(get, rowReader.getTableReader(),
-  // graphConfig);
-  // Map<Integer, Map<String, KeyValue>> buckets = buketizeResult(result,
-  // graphConfig);
-  //
-  // HashSet<Integer> sequences = new HashSet<Integer>();
-  // // filter sequence results using edge recognizer
-  // //if (!multiDescendantProperties) {
-  // // assemble a recognizer once for
-  // // all results. Then only evaluate each result.
-  // EdgeRecognizerSyntaxTreeAssembler assembler = new
-  // EdgeRecognizerSyntaxTreeAssembler(where,
-  // graphConfig, contextType, rootType);
-  // Expr recogniser = assembler.getResult();
-  // EdgeRecognizerContext context = new EdgeRecognizerContext();
-  // for (Integer seq : buckets.keySet())
-  // {
-  // Map<String, KeyValue> seqMap = buckets.get(seq);
-  // context.setSequence(seq);
-  // context.setKeyMap(seqMap);
-  // if (recogniser.evaluate(context))
-  // sequences.add(seq);
-  // }
-  // //}
-  // //else {
-  // // otherwise multi-column filter (above)
-  // // for (Integer seq : buckets.keySet())
-  // // sequences.add(seq);
-  // //}
-  // return sequences;
-  // }
 
   /**
    * Runs the given get and returns the result.

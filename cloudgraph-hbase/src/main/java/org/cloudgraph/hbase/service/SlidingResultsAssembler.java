@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.cloudgraph.hbase.graph.HBaseGraphAssembler;
+import org.cloudgraph.hbase.io.CellValues;
 import org.cloudgraph.hbase.io.TableReader;
 import org.cloudgraph.query.expr.Expr;
 import org.cloudgraph.recognizer.GraphRecognizerContext;
@@ -110,7 +111,7 @@ public class SlidingResultsAssembler implements ResultsAssembler {
       }
     }
 
-    this.graphAssembler.assemble(resultRow);
+    this.graphAssembler.assemble(new CellValues(resultRow));
     PlasmaDataGraph graph = this.graphAssembler.getDataGraph();
     this.graphAssembler.clear();
 

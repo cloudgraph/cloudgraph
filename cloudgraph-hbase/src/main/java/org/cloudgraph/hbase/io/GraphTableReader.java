@@ -205,10 +205,10 @@ public class GraphTableReader extends GraphTable implements TableReader {
    *           object UUID
    */
   @Override
-  public RowReader createRowReader(DataObject dataObject, Result resultRow)
+  public RowReader createRowReader(DataObject dataObject, CellValues resultRow)
       throws IllegalArgumentException {
 
-    byte[] rowKey = resultRow.getRow();
+    byte[] rowKey = resultRow.getRowKeyAsBytes();
     String keyString = Bytes.toString(rowKey);
     UUID uuid = ((PlasmaDataObject) dataObject).getUUID();
     if (this.rowReaderMap.containsKey(uuid.toString()))
@@ -216,7 +216,7 @@ public class GraphTableReader extends GraphTable implements TableReader {
     if (this.rowReaderMap.containsKey(keyString))
       throw new IllegalArgumentException(
           "existing row reader is already mapped for the given row key, " + keyString);
-    GraphRowReader rowReader = new GraphRowReader(resultRow.getRow(), resultRow, dataObject, this);
+    GraphRowReader rowReader = new GraphRowReader(rowKey, resultRow, dataObject, this);
     this.addRowReader(uuid, rowReader);
     this.rowReaderMap.put(keyString, rowReader);
 
