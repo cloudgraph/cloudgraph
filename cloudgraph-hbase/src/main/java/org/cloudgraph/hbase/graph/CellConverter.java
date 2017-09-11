@@ -42,13 +42,14 @@ public class CellConverter {
     for (KeyValue keyValue : values) {
       if (keyValue.getProp().getContainingType().equals(this.rootType)) {
         Key key = keyValue.getProp().getKey();
-        if (key != null && key.getStructure() != null && 
-            KeyStructure.valueOf(key.getStructure().name()).ordinal() == KeyStructure.uuid.ordinal()) {
+        if (key != null
+            && key.getStructure() != null
+            && KeyStructure.valueOf(key.getStructure().name()).ordinal() == KeyStructure.uuid
+                .ordinal()) {
           byte[] qual = keyFactory.createColumnKey(this.rootType, EntityMetaKey.UUID);
           byte[] value = hbaseConverter.toBytes(keyValue.getProp(), keyValue.getValue());
           result.addColumn(this.rootTableConfig.getDataColumnFamilyNameBytes(), qual, value);
-        } 
-        else {
+        } else {
           byte[] qual = keyFactory.createColumnKey(this.rootType, keyValue.getProp());
           byte[] value = hbaseConverter.toBytes(keyValue.getProp(), keyValue.getValue());
           result.addColumn(this.rootTableConfig.getDataColumnFamilyNameBytes(), qual, value);

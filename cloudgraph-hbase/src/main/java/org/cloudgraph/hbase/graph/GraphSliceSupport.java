@@ -257,8 +257,10 @@ class GraphSliceSupport {
     boolean hasRootContextUuid = false;
     for (Endpoint endpoint : endpoints) {
       Key key = endpoint.getProperty().getKey();
-      if (key != null && key.getStructure() != null && 
-          KeyStructure.valueOf(key.getStructure().name()).ordinal() == KeyStructure.uuid.ordinal()) {
+      if (key != null
+          && key.getStructure() != null
+          && KeyStructure.valueOf(key.getStructure().name()).ordinal() == KeyStructure.uuid
+              .ordinal()) {
         if (endpoint.getProperty().getContainingType().equals(contextType)) {
           hasRootContextUuid = true;
           break;
