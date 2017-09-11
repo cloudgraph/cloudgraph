@@ -74,6 +74,7 @@ import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
 import org.plasma.sdo.core.CoreConstants;
 import org.plasma.sdo.helper.PlasmaXMLHelper;
+import org.plasma.sdo.profile.KeyStructure;
 import org.plasma.sdo.xml.DefaultOptions;
 import org.xml.sax.SAXException;
 
@@ -256,7 +257,8 @@ class GraphSliceSupport {
     boolean hasRootContextUuid = false;
     for (Endpoint endpoint : endpoints) {
       Key key = endpoint.getProperty().getKey();
-      if (key != null && key.getIsUuid() != null && key.getIsUuid().booleanValue()) {
+      if (key != null && key.getStructure() != null && 
+          KeyStructure.valueOf(key.getStructure().name()).ordinal() == KeyStructure.uuid.ordinal()) {
         if (endpoint.getProperty().getContainingType().equals(contextType)) {
           hasRootContextUuid = true;
           break;
