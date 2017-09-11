@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:PlasmaSDOProfile="http:///schemas/PlasmaSDOProfile/_Ta1lIMTtEeSkYpwPkZ5I3w/0" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xsi:schemaLocation="http:///schemas/PlasmaSDOProfile/_Ta1lIMTtEeSkYpwPkZ5I3w/0 pathmap://PLASMA_PROFILES/PlasmaSDO.profile_v1_1.uml#_Ta1lIsTtEeSkYpwPkZ5I3w">
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:PlasmaSDOProfile="http:///schemas/PlasmaSDOProfile/_SyDpAJZEEeeUmordTzBftA/3" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xsi:schemaLocation="http:///schemas/PlasmaSDOProfile/_SyDpAJZEEeeUmordTzBftA/3 pathmap://PLASMA_PROFILES/PlasmaSDO.profile_v1_1.uml#_SyE3IJZEEeeUmordTzBftA">
   <uml:Model xmi:id="8f07a441-7327-4bf7-aff4-cd60402bf83a" name="datatypes">
     <packagedElement xmi:type="uml:Class" xmi:id="9880e6a9-d36f-4054-a754-3e05e445bade" name="DateTimeNode">
       <generalization xmi:type="uml:Generalization" xmi:id="a5d7f221-1ebc-451e-8b9d-c1769a18c293" general="91ceab15-96f3-4697-b01a-9c481f165dc5"/>
@@ -223,77 +223,67 @@
       <generalization xmi:type="uml:Generalization" xmi:id="99c1dff9-60b1-4f8f-9375-dc54f0e69e54" general="91ceab15-96f3-4697-b01a-9c481f165dc5"/>
     </packagedElement>
     <packagedElement xmi:type="uml:Association" xmi:id="164a53b1-6b2a-46c4-9c5c-418da4e48e7b" memberEnd="b8777ad8-12e0-45a2-a5fb-3ee689444fa2 d2ec2528-6504-484b-b10a-42d46382830d"/>
-    <profileApplication xmi:type="uml:ProfileApplication" xmi:id="a3a59980-d6c6-48cb-bc1e-68afebe8768b">
-      <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_TFOogGQDEee99JE8pJICqw" source="PapyrusVersion">
-        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_TFOogWQDEee99JE8pJICqw" key="Version" value="1.0.0"/>
-        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_TFOogmQDEee99JE8pJICqw" key="Comment" value=""/>
-        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_TFOog2QDEee99JE8pJICqw" key="Copyright" value="Copyright 2015, TerraMeta Software Inc. All rights reserved."/>
-        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_TFOohGQDEee99JE8pJICqw" key="Date" value="2015-03-07"/>
-        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_TFOohWQDEee99JE8pJICqw" key="Author" value="TerraMeta Software Inc."/>
-      </eAnnotations>
-      <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="a8ff90ff-ac48-454a-ad7b-ae947969132f" source="http://www.eclipse.org/uml2/5.0.0/UML">
-        <references xmi:type="ecore:EPackage" href="pathmap://PLASMA_PROFILES/PlasmaSDO.profile_v1_1.uml#_Ta1lIsTtEeSkYpwPkZ5I3w"/>
-      </eAnnotations>
-      <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_TD7oAGQDEee99JE8pJICqw" source="http://www.eclipse.org/uml2/2.0.0/UML">
-        <references xmi:type="ecore:EPackage" href="pathmap://PLASMA_PROFILES/PlasmaSDO.profile_v1_1.uml#_Ta1lIsTtEeSkYpwPkZ5I3w"/>
+    <profileApplication xmi:type="uml:ProfileApplication" xmi:id="_S1_TgJZUEeeDI8eHVQACiw">
+      <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_S2SOcJZUEeeDI8eHVQACiw" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="pathmap://PLASMA_PROFILES/PlasmaSDO.profile_v1_1.uml#_SyE3IJZEEeeUmordTzBftA"/>
       </eAnnotations>
       <appliedProfile xmi:type="uml:Profile" href="pathmap://PLASMA_PROFILES/PlasmaSDO.profile_v1_1.uml#_NlmngCJUEeSXvPZh3aumVA"/>
     </profileApplication>
   </uml:Model>
-  <PlasmaSDOProfile:SDONamespace xmi:id="737f5070-4b1b-4442-8aff-34519150d3dc" base_Package="8f07a441-7327-4bf7-aff4-cd60402bf83a" uri="http://cloudgraph.org/test/datatypes"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="b83e4382-15e2-4ebb-8e5e-26b0d88dd490" base_NamedElement="8f07a441-7327-4bf7-aff4-cd60402bf83a" physicalName="DATATYPES"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="2bcbe16a-5f94-4915-bffd-b84506dea896" base_NamedElement="9880e6a9-d36f-4054-a754-3e05e445bade" physicalName="DTND"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="520eeac7-8f3d-4034-98f9-2a3eba277749" base_NamedElement="edaadd8c-eba5-42ff-9a4e-de2154f0587e" physicalName="DBLND"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="0d3422da-e128-4eaf-9be3-474620589458" base_NamedElement="cdeb2208-b49d-4210-8341-08bd8cac00f9" physicalName="FLTND"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="4e79bc22-0851-4c78-980c-63ee465626a3" base_NamedElement="f8312ebb-3b93-4289-9802-94b99a526dab" physicalName="CO"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="06d6db2d-8434-4963-ad3d-b3298121dd99" base_NamedElement="5a437fbb-7934-46cb-a132-a7f7eaec87f4" physicalName="LMO"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="6e70c4e6-7a5f-4d7b-9e9a-af48eb3ea794" base_NamedElement="68f96603-480b-4b8a-8338-116f1f79fd49" physicalName="LAO"/>
-  <PlasmaSDOProfile:SDOKey xmi:id="14975821-8b15-4690-9f40-9183114216f5" base_Property="ba702917-fee2-4055-bc21-809865926d10" type="primary"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="8c9fab75-12f0-48ca-b56c-5d247514f9eb" base_NamedElement="ba702917-fee2-4055-bc21-809865926d10" physicalName="SEQ_ID"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="21debd49-4e31-4988-8b7e-1104080ab935" base_NamedElement="1e6b5090-8b4f-470a-8758-bb6b4e1723f1" physicalName="CB"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="99220fbb-e844-4ee7-a2eb-9ec87ac66cb1" base_NamedElement="9966859d-c8ea-4395-a5b3-0a6737d237a6" physicalName="LMB"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="195b23f7-d04f-4e15-90d1-8e94be2a8689" base_NamedElement="69193771-9aff-448e-8f20-c0f4031f7c43" physicalName="LN"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="f5f96e96-cb34-4a82-a639-e705220d9bdb" base_NamedElement="febaf430-4a4d-4b12-bfc8-ac64db57a9d3" physicalName="SN"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="0016e750-9bb1-46d7-a490-b408f3edb13c" base_NamedElement="328a9f41-b960-4231-a02a-c8923f7a721f" physicalName="DND"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="a11a1140-b65c-407c-b239-1969aefe1468" base_NamedElement="4cedef29-c2af-415e-8315-47fa437fd7a2" physicalName="LNGND"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="0f1591ae-1ecf-4c3b-adc7-731b9776b582" base_NamedElement="aeab940e-b35a-4d73-99f8-4ba57adb7edb" physicalName="DCMLND"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="83d77a47-012e-4491-84e5-defa7980e7ee" base_NamedElement="91ceab15-96f3-4697-b01a-9c481f165dc5" physicalName="DN"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="bee9aba4-9553-454e-9369-b0f6fe348f8b" base_NamedElement="d2ec2528-6504-484b-b10a-42d46382830d" physicalName="PRNT"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="06caaffa-9206-4e1d-b6c3-37c0bbb7f865" base_NamedElement="b8777ad8-12e0-45a2-a5fb-3ee689444fa2" physicalName="CHLD"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="7f3e6912-1d01-4920-8d02-32d336279193" base_NamedElement="a1d76c6d-a70f-47fa-af8c-073bf7cfab89" physicalName="NM"/>
-  <PlasmaSDOProfile:SDOValueConstraint xmi:id="92d0e608-244e-484b-8a97-f78e1f125d6c" base_Property="a1d76c6d-a70f-47fa-af8c-073bf7cfab89" maxLength="60"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="eb040e81-6cb5-4011-a9d2-8da8cf3ed165" base_NamedElement="82d638c2-41df-437f-9f23-9b9c5262bade" physicalName="BF"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="137ce572-1239-4a7c-8015-5e0dde82ea16" base_NamedElement="9491b5a3-1916-4e6c-81cb-3354c49b5bd2" physicalName="BTS"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="f40b37e5-83b8-48fe-a4bd-37a02182becf" base_NamedElement="267adae9-83a3-476b-b91a-79825827b9e2" physicalName="CRF"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="9ab4c30f-2ede-4ad1-882a-a077e3e1d6e8" base_NamedElement="aec7f67b-547d-47cd-947b-4c4a1a946bf6" physicalName="DTF"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="361a4d0e-95a0-487e-b44c-cc8b2fbf2484" base_NamedElement="2749804e-ac2b-43dd-b79c-a32b67159e9a" physicalName="DMF"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="e02ce07a-0e51-4826-8f2a-0d4443bd2eec" base_NamedElement="ef8399e9-2837-4e85-ac83-81768d6c6c27" physicalName="DYF"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="e2c141f1-433b-44ef-99e4-a15360115c84" base_NamedElement="a076970f-7172-461f-994d-5b2f51520798" physicalName="DCF"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="e8661165-ee33-459a-8127-b7bb833e2c1b" base_NamedElement="3fc220ed-5df1-401a-9024-e1a9827e8953" physicalName="DBF"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="56f51a0b-4180-45c0-9a18-6938e45f9959" base_NamedElement="c9fee8d3-2122-44f3-bd33-bd3550993811" physicalName="DRF"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="890030d3-5649-4ee2-aa9b-0999f802f723" base_NamedElement="0e0e9340-fce0-49a3-a909-b71e1d554074" physicalName="FF"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="1d2cfe36-0587-41d6-84dd-ef2c36666255" base_NamedElement="b2bd2d9f-6ec3-443c-9c84-4840e4344fa7" physicalName="IF"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="c34ae036-ee43-4c09-8dbc-fa53fc0172e6" base_NamedElement="758dfae1-6cbe-41b8-8652-394d41f83d1a" physicalName="INF"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="458035f0-d52f-4123-bbec-17509009abb6" base_NamedElement="a6a71782-47df-414d-ab7a-3a652a2d5b40" physicalName="LGF"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="b4a0d325-a898-42cb-a2f5-9eeb93f79cc3" base_NamedElement="396e7ed7-7b37-44bf-abb2-f748ee4b7767" physicalName="MNF"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="ef76cf66-1988-4e1c-80d4-5714f51ef688" base_NamedElement="26abafd5-5241-4ba7-a602-7ab48a7a1395" physicalName="MDF"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="16770171-e065-462c-ba33-d54e2ac75891" base_NamedElement="0c46cc4e-b05a-4a81-8105-90a3e39bbf10" physicalName="OF"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="00e247f3-2f8a-46aa-8818-f60d6ac49e9f" base_NamedElement="b27a3deb-391c-47e9-8cae-65967f3491c1" physicalName="STF"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="40bc559e-ec16-486b-a05e-824afb97fac8" base_NamedElement="bf6fc737-e10e-4dfc-9461-4e94ce247030" physicalName="SGF"/>
-  <PlasmaSDOProfile:SDOValueConstraint xmi:id="fddb91e7-3795-408e-922a-88080f388eb3" base_Property="bf6fc737-e10e-4dfc-9461-4e94ce247030" maxLength="20"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="0c8c51c7-b90f-4410-a272-821ab5bb2b4c" base_NamedElement="d2d7dfc7-947e-4557-a18b-86f34ee470eb" physicalName="SSF"/>
-  <PlasmaSDOProfile:SDOValueConstraint xmi:id="3bc7ed57-ece5-4484-8583-49b9345017af" base_Property="d2d7dfc7-947e-4557-a18b-86f34ee470eb" maxLength="30"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="6db87d7c-5b9f-4172-b028-4062b869747c" base_NamedElement="29562e1b-7fe4-483c-b46e-12abc6f47bc4" physicalName="TMF"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="e2a755df-fd80-4c39-8722-ad142527b65b" base_NamedElement="ab243eb6-dc26-4044-a06f-c7589db8b28d" physicalName="URIF"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="bb932353-7fdd-4eb9-8ab3-8dc1ec75f339" base_NamedElement="1e53b339-008f-442f-812e-24e25ecc8492" physicalName="YRF"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="894be379-be74-48b3-9c2c-101512a8cf8c" base_NamedElement="10298096-e4a7-4dbc-b13a-e6af521f9fdc" physicalName="YMF"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="b3dd8197-705e-41f8-b8db-66b534876cdb" base_NamedElement="87acdabf-64c2-426c-9750-c19be7685831" physicalName="YMD"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="4766873f-d1af-4153-8cf0-e55eb3d0d86f" base_NamedElement="30b377b0-5d48-4969-901c-323be81bd0c8" physicalName="BTF"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="5e24c955-9a4e-4751-a245-a3cdb0dda331" base_NamedElement="26686989-1651-4acc-904b-03d2663744a9" physicalName="ID"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="c4dc6b71-0dbc-4b3c-bf35-6e4f2063a9b5" base_NamedElement="5f085eae-afe1-4fbf-aef6-7da0ace1dbbd" physicalName="INTND"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="21eca843-42a0-4ef9-b13c-eb5dcaf0272a" base_NamedElement="e8446841-cb9c-4e25-b5ac-3b2408fee04e" physicalName="STRND"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="_QFcdoGQDEee99JE8pJICqw" base_NamedElement="8f07a441-7327-4bf7-aff4-cd60402bf83a" physicalName="DATATYPES"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="_QFeS0GQDEee99JE8pJICqw" base_NamedElement="9880e6a9-d36f-4054-a754-3e05e445bade" physicalName="DTND"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="_QFfg8GQDEee99JE8pJICqw" base_NamedElement="edaadd8c-eba5-42ff-9a4e-de2154f0587e" physicalName="DBLND"/>
-  <PlasmaSDOProfile:SDOValueConstraint xmi:id="_Z_BVYGQEEee99JE8pJICqw" base_Property="0e0e9340-fce0-49a3-a909-b71e1d554074" totalDigits="22" fractionDigits="11"/>
+  <PlasmaSDOProfile:SDONamespace xmi:id="_zIirQJcMEeenndEf3_jNNQ" base_Package="8f07a441-7327-4bf7-aff4-cd60402bf83a" uri="http://cloudgraph.org/test/datatypes"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zIr1MJcMEeenndEf3_jNNQ" base_NamedElement="8f07a441-7327-4bf7-aff4-cd60402bf83a" physicalName="DATATYPES"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zIr1MZcMEeenndEf3_jNNQ" base_NamedElement="9880e6a9-d36f-4054-a754-3e05e445bade" physicalName="DTND"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zIr1MpcMEeenndEf3_jNNQ" base_NamedElement="edaadd8c-eba5-42ff-9a4e-de2154f0587e" physicalName="DBLND"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zIr1M5cMEeenndEf3_jNNQ" base_NamedElement="cdeb2208-b49d-4210-8341-08bd8cac00f9" physicalName="FLTND"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zIr1NJcMEeenndEf3_jNNQ" base_NamedElement="f8312ebb-3b93-4289-9802-94b99a526dab" physicalName="CO"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zIr1NZcMEeenndEf3_jNNQ" base_NamedElement="5a437fbb-7934-46cb-a132-a7f7eaec87f4" physicalName="LMO"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zIr1NpcMEeenndEf3_jNNQ" base_NamedElement="68f96603-480b-4b8a-8338-116f1f79fd49" physicalName="LAO"/>
+  <PlasmaSDOProfile:SDOKey xmi:id="_zIr1N5cMEeenndEf3_jNNQ" base_Property="ba702917-fee2-4055-bc21-809865926d10" type="primary"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zIr1OJcMEeenndEf3_jNNQ" base_NamedElement="ba702917-fee2-4055-bc21-809865926d10" physicalName="SEQ_ID"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zIr1OZcMEeenndEf3_jNNQ" base_NamedElement="1e6b5090-8b4f-470a-8758-bb6b4e1723f1" physicalName="CB"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zI1mMJcMEeenndEf3_jNNQ" base_NamedElement="9966859d-c8ea-4395-a5b3-0a6737d237a6" physicalName="LMB"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zI1mMZcMEeenndEf3_jNNQ" base_NamedElement="69193771-9aff-448e-8f20-c0f4031f7c43" physicalName="LN"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zI1mMpcMEeenndEf3_jNNQ" base_NamedElement="febaf430-4a4d-4b12-bfc8-ac64db57a9d3" physicalName="SN"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zI1mM5cMEeenndEf3_jNNQ" base_NamedElement="328a9f41-b960-4231-a02a-c8923f7a721f" physicalName="DND"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zI1mNJcMEeenndEf3_jNNQ" base_NamedElement="4cedef29-c2af-415e-8315-47fa437fd7a2" physicalName="LNGND"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zI1mNZcMEeenndEf3_jNNQ" base_NamedElement="aeab940e-b35a-4d73-99f8-4ba57adb7edb" physicalName="DCMLND"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zI1mNpcMEeenndEf3_jNNQ" base_NamedElement="91ceab15-96f3-4697-b01a-9c481f165dc5" physicalName="DN"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zI1mN5cMEeenndEf3_jNNQ" base_NamedElement="d2ec2528-6504-484b-b10a-42d46382830d" physicalName="PRNT"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zI1mOJcMEeenndEf3_jNNQ" base_NamedElement="b8777ad8-12e0-45a2-a5fb-3ee689444fa2" physicalName="CHLD"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zI1mOZcMEeenndEf3_jNNQ" base_NamedElement="a1d76c6d-a70f-47fa-af8c-073bf7cfab89" physicalName="NM"/>
+  <PlasmaSDOProfile:SDOValueConstraint xmi:id="_zI1mOpcMEeenndEf3_jNNQ" base_Property="a1d76c6d-a70f-47fa-af8c-073bf7cfab89" maxLength="60"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zI1mO5cMEeenndEf3_jNNQ" base_NamedElement="82d638c2-41df-437f-9f23-9b9c5262bade" physicalName="BF"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zI1mPJcMEeenndEf3_jNNQ" base_NamedElement="9491b5a3-1916-4e6c-81cb-3354c49b5bd2" physicalName="BTS"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zI1mPZcMEeenndEf3_jNNQ" base_NamedElement="267adae9-83a3-476b-b91a-79825827b9e2" physicalName="CRF"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zI1mPpcMEeenndEf3_jNNQ" base_NamedElement="aec7f67b-547d-47cd-947b-4c4a1a946bf6" physicalName="DTF"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zI1mP5cMEeenndEf3_jNNQ" base_NamedElement="2749804e-ac2b-43dd-b79c-a32b67159e9a" physicalName="DMF"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zI1mQJcMEeenndEf3_jNNQ" base_NamedElement="ef8399e9-2837-4e85-ac83-81768d6c6c27" physicalName="DYF"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zI1mQZcMEeenndEf3_jNNQ" base_NamedElement="a076970f-7172-461f-994d-5b2f51520798" physicalName="DCF"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zI1mQpcMEeenndEf3_jNNQ" base_NamedElement="3fc220ed-5df1-401a-9024-e1a9827e8953" physicalName="DBF"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zI-wIJcMEeenndEf3_jNNQ" base_NamedElement="c9fee8d3-2122-44f3-bd33-bd3550993811" physicalName="DRF"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zI-wIZcMEeenndEf3_jNNQ" base_NamedElement="0e0e9340-fce0-49a3-a909-b71e1d554074" physicalName="FF"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zI-wIpcMEeenndEf3_jNNQ" base_NamedElement="b2bd2d9f-6ec3-443c-9c84-4840e4344fa7" physicalName="IF"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zI-wI5cMEeenndEf3_jNNQ" base_NamedElement="758dfae1-6cbe-41b8-8652-394d41f83d1a" physicalName="INF"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zI-wJJcMEeenndEf3_jNNQ" base_NamedElement="a6a71782-47df-414d-ab7a-3a652a2d5b40" physicalName="LGF"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zI-wJZcMEeenndEf3_jNNQ" base_NamedElement="396e7ed7-7b37-44bf-abb2-f748ee4b7767" physicalName="MNF"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zI-wJpcMEeenndEf3_jNNQ" base_NamedElement="26abafd5-5241-4ba7-a602-7ab48a7a1395" physicalName="MDF"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zI-wJ5cMEeenndEf3_jNNQ" base_NamedElement="0c46cc4e-b05a-4a81-8105-90a3e39bbf10" physicalName="OF"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zI-wKJcMEeenndEf3_jNNQ" base_NamedElement="b27a3deb-391c-47e9-8cae-65967f3491c1" physicalName="STF"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zI-wKZcMEeenndEf3_jNNQ" base_NamedElement="bf6fc737-e10e-4dfc-9461-4e94ce247030" physicalName="SGF"/>
+  <PlasmaSDOProfile:SDOValueConstraint xmi:id="_zI-wKpcMEeenndEf3_jNNQ" base_Property="bf6fc737-e10e-4dfc-9461-4e94ce247030" maxLength="20"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zI-wK5cMEeenndEf3_jNNQ" base_NamedElement="d2d7dfc7-947e-4557-a18b-86f34ee470eb" physicalName="SSF"/>
+  <PlasmaSDOProfile:SDOValueConstraint xmi:id="_zI-wLJcMEeenndEf3_jNNQ" base_Property="d2d7dfc7-947e-4557-a18b-86f34ee470eb" maxLength="30"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zI-wLZcMEeenndEf3_jNNQ" base_NamedElement="29562e1b-7fe4-483c-b46e-12abc6f47bc4" physicalName="TMF"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zI-wLpcMEeenndEf3_jNNQ" base_NamedElement="ab243eb6-dc26-4044-a06f-c7589db8b28d" physicalName="URIF"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zI-wL5cMEeenndEf3_jNNQ" base_NamedElement="1e53b339-008f-442f-812e-24e25ecc8492" physicalName="YRF"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zI-wMJcMEeenndEf3_jNNQ" base_NamedElement="10298096-e4a7-4dbc-b13a-e6af521f9fdc" physicalName="YMF"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zI-wMZcMEeenndEf3_jNNQ" base_NamedElement="87acdabf-64c2-426c-9750-c19be7685831" physicalName="YMD"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zI-wMpcMEeenndEf3_jNNQ" base_NamedElement="30b377b0-5d48-4969-901c-323be81bd0c8" physicalName="BTF"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zJIhIJcMEeenndEf3_jNNQ" base_NamedElement="26686989-1651-4acc-904b-03d2663744a9" physicalName="ID"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zJIhIZcMEeenndEf3_jNNQ" base_NamedElement="5f085eae-afe1-4fbf-aef6-7da0ace1dbbd" physicalName="INTND"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zJIhIpcMEeenndEf3_jNNQ" base_NamedElement="e8446841-cb9c-4e25-b5ac-3b2408fee04e" physicalName="STRND"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zJIhI5cMEeenndEf3_jNNQ" base_NamedElement="8f07a441-7327-4bf7-aff4-cd60402bf83a" physicalName="DATATYPES"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zJIhJJcMEeenndEf3_jNNQ" base_NamedElement="9880e6a9-d36f-4054-a754-3e05e445bade" physicalName="DTND"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_zJIhJZcMEeenndEf3_jNNQ" base_NamedElement="edaadd8c-eba5-42ff-9a4e-de2154f0587e" physicalName="DBLND"/>
+  <PlasmaSDOProfile:SDOValueConstraint xmi:id="_zJIhJpcMEeenndEf3_jNNQ" base_Property="0e0e9340-fce0-49a3-a909-b71e1d554074" totalDigits="22" fractionDigits="11"/>
 </xmi:XMI>
