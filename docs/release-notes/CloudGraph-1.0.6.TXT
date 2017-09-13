@@ -1,0 +1,26 @@
+Release Notes
+
+CloudGraph 1.0.6 Release Notes
+
+CloudGraph 1.0.6 is a production release of CloudGraph.
+
+The full list of changes can be found in our issue management system github, and is reproduced below.
+See https://github.com/cloudgraph/cloudgraph/issues. 
+
+For issues created during beta testing see:
+See https://github.com/terrameta/cloudgraph/issues. 
+
+
+Major Changes
+
+Bugs
+
+Improvements
+[Issue #8] - Row Key Parsing for External Edge Processing Slow 
+[Issue #7] - Check for Completed Evaluation in External Edge Syntax Trees  
+ 
+New Features
+
+Tasks
+
+Wish

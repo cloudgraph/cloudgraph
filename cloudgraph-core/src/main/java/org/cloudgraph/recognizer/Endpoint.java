@@ -84,14 +84,14 @@ public class Endpoint {
   }
 
   public int hashCode() {
-    if (hashCode != 0)
-      return hashCode;
+    if (this.hashCode != 0)
+      return this.hashCode;
     final int prime = 31;
-    int hashCode = 1;
+    this.hashCode = 1;
     if (this.path != null)
-      hashCode = prime * hashCode + this.path.hashCode();
-    hashCode = prime * hashCode + this.property.getId().hashCode();
-    return hashCode;
+      this.hashCode = prime * this.hashCode + this.path.hashCode();
+    this.hashCode = prime * this.hashCode + this.property.getId().hashCode();
+    return this.hashCode;
   }
 
   public boolean equals(Object other) {

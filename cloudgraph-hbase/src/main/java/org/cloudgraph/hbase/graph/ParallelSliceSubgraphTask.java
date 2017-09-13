@@ -166,7 +166,7 @@ class ParallelSliceSubgraphTask extends DefaultSubgraphTask implements SubgraphT
                 + "' to table: '" + externalTableReader.getTableConfig().getName() + "'");
         List<CellValues> resultRows = null;
         if (prop.isMany() && where != null) {
-          resultRows = this.sliceSupport.filter(childType, edgeReader, where, rowReader,
+          resultRows = this.sliceSupport.filter(childType, level, edgeReader, where, rowReader,
               externalTableReader);
         }
         assembleExternalEdges(target, targetSequence, prop, edgeReader, rowReader, resultRows,

@@ -127,8 +127,8 @@ class GraphSliceSupport {
    * @throws IllegalStateException
    *           if the edge collection is not external
    */
-  public List<CellValues> filter(PlasmaType contextType, EdgeReader edgeReader, Where where,
-      RowReader rowReader, TableReader tableReader) throws IOException {
+  public List<CellValues> filter(PlasmaType contextType, int level, EdgeReader edgeReader,
+      Where where, RowReader rowReader, TableReader tableReader) throws IOException {
     List<CellValues> results = new ArrayList<>((int) edgeReader.getCount());
 
     if (!edgeReader.isExternal())
@@ -148,7 +148,8 @@ class GraphSliceSupport {
     CellConverter cellConverter = new CellConverter(contextType, tableReader.getTableConfig());
     ExternalEdgeRecognizerContext edgeRecogniserContext = new ExternalEdgeRecognizerContext(
         contextType);
-    boolean complete = rowKeysHaveSelection(contextType, edgeRecogniserContext.getEndpoints());
+    boolean complete = rowKeysHaveSelection(contextType, level,
+        edgeRecogniserContext.getEndpoints());
     for (String rowKey : edgeReader.getRowKeys()) {
       edgeRecogniserContext.read(rowKey);
       if (edgeRecognizerRootExpr.evaluate(edgeRecogniserContext)) {
@@ -252,25 +253,28 @@ class GraphSliceSupport {
    * @param endpoints
    * @return
    */
-  private boolean rowKeysHaveSelection(PlasmaType contextType, Collection<Endpoint> endpoints) {
+  private boolean rowKeysHaveSelection(PlasmaType contextType, int level,
+      Collection<Endpoint> endpoints) {
 
     boolean hasRootContextUuid = false;
     for (Endpoint endpoint : endpoints) {
       Key key = endpoint.getProperty().getKey();
-      if (key != null
-          && key.getStructure() != null
-          && KeyStructure.valueOf(key.getStructure().name()).ordinal() == KeyStructure.uuid
-              .ordinal()) {
-        if (endpoint.getProperty().getContainingType().equals(contextType)) {
-          hasRootContextUuid = true;
-          break;
+      if (key != null && key.getStructure() != null) {
+        KeyStructure keyStruct = KeyStructure.valueOf(key.getStructure().name());
+        if (keyStruct.ordinal() == KeyStructure.uuid.ordinal()) {
+          PlasmaType endpointOwnerType = (PlasmaType) endpoint.getProperty().getContainingType();
+          if (endpointOwnerType.equals(contextType) || contextType.isBaseType(endpointOwnerType)) {
+            hasRootContextUuid = true;
+            break;
+          }
         }
       }
     }
     if (!hasRootContextUuid)
       return false;
 
-    for (Property prop : this.selection.getProperties(contextType)) {
+    Set<Property> selectionProps = this.selection.getProperties(contextType, level + 1);
+    for (Property prop : selectionProps) {
       PlasmaProperty plasmaProp = (PlasmaProperty) prop;
       boolean found = false;
       for (Endpoint endpoint : endpoints) {

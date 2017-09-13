@@ -40,7 +40,8 @@ public class CellConverter {
     result.addColumn(this.rootTableConfig.getDataColumnFamilyNameBytes(), typeQual, typeValue);
 
     for (KeyValue keyValue : values) {
-      if (keyValue.getProp().getContainingType().equals(this.rootType)) {
+      PlasmaType endpointOwnerType = (PlasmaType) keyValue.getProp().getContainingType();
+      if (endpointOwnerType.equals(this.rootType) || this.rootType.isBaseType(endpointOwnerType)) {
         Key key = keyValue.getProp().getKey();
         if (key != null
             && key.getStructure() != null

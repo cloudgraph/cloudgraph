@@ -159,7 +159,7 @@ public class GraphSliceAssembler extends DistributedAssembler {
                 + "' to table: '" + externalTableReader.getTableConfig().getName() + "'");
         List<CellValues> resultRows = null;
         if (where != null) {
-          resultRows = this.slice.filter(childType, edgeReader, where, rowReader,
+          resultRows = this.slice.filter(childType, level, edgeReader, where, rowReader,
               externalTableReader);
         } else {
           resultRows = edgeReader.getRowValues();

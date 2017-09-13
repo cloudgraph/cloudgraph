@@ -18,6 +18,9 @@ package org.cloudgraph.hbase.key;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -33,8 +36,10 @@ import org.cloudgraph.hbase.service.HBaseDataConverter;
 import org.cloudgraph.recognizer.Endpoint;
 import org.cloudgraph.state.RowState;
 import org.cloudgraph.store.key.KeyValue;
+import org.plasma.sdo.DataType;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
+import org.plasma.sdo.helper.DataConverter;
 
 import commonj.sdo.Property;
 
@@ -57,11 +62,10 @@ import commonj.sdo.Property;
  */
 public class CompositeRowKeyReader {
   private static final Log log = LogFactory.getLog(CompositeRowKeyReader.class);
-  private Charset charset;
   private TableConfig table;
   private DataGraphConfig graph;
   private PlasmaType contextType;
-  private String rowKeyFeildDelimRegexp;
+  private char rowKeyFieldDelimChar;
   private Map<UserDefinedRowKeyFieldConfig, Endpoint> endpointMap;
   private Map<Endpoint, KeyValue> valueMap;
 
@@ -75,17 +79,14 @@ public class CompositeRowKeyReader {
     this.contextType = contextType;
     this.table = CloudGraphConfig.getInstance().getTable(this.contextType);
     this.graph = CloudGraphConfig.getInstance().getDataGraph(this.contextType.getQualifiedName());
-    this.charset = table.getCharset();
 
     this.valueMap = new HashMap<>();
     this.endpointMap = new HashMap<>();
-    this.rowKeyFeildDelimRegexp = this.graph.getColumnKeyFieldDelimiter();
-    if (this.rowKeyFeildDelimRegexp.length() == 1) {
-      char c = this.rowKeyFeildDelimRegexp.charAt(0);
-      if (isSpecialRegexChar(c)) {
-        rowKeyFeildDelimRegexp = "\\" + String.valueOf(c);
-      }
-    }
+    if (this.graph.getRowKeyFieldDelimiter().length() == 1) {
+      this.rowKeyFieldDelimChar = this.graph.getRowKeyFieldDelimiter().charAt(0);
+    } else
+      throw new IllegalStateException("expected single character delimiter, not, '"
+          + this.graph.getRowKeyFieldDelimiter() + "'");
 
     construct();
   }
@@ -133,8 +134,10 @@ public class CompositeRowKeyReader {
 
   public void read(String rowKey) {
     this.valueMap.clear();
-    String[] tokens = rowKey.split(this.rowKeyFeildDelimRegexp);
-    for (int i = 0; i < tokens.length; i++) {
+    Iterator<String> iter = fastSplit(rowKey, this.rowKeyFieldDelimChar).iterator();
+    int i = 0;
+    while (iter.hasNext()) {
+      String token = iter.next().trim();
       KeyFieldConfig keyField = this.graph.getRowKeyFields().get(i);
       if (PreDefinedKeyFieldConfig.class.isAssignableFrom(keyField.getClass())) {
         if (log.isDebugEnabled())
@@ -150,14 +153,49 @@ public class CompositeRowKeyReader {
             + endpointProp + " - continuing");
         continue;
       }
-      Endpoint endpoint = this.endpointMap.get(i);
-      String stringValue = tokens[i].trim();
-      Object value = HBaseDataConverter.INSTANCE.fromBytes(endpointProp,
-          stringValue.getBytes(this.charset));
+      Endpoint endpoint = this.endpointMap.get(userDefinedKeyField);
+      Object value = null;
+      DataType sdoType = DataType.valueOf(endpointProp.getType().getName());
+      switch (sdoType) {
+      case String: // no conversion
+        value = token;
+        break;
+      default:
+        value = DataConverter.INSTANCE.fromString(endpointProp, token);
+        break;
+      }
       KeyValue kv = new KeyValue(endpointProp, value);
       kv.setPropertyPath(userDefinedKeyField.getPropertyPath());
+      if (this.valueMap.containsKey(endpoint))
+        throw new IllegalStateException("expected single value for endpoint, " + endpoint);
       this.valueMap.put(endpoint, kv);
+      i++;
     }
+  }
+
+  /**
+   * String split which beats Java regex String.split() by nearly an order of
+   * magnitude.
+   * 
+   * @param str
+   *          the source string
+   * @param delim
+   *          the delimiter
+   * @return the tokens
+   */
+  private List<String> fastSplit(String str, char delim) {
+    char[] chars = str.toCharArray();
+    LinkedList<String> list = new LinkedList<>();
+    int i, index = 0;
+    for (i = 0; i < chars.length; i++) {
+      if (chars[i] == delim) {
+        list.add(str.substring(index, i));
+        index = i + 1;
+      }
+    }
+    if (i > index)
+      list.add(str.substring(index, i));
+    return list;
   }
 
   public Object getValue(Endpoint endpoint) {

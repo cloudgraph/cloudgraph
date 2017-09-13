@@ -16,6 +16,7 @@
 package org.cloudgraph.hbase.graph;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.Result;
@@ -247,7 +249,15 @@ public abstract class DefaultAssembler {
         rowReader.getTableReader().getTableConfig(), rowReader);
     String uuidStr = null;
     uuidStr = new String(uuidValue, rowReader.getTableReader().getTableConfig().getCharset());
-    return UUID.fromString(uuidStr);
+    UUID uuid = null;
+    if (uuidStr.length() == 22) {
+      byte[] bytes = Base64.decodeBase64(uuidStr);
+      ByteBuffer bb = ByteBuffer.wrap(bytes);
+      uuid = new UUID(bb.getLong(), bb.getLong());
+    } else {
+      uuid = UUID.fromString(uuidStr);
+    }
+    return uuid;
   }
 
   protected UUID findRootUUID(TableReader childTableReader, GraphColumnKeyFactory keyFactory,
@@ -259,7 +269,14 @@ public abstract class DefaultAssembler {
     if (rootUuid != null) {
       String uuidStr = null;
       uuidStr = new String(rootUuid, childTableReader.getTableConfig().getCharset());
-      UUID uuid = UUID.fromString(uuidStr);
+      UUID uuid = null;
+      if (uuidStr.length() == 22) {
+        byte[] bytes = Base64.decodeBase64(uuidStr);
+        ByteBuffer bb = ByteBuffer.wrap(bytes);
+        uuid = new UUID(bb.getLong(), bb.getLong());
+      } else {
+        uuid = UUID.fromString(uuidStr);
+      }
       return uuid;
     }
     return null;
@@ -274,9 +291,15 @@ public abstract class DefaultAssembler {
     if (rootUuid == null)
       throw new GraphServiceException("expected column: " + Bytes.toString(uuidQual) + " for row '"
           + childResult.getRowKey() + "' in table: " + childTableReader.getTableConfig().getName());
-    String uuidStr = null;
-    uuidStr = new String(rootUuid, childTableReader.getTableConfig().getCharset());
-    UUID uuid = UUID.fromString(uuidStr);
+    String uuidStr = new String(rootUuid, childTableReader.getTableConfig().getCharset());
+    UUID uuid = null;
+    if (uuidStr.length() == 22) {
+      byte[] bytes = Base64.decodeBase64(uuidStr);
+      ByteBuffer bb = ByteBuffer.wrap(bytes);
+      uuid = new UUID(bb.getLong(), bb.getLong());
+    } else {
+      uuid = UUID.fromString(uuidStr);
+    }
     return uuid;
   }
 
