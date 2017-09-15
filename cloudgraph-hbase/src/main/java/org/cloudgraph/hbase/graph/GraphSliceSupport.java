@@ -148,7 +148,7 @@ class GraphSliceSupport {
     CellConverter cellConverter = new CellConverter(contextType, tableReader.getTableConfig());
     ExternalEdgeRecognizerContext edgeRecogniserContext = new ExternalEdgeRecognizerContext(
         contextType);
-    boolean complete = rowKeysHaveSelection(contextType, level,
+    boolean complete = rowKeyModelCompleteSelection(contextType, level,
         edgeRecogniserContext.getEndpoints());
     for (String rowKey : edgeReader.getRowKeys()) {
       edgeRecogniserContext.read(rowKey);
@@ -248,29 +248,28 @@ class GraphSliceSupport {
   }
 
   /**
+   * Return true if the row key model represented by the given {@link Endpoint
+   * endpoints} represents a complete selection such that a completed data
+   * object may be constructed entirely from each row key. This is hugely
+   * imports in avoiding data store round trips.
+   * 
+   * <p>
+   * </p>
+   * NOTE: This methods never returns true if a root UUID property is not
+   * present for the given (row key) {@link Endpoint endpoints}. Every data
+   * object must have a UUID, so in order to construct a completed data object
+   * entirely from a row key, the row key model MOST contain an {@link Endpoint
+   * endpoint} at root level, i.e. level 0 with no path in the row key field
+   * definition.
    * 
    * @param contextType
    * @param endpoints
    * @return
    */
-  private boolean rowKeysHaveSelection(PlasmaType contextType, int level,
+  private boolean rowKeyModelCompleteSelection(PlasmaType contextType, int level,
       Collection<Endpoint> endpoints) {
 
-    boolean hasRootContextUuid = false;
-    for (Endpoint endpoint : endpoints) {
-      Key key = endpoint.getProperty().getKey();
-      if (key != null && key.getStructure() != null) {
-        KeyStructure keyStruct = KeyStructure.valueOf(key.getStructure().name());
-        if (keyStruct.ordinal() == KeyStructure.uuid.ordinal()) {
-          PlasmaType endpointOwnerType = (PlasmaType) endpoint.getProperty().getContainingType();
-          if (endpointOwnerType.equals(contextType) || contextType.isBaseType(endpointOwnerType)) {
-            hasRootContextUuid = true;
-            break;
-          }
-        }
-      }
-    }
-    if (!hasRootContextUuid)
+    if (!hasRootUuid(endpoints, contextType))
       return false;
 
     Set<Property> selectionProps = this.selection.getProperties(contextType, level + 1);
@@ -287,6 +286,37 @@ class GraphSliceSupport {
         return false;
     }
     return true;
+  }
+
+  /**
+   * Returns true if an {@link Endpoint endpoint} property at root level is
+   * found with a key structure indicating a UUID.
+   * 
+   * @param endpoints
+   *          the {@link Endpoint endpoints}
+   * @param contextType
+   *          the context type
+   * @return true if an {@link Endpoint endpoint} property at root level is
+   *         found with a key structure indicating a UUID.
+   */
+  private boolean hasRootUuid(Collection<Endpoint> endpoints, PlasmaType contextType) {
+    boolean result = false;
+    for (Endpoint endpoint : endpoints) {
+      if (endpoint.getLevel() > 0)
+        continue; // can't be a root UUID if EP not at level 0
+      Key key = endpoint.getProperty().getKey();
+      if (key != null && key.getStructure() != null) {
+        KeyStructure keyStruct = KeyStructure.valueOf(key.getStructure().name());
+        if (keyStruct.ordinal() == KeyStructure.uuid.ordinal()) {
+          PlasmaType endpointOwnerType = (PlasmaType) endpoint.getProperty().getContainingType();
+          if (endpointOwnerType.equals(contextType) || contextType.isBaseType(endpointOwnerType)) {
+            result = true;
+            break;
+          }
+        }
+      }
+    }
+    return result;
   }
 
   /**

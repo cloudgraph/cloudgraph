@@ -107,11 +107,25 @@ public class Endpoint {
   }
 
   public boolean hasPath() {
-    return path.length() > 0;
+    return path != null && path.length() > 0;
   }
 
   public String getPath() {
     return path;
+  }
+
+  public int getLevel() {
+    if (hasPath()) {
+      int result = 0;
+      char[] chars = this.path.toCharArray();
+      for (char c : chars) {
+        if (c == '/') {
+          result++;
+        }
+      }
+      return result;
+    }
+    return 0;
   }
 
   public String toString() {
