@@ -12,7 +12,7 @@ See https://github.com/cloudgraph/cloudgraph/issues.
 
 
 Major Changes
-[Issue #10] -  Updrade to Plasma 2.0.0
+[Issue #10] -  Upgrade to Plasma 2.0.0
 Bugs
 
 Improvements
