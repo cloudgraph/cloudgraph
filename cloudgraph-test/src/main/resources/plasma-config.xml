@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<cfg:PlasmaConfiguration  
-    xmlns:cfg="http://www.plasma.org/config">
+<cfg:RuntimeConfiguration  
+    xmlns:cfg="http://www.plasma.org/runtime">
   
 
     <SDO>
@@ -87,4 +87,4 @@
     </Repository>
     
   
-</cfg:PlasmaConfiguration>   
+</cfg:RuntimeConfiguration>   
