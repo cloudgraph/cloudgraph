@@ -31,13 +31,15 @@ import org.apache.hadoop.mapreduce.JobContext;
 import org.cloudgraph.mapreduce.GraphService;
 import org.cloudgraph.rdb.connect.ProviderManager;
 import org.plasma.common.bind.DefaultValidationEventHandler;
-import org.plasma.config.DataAccessProviderName;
-import org.plasma.config.PlasmaConfig;
-import org.plasma.config.RDBMSVendorName;
 import org.plasma.query.bind.PlasmaQueryDataBinding;
 import org.plasma.query.model.From;
 import org.plasma.query.model.Query;
 import org.plasma.query.model.QueryValidator;
+import org.plasma.runtime.DataAccessProviderName;
+import org.plasma.runtime.DataStoreType;
+import org.plasma.runtime.PlasmaRuntime;
+import org.plasma.runtime.RDBMSVendorName;
+import org.plasma.runtime.annotation.PlasmaServiceProvider;
 import org.plasma.sdo.access.DataAccessException;
 import org.plasma.sdo.access.DataGraphDispatcher;
 import org.plasma.sdo.access.PlasmaDataAccessService;
@@ -48,6 +50,7 @@ import org.xml.sax.SAXException;
 import commonj.sdo.DataGraph;
 import commonj.sdo.Type;
 
+@PlasmaServiceProvider(storeType = DataStoreType.RDBMS, providerName = DataAccessProviderName.JDBC)
 public class RDBGraphService implements PlasmaDataAccessService, GraphService {
 
   private static Log log = LogFactory.getLog(RDBGraphService.class);
@@ -78,7 +81,7 @@ public class RDBGraphService implements PlasmaDataAccessService, GraphService {
           log.debug("turning off connection autocommit for count query");
         con.setAutoCommit(false);
       }
-      RDBMSVendorName vendor = PlasmaConfig.getInstance().getRDBMSProviderVendor(
+      RDBMSVendorName vendor = PlasmaRuntime.getInstance().getRDBMSProviderVendor(
           DataAccessProviderName.JDBC);
       switch (vendor) {
       case ORACLE:
@@ -136,7 +139,7 @@ public class RDBGraphService implements PlasmaDataAccessService, GraphService {
         con.setAutoCommit(false);
       }
       // TODO: make transaction isolation configurable
-      RDBMSVendorName vendor = PlasmaConfig.getInstance().getRDBMSProviderVendor(
+      RDBMSVendorName vendor = PlasmaRuntime.getInstance().getRDBMSProviderVendor(
           DataAccessProviderName.JDBC);
       switch (vendor) {
       case ORACLE:
@@ -202,7 +205,7 @@ public class RDBGraphService implements PlasmaDataAccessService, GraphService {
       }
 
       // TODO: make transaction isolation configurable
-      RDBMSVendorName vendor = PlasmaConfig.getInstance().getRDBMSProviderVendor(
+      RDBMSVendorName vendor = PlasmaRuntime.getInstance().getRDBMSProviderVendor(
           DataAccessProviderName.JDBC);
       switch (vendor) {
       case ORACLE:
@@ -263,7 +266,7 @@ public class RDBGraphService implements PlasmaDataAccessService, GraphService {
       }
 
       // TODO: make transaction isolation configurable
-      RDBMSVendorName vendor = PlasmaConfig.getInstance().getRDBMSProviderVendor(
+      RDBMSVendorName vendor = PlasmaRuntime.getInstance().getRDBMSProviderVendor(
           DataAccessProviderName.JDBC);
       switch (vendor) {
       case ORACLE:

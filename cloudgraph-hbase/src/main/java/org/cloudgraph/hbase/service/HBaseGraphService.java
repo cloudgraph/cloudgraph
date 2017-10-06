@@ -33,6 +33,9 @@ import org.plasma.query.bind.PlasmaQueryDataBinding;
 import org.plasma.query.model.From;
 import org.plasma.query.model.Query;
 import org.plasma.query.model.QueryValidator;
+import org.plasma.runtime.DataAccessProviderName;
+import org.plasma.runtime.DataStoreType;
+import org.plasma.runtime.annotation.PlasmaServiceProvider;
 import org.plasma.sdo.access.DataAccessException;
 import org.plasma.sdo.access.DataGraphDispatcher;
 import org.plasma.sdo.access.PlasmaDataAccessService;
@@ -66,6 +69,7 @@ import commonj.sdo.Type;
  * @author Scott Cinnamond
  * @since 0.5
  */
+@PlasmaServiceProvider(storeType = DataStoreType.NOSQL, providerName = DataAccessProviderName.HBASE)
 public class HBaseGraphService implements PlasmaDataAccessService, GraphService {
 
   private static Log log = LogFactory.getLog(HBaseGraphService.class);

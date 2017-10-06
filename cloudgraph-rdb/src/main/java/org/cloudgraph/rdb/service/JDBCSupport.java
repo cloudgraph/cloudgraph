@@ -36,9 +36,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.cloudgraph.rdb.filter.RDBFilterAssembler;
 import org.cloudgraph.store.service.AliasMap;
-import org.plasma.config.DataAccessProviderName;
-import org.plasma.config.PlasmaConfig;
-import org.plasma.config.RDBMSVendorName;
+import org.plasma.runtime.DataAccessProviderName;
+import org.plasma.runtime.PlasmaRuntime;
+import org.plasma.runtime.RDBMSVendorName;
 import org.plasma.sdo.DataFlavor;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
@@ -124,7 +124,7 @@ public abstract class JDBCSupport {
       sql.append(" = ");
       appendValue(propValue, true, sql);
     }
-    RDBMSVendorName vendor = PlasmaConfig.getInstance().getRDBMSProviderVendor(
+    RDBMSVendorName vendor = PlasmaRuntime.getInstance().getRDBMSProviderVendor(
         DataAccessProviderName.JDBC);
     switch (vendor) {
     case ORACLE:

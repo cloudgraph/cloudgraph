@@ -25,8 +25,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.cloudgraph.common.concurrent.ConfigProps;
+import org.cloudgraph.common.CloudGraphConstants;
 import org.cloudgraph.common.concurrent.SubgraphTask;
+import org.cloudgraph.config.ThreadPoolConfigProps;
 import org.cloudgraph.config.TableConfig;
 import org.cloudgraph.hbase.io.CellValues;
 import org.cloudgraph.hbase.io.DistributedReader;
@@ -94,7 +95,7 @@ class ParallelSubgraphTask extends DefaultSubgraphTask implements SubgraphTask {
   public ParallelSubgraphTask(PlasmaDataObject subroot, long subrootSequence, Selection selection,
       Timestamp snapshotDate, DistributedReader distributedReader, EdgeReader collection,
       PlasmaDataObject source, PlasmaProperty sourceProperty, RowReader rowReader, int level,
-      int taskSequence, ThreadPoolExecutor executorService, ConfigProps config) {
+      int taskSequence, ThreadPoolExecutor executorService, ThreadPoolConfigProps config) {
     super(subroot, subrootSequence, selection, snapshotDate, distributedReader, collection, source,
         sourceProperty, rowReader, level, taskSequence, executorService, config);
   }
@@ -129,7 +130,7 @@ class ParallelSubgraphTask extends DefaultSubgraphTask implements SubgraphTask {
       Selection selection, Timestamp snapshotDate, DistributedReader distributedReader,
       EdgeReader collection, PlasmaDataObject source, PlasmaProperty sourceProperty,
       RowReader rowReader, int level, int sequence, ThreadPoolExecutor executorService,
-      ConfigProps config) {
+      ThreadPoolConfigProps config) {
     return new ParallelSubgraphTask(subroot, subrootSequence, selection, snapshotDate,
         distributedReader, collection, source, sourceProperty, rowReader, level, sequence,
         executorService, config);
@@ -164,7 +165,6 @@ class ParallelSubgraphTask extends DefaultSubgraphTask implements SubgraphTask {
         continue;
 
       EdgeReader edgeReader = null;
-      // if (level > 0) {
       if (rowReader.edgeExists((PlasmaType) target.getType(), prop, targetSequence)) {
         edgeReader = rowReader.getEdgeReader((PlasmaType) target.getType(), prop, targetSequence);
       } else
@@ -174,13 +174,6 @@ class ParallelSubgraphTask extends DefaultSubgraphTask implements SubgraphTask {
         assembleEdges(target, targetSequence, prop, edgeReader, rowReader, tableReader, rowReader,
             level);
       } else {
-        // String childTable =
-        // rowReader.getGraphState().getRowKeyTable(edges[0].getUuid());
-        // if (childTable == null)
-        // throw new OperationException("no table found for type, " +
-        // edges[0].getType());
-        // TableReader externalTableReader =
-        // distributedReader.getTableReader(childTable);
         TableReader externalTableReader = distributedReader.getTableReader(edgeReader.getTable());
         if (externalTableReader == null)
           throw new OperationException("no table reader found for type, "
@@ -218,30 +211,16 @@ class ParallelSubgraphTask extends DefaultSubgraphTask implements SubgraphTask {
         log.debug("local edge: " + target.getType().getURI() + "#" + target.getType().getName()
             + "->" + prop.getName() + " (" + childSequence + ")");
 
-      // PlasmaDataObject child = null;
-      // synchronized (target) {
-      // // create a child object
-      // child = createChild(target, prop, edge);
-      // }
-      // synchronized (childRowReader) {
-      // childRowReader.addDataObject(child);
-      // }
-      // synchronized (this.distributedReader) {
-      // this.distributedReader.mapRowReader(child,
-      // childRowReader);
-      // }
-
       synchronized (this.distributedReader) {
         this.distributedReader.mapRowReader(childSequence, subType, childRowReader);
       }
 
       if (log.isDebugEnabled())
-        log.debug("traverse: (" + sourceProperty.getName() + ") ");
+        log.debug("traverse: (" + prop.getName() + ") ");
 
       PlasmaDataObject child = null;
       synchronized (target) {
-        child = createChild(childSequence, collection, source, sourceProperty, childRowReader,
-            this.graph);
+        child = createChild(childSequence, collection, target, prop, childRowReader, this.graph);
       }
 
       synchronized (childRowReader) {
@@ -280,21 +259,10 @@ class ParallelSubgraphTask extends DefaultSubgraphTask implements SubgraphTask {
   protected void assembleExternalEdges(PlasmaDataObject target, long targetSequence,
       PlasmaProperty prop, EdgeReader collection, RowReader rowReader,
       TableReader childTableReader, int level) throws IOException {
-    for (String childRowKey : collection.getRowKeys()) {
-      CellValues childResult = null;
-
-      // need to look up an existing row reader based on the root UUID of
-      // the external graph
-      // or the row key, and the row key is all we have in the local graph
-      // state. The edge UUID
-      // is a local graph UUID.
-      // childRowKey =
-      // rowReader.getGraphState().getRowKey(edge.getUuid()); // use local
-      // edge UUID
-      // String childRowKeyStr = Bytes.toString(childRowKey);
+    for (CellValues childValues : collection.getRowValues()) {
 
       // see if this row is locked during fetch, and wait for it
-      Object rowLock = fetchLocks.get(childRowKey);
+      Object rowLock = fetchLocks.get(childValues.getRowKey());
       if (rowLock != null) {
         synchronized (rowLock) {
           try {
@@ -305,7 +273,7 @@ class ParallelSubgraphTask extends DefaultSubgraphTask implements SubgraphTask {
         }
       }
 
-      RowReader existingChildRowReader = childTableReader.getRowReader(childRowKey);
+      RowReader existingChildRowReader = childTableReader.getRowReader(childValues.getRowKey());
       if (existingChildRowReader != null) {
         // If assembled this row root before,
         // just link it. The data is already complete.
@@ -328,85 +296,80 @@ class ParallelSubgraphTask extends DefaultSubgraphTask implements SubgraphTask {
       // The second thread may be arriving at this node from another
       // property/edge and
       // therefore need to link from another edge above.
-      fetchLocks.put(childRowKey, new Object());
+      fetchLocks.put(childValues.getRowKey(), new Object());
 
-      if (log.isDebugEnabled())
-        log.debug("fetch external row: " + prop.toString() + " (" + childRowKey + ")");
+      this.assembleExternalEdge(childValues, collection, childTableReader, target, targetSequence,
+          prop, level);
 
-      childResult = fetchGraph(Bytes.toBytes(childRowKey), childTableReader,
-          collection.getBaseType());
-
-      if (childResult.containsColumn(rootTableReader.getTableConfig()
-          .getDataColumnFamilyNameBytes(), GraphMetaKey.TOMBSTONE.codeAsBytes())) {
-        log.warn("ignoring toubstone result row '" + childRowKey + "'");
-        continue; // ignore toumbstone edge
-      }
-
-      // need to reconstruct the original graph, so need original UUID
-      if (log.isDebugEnabled())
-        log.debug("external edge: " + target.getType().getURI() + "#" + target.getType().getName()
-            + "->" + prop.getName() + " (" + childRowKey + ")");
-
-      // PlasmaDataObject child = null;
-      // synchronized (target) {
-      // // create a child object using UUID from external row root
-      // child = createChild(target, prop, edge, uuid);
-      // }
-      //
-      // RowReader childRowReader = null;
-      // synchronized (childTableReader) {
-      // childRowReader = childTableReader.createRowReader(
-      // child, childResult);
-      // }
-      // synchronized (this.distributedReader) {
-      // this.distributedReader.mapRowReader(child,
-      // childRowReader);
-      // }
-
-      PlasmaType subType = collection.getSubType();
-      if (subType == null)
-        subType = collection.getBaseType();
-      GraphColumnKeyFactory keyFactory = this.getKeyFactory(subType);
-      byte[] uuidQual = keyFactory.createColumnKey(subType, EntityMetaKey.UUID);
-      // need to reconstruct the original graph, so need original UUID
-      byte[] rootUuid = childResult.getColumnValue(
-          Bytes.toBytes(childTableReader.getTableConfig().getDataColumnFamilyName()), uuidQual);
-      if (rootUuid == null)
-        throw new GraphServiceException("expected column: "
-            + childTableReader.getTableConfig().getDataColumnFamilyName() + ":"
-            + Bytes.toString(uuidQual));
-
-      String uuidStr = null;
-      uuidStr = new String(rootUuid, childTableReader.getTableConfig().getCharset());
-      UUID uuid = UUID.fromString(uuidStr);
-
-      PlasmaDataObject child = null;
-      synchronized (target) {
-        // create a child object using UUID from external row root
-        child = createChild(source, sourceProperty, uuid, collection.getBaseType());
-      }
-
-      RowReader childRowReader = null;
-      synchronized (childTableReader) {
-        // create a row reader for every external edge
-        childRowReader = childTableReader.createRowReader(child, childResult);
-      }
-      synchronized (this.distributedReader) {
-        this.distributedReader.mapRowReader(childRowKey, childRowReader);
-      }
-
-      synchronized (target) {
-        childRowReader.addDataObject(child);
-      }
-
-      // FIXME: we have the child already why is the sequence needed
-      traversals.add(new Traversal(child, -1, collection, target, prop, childRowReader, true,
-          level + 1));
-
-      rowLock = fetchLocks.remove(childRowKey);
-      synchronized (rowLock) {
-        rowLock.notifyAll();
+      rowLock = fetchLocks.remove(childValues.getRowKey());
+      if (rowLock != null) {
+        synchronized (rowLock) {
+          rowLock.notifyAll();
+        }
+      } else {
+        log.error("expected locked row key '" + childValues.getRowKey() + "' for edgeReader, "
+            + collection);
       }
     }
   }
+
+  protected void assembleExternalEdge(CellValues childValues, EdgeReader edgeReader,
+      TableReader childTableReader, PlasmaDataObject source, long sourceSequence,
+      PlasmaProperty sourceProperty, int level) throws IOException {
+
+    if (log.isDebugEnabled())
+      log.debug("traverse: (" + sourceProperty + ") ");
+
+    PlasmaType subType = edgeReader.getSubType();
+    if (subType == null)
+      subType = edgeReader.getBaseType();
+
+    PlasmaDataObject child = null;
+    RowReader childRowReader = null;
+
+    // need to reconstruct the original graph, so need original UUID
+    GraphColumnKeyFactory keyFactory = this.getKeyFactory(subType);
+    if (childValues.isCompleteSelection()) {
+      UUID uuid = this.fetchRootUUID(childTableReader, keyFactory, subType, childValues);
+      PlasmaType childType = this.fetchRootType(childTableReader, keyFactory, subType, childValues);
+      synchronized (source) {
+        child = createChild(source, sourceProperty, uuid, childType);
+      }
+      synchronized (childTableReader) {
+        childRowReader = childTableReader.createRowReader(child, childValues);
+      }
+    } else {
+      CellValues childResult = null;
+      synchronized (childTableReader) {
+        childResult = fetchGraph(childValues.getRowKeyAsBytes(), childTableReader, subType);
+      }
+      if (childResult.containsColumn(rootTableReader.getTableConfig()
+          .getDataColumnFamilyNameBytes(), GraphMetaKey.TOMBSTONE.codeAsBytes())) {
+        log.warn("ignoring toubstone result row '" + childValues.getRowKey() + "'");
+        return; // ignore toumbstone edge
+      }
+      UUID uuid = this.fetchRootUUID(childTableReader, keyFactory, subType, childResult);
+      PlasmaType childType = this.fetchRootType(childTableReader, keyFactory, subType, childResult);
+      synchronized (source) { // sync cause can modify source
+        child = createChild(source, sourceProperty, uuid, childType);
+      }
+      synchronized (childTableReader) {
+        childRowReader = childTableReader.getRowReader(childResult.getRowKey());
+        if (childRowReader == null)
+          childRowReader = childTableReader.createRowReader(child, childResult);
+      }
+    }
+
+    if (log.isDebugEnabled())
+      log.debug("initialized external child: " + child);
+
+    synchronized (this.distributedReader) {
+      this.distributedReader.mapRowReader(childValues.getRowKey(), childRowReader);
+    }
+
+    traversals.add(new Traversal(child, sourceSequence, edgeReader, source, sourceProperty,
+        childRowReader, true, level + 1));
+
+  }
+
 }

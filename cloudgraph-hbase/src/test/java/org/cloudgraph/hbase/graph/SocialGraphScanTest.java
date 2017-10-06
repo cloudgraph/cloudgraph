@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cloudgraph.hbase.social;
+package org.cloudgraph.hbase.graph;
 
 import java.io.IOException;
 

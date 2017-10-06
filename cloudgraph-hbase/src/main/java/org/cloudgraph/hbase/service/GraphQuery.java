@@ -37,25 +37,20 @@ import org.apache.hadoop.hbase.filter.Filter;
 import org.apache.hadoop.hbase.filter.FilterList;
 import org.apache.hadoop.hbase.filter.RandomRowFilter;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.cloudgraph.common.concurrent.ConfigProps;
 import org.cloudgraph.config.CloudGraphConfig;
 import org.cloudgraph.config.CloudGraphConfigProp;
 import org.cloudgraph.config.Config;
 import org.cloudgraph.config.DataGraph;
 import org.cloudgraph.config.DataGraphConfig;
-import org.cloudgraph.config.QueryFetchType;
+import org.cloudgraph.config.FetchType;
+import org.cloudgraph.config.ParallelFetchDisposition;
+import org.cloudgraph.config.ThreadPoolConfigProps;
 import org.cloudgraph.config.UserDefinedRowKeyFieldConfig;
 import org.cloudgraph.hbase.filter.GraphFetchColumnFilterAssembler;
 import org.cloudgraph.hbase.filter.HBaseFilterAssembler;
 import org.cloudgraph.hbase.filter.InitialFetchColumnFilterAssembler;
 import org.cloudgraph.hbase.filter.PredicateRowFilterAssembler;
-import org.cloudgraph.hbase.graph.GraphAssembler;
-import org.cloudgraph.hbase.graph.GraphSliceAssembler;
-import org.cloudgraph.hbase.graph.HBaseGraphAssembler;
-import org.cloudgraph.hbase.graph.ParallelGraphAssembler;
-import org.cloudgraph.hbase.graph.ParallelGraphSliceAssembler;
 import org.cloudgraph.hbase.io.DistributedGraphReader;
-import org.cloudgraph.hbase.io.DistributedReader;
 import org.cloudgraph.hbase.io.TableReader;
 import org.cloudgraph.hbase.scan.CompleteRowKey;
 import org.cloudgraph.hbase.scan.FuzzyRowKey;
@@ -70,7 +65,6 @@ import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.common.bind.DefaultValidationEventHandler;
 import org.plasma.query.OrderBy;
 import org.plasma.query.bind.PlasmaQueryDataBinding;
-import org.plasma.query.collector.Selection;
 import org.plasma.query.collector.SelectionCollector;
 import org.plasma.query.model.From;
 import org.plasma.query.model.Query;
@@ -221,7 +215,8 @@ public class GraphQuery implements QueryDispatcher {
 
     // Create a graph assembler based on existence
     // of selection path predicates, need for federation, etc...
-    HBaseGraphAssembler graphAssembler = createGraphAssembler(query, type, graphReader,
+
+    GraphAssemblerFactory assemblerFactory = new GraphAssemblerFactory(query, type, graphReader,
         selectionCollector, snapshotDate);
 
     List<PartialRowKey> partialScans = new ArrayList<PartialRowKey>();
@@ -269,9 +264,30 @@ public class GraphQuery implements QueryDispatcher {
       hasOrdering = true;
     }
 
-    ResultsAssembler resultsCollector = new SlidingResultsAssembler(graphRecognizerRootExpr,
-        orderingComparator, rootTableReader, graphAssembler, query.getStartRange(),
-        query.getEndRange());
+    ResultsAssembler resultsCollector = null;
+    FetchType fetchType = CloudGraphConfigProp.getQueryFetchType(query);
+    switch (fetchType) {
+    case PARALLEL:
+      ParallelFetchDisposition fetchDisposition = CloudGraphConfigProp
+          .getQueryParallelFetchDisposition(query);
+      switch (fetchDisposition) {
+      case TALL: // where a thread is spawned for one or more graph
+                 // roots
+        resultsCollector = new ParallelSlidingResultsAssembler(graphRecognizerRootExpr,
+            orderingComparator, rootTableReader, assemblerFactory, query.getStartRange(),
+            query.getEndRange(), new ThreadPoolConfigProps(query));
+        break;
+      default:
+      }
+      break;
+    default:
+      break;
+    }
+
+    if (resultsCollector == null)
+      resultsCollector = new SlidingResultsAssembler(graphRecognizerRootExpr, orderingComparator,
+          rootTableReader, assemblerFactory.createAssembler(), query.getStartRange(),
+          query.getEndRange());
 
     // execute scans
     try {
@@ -503,59 +519,6 @@ public class GraphQuery implements QueryDispatcher {
           collectRowKeyProperties(collector, (PlasmaType) nextType);
       }
     }
-  }
-
-  /**
-   * Create a specific graph assembler based on the existence of selection path
-   * predicates found in the given collector. Since the reader hierarchy is
-   * initialized based entirely on metadata found in the selection graph,
-   * whether federation exists across the persisted graph cannot be determined
-   * up front. Federation must be discovered dynamically during assembly.
-   * Therefore on all cases graph assemblers capable of handling a distributed
-   * graph are used on all cases.
-   * 
-   * @param type
-   *          the root type
-   * @param graphReader
-   *          the graph reader
-   * @param selection
-   *          the selection collector
-   * @param snapshotDate
-   *          the query snapshot date
-   * @return the graph assembler
-   */
-  private HBaseGraphAssembler createGraphAssembler(Query query, PlasmaType type,
-      DistributedReader graphReader, Selection selection, Timestamp snapshotDate) {
-    HBaseGraphAssembler graphAssembler = null;
-
-    QueryFetchType fetchType = CloudGraphConfigProp.getQueryFetchType(query);
-    switch (fetchType) {
-    case PARALLEL:
-      int minPool = CloudGraphConfigProp.getQueryPoolMin(query);
-      int maxPool = CloudGraphConfigProp.getQueryPoolMax(query);
-      if (minPool > maxPool)
-        minPool = maxPool;
-      int threadMaxDepth = CloudGraphConfigProp.getQueryThreadMaxDepth(query);
-      ConfigProps config = new ConfigProps(minPool, maxPool, threadMaxDepth);
-      if (selection.hasPredicates()) {
-        graphAssembler = new ParallelGraphSliceAssembler(type, selection, graphReader,
-            snapshotDate, config);
-      } else {
-        graphAssembler = new ParallelGraphAssembler(type, selection, graphReader, snapshotDate,
-            config);
-      }
-      break;
-    case SERIAL:
-    default:
-      if (selection.hasPredicates()) {
-        graphAssembler = new GraphSliceAssembler(type, selection, graphReader, snapshotDate);
-      } else {
-        graphAssembler = new GraphAssembler(type, selection, graphReader, snapshotDate);
-      }
-      break;
-    }
-
-    return graphAssembler;
   }
 
   public List getVariables(Where where) {

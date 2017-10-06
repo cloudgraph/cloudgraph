@@ -135,19 +135,30 @@ public class RDBFilterAssembler extends SQLQueryFilterAssembler implements Query
   }
 
   public void start(Expression expression) {
-    // log.trace("visit Expression");
-    // THIS NEEDS REFACTOING
     for (int i = 0; i < expression.getTerms().size(); i++) {
-      PredicateOperator subqueryOper = expression.getTerms().get(i).getPredicateOperator();
-      if (subqueryOper != null) {
-        // log.info("found subquery expression");
-        Property property = expression.getTerms().get(i - 1).getProperty();
-        Query query = (Query) expression.getTerms().get(i + 1).getQuery();
-        assembleSubquery(property, subqueryOper, query);
-        subqueryCount++;
-        this.getContext().setTraversal(Traversal.ABORT);
-        // abort traversal as vanilla expression
+      PredicateOperator predicateOper = expression.getTerms().get(i).getPredicateOperator();
+      if (predicateOper != null) {
+        if (isSubquery(predicateOper)) {
+          Property property = expression.getTerms().get(i - 1).getProperty();
+          Query query = (Query) expression.getTerms().get(i + 1).getQuery();
+          assembleSubquery(property, predicateOper, query);
+          subqueryCount++;
+          this.getContext().setTraversal(Traversal.ABORT);
+          // abort traversal as vanilla expression
+        }
       }
+    }
+  }
+
+  private boolean isSubquery(PredicateOperator predicateOper) {
+    switch (predicateOper.getValue()) {
+    case IN:
+    case NOT_IN:
+    case EXISTS:
+    case NOT_EXISTS:
+      return true;
+    default:
+      return false;
     }
   }
 

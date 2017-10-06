@@ -59,14 +59,18 @@ public abstract class SocialGraphModelTest extends HBaseTestCase {
   }
 
   protected GraphInfo createGraph() throws IOException {
+    return this.createGraph(USERNAME_BASE);
+  }
+
+  protected GraphInfo createGraph(String usernamePrefix) throws IOException {
     GraphInfo info = new GraphInfo();
 
-    String name = USERNAME_BASE + String.valueOf(System.currentTimeMillis()) + "test.com";
+    String name = usernamePrefix + String.valueOf(System.nanoTime()).substring(10) + "test.com";
     info.actor = createRootActor(name);
     info.actor.setName(name);
     info.actor.setDescription("I'm a guy who likes storms...");
 
-    String followerName = "fol" + String.valueOf(System.currentTimeMillis()) + "test.com";
+    String followerName = "fol" + String.valueOf(System.nanoTime()).substring(10) + "test.com";
 
     info.friendship = (Friendship) info.actor.createTargetEdge(Friendship.class);
 
@@ -119,7 +123,7 @@ public abstract class SocialGraphModelTest extends HBaseTestCase {
   protected GraphInfo createSimpleGraph() throws IOException {
     GraphInfo info = new GraphInfo();
 
-    String name = USERNAME_BASE + String.valueOf(System.currentTimeMillis()) + "_test.com";
+    String name = USERNAME_BASE + String.valueOf(System.nanoTime()).substring(10) + "_test.com";
     info.actor = createRootActor(name);
     info.actor.setName(name);
     info.actor.setDescription("I'm a guy who likes storms...");
@@ -258,8 +262,10 @@ public abstract class SocialGraphModelTest extends HBaseTestCase {
         .select(root.blog().topic().parent().wildcard())
         .select(root.blog().topic().parent().parent().wildcard()).select(root.photo().wildcard());
 
-    root.where(root.name().eq(name));
-
+    if (!name.contains("*"))
+      root.where(root.name().eq(name));
+    else
+      root.where(root.name().like(name));
     return root;
   }
 

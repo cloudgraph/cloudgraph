@@ -19,13 +19,13 @@ import org.plasma.query.Query;
 
 public class CloudGraphConfigProp {
 
-  public static QueryFetchType getQueryFetchType(Query query) {
-    QueryFetchType fetchType = QueryFetchType.SERIAL;
+  public static FetchType getQueryFetchType(Query query) {
+    FetchType fetchType = FetchType.SERIAL;
     String fetchTypeValue = System.getProperty(ConfigurationProperty.CLOUDGRAPH___QUERY___FETCHTYPE
         .value());
     if (fetchTypeValue != null)
       try {
-        fetchType = QueryFetchType.fromValue(fetchTypeValue);
+        fetchType = FetchType.fromValue(fetchTypeValue);
       } catch (IllegalArgumentException e) {
         throw new CloudGraphConfigurationException("unknown query configuration value '"
             + fetchTypeValue + "' for property, "
@@ -36,13 +36,40 @@ public class CloudGraphConfigProp {
         .getConfigurationProperty(ConfigurationProperty.CLOUDGRAPH___QUERY___FETCHTYPE.value());
     if (fetchTypeValue != null)
       try {
-        fetchType = QueryFetchType.fromValue(fetchTypeValue);
+        fetchType = FetchType.fromValue(fetchTypeValue);
       } catch (IllegalArgumentException e) {
         throw new CloudGraphConfigurationException("unknown query configuration value '"
             + fetchTypeValue + "' for property, "
             + ConfigurationProperty.CLOUDGRAPH___QUERY___FETCHTYPE.value(), e);
       }
     return fetchType;
+  }
+
+  public static ParallelFetchDisposition getQueryParallelFetchDisposition(Query query) {
+    ParallelFetchDisposition fetchDisposition = ParallelFetchDisposition.TALL;
+    String fetchDispositionValue = System
+        .getProperty(ConfigurationProperty.CLOUDGRAPH___QUERY___PARALLELFETCH___DISPOSITION.value());
+    if (fetchDispositionValue != null)
+      try {
+        fetchDisposition = ParallelFetchDisposition.fromValue(fetchDispositionValue);
+      } catch (IllegalArgumentException e) {
+        throw new CloudGraphConfigurationException("unknown query configuration value '"
+            + fetchDispositionValue + "' for property, "
+            + ConfigurationProperty.CLOUDGRAPH___QUERY___PARALLELFETCH___DISPOSITION.value(), e);
+      }
+    // override it with query specific value
+    fetchDispositionValue = query
+        .getConfigurationProperty(ConfigurationProperty.CLOUDGRAPH___QUERY___PARALLELFETCH___DISPOSITION
+            .value());
+    if (fetchDispositionValue != null)
+      try {
+        fetchDisposition = ParallelFetchDisposition.fromValue(fetchDispositionValue);
+      } catch (IllegalArgumentException e) {
+        throw new CloudGraphConfigurationException("unknown query configuration value '"
+            + fetchDispositionValue + "' for property, "
+            + ConfigurationProperty.CLOUDGRAPH___QUERY___PARALLELFETCH___DISPOSITION.value(), e);
+      }
+    return fetchDisposition;
   }
 
   public static int getQueryPoolMin(Query query) {

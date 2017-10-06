@@ -37,9 +37,9 @@ import org.cloudgraph.store.lang.StatementFactory;
 import org.cloudgraph.store.service.CreatedCommitComparator;
 import org.cloudgraph.store.service.DeletedCommitComparator;
 import org.cloudgraph.store.service.GraphServiceException;
-import org.plasma.config.DataAccessProvider;
-import org.plasma.config.DataAccessProviderName;
-import org.plasma.config.PlasmaConfig;
+import org.plasma.runtime.DataAccessProvider;
+import org.plasma.runtime.DataAccessProviderName;
+import org.plasma.runtime.PlasmaRuntime;
 import org.plasma.sdo.DataFlavor;
 import org.plasma.sdo.PlasmaChangeSummary;
 import org.plasma.sdo.PlasmaDataGraph;
@@ -789,7 +789,7 @@ public class GraphDispatcher implements DataGraphDispatcher {
       } else // another user has existing or expired lock
       {
         long timeout = 300000L;
-        DataAccessProvider providerConf = PlasmaConfig.getInstance().getDataAccessProvider(
+        DataAccessProvider providerConf = PlasmaRuntime.getInstance().getDataAccessProvider(
             DataAccessProviderName.JDBC);
         if (providerConf.getConcurrency() != null)
           if (providerConf.getConcurrency().getPessimisticLockTimeoutMillis() > 0)
@@ -970,7 +970,7 @@ public class GraphDispatcher implements DataGraphDispatcher {
   }
 
   private boolean hasSequenceGenerator() {
-    DataAccessProvider provider = PlasmaConfig.getInstance().getDataAccessProvider(
+    DataAccessProvider provider = PlasmaRuntime.getInstance().getDataAccessProvider(
         DataAccessProviderName.JDBC);
     return provider.getSequenceConfiguration() != null
         && provider.getSequenceConfiguration().getGeneratorClassName() != null;
@@ -978,7 +978,7 @@ public class GraphDispatcher implements DataGraphDispatcher {
 
   private SequenceGenerator newSequenceGenerator() {
     try {
-      DataAccessProvider provider = PlasmaConfig.getInstance().getDataAccessProvider(
+      DataAccessProvider provider = PlasmaRuntime.getInstance().getDataAccessProvider(
           DataAccessProviderName.JDBC);
       String qualifiedName = provider.getSequenceConfiguration().getGeneratorClassName();
 

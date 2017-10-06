@@ -4,17 +4,17 @@
     <parent>
         <groupId>org.cloudgraph</groupId>
         <artifactId>cloudgraph</artifactId>
-        <version>1.0.6</version>
+        <version>1.0.7</version>
     </parent>
     <groupId>org.cloudgraph</groupId>
     <artifactId>cloudgraph-hbase</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.6</version>
+    <version>1.0.7</version>
     <name>CloudGraph HBase Service</name>
     <description>CloudGraph(tm) is a suite of Service Data Object (SDO) 2.1 services designed for relational and big-table style "cloud" databases, such as HBase and others.</description>
 	<properties>
-		<cloudgraph.version>1.0.6</cloudgraph.version>
-		<plasma.version>1.3.3</plasma.version>
+		<cloudgraph.version>1.0.7</cloudgraph.version>
+		<plasma.version>2.0.0</plasma.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <slf4j.version>1.6.1</slf4j.version>
 		<hadoop.version>2.7.3</hadoop.version>
@@ -24,22 +24,22 @@
         <dependency>
             <groupId>org.cloudgraph</groupId>
             <artifactId>cloudgraph-common</artifactId>
-            <version>1.0.6</version>
+            <version>1.0.7</version>
         </dependency>
         <dependency>
             <groupId>org.cloudgraph</groupId>
             <artifactId>cloudgraph-store</artifactId>
-            <version>1.0.6</version>
+            <version>1.0.7</version>
         </dependency>
         <dependency>
             <groupId>org.cloudgraph</groupId>
             <artifactId>cloudgraph-core</artifactId>
-            <version>1.0.6</version>
+            <version>1.0.7</version>
         </dependency>
         <dependency>
             <groupId>org.cloudgraph</groupId>
             <artifactId>cloudgraph-mapreduce</artifactId>
-            <version>1.0.6</version>
+            <version>1.0.7</version>
             <exclusions>
             	<exclusion>
             		<artifactId>commons-httpclient</artifactId>
@@ -110,7 +110,7 @@
         <dependency>
             <groupId>org.cloudgraph</groupId>
             <artifactId>cloudgraph-test</artifactId>
-            <version>1.0.6</version>
+            <version>1.0.7</version>
             <scope>test</scope>
         </dependency>
         <!-- 
@@ -142,7 +142,7 @@
         </dependency>
         <dependency>
             <groupId>org.terrameta</groupId>
-            <artifactId>plasma-sdo</artifactId>
+            <artifactId>plasma-core</artifactId>
             <version>${plasma.version}</version>
             <exclusions>
             	<exclusion>
@@ -282,8 +282,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.2</version>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
@@ -318,7 +318,7 @@
                       <goal>test</goal>
                     </goals>
                     <configuration>
-                        <skip>true</skip>
+                        <skip>false</skip>
                         <additionalClasspathElements>
                             <additionalClasspathElement>${basedir}/src/main/resources</additionalClasspathElement>
                             <additionalClasspathElement>${basedir}/src/test/resources</additionalClasspathElement>
@@ -344,7 +344,7 @@
                       <goal>test</goal>
                     </goals>
                     <configuration>
-                        <skip>true</skip>
+                        <skip>false</skip>
                         <additionalClasspathElements>
                             <additionalClasspathElement>${basedir}/src/main/resources</additionalClasspathElement>
                             <additionalClasspathElement>${basedir}/src/test/resources</additionalClasspathElement>
@@ -366,7 +366,7 @@
                       <goal>test</goal>
                     </goals>
                     <configuration>
-                        <skip>true</skip>
+                        <skip>false</skip>
                         <additionalClasspathElements>
                             <additionalClasspathElement>${basedir}/src/main/resources</additionalClasspathElement>
                             <additionalClasspathElement>${basedir}/src/test/resources</additionalClasspathElement>
@@ -402,6 +402,7 @@
 	                    </systemPropertyVariables>
 	                    <includes>               
                              <include>**/SocialGraphWideRowTest*</include>                      
+                             <include>**/SocialGraphParallelWideRowTest*</include>                      
 	                    </includes> 
                     </configuration>
                   </execution>
@@ -427,6 +428,7 @@
 	                        <include>**/*SocialGraphDistributedTest*</include>
 	                        <include>**/*SocialGraphScanTest*</include>                      
                             <include>**/*DatePredicateSliceTest*</include>   
+	                        <include>**/*SocialGraphParallelDistributedTest*</include>
 	                    </includes> 
                     </configuration>
                   </execution>
@@ -438,9 +440,9 @@
                     <argLine>-Xms128M -Xmx500M</argLine>                      
                       --> 
                     <!-- debugging -->  
-                       <!--                                       
-                    <argLine>-Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,address=8002,server=y,suspend=y</argLine>                      
-                        -->                                     
+                                                                      
+<!--                     <argLine>-Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,address=8002,server=y,suspend=y</argLine>                       -->
+                                                                
                     <!-- profiling  -->
                     <!--
                     <argLine>-Xrunhprof:cpu=samples,depth=25</argLine>  

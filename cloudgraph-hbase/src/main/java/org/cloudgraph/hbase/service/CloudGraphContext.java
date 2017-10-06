@@ -20,8 +20,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.cloudgraph.config.CloudGraphConfig;
-import org.plasma.config.DataAccessProviderName;
-import org.plasma.config.PlasmaConfig;
+import org.plasma.runtime.DataAccessProviderName;
+import org.plasma.runtime.PlasmaRuntime;
 
 /**
  * Provides context information for HBase such as an already initialized HBase
@@ -57,7 +57,7 @@ public class CloudGraphContext {
       config = HBaseConfiguration.create();
       config.clear();
       // set DAS properties
-      for (org.plasma.config.Property property : PlasmaConfig.getInstance()
+      for (org.plasma.runtime.Property property : PlasmaRuntime.getInstance()
           .getDataAccessProvider(DataAccessProviderName.HBASE).getProperties()) {
         config.set(property.getName(), property.getValue());
       }

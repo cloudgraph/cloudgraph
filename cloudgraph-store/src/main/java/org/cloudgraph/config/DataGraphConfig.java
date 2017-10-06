@@ -21,8 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.plasma.config.ConfigurationException;
-import org.plasma.config.PlasmaConfig;
+import org.plasma.runtime.ConfigurationException;
+import org.plasma.runtime.PlasmaRuntime;
 import org.plasma.sdo.core.CoreConstants;
 import org.plasma.sdo.helper.PlasmaTypeHelper;
 
@@ -64,7 +64,7 @@ public class DataGraphConfig {
 
     // validate the URI
     try {
-      PlasmaConfig.getInstance().getSDONamespaceByURI(graph.getUri());
+      PlasmaRuntime.getInstance().getSDONamespaceByURI(graph.getUri());
     } catch (ConfigurationException e) {
       throw new CloudGraphConfigurationException("invalid graph URI '" + graph.getUri()
           + "' specified for table, '" + table.getName() + "'", e);

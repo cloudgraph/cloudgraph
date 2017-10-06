@@ -26,10 +26,10 @@ import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.plasma.config.ConfigurationConstants;
-import org.plasma.config.DataAccessProviderName;
-import org.plasma.config.PlasmaConfig;
-import org.plasma.config.Property;
+import org.plasma.runtime.ConfigurationConstants;
+import org.plasma.runtime.DataAccessProviderName;
+import org.plasma.runtime.PlasmaRuntime;
+import org.plasma.runtime.Property;
 import org.plasma.sdo.access.DataAccessException;
 
 /**
@@ -41,7 +41,7 @@ public class JNDIDataSourceProvider implements DataSourceProvder {
 
   public JNDIDataSourceProvider() {
     Properties props = new Properties();
-    for (Property property : PlasmaConfig.getInstance()
+    for (Property property : PlasmaRuntime.getInstance()
         .getDataAccessProvider(DataAccessProviderName.JDBC).getProperties()) {
       props.put(property.getName(), property.getValue());
     }

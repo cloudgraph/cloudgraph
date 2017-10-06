@@ -29,8 +29,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.cloudgraph.common.concurrent.ConfigProps;
 import org.cloudgraph.common.concurrent.SubgraphTask;
+import org.cloudgraph.config.ThreadPoolConfigProps;
 import org.cloudgraph.hbase.io.DistributedReader;
 import org.cloudgraph.hbase.io.EdgeReader;
 import org.cloudgraph.hbase.io.RowReader;
@@ -55,7 +55,7 @@ abstract class DefaultSubgraphTask extends DistributedAssembler implements Subgr
   protected PlasmaDataObject subroot;
   protected long subrootSequence;
   protected DistributedReader distributedReader;
-  protected EdgeReader collection;
+  protected EdgeReader edgeReader;
   protected PlasmaDataObject source;
   protected PlasmaProperty sourceProperty;
   protected RowReader rowReader;
@@ -70,7 +70,7 @@ abstract class DefaultSubgraphTask extends DistributedAssembler implements Subgr
   protected static Map<String, Object> fetchLocks = new ConcurrentHashMap<String, Object>();
   protected final CountDownLatch shutdownLatch = new CountDownLatch(1);
   protected ThreadPoolExecutor executorService;
-  protected ConfigProps config;
+  protected ThreadPoolConfigProps config;
   protected List<Traversal> traversals = new ArrayList<Traversal>();
 
   /**
@@ -99,16 +99,16 @@ abstract class DefaultSubgraphTask extends DistributedAssembler implements Subgr
    * 
    */
   public DefaultSubgraphTask(PlasmaDataObject subroot, long subrootSequence, Selection selection,
-      Timestamp snapshotDate, DistributedReader distributedReader, EdgeReader collection,
+      Timestamp snapshotDate, DistributedReader distributedReader, EdgeReader edgeReader,
       PlasmaDataObject source, PlasmaProperty sourceProperty, RowReader rowReader, int level,
-      int sequence, ThreadPoolExecutor executorService, ConfigProps config) {
+      int sequence, ThreadPoolExecutor executorService, ThreadPoolConfigProps config) {
     super((PlasmaType) subroot.getType(), selection, distributedReader, snapshotDate);
     this.subroot = subroot;
     this.subrootSequence = subrootSequence;
     this.selection = selection;
     this.snapshotDate = snapshotDate;
     this.distributedReader = distributedReader;
-    this.collection = collection;
+    this.edgeReader = edgeReader;
     this.source = source;
     this.sourceProperty = sourceProperty;
     this.rowReader = rowReader;
@@ -116,6 +116,9 @@ abstract class DefaultSubgraphTask extends DistributedAssembler implements Subgr
     this.taskSequence = sequence;
     this.executorService = executorService;
     this.config = config;
+
+    if (this.subroot == null)
+      throw new IllegalArgumentException("expected arg 'subroot'");
   }
 
   /**
@@ -131,7 +134,7 @@ abstract class DefaultSubgraphTask extends DistributedAssembler implements Subgr
         public void run() {
           // begin a breadth first traversal from the given node
           try {
-            assemble(subroot, subrootSequence, collection, source, sourceProperty, rowReader, level);
+            assemble(subroot, subrootSequence, edgeReader, source, sourceProperty, rowReader, level);
           } catch (IOException e) {
             log.error(e.getMessage(), e);
           }
@@ -166,7 +169,7 @@ abstract class DefaultSubgraphTask extends DistributedAssembler implements Subgr
    * @throws IOException
    */
   public void assemble() throws IOException {
-    assemble(subroot, subrootSequence, collection, source, sourceProperty, rowReader, level);
+    assemble(subroot, subrootSequence, edgeReader, source, sourceProperty, rowReader, level);
   }
 
   /**
@@ -198,7 +201,7 @@ abstract class DefaultSubgraphTask extends DistributedAssembler implements Subgr
       Selection selection, Timestamp snapshotDate, DistributedReader distributedReader,
       EdgeReader collection, PlasmaDataObject source, PlasmaProperty sourceProperty,
       RowReader rowReader, int level, int sequence, ThreadPoolExecutor executorService,
-      ConfigProps config);
+      ThreadPoolConfigProps config);
 
   @Override
   protected abstract void assemble(PlasmaDataObject target, long targetSequence,

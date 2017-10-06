@@ -462,7 +462,18 @@ column field may be specified.
                     &lt;li&gt;Data Type: string&lt;/li&gt;
                     &lt;li&gt;Expected Values: serial,parallel&lt;/li&gt;
                     &lt;li&gt;Default: serial&lt;/li&gt;
-                    @see QueryFetchType
+                    @see FetchType
+                    </xsd:documentation> 
+                </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="cloudgraph.query.parallelfetch.disposition">
+               <xsd:annotation>
+                    <xsd:documentation>The type of fetch used when executing queries.
+                    &lt;li&gt;Name: cloudgraph.query.parallelfetch.disposition&lt;/li&gt;
+                    &lt;li&gt;Data Type: string&lt;/li&gt;
+                    &lt;li&gt;Expected Values: tall,wide&lt;/li&gt;
+                    &lt;li&gt;Default: tall&lt;/li&gt;
+                    @see ParallelFetchDisposition
                     </xsd:documentation> 
                 </xsd:annotation>
             </xsd:enumeration>
@@ -538,7 +549,7 @@ column field may be specified.
         </xsd:restriction>
     </xsd:simpleType>
             
-    <xsd:simpleType name="QueryFetchType">
+    <xsd:simpleType name="FetchType">
         <xsd:annotation>
             <xsd:documentation>Holds the expected values for the &lt;b&gt;cloudgraph.query.fetchtype&lt;b&gt; configuration property.</xsd:documentation>
         </xsd:annotation>
@@ -548,6 +559,20 @@ column field may be specified.
             </xsd:enumeration>
             <xsd:enumeration value="parallel">
                 <xsd:annotation><xsd:documentation>Use parallel or asynchronous fetching during query processing such as when assembling data graphs</xsd:documentation></xsd:annotation>
+            </xsd:enumeration>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ParallelFetchDisposition">
+        <xsd:annotation>
+            <xsd:documentation>Holds the expected values for the &lt;b&gt;cloudgraph.query.parallelfetch.disposition&lt;b&gt; configuration property.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="wide">
+                <xsd:annotation><xsd:documentation>Indicates graph oriented parallelization where threads are spawned as the graph is explored and assembled. Applicable when fetching a small number of graphs but the graph size depth/breadth is large or huge.</xsd:documentation></xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="tall">
+                <xsd:annotation><xsd:documentation>Indicates row oriented parallelization where a thread is spawned for one or more graph row roots.  More applicable when fetching a large number of graph roots and the graph size depth/breadth is small.</xsd:documentation></xsd:annotation>
             </xsd:enumeration>
         </xsd:restriction>
     </xsd:simpleType>

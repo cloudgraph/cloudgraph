@@ -17,10 +17,10 @@ package org.cloudgraph.rdb.filter;
 
 import java.util.List;
 
-import org.plasma.config.DataAccessProviderName;
-import org.plasma.config.PlasmaConfig;
-import org.plasma.config.RDBMSVendorName;
 import org.plasma.query.model.Function;
+import org.plasma.runtime.DataAccessProviderName;
+import org.plasma.runtime.PlasmaRuntime;
+import org.plasma.runtime.RDBMSVendorName;
 import org.plasma.sdo.DataFlavor;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.access.DataAccessException;
@@ -30,7 +30,7 @@ public class Functions {
   public static String wrap(PlasmaProperty endpointProp, List<Function> functions,
       String targetAlias) {
     DataFlavor flavor = endpointProp.getDataFlavor();
-    RDBMSVendorName vendor = PlasmaConfig.getInstance().getRDBMSProviderVendor(
+    RDBMSVendorName vendor = PlasmaRuntime.getInstance().getRDBMSProviderVendor(
         DataAccessProviderName.JDBC);
     StringBuilder buf = new StringBuilder();
 

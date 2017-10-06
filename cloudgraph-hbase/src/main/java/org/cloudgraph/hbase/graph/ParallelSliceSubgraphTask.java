@@ -28,8 +28,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.cloudgraph.common.concurrent.ConfigProps;
 import org.cloudgraph.common.concurrent.SubgraphTask;
+import org.cloudgraph.config.ThreadPoolConfigProps;
 import org.cloudgraph.config.TableConfig;
 import org.cloudgraph.hbase.io.CellValues;
 import org.cloudgraph.hbase.io.DistributedReader;
@@ -76,7 +76,7 @@ class ParallelSliceSubgraphTask extends DefaultSubgraphTask implements SubgraphT
       Selection selection, Timestamp snapshotDate, DistributedReader distributedReader,
       EdgeReader collection, PlasmaDataObject source, PlasmaProperty sourceProperty,
       RowReader rowReader, int level, int sequence, ThreadPoolExecutor executorService,
-      ConfigProps config) {
+      ThreadPoolConfigProps config) {
     super(subroot, subrootSequence, selection, snapshotDate, distributedReader, collection, source,
         sourceProperty, rowReader, level, sequence, executorService, config);
     this.sliceSupport = new GraphSliceSupport(selection, snapshotDate);
@@ -87,7 +87,7 @@ class ParallelSliceSubgraphTask extends DefaultSubgraphTask implements SubgraphT
       Selection selection, Timestamp snapshotDate, DistributedReader distributedReader,
       EdgeReader collection, PlasmaDataObject source, PlasmaProperty sourceProperty,
       RowReader rowReader, int level, int sequence, ThreadPoolExecutor executorService,
-      ConfigProps config) {
+      ThreadPoolConfigProps config) {
     return new ParallelSliceSubgraphTask(subroot, subrootSequence, selection, snapshotDate,
         distributedReader, collection, source, sourceProperty, rowReader, level, sequence,
         executorService, config);

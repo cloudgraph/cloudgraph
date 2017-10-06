@@ -65,13 +65,13 @@ import org.cloudgraph.state.StateNonValidatingDataBinding;
 import org.cloudgraph.store.key.GraphMetaKey;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.common.bind.DefaultValidationEventHandler;
-import org.plasma.config.PlasmaConfig;
 import org.plasma.query.bind.PlasmaQueryDataBinding;
 import org.plasma.query.collector.Selection;
 import org.plasma.query.collector.SelectionCollector;
 import org.plasma.query.model.From;
 import org.plasma.query.model.Query;
 import org.plasma.query.model.Where;
+import org.plasma.runtime.PlasmaRuntime;
 import org.plasma.sdo.PlasmaDataGraph;
 import org.plasma.sdo.PlasmaType;
 import org.plasma.sdo.core.CoreDataObject;
@@ -233,8 +233,8 @@ public class GraphRecordRecognizer {
           CloudGraphConfiguration result = (CloudGraphConfiguration) binding.validate(mappingXml);
           for (org.cloudgraph.config.Table mapping : result.getTables()) {
             for (org.cloudgraph.config.DataGraph graph : mapping.getDataGraphs())
-              if (!PlasmaConfig.getInstance().hasSDONamespace(graph.getUri()))
-                PlasmaConfig.getInstance().addDynamicSDONamespace(graph.getUri(), null);
+              if (!PlasmaRuntime.getInstance().hasSDONamespace(graph.getUri()))
+                PlasmaRuntime.getInstance().addDynamicSDONamespace(graph.getUri(), null);
             loadMapping(mapping);
           }
         } catch (JAXBException e) {
@@ -551,8 +551,8 @@ public class GraphRecordRecognizer {
     if (from.getEntity().getName() == null || from.getEntity().getNamespaceURI() == null)
       throw new GraphServiceException("given query has no root type and/or URI");
     String uri = from.getEntity().getNamespaceURI();
-    if (!PlasmaConfig.getInstance().hasSDONamespace(uri))
-      PlasmaConfig.getInstance().addDynamicSDONamespace(uri, null);
+    if (!PlasmaRuntime.getInstance().hasSDONamespace(uri))
+      PlasmaRuntime.getInstance().addDynamicSDONamespace(uri, null);
     PlasmaType type = (PlasmaType) PlasmaTypeHelper.INSTANCE.getType(uri, from.getEntity()
         .getName());
     return type;

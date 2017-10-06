@@ -33,7 +33,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.cloudgraph.common.concurrent.ConfigProps;
 import org.cloudgraph.config.CloudGraphConfigProp;
-import org.cloudgraph.config.QueryFetchType;
+import org.cloudgraph.config.FetchType;
 import org.cloudgraph.rdb.filter.RDBFilterAssembler;
 import org.cloudgraph.rdb.filter.RDBGroupingAssembler;
 import org.cloudgraph.rdb.filter.RDBOrderingAssembler;
@@ -42,9 +42,6 @@ import org.cloudgraph.rdb.graph.ParallelGraphAssembler;
 import org.cloudgraph.store.lang.LangStoreGraphAssembler;
 import org.cloudgraph.store.lang.StatementUtil;
 import org.cloudgraph.store.service.AliasMap;
-import org.plasma.config.DataAccessProviderName;
-import org.plasma.config.PlasmaConfig;
-import org.plasma.config.RDBMSVendorName;
 import org.plasma.query.collector.SelectionCollector;
 import org.plasma.query.model.From;
 import org.plasma.query.model.GroupBy;
@@ -56,6 +53,9 @@ import org.plasma.query.model.Variable;
 import org.plasma.query.model.Where;
 import org.plasma.query.visitor.DefaultQueryVisitor;
 import org.plasma.query.visitor.QueryVisitor;
+import org.plasma.runtime.DataAccessProviderName;
+import org.plasma.runtime.PlasmaRuntime;
+import org.plasma.runtime.RDBMSVendorName;
 import org.plasma.sdo.PlasmaDataGraph;
 import org.plasma.sdo.PlasmaDataObject;
 import org.plasma.sdo.PlasmaProperty;
@@ -110,7 +110,7 @@ public class GraphQuery implements QueryDispatcher {
 
     LangStoreGraphAssembler assembler = null;
 
-    QueryFetchType fetchType = CloudGraphConfigProp.getQueryFetchType(query);
+    FetchType fetchType = CloudGraphConfigProp.getQueryFetchType(query);
     switch (fetchType) {
     case PARALLEL:
       int minPool = CloudGraphConfigProp.getQueryPoolMin(query);
@@ -473,7 +473,7 @@ public class GraphQuery implements QueryDispatcher {
     }
 
     // set the result range
-    RDBMSVendorName vendor = PlasmaConfig.getInstance().getRDBMSProviderVendor(
+    RDBMSVendorName vendor = PlasmaRuntime.getInstance().getRDBMSProviderVendor(
         DataAccessProviderName.JDBC);
     switch (vendor) {
     case ORACLE:

@@ -15,12 +15,11 @@
  */
 package org.cloudgraph.hbase.service;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,10 +32,6 @@ import org.cloudgraph.query.expr.Expr;
 import org.cloudgraph.recognizer.GraphRecognizerContext;
 import org.cloudgraph.store.key.GraphMetaKey;
 import org.plasma.sdo.PlasmaDataGraph;
-import org.plasma.sdo.helper.PlasmaXMLHelper;
-import org.plasma.sdo.xml.DefaultOptions;
-
-import commonj.sdo.helper.XMLDocument;
 
 /**
  * Assembler which determines whether results can be ignored under the current
@@ -51,64 +46,28 @@ import commonj.sdo.helper.XMLDocument;
  * @see Expr
  * @see GraphRecognizerContext
  */
-public class SlidingResultsAssembler implements ResultsAssembler {
+public class SlidingResultsAssembler extends DefaultResultsAssembler implements ResultsAssembler {
   private static final Log log = LogFactory.getLog(SlidingResultsAssembler.class);
-  private Set<PlasmaDataGraph> graphs = new HashSet<PlasmaDataGraph>();
-
-  private Expr graphRecognizerRootExpr;
-  private GraphRecognizerContext recognizerContext;
-  private Comparator<PlasmaDataGraph> orderingComparator;
-  private TableReader rootTableReader;
-  private HBaseGraphAssembler graphAssembler;
-  private Integer startRange;
-  private Integer endRange;
-  private boolean resultEndRangeReached = false;
-  private int unrecognizedRsults;
-  private int ignoredResults;
-  private int ignoredResultsPreceedingRange;
-  private int range;
-
-  private SlidingResultsAssembler() {
-  }
+  protected HBaseGraphAssembler graphAssembler;
+  protected Collection<PlasmaDataGraph> graphs;
 
   public SlidingResultsAssembler(Expr graphRecognizerRootExpr,
       Comparator<PlasmaDataGraph> orderingComparator, TableReader rootTableReader,
       HBaseGraphAssembler graphAssembler, Integer startRange, Integer endRange) {
-    this();
-    this.graphRecognizerRootExpr = graphRecognizerRootExpr;
-    this.orderingComparator = orderingComparator;
-    this.rootTableReader = rootTableReader;
+    super(graphRecognizerRootExpr, orderingComparator, rootTableReader, startRange, endRange);
     this.graphAssembler = graphAssembler;
-    this.startRange = startRange;
-    this.endRange = endRange;
-    if (startRange != null && endRange != null) {
-      range = endRange.intValue() - startRange.intValue();
-      range++; // inclusive
-    }
+    this.graphs = new ArrayList<PlasmaDataGraph>();
   }
 
+  @Override
   public boolean collect(Result resultRow) throws IOException {
     if (resultRow.containsColumn(rootTableReader.getTableConfig().getDataColumnFamilyNameBytes(),
         GraphMetaKey.TOMBSTONE.codeAsBytes())) {
       return false; // ignore toumbstone roots
     }
 
-    if (canIgnoreResults()) {
-      if (startRange != null && endRange != null) {
-        int current = ignoredResultsPreceedingRange + 1;
-        if (current < startRange.intValue()) {
-          ignoredResultsPreceedingRange++;
-          ignoredResults++;
-          return false;
-        }
-
-        current = this.graphs.size() + 1;
-        if (current > range) {
-          ignoredResults++;
-          this.resultEndRangeReached = true;
-          return false;
-        }
-      }
+    if (canIgnoreResults() && currentResultIgnored()) {
+      return false;
     }
 
     this.graphAssembler.assemble(new CellValues(resultRow));
@@ -124,7 +83,7 @@ public class SlidingResultsAssembler implements ResultsAssembler {
           log.debug("recognizer excluded: " + Bytes.toString(resultRow.getRow()));
         if (log.isDebugEnabled())
           log.debug(serializeGraph(graph));
-        this.unrecognizedRsults++;
+        this.unrecognizedResults++;
         return false;
       }
     }
@@ -134,18 +93,8 @@ public class SlidingResultsAssembler implements ResultsAssembler {
   }
 
   @Override
-  public int getUnrecognizedResults() {
-    return unrecognizedRsults;
-  }
-
-  @Override
-  public int getIgnoredResults() {
-    return ignoredResults;
-  }
-
-  @Override
-  public boolean isResultEndRangeReached() {
-    return resultEndRangeReached;
+  public int size() {
+    return this.graphs.size();
   }
 
   @Override
@@ -155,30 +104,6 @@ public class SlidingResultsAssembler implements ResultsAssembler {
     if (this.orderingComparator != null)
       Arrays.sort(array, this.orderingComparator);
     return array;
-  }
-
-  @Override
-  public boolean canIgnoreResults() {
-    return this.graphRecognizerRootExpr == null;
-  }
-
-  @Override
-  public int size() {
-    return this.graphs.size();
-  }
-
-  private String serializeGraph(commonj.sdo.DataGraph graph) throws IOException {
-    DefaultOptions options = new DefaultOptions(graph.getRootObject().getType().getURI());
-    options.setRootNamespacePrefix("debug");
-
-    XMLDocument doc = PlasmaXMLHelper.INSTANCE.createDocument(graph.getRootObject(), graph
-        .getRootObject().getType().getURI(), null);
-    ByteArrayOutputStream os = new ByteArrayOutputStream();
-    PlasmaXMLHelper.INSTANCE.save(doc, os, options);
-    os.flush();
-    os.close();
-    String xml = new String(os.toByteArray());
-    return xml;
   }
 
 }

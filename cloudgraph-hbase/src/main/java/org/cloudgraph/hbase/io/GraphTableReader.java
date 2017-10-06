@@ -87,9 +87,6 @@ public class GraphTableReader extends GraphTable implements TableReader {
         // Note: calling tableExists() using the admin HBase API is expensive
         // and is
         // showing up on CPU profiling results. Just call get table and catch :(
-        // Unfortunately at least on windows client, below get operation does
-        // not throw
-        // anything and continues on.
         if (!this.connection.tableExists(tableName)) {
           HBaseConnectionManager.instance().createTable(this.connection, tableName);
           this.table = this.connection.getTable(tableName);
@@ -239,18 +236,6 @@ public class GraphTableReader extends GraphTable implements TableReader {
   public DistributedOperation getDistributedOperation() {
     return this.distributedOperation;
   }
-
-  /**
-   * Sets the distributed context associated with this table operation context.
-   * 
-   * @param distributedOperation
-   *          the operation
-   */
-  // @Override
-  // public void setDistributedOperation(DistributedOperation
-  // distributedOperation) {
-  // this.distributedOperation = distributedOperation;
-  // }
 
   /**
    * Frees resources associated with this reader and any component readers.

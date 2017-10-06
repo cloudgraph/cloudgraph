@@ -109,36 +109,11 @@ public class GraphAssembler extends DistributedAssembler {
 
       if (edgeReader == null)
         continue; // edge not found in data
-      // }
-      // else { // root
-      // edgeReader =
-      // rowReader.getEdgeReader((PlasmaType)target.getType(),
-      // prop);
-      // }
-
-      // if (keyValue == null || keyValue.length == 0 ) {
-      // continue; // zero length can happen on modification or delete as
-      // we keep cell history
-      // }
-      // if (log.isDebugEnabled())
-      // log.debug(prop.toString() + ": " + Bytes.toString(keyValue));
-
-      // Edge[] edges = rowReader.getGraphState().unmarshalEdges(
-      // keyValue);
-      // if (edges.length == 0) {
-      // continue; // zero length can happen on modification or delete as
-      // we keep cell history
-      // }
 
       if (!edgeReader.isExternal()) {
         assembleEdges(target, targetSequence, prop, edgeReader, rowReader, tableReader, rowReader,
             level);
       } else {
-        // String childTable =
-        // rowReader.getGraphState().getRowKeyTable(edges[0].getUuid());
-        // if (childTable == null)
-        // throw new OperationException("no table found for type, " +
-        // edges[0].getType());
         TableReader externalTableReader = distributedReader.getTableReader(edgeReader.getTable());
         if (externalTableReader == null)
           throw new OperationException("no table reader found for type, "

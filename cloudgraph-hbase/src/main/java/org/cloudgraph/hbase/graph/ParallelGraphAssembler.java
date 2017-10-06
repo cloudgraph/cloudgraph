@@ -22,7 +22,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.hadoop.hbase.client.Result;
-import org.cloudgraph.common.concurrent.ConfigProps;
+import org.cloudgraph.config.ThreadPoolConfigProps;
 import org.cloudgraph.hbase.io.DistributedReader;
 import org.cloudgraph.hbase.io.EdgeReader;
 import org.cloudgraph.hbase.io.RowReader;
@@ -76,7 +76,7 @@ public class ParallelGraphAssembler extends DistributedAssembler {
    * Thread pool shared by all tasks created by this assembler.
    */
   private ThreadPoolExecutor executorService;
-  private ConfigProps config;
+  private ThreadPoolConfigProps config;
 
   /**
    * Constructor.
@@ -99,7 +99,7 @@ public class ParallelGraphAssembler extends DistributedAssembler {
    *          executed under this assembler
    */
   public ParallelGraphAssembler(PlasmaType rootType, Selection selection,
-      DistributedReader distributedReader, Timestamp snapshotDate, ConfigProps config) {
+      DistributedReader distributedReader, Timestamp snapshotDate, ThreadPoolConfigProps config) {
     super(rootType, selection, distributedReader, snapshotDate);
 
     this.executorService = new ThreadPoolExecutor(config.getMinThreadPoolSize(),
@@ -112,7 +112,7 @@ public class ParallelGraphAssembler extends DistributedAssembler {
     return executorService;
   }
 
-  public ConfigProps getConfig() {
+  public ThreadPoolConfigProps getConfig() {
     return config;
   }
 
