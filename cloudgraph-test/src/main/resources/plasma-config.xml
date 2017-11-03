@@ -67,23 +67,14 @@
     </SDO>
     
     <Repository> 
-        <!-- Would like to use our own namespace here (say 'http://www.servicelabs.org/plasma/sdo/profile') but MagicDraw
-            unfortunately bakes this namespace e.g. 'http://www.magicdraw.com/schemas/*'  
-            into any and every model that references a profile. You can change
-            the namespace declaration by hand in the XMI but next time the
-            model is changed, MD will change it back !!
-        -->
-<!--         <Artifact name="Plasma_SDO_Profile.uml" -->
-<!--             urn="Plasma_SDO_Profile.uml"  -->
-<!--             namespaceUri="http://www.magicdraw.com/schemas/Plasma_SDO_Profile.xmi"/> -->
-      
         <Artifact name="datatypes.uml"
             urn="datatypes.uml" 
             namespaceUri="http://cloudgraph.org/datatypes.uml"/>  
-  
+
         <Artifact name="social-graph.uml"
             urn="social-graph.uml" 
             namespaceUri="http://cloudgraph.org/social-graph.uml"/>  
+   
     </Repository>
     
   
