@@ -55,9 +55,9 @@ import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.net.DNS;
 import org.apache.hadoop.util.StringUtils;
-import org.cloudgraph.config.CloudGraphConfiguration;
 import org.cloudgraph.hbase.util.FilterUtil;
 import org.cloudgraph.mapreduce.GraphWritable;
+import org.cloudgraph.store.mapping.CloudGraphStoreMapping;
 
 /**
  * A graph based input-specification for MapReduce jobs which splits an
@@ -106,7 +106,7 @@ public class GraphInputFormat extends InputFormat<ImmutableBytesWritable, GraphW
    * dynamic and loaded at runtime, the job (spark,mapreduce) child VM's must
    * have access to and load this mapping dynamically. The mapping must be
    * serialized as XML and be marshalled and be unmarshallable using the root
-   * {@link CloudGraphConfiguration} which may have any number of table mapping
+   * {@link CloudGraphStoreMapping} which may have any number of table mapping
    * elements.
    */
   public static final String TABLE_MAPPINGS = "cloudgraph.hbase.mapreduce.tablemappings";

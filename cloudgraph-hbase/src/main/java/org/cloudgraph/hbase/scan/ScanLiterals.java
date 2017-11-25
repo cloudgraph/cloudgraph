@@ -22,9 +22,9 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.cloudgraph.config.DataGraphConfig;
-import org.cloudgraph.config.PreDefinedKeyFieldConfig;
-import org.cloudgraph.config.UserDefinedRowKeyFieldConfig;
+import org.cloudgraph.store.mapping.DataGraphMapping;
+import org.cloudgraph.store.mapping.PreDefinedKeyFieldMapping;
+import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.plasma.query.Wildcard;
 import org.plasma.query.model.RelationalOperator;
 
@@ -47,8 +47,8 @@ public class ScanLiterals {
   private boolean hasMultipleWildcardLiterals = false;
   private boolean hasOtherThanSingleTrailingWildcards = false;
   private boolean hasOnlyEqualityRelationalOperators = true;
-  private Map<DataGraphConfig, Boolean> hasContiguousPartialKeyScanFieldValuesMap;
-  private Map<DataGraphConfig, Boolean> hasContiguousKeyFieldValuesMap;
+  private Map<DataGraphMapping, Boolean> hasContiguousPartialKeyScanFieldValuesMap;
+  private Map<DataGraphMapping, Boolean> hasContiguousKeyFieldValuesMap;
 
   public ScanLiterals() {
   }
@@ -57,7 +57,7 @@ public class ScanLiterals {
     return literalList;
   }
 
-  public List<ScanLiteral> getLiterals(UserDefinedRowKeyFieldConfig fieldConfig) {
+  public List<ScanLiteral> getLiterals(UserDefinedRowKeyFieldMapping fieldConfig) {
     return literalMap.get(fieldConfig.getSequenceNum());
   }
 
@@ -93,7 +93,7 @@ public class ScanLiterals {
       }
     }
 
-    UserDefinedRowKeyFieldConfig fieldConfig = scanLiteral.getFieldConfig();
+    UserDefinedRowKeyFieldMapping fieldConfig = scanLiteral.getFieldConfig();
     List<ScanLiteral> list = this.literalMap.get(fieldConfig.getSequenceNum());
     if (list == null) {
       list = new ArrayList<ScanLiteral>(4);
@@ -112,7 +112,7 @@ public class ScanLiterals {
    * @return true if this set of literals can support a partial row key scan for
    *         the given graph
    */
-  public boolean supportPartialRowKeyScan(DataGraphConfig graph) {
+  public boolean supportPartialRowKeyScan(DataGraphMapping graph) {
     if (this.hasMultipleWildcardLiterals || this.hasOtherThanSingleTrailingWildcards)
       return false;
 
@@ -135,7 +135,7 @@ public class ScanLiterals {
     }
 
     if (hasContiguousPartialKeyScanFieldValuesMap == null)
-      hasContiguousPartialKeyScanFieldValuesMap = new HashMap<DataGraphConfig, Boolean>();
+      hasContiguousPartialKeyScanFieldValuesMap = new HashMap<DataGraphMapping, Boolean>();
 
     if (this.hasContiguousPartialKeyScanFieldValuesMap.get(graph) == null) {
       boolean hasContiguousPartialKeyScanFieldValues = true;
@@ -165,7 +165,7 @@ public class ScanLiterals {
    * @return true if this set of literals can support a partial row key scan for
    *         the given graph
    */
-  public boolean supportCompleteRowKey(DataGraphConfig graph) {
+  public boolean supportCompleteRowKey(DataGraphMapping graph) {
     if (this.hasWildcardLiterals)
       return false;
 
@@ -173,7 +173,7 @@ public class ScanLiterals {
       return false;
 
     if (hasContiguousKeyFieldValuesMap == null)
-      hasContiguousKeyFieldValuesMap = new HashMap<DataGraphConfig, Boolean>();
+      hasContiguousKeyFieldValuesMap = new HashMap<DataGraphMapping, Boolean>();
     if (this.hasContiguousKeyFieldValuesMap.get(graph) == null) {
       boolean hasContiguousFieldValues = true;
 
@@ -185,7 +185,7 @@ public class ScanLiterals {
         if (scanLiteralCount[i] == 0)
           hasContiguousFieldValues = false;
 
-      for (PreDefinedKeyFieldConfig field : graph.getPreDefinedRowKeyFields()) {
+      for (PreDefinedKeyFieldMapping field : graph.getPreDefinedRowKeyFields()) {
         switch (field.getName()) {
         case URI:
         case TYPE:
@@ -210,12 +210,12 @@ public class ScanLiterals {
     return this.hasContiguousKeyFieldValuesMap.get(graph).booleanValue();
   }
 
-  private int[] initScanLiteralCount(DataGraphConfig graph) {
+  private int[] initScanLiteralCount(DataGraphMapping graph) {
     int size = graph.getUserDefinedRowKeyFields().size();
     int[] scanLiteralCount = new int[size];
 
     for (int i = 0; i < size; i++) {
-      UserDefinedRowKeyFieldConfig fieldConfig = graph.getUserDefinedRowKeyFields().get(i);
+      UserDefinedRowKeyFieldMapping fieldConfig = graph.getUserDefinedRowKeyFields().get(i);
       List<ScanLiteral> list = this.getLiterals(fieldConfig);
       if (list != null)
         scanLiteralCount[i] = list.size();

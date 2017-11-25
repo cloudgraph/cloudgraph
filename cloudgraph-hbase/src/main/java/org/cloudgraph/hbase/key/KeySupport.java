@@ -24,14 +24,14 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.hbase.util.Hash;
 import org.cloudgraph.common.CloudGraphConstants;
-import org.cloudgraph.config.CloudGraphConfigurationException;
-import org.cloudgraph.config.PreDefinedKeyFieldConfig;
-import org.cloudgraph.config.PredefinedField;
-import org.cloudgraph.config.TableConfig;
-import org.cloudgraph.config.UserDefinedRowKeyFieldConfig;
 import org.cloudgraph.hbase.scan.StringLiteral;
 import org.cloudgraph.hbase.service.CloudGraphContext;
 import org.cloudgraph.store.key.KeyValue;
+import org.cloudgraph.store.mapping.PreDefinedKeyFieldMapping;
+import org.cloudgraph.store.mapping.PredefinedField;
+import org.cloudgraph.store.mapping.StoreMappingException;
+import org.cloudgraph.store.mapping.TableMapping;
+import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.plasma.sdo.PlasmaDataObject;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
@@ -55,7 +55,7 @@ public class KeySupport {
    * 
    * @return the specific configured hash algorithm configured for an HTable.
    */
-  public Hash getHashAlgorithm(TableConfig table) {
+  public Hash getHashAlgorithm(TableMapping table) {
     Hash hash = null;
     if (table.hasHashAlgorithm()) {
       String hashName = table.getTable().getHashAlgorithm().getName().value();
@@ -69,7 +69,7 @@ public class KeySupport {
     return hash;
   }
 
-  public KeyValue findKeyValue(UserDefinedRowKeyFieldConfig fieldConfig, List<KeyValue> pairs) {
+  public KeyValue findKeyValue(UserDefinedRowKeyFieldMapping fieldConfig, List<KeyValue> pairs) {
 
     PlasmaProperty fieldProperty = fieldConfig.getEndpointProperty();
 
@@ -98,7 +98,7 @@ public class KeySupport {
    * @return the token value
    */
   public String getPredefinedFieldValue(PlasmaType type, Hashing hashing,
-      PreDefinedKeyFieldConfig token) {
+      PreDefinedKeyFieldMapping token) {
     String result = null;
     switch (token.getName()) {
     case URI:
@@ -118,8 +118,8 @@ public class KeySupport {
       }
       break;
     default:
-      throw new CloudGraphConfigurationException("invalid row key token name, "
-          + token.getName().name() + " - cannot get this token from a SDO Type");
+      throw new StoreMappingException("invalid row key token name, " + token.getName().name()
+          + " - cannot get this token from a SDO Type");
     }
 
     if (token.isHash()) {
@@ -130,12 +130,12 @@ public class KeySupport {
   }
 
   public byte[] getPredefinedFieldValueStartBytes(PlasmaType type, Hashing hashing,
-      PreDefinedKeyFieldConfig token) {
+      PreDefinedKeyFieldMapping token) {
     return getPredefinedFieldValueBytes(type, hashing, token);
   }
 
   public byte[] getPredefinedFieldValueStopBytes(PlasmaType type, Hashing hashing,
-      PreDefinedKeyFieldConfig token) {
+      PreDefinedKeyFieldMapping token) {
     byte[] result = null;
     switch (token.getName()) {
     case URI:
@@ -179,15 +179,15 @@ public class KeySupport {
       }
       break;
     default:
-      throw new CloudGraphConfigurationException("invalid row key token name, "
-          + token.getName().name() + " - cannot get this token from a SDO Type");
+      throw new StoreMappingException("invalid row key token name, " + token.getName().name()
+          + " - cannot get this token from a SDO Type");
     }
 
     return result;
   }
 
   public byte[] getPredefinedFieldValueBytes(PlasmaType type, Hashing hashing,
-      PreDefinedKeyFieldConfig token) {
+      PreDefinedKeyFieldMapping token) {
     byte[] result = null;
     switch (token.getName()) {
     case URI:
@@ -207,8 +207,8 @@ public class KeySupport {
       }
       break;
     default:
-      throw new CloudGraphConfigurationException("invalid row key token name, "
-          + token.getName().name() + " - cannot get this token from a SDO Type");
+      throw new StoreMappingException("invalid row key token name, " + token.getName().name()
+          + " - cannot get this token from a SDO Type");
     }
 
     if (token.isHash()) {
@@ -269,8 +269,8 @@ public class KeySupport {
       result = Bytes.toBytes(((PlasmaDataObject) dataObject).getUUIDAsString());
       break;
     default:
-      throw new CloudGraphConfigurationException("invalid row key token name, "
-          + token.getName().name() + " - cannot get this token from a Data Graph");
+      throw new StoreMappingException("invalid row key token name, " + token.getName().name()
+          + " - cannot get this token from a Data Graph");
     }
 
     if (token.isHash()) {

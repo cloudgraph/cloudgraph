@@ -15,31 +15,31 @@
  */
 package org.cloudgraph.state;
 
-import org.cloudgraph.config.TableConfig;
+import org.cloudgraph.store.mapping.TableMapping;
 
 /**
  * Encapsulates the configuration and state related context information for a
  * specific table.
  * 
- * @see org.cloudgraph.config.TableConfig
+ * @see org.cloudgraph.store.mapping.TableMapping
  * @author Scott Cinnamond
  * @since 0.5.1
  */
 public abstract class GraphTable implements TableState {
-  protected TableConfig tableConfig;
+  protected TableMapping tableConfig;
 
   @SuppressWarnings("unused")
   private GraphTable() {
   }
 
-  public GraphTable(TableConfig table) {
+  public GraphTable(TableMapping table) {
     if (table == null)
       throw new IllegalArgumentException("unexpected null value for 'table'");
     this.tableConfig = table;
   }
 
   @Override
-  public TableConfig getTableConfig() {
+  public TableMapping getTableConfig() {
     return this.tableConfig;
   }
 

@@ -15,20 +15,24 @@
  */
 package org.cloudgraph.hbase.graph;
 
-import org.cloudgraph.config.DataGraphConfig;
 import org.cloudgraph.hbase.expr.PathPredicateBinaryExprTreeAssembler;
+import org.cloudgraph.query.expr.DefaultBinaryExprTreeAssembler;
 import org.cloudgraph.query.expr.DefaultLogicalBinaryExpr;
 import org.cloudgraph.query.expr.Expr;
 import org.cloudgraph.query.expr.ExprAssembler;
 import org.cloudgraph.query.expr.LogicalBinaryExpr;
 import org.cloudgraph.query.expr.RelationalBinaryExpr;
 import org.cloudgraph.query.expr.WildcardBinaryExpr;
+import org.cloudgraph.store.lang.GraphFilterException;
+import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.plasma.query.model.Literal;
 import org.plasma.query.model.LogicalOperator;
+import org.plasma.query.model.Path;
 import org.plasma.query.model.PredicateOperator;
 import org.plasma.query.model.Property;
 import org.plasma.query.model.RelationalOperator;
 import org.plasma.query.model.Where;
+import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
 
 /**
@@ -54,8 +58,9 @@ import org.plasma.sdo.PlasmaType;
  * @see ExternalEdgeRecognizerWildcardBinaryExpr
  * @see ExprAssembler
  */
-public class ExternalEdgeRecognizerSyntaxTreeAssembler extends PathPredicateBinaryExprTreeAssembler {
-  protected DataGraphConfig graphConfig;
+public class ExternalEdgeRecognizerSyntaxTreeAssembler extends DefaultBinaryExprTreeAssembler {
+  protected DataGraphMapping graphConfig;
+  protected PlasmaType edgeType;
 
   /**
    * Constructs an assembler based on the given predicate and graph edge type.
@@ -70,10 +75,11 @@ public class ExternalEdgeRecognizerSyntaxTreeAssembler extends PathPredicateBina
    * @param graphConfig
    *          the graph config
    */
-  public ExternalEdgeRecognizerSyntaxTreeAssembler(Where predicate, DataGraphConfig graphConfig,
+  public ExternalEdgeRecognizerSyntaxTreeAssembler(Where predicate, DataGraphMapping graphConfig,
       PlasmaType edgeType, PlasmaType rootType) {
-    super(predicate, edgeType, rootType);
+    super(predicate, rootType);
     this.graphConfig = graphConfig;
+    this.edgeType = edgeType;
   }
 
   @Override
@@ -93,4 +99,30 @@ public class ExternalEdgeRecognizerSyntaxTreeAssembler extends PathPredicateBina
     return new DefaultLogicalBinaryExpr(left, right, operator);
   }
 
+  /**
+   * Process the traversal end event for a query
+   * {@link org.plasma.query.model.Property property} within an
+   * {@link org.plasma.query.model.Expression expression} setting up context
+   * information for the endpoint property and its type, as well as physical
+   * column qualifier name bytes which are set into the
+   * {@link #contextQueryProperty} physical name bytes. for the current
+   * {@link org.plasma.query.model.Expression expression}.
+   * 
+   * @see org.plasma.query.visitor.DefaultQueryVisitor#end(org.plasma.query.model.Property)
+   */
+  @Override
+  public void end(Property property) {
+    Path path = property.getPath();
+    PlasmaType targetType = (PlasmaType) this.edgeType;
+    if (path == null) {
+      // no error here for external edges
+    } else {
+      targetType = traverse(path, targetType);
+    }
+    PlasmaProperty endpointProp = (PlasmaProperty) targetType.getProperty(property.getName());
+    this.contextProperty = endpointProp;
+    this.contextType = targetType;
+    this.contextQueryProperty = property;
+
+  }
 }

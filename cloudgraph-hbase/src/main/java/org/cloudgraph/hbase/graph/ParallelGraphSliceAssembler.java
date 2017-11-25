@@ -22,12 +22,12 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.hadoop.hbase.client.Result;
-import org.cloudgraph.config.ThreadPoolConfigProps;
 import org.cloudgraph.hbase.io.DistributedReader;
 import org.cloudgraph.hbase.io.EdgeReader;
 import org.cloudgraph.hbase.io.RowReader;
 import org.cloudgraph.recognizer.GraphRecognizerContext;
 import org.cloudgraph.recognizer.GraphRecognizerSyntaxTreeAssembler;
+import org.cloudgraph.store.mapping.ThreadPoolMappingProps;
 import org.plasma.query.collector.Selection;
 import org.plasma.sdo.PlasmaDataObject;
 import org.plasma.sdo.PlasmaProperty;
@@ -94,7 +94,7 @@ public class ParallelGraphSliceAssembler extends DistributedAssembler {
    * Thread pool shared by all tasks created by this assembler.
    */
   private ThreadPoolExecutor executorService;
-  private ThreadPoolConfigProps config;
+  private ThreadPoolMappingProps config;
 
   /**
    * Constructor.
@@ -117,7 +117,7 @@ public class ParallelGraphSliceAssembler extends DistributedAssembler {
    *          executed under this assembler
    */
   public ParallelGraphSliceAssembler(PlasmaType rootType, Selection selection,
-      DistributedReader distributedReader, Timestamp snapshotDate, ThreadPoolConfigProps config) {
+      DistributedReader distributedReader, Timestamp snapshotDate, ThreadPoolMappingProps config) {
     super(rootType, selection, distributedReader, snapshotDate);
 
     this.executorService = new ThreadPoolExecutor(config.getMinThreadPoolSize(),

@@ -39,8 +39,6 @@ import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.filter.Filter;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.cloudgraph.config.CloudGraphConfig;
-import org.cloudgraph.config.DataGraphConfig;
 import org.cloudgraph.hbase.filter.BinaryPrefixColumnFilterAssembler;
 import org.cloudgraph.hbase.filter.ColumnPredicateFilterAssembler;
 import org.cloudgraph.hbase.filter.GraphFetchColumnFilterAssembler;
@@ -61,6 +59,8 @@ import org.cloudgraph.query.expr.ExprPrinter;
 import org.cloudgraph.recognizer.Endpoint;
 import org.cloudgraph.recognizer.GraphRecognizerContext;
 import org.cloudgraph.recognizer.GraphRecognizerSyntaxTreeAssembler;
+import org.cloudgraph.store.mapping.DataGraphMapping;
+import org.cloudgraph.store.mapping.StoreMapping;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.common.bind.DefaultValidationEventHandler;
 import org.plasma.query.bind.PlasmaQueryDataBinding;
@@ -163,8 +163,8 @@ class GraphSliceSupport {
       }
     }
     if (log.isDebugEnabled())
-      log.debug("recognized " + graphEvalRowKeys.size() + results.size() + " out of "
-          + edgeReader.getRowKeys().size() + " external edges");
+      log.debug("recognized " + String.valueOf(graphEvalRowKeys.size() + results.size())
+          + " out of " + edgeReader.getRowKeys().size() + " external edges");
     if (graphEvalRowKeys.size() == 0)
       return results; // no edges recognized or all recognized by row key alone
 
@@ -204,7 +204,7 @@ class GraphSliceSupport {
       get.setFilter(columnFilter);
       gets.add(get);
     }
-    DataGraphConfig graphConfig = CloudGraphConfig.getInstance().getDataGraph(
+    DataGraphMapping graphConfig = StoreMapping.getInstance().getDataGraph(
         contextType.getQualifiedName());
     Result[] rows = this.fetchResult(gets, tableReader, graphConfig);
 
@@ -235,6 +235,11 @@ class GraphSliceSupport {
           log.debug(serializeGraph(assembledGraph));
 
         continue;
+      } else {
+        if (log.isDebugEnabled())
+          log.debug("recognizer passed: " + Bytes.toString(resultRow.getRow()));
+        if (log.isDebugEnabled())
+          log.debug(serializeGraph(assembledGraph));
       }
 
       String rowKey = new String(resultRow.getRow(), charset);
@@ -339,7 +344,7 @@ class GraphSliceSupport {
       throws IOException {
 
     PlasmaType rootType = (PlasmaType) rowReader.getRootType();
-    DataGraphConfig graphConfig = CloudGraphConfig.getInstance().getDataGraph(
+    DataGraphMapping graphConfig = StoreMapping.getInstance().getDataGraph(
         rootType.getQualifiedName());
     Get get = new Get(rowReader.getRowKey());
 
@@ -388,7 +393,7 @@ class GraphSliceSupport {
    * @return the result.
    * @throws IOException
    */
-  public Result fetchResult(Get get, TableOperation tableOperation, DataGraphConfig graphConfig)
+  public Result fetchResult(Get get, TableOperation tableOperation, DataGraphMapping graphConfig)
       throws IOException {
     if (log.isDebugEnabled())
       try {
@@ -422,7 +427,7 @@ class GraphSliceSupport {
    * @throws IOException
    */
   public Result[] fetchResult(List<Get> gets, TableOperation tableOperation,
-      DataGraphConfig graphConfig) throws IOException {
+      DataGraphMapping graphConfig) throws IOException {
     if (log.isDebugEnabled())
       try {
         log.debug("get filter: " + FilterUtil.printFilterTree(gets.get(0).getFilter()));
@@ -442,7 +447,7 @@ class GraphSliceSupport {
     return result;
   }
 
-  public Map<Long, Map<String, KeyValue>> buketizeResult(Result result, DataGraphConfig graphConfig) {
+  public Map<Long, Map<String, KeyValue>> buketizeResult(Result result, DataGraphMapping graphConfig) {
     Map<Long, Map<String, KeyValue>> resultMap = new HashMap<Long, Map<String, KeyValue>>();
 
     if (!result.isEmpty())
@@ -474,7 +479,7 @@ class GraphSliceSupport {
    * @throws IOException
    */
   public Map<Integer, Integer> fetchSequences(Get get, TableReader tableReader,
-      DataGraphConfig graphConfig) throws IOException {
+      DataGraphMapping graphConfig) throws IOException {
     if (log.isDebugEnabled())
       try {
         log.debug("get filter: " + FilterUtil.printFilterTree(get.getFilter()));
@@ -517,7 +522,7 @@ class GraphSliceSupport {
    * @return the sequence numbers.
    */
   public Map<Long, Long> fetchSequences(Scan scan, TableReader tableReader,
-      DataGraphConfig graphConfig) {
+      DataGraphMapping graphConfig) {
     if (log.isDebugEnabled())
       try {
         log.debug("scan filter: " + FilterUtil.printFilterTree(scan.getFilter()));

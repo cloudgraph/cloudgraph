@@ -30,10 +30,10 @@ import java.util.concurrent.ThreadPoolExecutor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.cloudgraph.common.concurrent.SubgraphTask;
-import org.cloudgraph.config.ThreadPoolConfigProps;
 import org.cloudgraph.hbase.io.DistributedReader;
 import org.cloudgraph.hbase.io.EdgeReader;
 import org.cloudgraph.hbase.io.RowReader;
+import org.cloudgraph.store.mapping.ThreadPoolMappingProps;
 import org.plasma.query.collector.Selection;
 import org.plasma.sdo.PlasmaDataObject;
 import org.plasma.sdo.PlasmaProperty;
@@ -70,7 +70,7 @@ abstract class DefaultSubgraphTask extends DistributedAssembler implements Subgr
   protected static Map<String, Object> fetchLocks = new ConcurrentHashMap<String, Object>();
   protected final CountDownLatch shutdownLatch = new CountDownLatch(1);
   protected ThreadPoolExecutor executorService;
-  protected ThreadPoolConfigProps config;
+  protected ThreadPoolMappingProps config;
   protected List<Traversal> traversals = new ArrayList<Traversal>();
 
   /**
@@ -101,7 +101,7 @@ abstract class DefaultSubgraphTask extends DistributedAssembler implements Subgr
   public DefaultSubgraphTask(PlasmaDataObject subroot, long subrootSequence, Selection selection,
       Timestamp snapshotDate, DistributedReader distributedReader, EdgeReader edgeReader,
       PlasmaDataObject source, PlasmaProperty sourceProperty, RowReader rowReader, int level,
-      int sequence, ThreadPoolExecutor executorService, ThreadPoolConfigProps config) {
+      int sequence, ThreadPoolExecutor executorService, ThreadPoolMappingProps config) {
     super((PlasmaType) subroot.getType(), selection, distributedReader, snapshotDate);
     this.subroot = subroot;
     this.subrootSequence = subrootSequence;
@@ -201,7 +201,7 @@ abstract class DefaultSubgraphTask extends DistributedAssembler implements Subgr
       Selection selection, Timestamp snapshotDate, DistributedReader distributedReader,
       EdgeReader collection, PlasmaDataObject source, PlasmaProperty sourceProperty,
       RowReader rowReader, int level, int sequence, ThreadPoolExecutor executorService,
-      ThreadPoolConfigProps config);
+      ThreadPoolMappingProps config);
 
   @Override
   protected abstract void assemble(PlasmaDataObject target, long targetSequence,

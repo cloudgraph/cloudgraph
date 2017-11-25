@@ -21,13 +21,13 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.cloudgraph.common.CloudGraphConstants;
-import org.cloudgraph.config.CloudGraphConfig;
 import org.cloudgraph.hbase.io.DistributedWriter;
 import org.cloudgraph.hbase.io.EdgeWriter;
 import org.cloudgraph.hbase.io.RowWriter;
 import org.cloudgraph.hbase.io.TableWriter;
 import org.cloudgraph.hbase.service.HBaseDataConverter;
 import org.cloudgraph.hbase.service.ServiceContext;
+import org.cloudgraph.store.mapping.StoreMapping;
 import org.plasma.sdo.PlasmaDataObject;
 import org.plasma.sdo.PlasmaEdge;
 import org.plasma.sdo.PlasmaNode;
@@ -58,7 +58,7 @@ public class Create extends DefaultMutation implements Collector {
     PlasmaType type = (PlasmaType) dataObject.getType();
     PlasmaNode dataNode = (PlasmaNode) dataObject;
     CoreNode coreNode = ((CoreNode) dataObject);
-    boolean typeBound = CloudGraphConfig.getInstance().findTable(type.getQualifiedName()) != null;
+    boolean typeBound = StoreMapping.getInstance().findTable(type.getQualifiedName()) != null;
 
     long sequence = CloudGraphConstants.ROOT_SEQUENCE;
     // if were not creating a root in this or another graph

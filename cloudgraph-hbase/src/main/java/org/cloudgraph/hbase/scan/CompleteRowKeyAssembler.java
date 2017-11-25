@@ -25,15 +25,15 @@ import javax.xml.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.util.Hash;
-import org.cloudgraph.config.CloudGraphConfig;
-import org.cloudgraph.config.DataGraphConfig;
-import org.cloudgraph.config.KeyFieldConfig;
-import org.cloudgraph.config.PreDefinedKeyFieldConfig;
-import org.cloudgraph.config.TableConfig;
-import org.cloudgraph.config.UserDefinedRowKeyFieldConfig;
 import org.cloudgraph.hbase.key.Hashing;
 import org.cloudgraph.hbase.key.KeySupport;
 import org.cloudgraph.hbase.key.Padding;
+import org.cloudgraph.store.mapping.DataGraphMapping;
+import org.cloudgraph.store.mapping.KeyFieldMapping;
+import org.cloudgraph.store.mapping.PreDefinedKeyFieldMapping;
+import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.TableMapping;
+import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.plasma.query.model.Where;
 import org.plasma.sdo.DataFlavor;
 import org.plasma.sdo.PlasmaType;
@@ -42,11 +42,11 @@ import org.plasma.sdo.PlasmaType;
  * Assembles a row key where each field within the composite row key is
  * constructed based a set of given query predicates.
  * 
- * @see org.cloudgraph.config.DataGraphConfig
- * @see org.cloudgraph.config.TableConfig
- * @see org.cloudgraph.config.UserDefinedField
- * @see org.cloudgraph.config.PredefinedField
- * @see org.cloudgraph.config.PreDefinedFieldName
+ * @see org.cloudgraph.store.mapping.DataGraphMapping
+ * @see org.cloudgraph.store.mapping.TableMapping
+ * @see org.cloudgraph.store.mapping.UserDefinedField
+ * @see org.cloudgraph.store.mapping.PredefinedField
+ * @see org.cloudgraph.store.mapping.PreDefinedFieldName
  * @author Scott Cinnamond
  * @since 0.5.5
  */
@@ -55,8 +55,8 @@ public class CompleteRowKeyAssembler implements RowKeyScanAssembler, CompleteRow
   protected int bufsize = 4000;
   protected ByteBuffer startKey = ByteBuffer.allocate(bufsize);
   protected PlasmaType rootType;
-  protected DataGraphConfig graph;
-  protected TableConfig table;
+  protected DataGraphMapping graph;
+  protected TableMapping table;
   protected KeySupport keySupport = new KeySupport();
   protected Charset charset;
   protected ScanLiterals scanLiterals;
@@ -78,10 +78,10 @@ public class CompleteRowKeyAssembler implements RowKeyScanAssembler, CompleteRow
   public CompleteRowKeyAssembler(PlasmaType rootType) {
     this.rootType = rootType;
     QName rootTypeQname = this.rootType.getQualifiedName();
-    this.graph = CloudGraphConfig.getInstance().getDataGraph(rootTypeQname);
-    this.table = CloudGraphConfig.getInstance().getTable(rootTypeQname);
+    this.graph = StoreMapping.getInstance().getDataGraph(rootTypeQname);
+    this.table = StoreMapping.getInstance().getTable(rootTypeQname);
     Hash hash = this.keySupport.getHashAlgorithm(this.table);
-    this.charset = CloudGraphConfig.getInstance().getCharset();
+    this.charset = StoreMapping.getInstance().getCharset();
     this.hashing = new Hashing(hash, this.charset);
     this.padding = new Padding(this.charset);
   }
@@ -104,8 +104,8 @@ public class CompleteRowKeyAssembler implements RowKeyScanAssembler, CompleteRow
    * Assemble row key scan information based only on any pre-defined row-key
    * fields such as the data graph root type or URI.
    * 
-   * @see org.cloudgraph.config.PredefinedField
-   * @see org.cloudgraph.config.PreDefinedFieldName
+   * @see org.cloudgraph.store.mapping.PredefinedField
+   * @see org.cloudgraph.store.mapping.PreDefinedFieldName
    */
   @Override
   public void assemble() {
@@ -119,8 +119,8 @@ public class CompleteRowKeyAssembler implements RowKeyScanAssembler, CompleteRow
    * 
    * @param literalList
    *          the scan literals
-   * @see org.cloudgraph.config.PredefinedField
-   * @see org.cloudgraph.config.PreDefinedFieldName
+   * @see org.cloudgraph.store.mapping.PredefinedField
+   * @see org.cloudgraph.store.mapping.PreDefinedFieldName
    */
   @Override
   public void assemble(ScanLiterals literals) {
@@ -158,9 +158,9 @@ public class CompleteRowKeyAssembler implements RowKeyScanAssembler, CompleteRow
   }
 
   private void assemblePredefinedFields() {
-    List<PreDefinedKeyFieldConfig> resultFields = new ArrayList<PreDefinedKeyFieldConfig>();
+    List<PreDefinedKeyFieldMapping> resultFields = new ArrayList<PreDefinedKeyFieldMapping>();
 
-    for (PreDefinedKeyFieldConfig field : this.graph.getPreDefinedRowKeyFields()) {
+    for (PreDefinedKeyFieldMapping field : this.graph.getPreDefinedRowKeyFields()) {
       switch (field.getName()) {
       case URI:
       case TYPE:
@@ -174,7 +174,7 @@ public class CompleteRowKeyAssembler implements RowKeyScanAssembler, CompleteRow
 
     int fieldCount = resultFields.size();
     for (int i = 0; i < fieldCount; i++) {
-      PreDefinedKeyFieldConfig preDefinedField = resultFields.get(i);
+      PreDefinedKeyFieldMapping preDefinedField = resultFields.get(i);
       if (startRowFieldCount > 0) {
         this.startKey.put(graph.getRowKeyFieldDelimiterBytes());
       }
@@ -195,9 +195,9 @@ public class CompleteRowKeyAssembler implements RowKeyScanAssembler, CompleteRow
   }
 
   private void assembleLiterals() {
-    for (KeyFieldConfig fieldConfig : this.graph.getRowKeyFields()) {
-      if (fieldConfig instanceof PreDefinedKeyFieldConfig) {
-        PreDefinedKeyFieldConfig predefinedConfig = (PreDefinedKeyFieldConfig) fieldConfig;
+    for (KeyFieldMapping fieldConfig : this.graph.getRowKeyFields()) {
+      if (fieldConfig instanceof PreDefinedKeyFieldMapping) {
+        PreDefinedKeyFieldMapping predefinedConfig = (PreDefinedKeyFieldMapping) fieldConfig;
 
         byte[] tokenValue = null;
         switch (predefinedConfig.getName()) {
@@ -227,8 +227,8 @@ public class CompleteRowKeyAssembler implements RowKeyScanAssembler, CompleteRow
           this.startKey.put(graph.getRowKeyFieldDelimiterBytes());
         this.startKey.put(paddedTokenValue);
         this.startRowFieldCount++;
-      } else if (fieldConfig instanceof UserDefinedRowKeyFieldConfig) {
-        UserDefinedRowKeyFieldConfig userFieldConfig = (UserDefinedRowKeyFieldConfig) fieldConfig;
+      } else if (fieldConfig instanceof UserDefinedRowKeyFieldMapping) {
+        UserDefinedRowKeyFieldMapping userFieldConfig = (UserDefinedRowKeyFieldMapping) fieldConfig;
         List<ScanLiteral> scanLiterals = this.scanLiterals.getLiterals(userFieldConfig);
         if (scanLiterals == null)
           continue;

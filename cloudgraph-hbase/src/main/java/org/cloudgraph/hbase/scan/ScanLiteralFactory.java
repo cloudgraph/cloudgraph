@@ -15,7 +15,7 @@
  */
 package org.cloudgraph.hbase.scan;
 
-import org.cloudgraph.config.UserDefinedRowKeyFieldConfig;
+import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.plasma.query.model.RelationalOperator;
 import org.plasma.query.model.PredicateOperator;
 import org.plasma.sdo.DataType;
@@ -53,7 +53,7 @@ public class ScanLiteralFactory {
    *         relational and logical operators.
    */
   public ScanLiteral createLiteral(String content, PlasmaProperty property, PlasmaType rootType,
-      RelationalOperator relationalOperator, UserDefinedRowKeyFieldConfig fieldConfig) {
+      RelationalOperator relationalOperator, UserDefinedRowKeyFieldMapping fieldConfig) {
 
     ScanLiteral result = null;
     DataType dataType = DataType.valueOf(property.getType().getName());
@@ -103,7 +103,7 @@ public class ScanLiteralFactory {
    *         relational and logical operators.
    */
   public ScanLiteral createLiteral(String content, PlasmaProperty property, PlasmaType rootType,
-      PredicateOperator wildcardOperator, UserDefinedRowKeyFieldConfig fieldConfig) {
+      PredicateOperator wildcardOperator, UserDefinedRowKeyFieldMapping fieldConfig) {
 
     ScanLiteral result = null;
     DataType dataType = DataType.valueOf(property.getType().getName());

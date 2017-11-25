@@ -3,7 +3,7 @@
     xmlns:cloudgraph="http://www.cloudgraph.org/config"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema">
  
-    <xsd:complexType name="CloudGraphConfiguration">
+    <xsd:complexType name="CloudGraphStoreMapping">
         <xsd:annotation>
             <xsd:documentation>
 Top level configuration settings
@@ -44,7 +44,7 @@ Top level configuration settings
          
     </xsd:complexType>
 
-    <xsd:element name="CloudGraphConfiguration" type="cloudgraph:CloudGraphConfiguration">
+    <xsd:element name="CloudGraphStoreMapping" type="cloudgraph:CloudGraphStoreMapping">
         <xsd:annotation>
             <xsd:documentation></xsd:documentation>
         </xsd:annotation>
@@ -405,6 +405,7 @@ column field may be specified.
             <xsd:documentation>Supported non-cryptographic hash algorithms</xsd:documentation>
         </xsd:annotation>
         <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="none" />
             <xsd:enumeration value="murmur" />
             <xsd:enumeration value="jenkins" />
         </xsd:restriction>

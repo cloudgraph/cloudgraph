@@ -29,8 +29,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.cloudgraph.common.concurrent.SubgraphTask;
-import org.cloudgraph.config.ThreadPoolConfigProps;
-import org.cloudgraph.config.TableConfig;
 import org.cloudgraph.hbase.io.CellValues;
 import org.cloudgraph.hbase.io.DistributedReader;
 import org.cloudgraph.hbase.io.EdgeReader;
@@ -39,6 +37,8 @@ import org.cloudgraph.hbase.io.TableReader;
 import org.cloudgraph.store.key.EntityMetaKey;
 import org.cloudgraph.store.key.GraphColumnKeyFactory;
 import org.cloudgraph.store.key.GraphMetaKey;
+import org.cloudgraph.store.mapping.TableMapping;
+import org.cloudgraph.store.mapping.ThreadPoolMappingProps;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.query.collector.Selection;
 import org.plasma.query.model.Where;
@@ -76,7 +76,7 @@ class ParallelSliceSubgraphTask extends DefaultSubgraphTask implements SubgraphT
       Selection selection, Timestamp snapshotDate, DistributedReader distributedReader,
       EdgeReader collection, PlasmaDataObject source, PlasmaProperty sourceProperty,
       RowReader rowReader, int level, int sequence, ThreadPoolExecutor executorService,
-      ThreadPoolConfigProps config) {
+      ThreadPoolMappingProps config) {
     super(subroot, subrootSequence, selection, snapshotDate, distributedReader, collection, source,
         sourceProperty, rowReader, level, sequence, executorService, config);
     this.sliceSupport = new GraphSliceSupport(selection, snapshotDate);
@@ -87,7 +87,7 @@ class ParallelSliceSubgraphTask extends DefaultSubgraphTask implements SubgraphT
       Selection selection, Timestamp snapshotDate, DistributedReader distributedReader,
       EdgeReader collection, PlasmaDataObject source, PlasmaProperty sourceProperty,
       RowReader rowReader, int level, int sequence, ThreadPoolExecutor executorService,
-      ThreadPoolConfigProps config) {
+      ThreadPoolMappingProps config) {
     return new ParallelSliceSubgraphTask(subroot, subrootSequence, selection, snapshotDate,
         distributedReader, collection, source, sourceProperty, rowReader, level, sequence,
         executorService, config);
@@ -111,7 +111,7 @@ class ParallelSliceSubgraphTask extends DefaultSubgraphTask implements SubgraphT
     }
 
     TableReader tableReader = rowReader.getTableReader();
-    TableConfig tableConfig = tableReader.getTableConfig();
+    TableMapping tableConfig = tableReader.getTableConfig();
 
     traversals.clear();
 

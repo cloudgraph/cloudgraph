@@ -24,10 +24,10 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.cloudgraph.config.CloudGraphConfig;
-import org.cloudgraph.config.TableConfig;
 import org.cloudgraph.state.GraphRow;
 import org.cloudgraph.state.StateMarshalingContext;
+import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.TableMapping;
 import org.plasma.sdo.PlasmaType;
 
 import commonj.sdo.DataObject;
@@ -78,7 +78,7 @@ public class DistributedGraphReader implements DistributedReader {
     this.marshallingContext = marshallingContext;
     PlasmaType root = (PlasmaType) rootType;
 
-    TableConfig rootTable = CloudGraphConfig.getInstance().getTable(root.getQualifiedName());
+    TableMapping rootTable = StoreMapping.getInstance().getTable(root.getQualifiedName());
 
     TableReader tableReader = new GraphTableReader(rootTable, this);
     this.tableReaderMap.put(tableReader.getTableConfig().getName(), tableReader);
@@ -91,7 +91,7 @@ public class DistributedGraphReader implements DistributedReader {
 
     for (Type t : types) {
       PlasmaType type = (PlasmaType) t;
-      TableConfig table = CloudGraphConfig.getInstance().findTable(type.getQualifiedName());
+      TableMapping table = StoreMapping.getInstance().findTable(type.getQualifiedName());
       if (table == null)
         continue; // not a graph root
 

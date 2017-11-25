@@ -21,9 +21,9 @@ import junit.framework.Test;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.cloudgraph.config.FetchType;
-import org.cloudgraph.config.ParallelFetchDisposition;
 import org.cloudgraph.hbase.test.SocialGraphModelTest;
+import org.cloudgraph.store.mapping.FetchType;
+import org.cloudgraph.store.mapping.ParallelFetchDisposition;
 import org.cloudgraph.test.socialgraph.actor.Actor;
 import org.cloudgraph.test.socialgraph.actor.Photo;
 import org.cloudgraph.test.socialgraph.actor.Topic;
@@ -113,14 +113,15 @@ public class SocialGraphParallelDistributedTest extends SocialGraphModelTest {
 
   private void parallelize(Query query) {
     ConfigurationProperty parallel = new ConfigurationProperty();
-    parallel.setName(org.cloudgraph.config.ConfigurationProperty.CLOUDGRAPH___QUERY___FETCHTYPE
-        .value());
+    parallel
+        .setName(org.cloudgraph.store.mapping.ConfigurationProperty.CLOUDGRAPH___QUERY___FETCHTYPE
+            .value());
     parallel.setValue(FetchType.PARALLEL.value());
     query.getModel().getConfigurationProperties().add(parallel);
 
     ConfigurationProperty disposition = new ConfigurationProperty();
     disposition
-        .setName(org.cloudgraph.config.ConfigurationProperty.CLOUDGRAPH___QUERY___PARALLELFETCH___DISPOSITION
+        .setName(org.cloudgraph.store.mapping.ConfigurationProperty.CLOUDGRAPH___QUERY___PARALLELFETCH___DISPOSITION
             .value());
     disposition.setValue(ParallelFetchDisposition.WIDE.value());
     query.getModel().getConfigurationProperties().add(disposition);

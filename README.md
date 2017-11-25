@@ -1,19 +1,27 @@
 
 <img src="images/media/image2.png" alt="http://cloudgraph.org/images/text_logo_stack.png;jsessionid=040E7D42488825E3DBDF3B6888B3EED7" width="299" height="79" />
 
-TerraMeta Software, Inc.
-
-Overview
-========
-
-<span id="_Toc135028939" class="anchor"><span id="_Toc495460092" class="anchor"><span id="_Toc498843305" class="anchor"><span id="_Toc24906349" class="anchor"></span></span></span></span>
+**TerraMeta Software, Inc.**  
+CloudGraph<sup>®</sup> is a registered
+trademark of TerraMeta Software, Inc.
 
 **Introduction**
 ================
 
 <span id="_Toc135028943" class="anchor"></span>
 
-CloudGraph<sup>®</sup> is a suite of Java™ data-graph wide-row mapping and ad hoc query services for big-table sparse, columnar "cloud" and other databases. It provides services and infrastructure to impose the structure of your business domain model, regardless of its size or complexity, as a data-graph oriented service layer over Apache HBase, relational database (RDB) and a growing list of others, providing data store vendor independence and a number of other important features.
+CloudGraph is a suite of Java™ data-graph wide-row mapping and ad hoc query services for big-table sparse, columnar "cloud" and other databases. It provides services and infrastructure to impose the structure of your business domain model, regardless of its size or complexity, as a data-graph oriented service layer over Apache HBase, relational database (RDB) and a growing list of others, providing data store vendor independence and a number of other important features.
+
+**Detailed Documentation**
+==========================
+
+| **Document** | **Description** |
+|  ----------------------------- | ----------------------------- |
+| [**CloudGraph Quickstart HBase (POJO)**](http://cloudgraph.github.io/cloudgraph/quickstart/CloudGraph-Quickstart-HBase-Pojo) | Step by step guide for end-to-end HBase persistence with code samples using Plasma annotated Java POJO's as sole metadata source |
+| [**CloudGraph Quickstart MySql (POJO)**](http://cloudgraph.github.io/cloudgraph/quickstart/CloudGraph-Quickstart-MySql-Pojo) | Step by step guide for end-to-end MySql persistence with code samples using Plasma annotated Java POJO's as sole metadata source |
+| [**CloudGraph Quickstart MySql (UML)**](http://cloudgraph.github.io/cloudgraph/quickstart/CloudGraph-Quickstart-MySql-UML) | Step by step guide for end-to-end MySql persistence with code samples using Plasma annotated UML as metadata source |
+| [**CloudGraph Architecture Overview**](http://cloudgraph.github.io/cloudgraph/arch_overview/CloudGraph-Architecture-Overview) | General technical background plus architecture components |
+| [**CloudGraph API DOCS**](http://cloudgraph.github.io/cloudgraph/apidocs/index.html)                                          | Generated javadoc API documentation tree |
 
 **How It Works**
 ================
@@ -62,37 +70,47 @@ Add the following dependencies to any Apache Maven POM files (or your build syst
 
 For the CloudGraph HBase data store library use the following artefact.
 
-&lt;dependency&gt;
-&lt;groupId&gt;org.cloudgraph&lt;/groupId&gt;
-&lt;artifactId&gt;cloudgraph-hbase&lt;/artifactId&gt;
-&lt;version&gt;1.0.1&lt;/version&gt;
-&lt;/dependency&gt;
+```xml
+<dependency>
+  <groupId>org.cloudgraph</groupId>
+  <artifactId>cloudgraph-hbase</artifactId>
+  <version>1.0.8</version>
+</dependency>
+```
 
 **CloudGraph MAPRDB**
 
 For the CloudGraph MAPRDB data store library use the following artefact.
 
-&lt;dependency&gt;
-&lt;groupId&gt;org.cloudgraph&lt;/groupId&gt;
-&lt;artifactId&gt;cloudgraph-maprdb&lt;/artifactId&gt;
-&lt;version&gt;1.0.1&lt;/version&gt;
-&lt;/dependency&gt;
+```xml
+<dependency>
+  <groupId>org.cloudgraph</groupId>
+  <artifactId>cloudgraph-maprdb</artifactId>
+  <version>1.0.8</version>
+</dependency>
+```
 
 **CloudGraph RDB**
 
 For the CloudGraph RDB data store library use the following artefact.
 
-&lt;dependency&gt;
-&lt;groupId&gt;org.cloudgraph&lt;/groupId&gt;
-&lt;artifactId&gt;cloudgraph-rdb&lt;/artifactId&gt;
-&lt;version&gt;1.0.1&lt;/version&gt;
-&lt;/dependency&gt;
+```xml
+<dependency>
+  <groupId>org.cloudgraph</groupId>
+  <artifactId>cloudgraph-rdb</artifactId>
+  <version>1.0.8</version>
+</dependency>
+```
 
 **Detailed Documentation**
 ==========================
 
-| [**CloudGraph Architecture Overview**](http://cloudgraph.github.io/cloudgraph/arch_overview/CloudGraph-Architecture-Overview) |
-|------------------------------------------------------------------------------------------------------------------------------|
-| [**CloudGraph API DOCS**](http://cloudgraph.github.io/cloudgraph/apidocs/index.html)                                          |
+| **Document** | **Description** |
+|  --------------------- | --------------------- |
+| [**CloudGraph Quickstart HBase (POJO)**](http://cloudgraph.github.io/cloudgraph/quickstart/CloudGraph-Quickstart-HBase-Pojo) | Step by step guide for end-to-end HBase persistence with code samples using Plasma annotated Java POJO's as sole metadata source |
+| [**CloudGraph Quickstart MySql (POJO)**](http://cloudgraph.github.io/cloudgraph/quickstart/CloudGraph-Quickstart-MySql-Pojo) | Step by step guide for end-to-end MySql persistence with code samples using Plasma annotated Java POJO's as sole metadata source |
+| [**CloudGraph Quickstart MySql (UML)**](http://cloudgraph.github.io/cloudgraph/quickstart/CloudGraph-Quickstart-MySql-UML) | Step by step guide for end-to-end MySql persistence with code samples using Plasma annotated UML as metadata source |
+| [**CloudGraph Architecture Overview**](http://cloudgraph.github.io/cloudgraph/arch_overview/CloudGraph-Architecture-Overview) | General technical background plus architecture components |
+| [**CloudGraph API DOCS**](http://cloudgraph.github.io/cloudgraph/apidocs/index.html)                                          | Generated javadoc API documentation tree |
 
 

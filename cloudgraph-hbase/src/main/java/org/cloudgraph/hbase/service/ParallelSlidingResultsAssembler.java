@@ -30,13 +30,13 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.client.Result;
-import org.cloudgraph.config.ThreadPoolConfigProps;
 import org.cloudgraph.hbase.graph.GraphAssemblerCallable;
 import org.cloudgraph.hbase.graph.HBaseGraphAssembler;
 import org.cloudgraph.hbase.io.TableReader;
 import org.cloudgraph.query.expr.Expr;
 import org.cloudgraph.recognizer.GraphRecognizerContext;
 import org.cloudgraph.store.key.GraphMetaKey;
+import org.cloudgraph.store.mapping.ThreadPoolMappingProps;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.sdo.PlasmaDataGraph;
 
@@ -66,7 +66,7 @@ import org.plasma.sdo.PlasmaDataGraph;
 public class ParallelSlidingResultsAssembler extends DefaultResultsAssembler implements
     ResultsAssembler {
   private static final Log log = LogFactory.getLog(ParallelSlidingResultsAssembler.class);
-  private ThreadPoolConfigProps poolProps;
+  private ThreadPoolMappingProps poolProps;
   private ThreadPoolExecutor executorService;
   private List<GraphAssemblerCallable> tasks;
   private GraphAssemblerFactory assemblerFactory;
@@ -74,7 +74,7 @@ public class ParallelSlidingResultsAssembler extends DefaultResultsAssembler imp
   public ParallelSlidingResultsAssembler(Expr graphRecognizerRootExpr,
       Comparator<PlasmaDataGraph> orderingComparator, TableReader rootTableReader,
       GraphAssemblerFactory assemblerFactory, Integer startRange, Integer endRange,
-      ThreadPoolConfigProps poolProps) {
+      ThreadPoolMappingProps poolProps) {
     super(graphRecognizerRootExpr, orderingComparator, rootTableReader, startRange, endRange);
     this.assemblerFactory = assemblerFactory;
     this.poolProps = poolProps;

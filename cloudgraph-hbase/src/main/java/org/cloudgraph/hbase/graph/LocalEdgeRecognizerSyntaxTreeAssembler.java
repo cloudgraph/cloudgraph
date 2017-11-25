@@ -16,7 +16,6 @@
 package org.cloudgraph.hbase.graph;
 
 import org.apache.hadoop.hbase.util.Bytes;
-import org.cloudgraph.config.DataGraphConfig;
 import org.cloudgraph.hbase.expr.PathPredicateBinaryExprTreeAssembler;
 import org.cloudgraph.query.expr.DefaultLogicalBinaryExpr;
 import org.cloudgraph.query.expr.Expr;
@@ -24,6 +23,7 @@ import org.cloudgraph.query.expr.ExprAssembler;
 import org.cloudgraph.query.expr.LogicalBinaryExpr;
 import org.cloudgraph.query.expr.RelationalBinaryExpr;
 import org.cloudgraph.query.expr.WildcardBinaryExpr;
+import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.plasma.query.model.Literal;
 import org.plasma.query.model.LogicalOperator;
 import org.plasma.query.model.PredicateOperator;
@@ -69,7 +69,7 @@ import org.plasma.sdo.PlasmaType;
  * @see ExprAssembler
  */
 public class LocalEdgeRecognizerSyntaxTreeAssembler extends PathPredicateBinaryExprTreeAssembler {
-  protected DataGraphConfig graphConfig;
+  protected DataGraphMapping graphConfig;
 
   /**
    * Constructs an assembler based on the given predicate and graph edge type.
@@ -84,7 +84,7 @@ public class LocalEdgeRecognizerSyntaxTreeAssembler extends PathPredicateBinaryE
    * @param graphConfig
    *          the graph config
    */
-  public LocalEdgeRecognizerSyntaxTreeAssembler(Where predicate, DataGraphConfig graphConfig,
+  public LocalEdgeRecognizerSyntaxTreeAssembler(Where predicate, DataGraphMapping graphConfig,
       PlasmaType edgeType, PlasmaType rootType) {
     super(predicate, edgeType, rootType);
     this.graphConfig = graphConfig;

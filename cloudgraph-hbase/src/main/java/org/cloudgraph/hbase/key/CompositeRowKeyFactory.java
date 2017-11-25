@@ -21,13 +21,13 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.cloudgraph.config.KeyFieldConfig;
-import org.cloudgraph.config.PreDefinedKeyFieldConfig;
-import org.cloudgraph.config.UserDefinedRowKeyFieldConfig;
 import org.cloudgraph.state.RowState;
 import org.cloudgraph.store.key.GraphRowKeyFactory;
 import org.cloudgraph.store.key.KeyFieldOverflowException;
 import org.cloudgraph.store.key.KeyValue;
+import org.cloudgraph.store.mapping.KeyFieldMapping;
+import org.cloudgraph.store.mapping.PreDefinedKeyFieldMapping;
+import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.plasma.sdo.DataFlavor;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
@@ -38,8 +38,8 @@ import commonj.sdo.Type;
 
 /**
  * Generates an HBase row key based on the configured CloudGraph
- * {@link org.cloudgraph.config.RowKeyModel Row Key Model} for a specific
- * {@link org.cloudgraph.config.Table HTable Configuration}.
+ * {@link org.cloudgraph.store.mapping.RowKeyModel Row Key Model} for a specific
+ * {@link org.cloudgraph.store.mapping.Table HTable Configuration}.
  * <p>
  * The initial creation and subsequent reconstitution for query retrieval
  * purposes of both row and column keys in CloudGraph&#8482; is efficient, as it
@@ -82,9 +82,9 @@ public class CompositeRowKeyFactory extends ByteBufferKeyFactory implements Grap
     StringBuilder result = new StringBuilder();
     PlasmaType plasmaType = (PlasmaType) type;
 
-    List<PreDefinedKeyFieldConfig> preDefinedFields = this.getGraph().getPreDefinedRowKeyFields();
+    List<PreDefinedKeyFieldMapping> preDefinedFields = this.getGraph().getPreDefinedRowKeyFields();
     for (int i = 0; i < preDefinedFields.size(); i++) {
-      PreDefinedKeyFieldConfig preDefinedField = preDefinedFields.get(i);
+      PreDefinedKeyFieldMapping preDefinedField = preDefinedFields.get(i);
       if (i > 0)
         result.append(this.getGraph().getRowKeyFieldDelimiter());
       String tokenValue = this.keySupport.getPredefinedFieldValue(plasmaType, this.hashing,
@@ -116,9 +116,9 @@ public class CompositeRowKeyFactory extends ByteBufferKeyFactory implements Grap
   }
 
   private void create(PlasmaType type) {
-    List<PreDefinedKeyFieldConfig> preDefinedFields = this.getGraph().getPreDefinedRowKeyFields();
+    List<PreDefinedKeyFieldMapping> preDefinedFields = this.getGraph().getPreDefinedRowKeyFields();
     for (int i = 0; i < preDefinedFields.size(); i++) {
-      PreDefinedKeyFieldConfig preDefinedField = preDefinedFields.get(i);
+      PreDefinedKeyFieldMapping preDefinedField = preDefinedFields.get(i);
       if (i > 0)
         this.buf.put(this.getGraph().getRowKeyFieldDelimiterBytes());
       byte[] tokenValue = this.keySupport.getPredefinedFieldValueBytes(type, this.hashing,
@@ -145,7 +145,7 @@ public class CompositeRowKeyFactory extends ByteBufferKeyFactory implements Grap
     this.buf.clear();
 
     int i = 0;
-    for (KeyFieldConfig fieldConfig : this.getGraph().getRowKeyFields()) {
+    for (KeyFieldMapping fieldConfig : this.getGraph().getRowKeyFields()) {
       if (i > 0)
         this.buf.put(this.getGraph().getRowKeyFieldDelimiterBytes());
 
@@ -155,8 +155,8 @@ public class CompositeRowKeyFactory extends ByteBufferKeyFactory implements Grap
         keyValue = this.hashing.toStringBytes(keyValue);
         paddedKeyValue = padding.pad(keyValue, fieldConfig.getMaxLength(), DataFlavor.integral);
       } else {
-        if (fieldConfig instanceof UserDefinedRowKeyFieldConfig) {
-          UserDefinedRowKeyFieldConfig userField = (UserDefinedRowKeyFieldConfig) fieldConfig;
+        if (fieldConfig instanceof UserDefinedRowKeyFieldMapping) {
+          UserDefinedRowKeyFieldMapping userField = (UserDefinedRowKeyFieldMapping) fieldConfig;
           PlasmaProperty endpointProp = userField.getEndpointProperty();
           int delta = userField.getMaxLength() - keyValue.length;
           if (delta < 0)
@@ -196,15 +196,15 @@ public class CompositeRowKeyFactory extends ByteBufferKeyFactory implements Grap
 
     byte[] fieldValue = null;
     int i = 0;
-    for (KeyFieldConfig fieldConfig : this.getGraph().getRowKeyFields()) {
+    for (KeyFieldMapping fieldConfig : this.getGraph().getRowKeyFields()) {
       if (i > 0)
         this.buf.put(this.getGraph().getRowKeyFieldDelimiterBytes());
 
-      if (fieldConfig instanceof PreDefinedKeyFieldConfig) {
-        PreDefinedKeyFieldConfig predefinedConfig = (PreDefinedKeyFieldConfig) fieldConfig;
+      if (fieldConfig instanceof PreDefinedKeyFieldMapping) {
+        PreDefinedKeyFieldMapping predefinedConfig = (PreDefinedKeyFieldMapping) fieldConfig;
         fieldValue = predefinedConfig.getKeyBytes(this.getRootType());
       } else {
-        UserDefinedRowKeyFieldConfig userFieldConfig = (UserDefinedRowKeyFieldConfig) fieldConfig;
+        UserDefinedRowKeyFieldMapping userFieldConfig = (UserDefinedRowKeyFieldMapping) fieldConfig;
         KeyValue keyValue = this.keySupport.findKeyValue(userFieldConfig, values);
 
         if (keyValue != null) {
@@ -224,8 +224,8 @@ public class CompositeRowKeyFactory extends ByteBufferKeyFactory implements Grap
         fieldValue = this.hashing.toStringBytes(fieldValue);
         paddedKeyValue = padding.pad(fieldValue, fieldConfig.getMaxLength(), DataFlavor.integral);
       } else {
-        if (fieldConfig instanceof UserDefinedRowKeyFieldConfig) {
-          UserDefinedRowKeyFieldConfig userField = (UserDefinedRowKeyFieldConfig) fieldConfig;
+        if (fieldConfig instanceof UserDefinedRowKeyFieldMapping) {
+          UserDefinedRowKeyFieldMapping userField = (UserDefinedRowKeyFieldMapping) fieldConfig;
           PlasmaProperty endpointProp = userField.getEndpointProperty();
           int delta = userField.getMaxLength() - fieldValue.length;
           if (delta < 0)

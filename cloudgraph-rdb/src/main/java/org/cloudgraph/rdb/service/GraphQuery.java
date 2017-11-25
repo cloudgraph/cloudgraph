@@ -32,8 +32,6 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.cloudgraph.common.concurrent.ConfigProps;
-import org.cloudgraph.config.CloudGraphConfigProp;
-import org.cloudgraph.config.FetchType;
 import org.cloudgraph.rdb.filter.RDBFilterAssembler;
 import org.cloudgraph.rdb.filter.RDBGroupingAssembler;
 import org.cloudgraph.rdb.filter.RDBOrderingAssembler;
@@ -41,6 +39,8 @@ import org.cloudgraph.rdb.graph.GraphAssembler;
 import org.cloudgraph.rdb.graph.ParallelGraphAssembler;
 import org.cloudgraph.store.lang.LangStoreGraphAssembler;
 import org.cloudgraph.store.lang.StatementUtil;
+import org.cloudgraph.store.mapping.FetchType;
+import org.cloudgraph.store.mapping.StoreMappingProp;
 import org.cloudgraph.store.service.AliasMap;
 import org.plasma.query.collector.SelectionCollector;
 import org.plasma.query.model.From;
@@ -110,16 +110,16 @@ public class GraphQuery implements QueryDispatcher {
 
     LangStoreGraphAssembler assembler = null;
 
-    FetchType fetchType = CloudGraphConfigProp.getQueryFetchType(query);
+    FetchType fetchType = StoreMappingProp.getQueryFetchType(query);
     switch (fetchType) {
     case PARALLEL:
-      int minPool = CloudGraphConfigProp.getQueryPoolMin(query);
+      int minPool = StoreMappingProp.getQueryPoolMin(query);
       ;
-      int maxPool = CloudGraphConfigProp.getQueryPoolMax(query);
+      int maxPool = StoreMappingProp.getQueryPoolMax(query);
       ;
       if (minPool > maxPool)
         minPool = maxPool;
-      int threadMaxDepth = CloudGraphConfigProp.getQueryThreadMaxDepth(query);
+      int threadMaxDepth = StoreMappingProp.getQueryThreadMaxDepth(query);
       ConfigProps config = new ConfigProps(minPool, maxPool, threadMaxDepth);
 
       assembler = new ParallelGraphAssembler(type, collector, snapshotDate, config, con);

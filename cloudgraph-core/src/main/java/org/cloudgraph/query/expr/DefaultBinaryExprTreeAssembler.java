@@ -430,7 +430,18 @@ public abstract class DefaultBinaryExprTreeAssembler extends ExpresionVisitorSup
   @Override
   public void end(Property property) {
     Path path = property.getPath();
-    PlasmaType targetType = this.rootType;
+
+    PlasmaType targetType = traverse(path, this.rootType);
+    PlasmaProperty endpointProp = (PlasmaProperty) targetType.getProperty(property.getName());
+    this.contextProperty = endpointProp;
+    this.contextType = targetType;
+    this.contextQueryProperty = property;
+
+    super.end(property);
+  }
+
+  protected PlasmaType traverse(Path path, PlasmaType startType) {
+    PlasmaType result = startType;
     if (path != null) {
       for (int i = 0; i < path.getPathNodes().size(); i++) {
         AbstractPathElement pathElem = path.getPathNodes().get(i).getPathElement();
@@ -438,17 +449,11 @@ public abstract class DefaultBinaryExprTreeAssembler extends ExpresionVisitorSup
           throw new GraphFilterException(
               "wildcard path elements applicable for 'Select' clause paths only, not 'Where' clause paths");
         String elem = ((PathElement) pathElem).getValue();
-        PlasmaProperty prop = (PlasmaProperty) targetType.getProperty(elem);
-        targetType = (PlasmaType) prop.getType(); // traverse
+        PlasmaProperty prop = (PlasmaProperty) result.getProperty(elem);
+        result = (PlasmaType) prop.getType(); // traverse
       }
     }
-
-    PlasmaProperty endpointProp = (PlasmaProperty) targetType.getProperty(property.getName());
-    this.contextProperty = endpointProp;
-    this.contextType = targetType;
-    this.contextQueryProperty = property;
-
-    super.start(property);
+    return result;
   }
 
   private String getTermClassName(Term term) {

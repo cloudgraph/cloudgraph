@@ -28,13 +28,13 @@ import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.CellUtil;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
-import org.cloudgraph.config.CloudGraphConfig;
-import org.cloudgraph.config.DataGraphConfig;
-import org.cloudgraph.config.TableConfig;
 import org.cloudgraph.state.StateException;
 import org.cloudgraph.state.proto.RowKeysProto.RowKey;
 import org.cloudgraph.state.proto.RowKeysProto.RowKeys;
 import org.cloudgraph.store.key.RequiredKeyFieldException;
+import org.cloudgraph.store.mapping.DataGraphMapping;
+import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.TableMapping;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
 import org.plasma.sdo.helper.PlasmaTypeHelper;
@@ -48,8 +48,8 @@ public abstract class DefaultEdgeOperation implements EdgeOperation {
 
   protected PlasmaType sourceType;
   protected PlasmaProperty sourceProp;
-  protected TableConfig tableConfig;
-  protected DataGraphConfig graphConfig;
+  protected TableMapping tableConfig;
+  protected DataGraphMapping graphConfig;
   protected static Charset charset = Charset.forName("UTF-8");
 
   protected PlasmaType collectionBaseType;
@@ -79,7 +79,7 @@ public abstract class DefaultEdgeOperation implements EdgeOperation {
   protected String countQualStr;
 
   protected DefaultEdgeOperation(PlasmaType sourceType, PlasmaProperty sourceProp,
-      TableConfig tableConfig, DataGraphConfig graphConfig) throws IOException {
+      TableMapping tableConfig, DataGraphMapping graphConfig) throws IOException {
     super();
     this.sourceType = sourceType;
     this.sourceProp = sourceProp;
@@ -175,12 +175,12 @@ public abstract class DefaultEdgeOperation implements EdgeOperation {
     if (!isExternal())
       throw new IllegalStateException("cannot find table for local (non-external) edge, " + this);
 
-    TableConfig table = null;
+    TableMapping table = null;
     if (this.collectionDefaultSubType != null) {
-      table = CloudGraphConfig.getInstance().findTable(
-          this.collectionDefaultSubType.getQualifiedName());
+      table = StoreMapping.getInstance()
+          .findTable(this.collectionDefaultSubType.getQualifiedName());
     } else {
-      table = CloudGraphConfig.getInstance().findTable(this.collectionBaseType.getQualifiedName());
+      table = StoreMapping.getInstance().findTable(this.collectionBaseType.getQualifiedName());
     }
     return table.getName();
   }
@@ -209,10 +209,10 @@ public abstract class DefaultEdgeOperation implements EdgeOperation {
     } else {
       boolean result = false;
       if (this.collectionDefaultSubType != null) {
-        result = CloudGraphConfig.getInstance().findTable(
+        result = StoreMapping.getInstance().findTable(
             this.collectionDefaultSubType.getQualifiedName()) != null;
       } else {
-        edgeTypeBound = CloudGraphConfig.getInstance().findTable(
+        edgeTypeBound = StoreMapping.getInstance().findTable(
             this.collectionBaseType.getQualifiedName()) != null;
         result = edgeTypeBound;
       }

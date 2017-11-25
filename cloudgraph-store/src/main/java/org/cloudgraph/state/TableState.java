@@ -15,13 +15,13 @@
  */
 package org.cloudgraph.state;
 
-import org.cloudgraph.config.TableConfig;
+import org.cloudgraph.store.mapping.TableMapping;
 
 /**
  * Provides access to the configuration and state related context information
  * for a specific table.
  * 
- * @see org.cloudgraph.config.TableConfig
+ * @see org.cloudgraph.store.mapping.TableMapping
  * @author Scott Cinnamond
  * @since 0.5.1
  */
@@ -32,6 +32,6 @@ public interface TableState {
    * 
    * @return the table configuration for this context.
    */
-  public TableConfig getTableConfig();
+  public TableMapping getTableConfig();
 
 }

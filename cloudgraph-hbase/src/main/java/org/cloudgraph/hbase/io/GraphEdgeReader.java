@@ -22,12 +22,12 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.cloudgraph.config.CloudGraphConfig;
-import org.cloudgraph.config.DataGraphConfig;
-import org.cloudgraph.config.TableConfig;
 import org.cloudgraph.hbase.graph.CellConverter;
 import org.cloudgraph.hbase.key.CompositeRowKeyReader;
 import org.cloudgraph.store.key.EdgeMetaKey;
+import org.cloudgraph.store.mapping.DataGraphMapping;
+import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.TableMapping;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
 
@@ -37,7 +37,8 @@ public class GraphEdgeReader extends DefaultEdgeOperation implements EdgeReader 
   private boolean oppositeTypeBound;
 
   GraphEdgeReader(PlasmaType sourceType, PlasmaProperty sourceProp, Long typeSequenceNum,
-      TableConfig tableConfig, DataGraphConfig graphConfig, RowReader rowReader) throws IOException {
+      TableMapping tableConfig, DataGraphMapping graphConfig, RowReader rowReader)
+      throws IOException {
 
     super(sourceType, sourceProp, tableConfig, graphConfig);
 
@@ -67,8 +68,8 @@ public class GraphEdgeReader extends DefaultEdgeOperation implements EdgeReader 
     this.construct(rowReader, graphConfig);
   }
 
-  GraphEdgeReader(PlasmaType targetType, PlasmaProperty sourceProp, TableConfig tableConfig,
-      DataGraphConfig graphConfig, RowReader rowReader) throws IOException {
+  GraphEdgeReader(PlasmaType targetType, PlasmaProperty sourceProp, TableMapping tableConfig,
+      DataGraphMapping graphConfig, RowReader rowReader) throws IOException {
     super(targetType, sourceProp, tableConfig, graphConfig);
 
     this.family = tableConfig.getDataColumnFamilyNameBytes();
@@ -90,8 +91,8 @@ public class GraphEdgeReader extends DefaultEdgeOperation implements EdgeReader 
     this.construct(rowReader, graphConfig);
   }
 
-  static boolean exists(PlasmaType targetType, PlasmaProperty sourceProp, TableConfig tableConfig,
-      DataGraphConfig graphConfig, RowReader rowReader) throws IOException {
+  static boolean exists(PlasmaType targetType, PlasmaProperty sourceProp, TableMapping tableConfig,
+      DataGraphMapping graphConfig, RowReader rowReader) throws IOException {
     byte[] fam = tableConfig.getDataColumnFamilyNameBytes();
     byte[] typeQual = rowReader.getColumnKeyFactory().createColumnKey(targetType, sourceProp,
         EdgeMetaKey.BASETYPE);
@@ -99,17 +100,18 @@ public class GraphEdgeReader extends DefaultEdgeOperation implements EdgeReader 
   }
 
   static boolean exists(PlasmaType targetType, PlasmaProperty sourceProp, Long typeSequenceNum,
-      TableConfig tableConfig, DataGraphConfig graphConfig, RowReader rowReader) throws IOException {
+      TableMapping tableConfig, DataGraphMapping graphConfig, RowReader rowReader)
+      throws IOException {
     byte[] fam = tableConfig.getDataColumnFamilyNameBytes();
     byte[] typeQual = rowReader.getColumnKeyFactory().createColumnKey(targetType, typeSequenceNum,
         sourceProp, EdgeMetaKey.BASETYPE);
     return rowReader.getRow().containsColumn(fam, typeQual);
   }
 
-  private void construct(RowReader rowReader, DataGraphConfig graphConfig) {
+  private void construct(RowReader rowReader, DataGraphMapping graphConfig) {
 
     this.oppositeType = (PlasmaType) sourceProp.getType();
-    this.oppositeTypeBound = CloudGraphConfig.getInstance().findTable(
+    this.oppositeTypeBound = StoreMapping.getInstance().findTable(
         this.oppositeType.getQualifiedName()) != null;
 
     byte[] typeBytes = fetchValue(family, baseTypeQual, rowReader.getRow());

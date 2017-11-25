@@ -19,7 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
-import org.cloudgraph.config.CloudGraphConfig;
+import org.cloudgraph.store.mapping.StoreMapping;
 import org.plasma.runtime.DataAccessProviderName;
 import org.plasma.runtime.PlasmaRuntime;
 
@@ -31,7 +31,7 @@ import org.plasma.runtime.PlasmaRuntime;
  * configuration is setup with values taken first from the PlasmaSDO NoSQL DAS
  * <a href="http://docs.plasma-sdo.org/api/org/plasma/config/PlasmaConfig.html"
  * target="#">configuration</a> for HBase then overridden where key matches
- * exist from the CloudGraph {@link org.cloudgraph.config.CloudGraphConfig
+ * exist from the CloudGraph {@link org.cloudgraph.store.mapping.StoreMapping
  * configuration}. Used by
  * {@link org.cloudgraph.hbase.connect.HBaseConnectionManager} when creating
  * pooled HTable client instances.
@@ -62,7 +62,8 @@ public class CloudGraphContext {
         config.set(property.getName(), property.getValue());
       }
       // override plasma DAS properties where matches exits
-      for (org.cloudgraph.config.Property property : CloudGraphConfig.getInstance().getProperties()) {
+      for (org.cloudgraph.store.mapping.Property property : StoreMapping.getInstance()
+          .getProperties()) {
         config.set(property.getName(), property.getValue());
       }
 

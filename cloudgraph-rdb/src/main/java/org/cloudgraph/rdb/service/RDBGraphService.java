@@ -309,7 +309,8 @@ public class RDBGraphService implements PlasmaDataAccessService, GraphService {
         try {
           if (log.isDebugEnabled())
             log.debug("closing connection");
-          con.close();
+          if (con != null)
+            con.close();
         } catch (SQLException e) {
           log.error(e.getMessage(), e);
         }
@@ -340,12 +341,14 @@ public class RDBGraphService implements PlasmaDataAccessService, GraphService {
         log.debug("using transaction isolation level " + con.getTransactionIsolation()
             + " forgraph commit");
     } catch (SQLException e2) {
-      try {
-        if (log.isDebugEnabled())
-          log.debug("closing connection");
-        con.close();
-      } catch (SQLException e) {
-        log.error(e.getMessage(), e);
+      if (con != null) {
+        try {
+          if (log.isDebugEnabled())
+            log.debug("closing connection");
+          con.close();
+        } catch (SQLException e) {
+          log.error(e.getMessage(), e);
+        }
       }
       throw new DataAccessException(e2);
     }

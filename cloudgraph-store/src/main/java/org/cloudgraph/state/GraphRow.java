@@ -22,9 +22,9 @@ import java.util.UUID;
 
 import javax.xml.namespace.QName;
 
-import org.cloudgraph.config.CloudGraphConfig;
-import org.cloudgraph.config.DataGraphConfig;
 import org.cloudgraph.store.key.GraphStatefullColumnKeyFactory;
+import org.cloudgraph.store.mapping.DataGraphMapping;
+import org.cloudgraph.store.mapping.StoreMapping;
 import org.plasma.sdo.PlasmaDataObject;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
@@ -37,7 +37,7 @@ import commonj.sdo.DataObject;
  * graph and the composite column key factory used to generated column keys
  * specific to a configured graph.
  * 
- * @see org.cloudgraph.config.DataGraphConfig
+ * @see org.cloudgraph.store.mapping.DataGraphMapping
  * @author Scott Cinnamond
  * @since 0.5.1
  * 
@@ -47,7 +47,7 @@ public class GraphRow implements RowState {
 
   protected byte[] rowKey;
   protected SequenceGenerator sequenceMapping;
-  protected DataGraphConfig graphConfig;
+  protected DataGraphMapping graphConfig;
   protected GraphStatefullColumnKeyFactory columnKeyFactory;
   protected DataObject rootDataObject;
   private Map<Integer, DataObject> dataObjectMap = new HashMap<>();
@@ -64,7 +64,7 @@ public class GraphRow implements RowState {
     this.dataObjectMap.put(hashCode, rootDataObject);
 
     QName rootTypeQname = ((PlasmaType) this.rootDataObject.getType()).getQualifiedName();
-    this.graphConfig = CloudGraphConfig.getInstance().getDataGraph(rootTypeQname);
+    this.graphConfig = StoreMapping.getInstance().getDataGraph(rootTypeQname);
   }
 
   @Override
@@ -73,7 +73,7 @@ public class GraphRow implements RowState {
   }
 
   @Override
-  public DataGraphConfig getDataGraph() {
+  public DataGraphMapping getDataGraph() {
     return this.graphConfig;
   }
 

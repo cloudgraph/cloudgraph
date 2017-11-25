@@ -21,9 +21,9 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.cloudgraph.config.CloudGraphConfig;
-import org.cloudgraph.config.DataGraphConfig;
-import org.cloudgraph.config.UserDefinedRowKeyFieldConfig;
+import org.cloudgraph.store.mapping.DataGraphMapping;
+import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.query.QueryException;
 import org.plasma.query.model.GroupOperator;
@@ -57,7 +57,7 @@ public class ScanContext extends DefaultQueryVisitor {
   private static Log log = LogFactory.getLog(ScanContext.class);
 
   protected PlasmaType rootType;
-  protected DataGraphConfig graph;
+  protected DataGraphMapping graph;
   protected ScanLiterals partialKeyScanLiterals;
   protected ScanLiterals fuzzyKeyScanLiterals;
   protected boolean hasContiguousPartialKeyScanFieldValues;
@@ -82,7 +82,7 @@ public class ScanContext extends DefaultQueryVisitor {
   public ScanContext(PlasmaType rootType, Where where) {
     this.rootType = rootType;
     QName rootTypeQname = this.rootType.getQualifiedName();
-    this.graph = CloudGraphConfig.getInstance().getDataGraph(rootTypeQname);
+    this.graph = StoreMapping.getInstance().getDataGraph(rootTypeQname);
     if (log.isDebugEnabled())
       log.debug("begin traverse");
 
@@ -107,7 +107,7 @@ public class ScanContext extends DefaultQueryVisitor {
     int[] scanLiteralCount = new int[size];
 
     for (int i = 0; i < size; i++) {
-      UserDefinedRowKeyFieldConfig fieldConfig = this.graph.getUserDefinedRowKeyFields().get(i);
+      UserDefinedRowKeyFieldMapping fieldConfig = this.graph.getUserDefinedRowKeyFields().get(i);
       List<ScanLiteral> list = this.partialKeyScanLiterals.getLiterals(fieldConfig);
       if (list != null)
         scanLiteralCount[i] = list.size();

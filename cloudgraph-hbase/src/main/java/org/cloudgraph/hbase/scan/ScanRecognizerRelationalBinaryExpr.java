@@ -17,12 +17,12 @@ package org.cloudgraph.hbase.scan;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.cloudgraph.config.DataGraphConfig;
-import org.cloudgraph.config.UserDefinedRowKeyFieldConfig;
 import org.cloudgraph.hbase.graph.LocalEdgeRecognizerContext;
 import org.cloudgraph.query.expr.DefaultRelationalBinaryExpr;
 import org.cloudgraph.query.expr.EvaluationContext;
 import org.cloudgraph.query.expr.RelationalBinaryExpr;
+import org.cloudgraph.store.mapping.DataGraphMapping;
+import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.plasma.query.model.Literal;
 import org.plasma.query.model.Property;
 import org.plasma.query.model.RelationalOperator;
@@ -78,10 +78,10 @@ public class ScanRecognizerRelationalBinaryExpr extends DefaultRelationalBinaryE
     return false;
   }
 
-  private ScanLiteral createLiteral(DataGraphConfig graph) {
+  private ScanLiteral createLiteral(DataGraphMapping graph) {
     // Match the current property to a user defined
     // row key token, if found we can process
-    UserDefinedRowKeyFieldConfig fieldConfig = graph.getUserDefinedRowKeyField(this.propertyPath);
+    UserDefinedRowKeyFieldMapping fieldConfig = graph.getUserDefinedRowKeyField(this.propertyPath);
     if (fieldConfig != null) {
       PlasmaProperty property = (PlasmaProperty) fieldConfig.getEndpointProperty();
       ScanLiteralFactory factory = new ScanLiteralFactory();

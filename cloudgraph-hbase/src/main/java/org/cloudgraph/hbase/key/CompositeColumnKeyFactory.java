@@ -17,22 +17,22 @@ package org.cloudgraph.hbase.key;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.cloudgraph.config.ColumnKeyFieldConfig;
-import org.cloudgraph.config.DataGraphConfig;
-import org.cloudgraph.config.KeyFieldConfig;
-import org.cloudgraph.config.PreDefinedFieldName;
-import org.cloudgraph.config.PreDefinedKeyFieldConfig;
 import org.cloudgraph.state.RowState;
 import org.cloudgraph.store.key.EdgeMetaKey;
 import org.cloudgraph.store.key.EntityMetaKey;
 import org.cloudgraph.store.key.GraphColumnKeyFactory;
+import org.cloudgraph.store.mapping.ColumnKeyFieldMapping;
+import org.cloudgraph.store.mapping.DataGraphMapping;
+import org.cloudgraph.store.mapping.KeyFieldMapping;
+import org.cloudgraph.store.mapping.PreDefinedFieldName;
+import org.cloudgraph.store.mapping.PreDefinedKeyFieldMapping;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
 
 /**
  * Creates an HBase column key based on the configured CloudGraph column key
- * {@link org.cloudgraph.config.ColumnKeyModel model} for a specific HTable
- * {@link org.cloudgraph.config.Table configuration}.
+ * {@link org.cloudgraph.store.mapping.ColumnKeyModel model} for a specific
+ * HTable {@link org.cloudgraph.store.mapping.Table configuration}.
  * <p>
  * The initial creation and subsequent reconstitution for query retrieval
  * purposes of both row and column keys in CloudGraph&#8482; is efficient, as it
@@ -46,8 +46,8 @@ import org.plasma.sdo.PlasmaType;
  * type and property names.
  * </p>
  * 
- * @see org.cloudgraph.config.ColumnKeyModel
- * @see org.cloudgraph.config.Table
+ * @see org.cloudgraph.store.mapping.ColumnKeyModel
+ * @see org.cloudgraph.store.mapping.Table
  * @author Scott Cinnamond
  * @since 0.5
  */
@@ -125,10 +125,10 @@ public class CompositeColumnKeyFactory extends ByteBufferKeyFactory implements
 
   protected void addColumnKeyFields(PlasmaType type, EntityMetaKey metaField) {
     int i = 0;
-    for (KeyFieldConfig fieldConfig : this.getGraph().getColumnKeyFields()) {
+    for (KeyFieldMapping fieldConfig : this.getGraph().getColumnKeyFields()) {
       if (i > 0)
         this.buf.put(this.getGraph().getColumnKeyFieldDelimiterBytes());
-      PreDefinedKeyFieldConfig predefinedFieldConfig = (PreDefinedKeyFieldConfig) fieldConfig;
+      PreDefinedKeyFieldMapping predefinedFieldConfig = (PreDefinedKeyFieldMapping) fieldConfig;
       byte[] keyValue = predefinedFieldConfig.getKeyBytes(type, metaField);
       if (fieldConfig.isHash()) {
         keyValue = this.hashing.toStringBytes(keyValue);
@@ -140,10 +140,10 @@ public class CompositeColumnKeyFactory extends ByteBufferKeyFactory implements
 
   protected void addColumnKeyFields(PlasmaType type, EdgeMetaKey metaField) {
     int i = 0;
-    for (KeyFieldConfig fieldConfig : this.getGraph().getColumnKeyFields()) {
+    for (KeyFieldMapping fieldConfig : this.getGraph().getColumnKeyFields()) {
       if (i > 0)
         this.buf.put(this.getGraph().getColumnKeyFieldDelimiterBytes());
-      PreDefinedKeyFieldConfig predefinedFieldConfig = (PreDefinedKeyFieldConfig) fieldConfig;
+      PreDefinedKeyFieldMapping predefinedFieldConfig = (PreDefinedKeyFieldMapping) fieldConfig;
       byte[] keyValue = predefinedFieldConfig.getKeyBytes(type, metaField);
       if (fieldConfig.isHash()) {
         keyValue = this.hashing.toStringBytes(keyValue);
@@ -155,10 +155,10 @@ public class CompositeColumnKeyFactory extends ByteBufferKeyFactory implements
 
   protected void addColumnKeyFields(PlasmaType type, PlasmaProperty property) {
     int i = 0;
-    for (KeyFieldConfig fieldConfig : this.getGraph().getColumnKeyFields()) {
+    for (KeyFieldMapping fieldConfig : this.getGraph().getColumnKeyFields()) {
       if (i > 0)
         this.buf.put(this.getGraph().getColumnKeyFieldDelimiterBytes());
-      PreDefinedKeyFieldConfig predefinedFieldConfig = (PreDefinedKeyFieldConfig) fieldConfig;
+      PreDefinedKeyFieldMapping predefinedFieldConfig = (PreDefinedKeyFieldMapping) fieldConfig;
       byte[] keyValue = predefinedFieldConfig.getKeyBytes(type, property);
       if (fieldConfig.isHash()) {
         keyValue = this.hashing.toStringBytes(keyValue);
@@ -168,10 +168,10 @@ public class CompositeColumnKeyFactory extends ByteBufferKeyFactory implements
     }
   }
 
-  protected byte[] configureTokenBytes(byte[] token, DataGraphConfig graph, Hashing hashing,
+  protected byte[] configureTokenBytes(byte[] token, DataGraphMapping graph, Hashing hashing,
       PreDefinedFieldName tokenName) {
     byte[] result = token;
-    ColumnKeyFieldConfig tokenConfig = graph.getColumnKeyField(tokenName);
+    ColumnKeyFieldMapping tokenConfig = graph.getColumnKeyField(tokenName);
     if (tokenConfig != null) {
       if (tokenConfig.isHash()) {
         result = hashing.toStringBytes(result);

@@ -15,11 +15,11 @@
  */
 package org.cloudgraph.recognizer;
 
-import org.cloudgraph.config.DataGraphConfig;
 import org.cloudgraph.query.expr.DefaultBinaryExprTreeAssembler;
 import org.cloudgraph.query.expr.ExprAssembler;
 import org.cloudgraph.query.expr.RelationalBinaryExpr;
 import org.cloudgraph.query.expr.WildcardBinaryExpr;
+import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.plasma.query.model.Literal;
 import org.plasma.query.model.PredicateOperator;
 import org.plasma.query.model.Property;
@@ -50,7 +50,7 @@ import org.plasma.sdo.PlasmaType;
  * @see DefaultBinaryExprTreeAssembler
  */
 public class GraphRecognizerSyntaxTreeAssembler extends DefaultBinaryExprTreeAssembler {
-  protected DataGraphConfig graphConfig;
+  protected DataGraphMapping graphConfig;
 
   /**
    * Constructs an assembler based on the given predicate data graph

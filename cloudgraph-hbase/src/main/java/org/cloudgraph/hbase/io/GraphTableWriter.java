@@ -28,10 +28,10 @@ import org.apache.hadoop.hbase.NamespaceNotFoundException;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.TableNotFoundException;
 import org.apache.hadoop.hbase.client.Table;
-import org.cloudgraph.config.TableConfig;
 import org.cloudgraph.hbase.connect.Connection;
 import org.cloudgraph.hbase.connect.HBaseConnectionManager;
 import org.cloudgraph.state.GraphTable;
+import org.cloudgraph.store.mapping.TableMapping;
 
 /**
  * The operational, configuration and other state information required for write
@@ -58,11 +58,11 @@ public class GraphTableWriter extends GraphTable implements TableWriter {
   private Map<String, RowWriter> rowContextMap = new HashMap<String, RowWriter>();
   private DistributedGraphWriter distributedGraphWriter;
 
-  public GraphTableWriter(TableConfig table) {
+  public GraphTableWriter(TableMapping table) {
     super(table);
   }
 
-  public GraphTableWriter(TableConfig table, DistributedGraphWriter distributedOperation) {
+  public GraphTableWriter(TableMapping table, DistributedGraphWriter distributedOperation) {
     super(table);
     this.distributedGraphWriter = distributedOperation;
   }

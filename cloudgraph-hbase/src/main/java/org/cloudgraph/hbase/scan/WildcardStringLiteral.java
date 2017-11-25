@@ -15,7 +15,7 @@
  */
 package org.cloudgraph.hbase.scan;
 
-import org.cloudgraph.config.UserDefinedRowKeyFieldConfig;
+import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.query.Wildcard;
 import org.plasma.query.model.PredicateOperator;
@@ -28,7 +28,7 @@ import org.plasma.sdo.PlasmaType;
  * operator and various configurable composite key-field hashing, formatting,
  * padding and other features.
  * 
- * @see org.cloudgraph.config.TableConfig
+ * @see org.cloudgraph.store.mapping.TableMapping
  * @see org.cloudgraph.hbase.service.HBaseDataConverter
  * @author Scott Cinnamond
  * @since 0.5
@@ -40,7 +40,7 @@ public class WildcardStringLiteral extends StringLiteral implements WildcardPart
   private PredicateOperator wildcardOperator;
 
   public WildcardStringLiteral(String literal, PlasmaType rootType,
-      PredicateOperator wildcardOperator, UserDefinedRowKeyFieldConfig fieldConfig) {
+      PredicateOperator wildcardOperator, UserDefinedRowKeyFieldMapping fieldConfig) {
     super(literal, rootType, null, fieldConfig);
     this.wildcardOperator = wildcardOperator;
   }

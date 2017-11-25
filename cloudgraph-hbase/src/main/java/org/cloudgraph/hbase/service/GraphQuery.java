@@ -37,15 +37,6 @@ import org.apache.hadoop.hbase.filter.Filter;
 import org.apache.hadoop.hbase.filter.FilterList;
 import org.apache.hadoop.hbase.filter.RandomRowFilter;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.cloudgraph.config.CloudGraphConfig;
-import org.cloudgraph.config.CloudGraphConfigProp;
-import org.cloudgraph.config.Config;
-import org.cloudgraph.config.DataGraph;
-import org.cloudgraph.config.DataGraphConfig;
-import org.cloudgraph.config.FetchType;
-import org.cloudgraph.config.ParallelFetchDisposition;
-import org.cloudgraph.config.ThreadPoolConfigProps;
-import org.cloudgraph.config.UserDefinedRowKeyFieldConfig;
 import org.cloudgraph.hbase.filter.GraphFetchColumnFilterAssembler;
 import org.cloudgraph.hbase.filter.HBaseFilterAssembler;
 import org.cloudgraph.hbase.filter.InitialFetchColumnFilterAssembler;
@@ -61,6 +52,15 @@ import org.cloudgraph.hbase.util.FilterUtil;
 import org.cloudgraph.query.expr.Expr;
 import org.cloudgraph.query.expr.ExprPrinter;
 import org.cloudgraph.recognizer.GraphRecognizerSyntaxTreeAssembler;
+import org.cloudgraph.store.mapping.Config;
+import org.cloudgraph.store.mapping.DataGraph;
+import org.cloudgraph.store.mapping.DataGraphMapping;
+import org.cloudgraph.store.mapping.FetchType;
+import org.cloudgraph.store.mapping.ParallelFetchDisposition;
+import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.StoreMappingProp;
+import org.cloudgraph.store.mapping.ThreadPoolMappingProps;
+import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.common.bind.DefaultValidationEventHandler;
 import org.plasma.query.OrderBy;
@@ -265,17 +265,17 @@ public class GraphQuery implements QueryDispatcher {
     }
 
     ResultsAssembler resultsCollector = null;
-    FetchType fetchType = CloudGraphConfigProp.getQueryFetchType(query);
+    FetchType fetchType = StoreMappingProp.getQueryFetchType(query);
     switch (fetchType) {
     case PARALLEL:
-      ParallelFetchDisposition fetchDisposition = CloudGraphConfigProp
+      ParallelFetchDisposition fetchDisposition = StoreMappingProp
           .getQueryParallelFetchDisposition(query);
       switch (fetchDisposition) {
       case TALL: // where a thread is spawned for one or more graph
                  // roots
         resultsCollector = new ParallelSlidingResultsAssembler(graphRecognizerRootExpr,
             orderingComparator, rootTableReader, assemblerFactory, query.getStartRange(),
-            query.getEndRange(), new ThreadPoolConfigProps(query));
+            query.getEndRange(), new ThreadPoolMappingProps(query));
         break;
       default:
       }
@@ -507,13 +507,13 @@ public class GraphQuery implements QueryDispatcher {
    *          the current type
    */
   private void collectRowKeyProperties(SelectionCollector collector, PlasmaType type) {
-    Config config = CloudGraphConfig.getInstance();
-    DataGraphConfig graph = config.findDataGraph(type.getQualifiedName());
+    Config config = StoreMapping.getInstance();
+    DataGraphMapping graph = config.findDataGraph(type.getQualifiedName());
     if (graph != null) {
-      UserDefinedRowKeyFieldConfig[] fields = new UserDefinedRowKeyFieldConfig[graph
+      UserDefinedRowKeyFieldMapping[] fields = new UserDefinedRowKeyFieldMapping[graph
           .getUserDefinedRowKeyFields().size()];
       graph.getUserDefinedRowKeyFields().toArray(fields);
-      for (UserDefinedRowKeyFieldConfig field : fields) {
+      for (UserDefinedRowKeyFieldMapping field : fields) {
         List<Type> types = collector.addProperty(graph.getRootType(), field.getPropertyPath());
         for (Type nextType : types)
           collectRowKeyProperties(collector, (PlasmaType) nextType);

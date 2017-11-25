@@ -38,7 +38,16 @@
                                 
   
   <dependencies>     
-        
+        <dependency>
+            <groupId>org.cloudgraph</groupId>
+            <artifactId>cloudgraph-hbase</artifactId>
+            <version>1.0.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.cloudgraph</groupId>
+            <artifactId>cloudgraph-rdb</artifactId>
+            <version>1.0.8</version>
+        </dependency>
   </dependencies>
 	<build>
 		<finalName>cloudgraph-docs</finalName>
@@ -132,7 +141,7 @@
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.8</version>
+					<version>1.0.0</version>
 					<configuration>
 						<lifecycleMappingMetadata>
 							<pluginExecutions>

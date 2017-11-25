@@ -21,17 +21,17 @@ import java.nio.charset.Charset;
 import javax.xml.namespace.QName;
 
 import org.apache.hadoop.hbase.util.Hash;
-import org.cloudgraph.config.CloudGraphConfig;
-import org.cloudgraph.config.Config;
-import org.cloudgraph.config.DataGraphConfig;
-import org.cloudgraph.config.TableConfig;
 import org.cloudgraph.state.RowState;
+import org.cloudgraph.store.mapping.Config;
+import org.cloudgraph.store.mapping.DataGraphMapping;
+import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.TableMapping;
 import org.plasma.sdo.PlasmaType;
 
 /**
  * A configuration driven abstract class which helps subclasses leverage
- * {@link org.cloudgraph.config.TableConfig table} and
- * {@link org.cloudgraph.config.DataGraphConfig data graph} specific
+ * {@link org.cloudgraph.store.mapping.TableMapping table} and
+ * {@link org.cloudgraph.store.mapping.DataGraphMapping data graph} specific
  * configuration information, such as the hashing algorithm and field level row
  * and column model settings, as well as java <a target="#" href=
  * "http://docs.oracle.com/javase/1.5.0/docs/api/java/nio/ByteBuffer.html"
@@ -49,9 +49,9 @@ import org.plasma.sdo.PlasmaType;
  * type and property names.
  * </p>
  * 
- * @see org.cloudgraph.config.CloudGraphConfig
- * @see org.cloudgraph.config.TableConfig
- * @see org.cloudgraph.config.DataGraphConfig
+ * @see org.cloudgraph.store.mapping.StoreMapping
+ * @see org.cloudgraph.store.mapping.TableMapping
+ * @see org.cloudgraph.store.mapping.DataGraphMapping
  * @author Scott Cinnamond
  * @since 0.5
  */
@@ -62,8 +62,8 @@ public abstract class ByteBufferKeyFactory implements ConfigurableKeyFactory {
   protected Charset charset;
   protected KeySupport keySupport = new KeySupport();
   protected Hashing hashing;
-  protected TableConfig table;
-  protected DataGraphConfig graph;
+  protected TableMapping table;
+  protected DataGraphMapping graph;
   protected PlasmaType rootType;
 
   @SuppressWarnings("unused")
@@ -97,7 +97,7 @@ public abstract class ByteBufferKeyFactory implements ConfigurableKeyFactory {
     this.rootType = rootType;
     // FIXME: should be table context delegate?
     QName rootTypeQname = this.rootType.getQualifiedName();
-    Config config = CloudGraphConfig.getInstance();
+    Config config = StoreMapping.getInstance();
     if (config.findTable(rootTypeQname) == null)
       throw new IllegalArgumentException("given type is not a bound (graph root) type, " + rootType);
     this.table = config.getTable(rootTypeQname);
@@ -107,11 +107,11 @@ public abstract class ByteBufferKeyFactory implements ConfigurableKeyFactory {
     this.hashing = new Hashing(hash, this.charset);
   }
 
-  public TableConfig getTable() {
+  public TableMapping getTable() {
     return this.table;
   }
 
-  public DataGraphConfig getGraph() {
+  public DataGraphMapping getGraph() {
     return this.graph;
   }
 

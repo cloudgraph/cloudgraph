@@ -19,13 +19,13 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.cloudgraph.config.KeyFieldConfig;
-import org.cloudgraph.config.PreDefinedKeyFieldConfig;
-import org.cloudgraph.config.UserDefinedRowKeyFieldConfig;
 import org.cloudgraph.state.RowState;
 import org.cloudgraph.store.key.GraphKeyException;
 import org.cloudgraph.store.key.GraphRowKeyExpressionFactory;
 import org.cloudgraph.store.key.KeyValue;
+import org.cloudgraph.store.mapping.KeyFieldMapping;
+import org.cloudgraph.store.mapping.PreDefinedKeyFieldMapping;
+import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.plasma.sdo.DataFlavor;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
@@ -34,8 +34,8 @@ import commonj.sdo.Type;
 
 /**
  * Generates an HBase row key based on the configured CloudGraph
- * {@link org.cloudgraph.config.RowKeyModel Row Key Model} for a specific
- * {@link org.cloudgraph.config.Table HTable Configuration}.
+ * {@link org.cloudgraph.store.mapping.RowKeyModel Row Key Model} for a specific
+ * {@link org.cloudgraph.store.mapping.Table HTable Configuration}.
  * <p>
  * The initial creation and subsequent re-constitution for query retrieval
  * purposes of both row and column keys in CloudGraph&#8482; is efficient, as it
@@ -74,14 +74,14 @@ public class CompositeRowKeyExpressionFactory extends ByteBufferKeyFactory imple
 
     String keyValue = null;
     int i = 0;
-    for (KeyFieldConfig fieldConfig : this.getGraph().getRowKeyFields()) {
+    for (KeyFieldMapping fieldConfig : this.getGraph().getRowKeyFields()) {
       if (i > 0)
         this.buf.put(this.getGraph().getRowKeyFieldDelimiterBytes());
-      if (fieldConfig instanceof PreDefinedKeyFieldConfig) {
-        PreDefinedKeyFieldConfig predefinedConfig = (PreDefinedKeyFieldConfig) fieldConfig;
+      if (fieldConfig instanceof PreDefinedKeyFieldMapping) {
+        PreDefinedKeyFieldMapping predefinedConfig = (PreDefinedKeyFieldMapping) fieldConfig;
         keyValue = new String(predefinedConfig.getKeyBytes(this.getRootType()), this.charset);
-      } else if (fieldConfig instanceof UserDefinedRowKeyFieldConfig) {
-        UserDefinedRowKeyFieldConfig userFieldConfig = (UserDefinedRowKeyFieldConfig) fieldConfig;
+      } else if (fieldConfig instanceof UserDefinedRowKeyFieldMapping) {
+        UserDefinedRowKeyFieldMapping userFieldConfig = (UserDefinedRowKeyFieldMapping) fieldConfig;
         KeyValue found = findTokenValue(userFieldConfig.getPropertyPath(), values);
         // user has a configuration for this path
         if (found != null) {
@@ -139,14 +139,14 @@ public class CompositeRowKeyExpressionFactory extends ByteBufferKeyFactory imple
 
     byte[] keyValue = null;
     int i = 0;
-    for (KeyFieldConfig fieldConfig : this.getGraph().getRowKeyFields()) {
+    for (KeyFieldMapping fieldConfig : this.getGraph().getRowKeyFields()) {
       if (i > 0)
         this.buf.put(this.getGraph().getRowKeyFieldDelimiterBytes());
-      if (fieldConfig instanceof PreDefinedKeyFieldConfig) {
-        PreDefinedKeyFieldConfig predefinedConfig = (PreDefinedKeyFieldConfig) fieldConfig;
+      if (fieldConfig instanceof PreDefinedKeyFieldMapping) {
+        PreDefinedKeyFieldMapping predefinedConfig = (PreDefinedKeyFieldMapping) fieldConfig;
         keyValue = predefinedConfig.getKeyBytes(this.getRootType());
-      } else if (fieldConfig instanceof UserDefinedRowKeyFieldConfig) {
-        UserDefinedRowKeyFieldConfig userFieldConfig = (UserDefinedRowKeyFieldConfig) fieldConfig;
+      } else if (fieldConfig instanceof UserDefinedRowKeyFieldMapping) {
+        UserDefinedRowKeyFieldMapping userFieldConfig = (UserDefinedRowKeyFieldMapping) fieldConfig;
         KeyValue found = findTokenValue(userFieldConfig.getPropertyPath(), values);
         // user has a configuration for this path
         if (found != null) {

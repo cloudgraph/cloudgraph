@@ -19,10 +19,10 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.cloudgraph.config.CloudGraphConfig;
-import org.cloudgraph.config.DataGraphConfig;
-import org.cloudgraph.config.TableConfig;
-import org.cloudgraph.config.UserDefinedRowKeyFieldConfig;
+import org.cloudgraph.store.mapping.DataGraphMapping;
+import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.TableMapping;
+import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.query.model.AbstractPathElement;
 import org.plasma.query.model.GroupOperator;
@@ -45,8 +45,8 @@ import org.plasma.sdo.PlasmaType;
  * Assembles the set of data "flavor" and data type specific scan literals used
  * to construct composite partial row (start/stop) key pair.
  * 
- * @see org.cloudgraph.config.DataGraphConfig
- * @see org.cloudgraph.config.TableConfig
+ * @see org.cloudgraph.store.mapping.DataGraphMapping
+ * @see org.cloudgraph.store.mapping.TableMapping
  * @author Scott Cinnamond
  * @since 0.5
  */
@@ -59,8 +59,8 @@ public class ScanLiteralAssembler extends DefaultQueryVisitor {
   protected RelationalOperator contextRelationalOperator;
   protected LogicalOperator contextLogicalOperator;
   protected PredicateOperator contextWildcardOperator;
-  protected DataGraphConfig graph;
-  protected TableConfig table;
+  protected DataGraphMapping graph;
+  protected TableMapping table;
   protected ScanLiterals partialKeyScanLiterals = new ScanLiterals();
   protected ScanLiterals fuzzyKeyScanLiterals = new ScanLiterals();
   protected ScanLiteralFactory scanLiteralFactory = new ScanLiteralFactory();
@@ -73,8 +73,8 @@ public class ScanLiteralAssembler extends DefaultQueryVisitor {
     this.rootType = rootType;
     this.contextType = this.rootType;
     QName rootTypeQname = this.rootType.getQualifiedName();
-    this.graph = CloudGraphConfig.getInstance().getDataGraph(rootTypeQname);
-    this.table = CloudGraphConfig.getInstance().getTable(rootTypeQname);
+    this.graph = StoreMapping.getInstance().getDataGraph(rootTypeQname);
+    this.table = StoreMapping.getInstance().getTable(rootTypeQname);
   }
 
   public ScanLiterals getPartialKeyScanResult() {
@@ -163,7 +163,7 @@ public class ScanLiteralAssembler extends DefaultQueryVisitor {
 
     // Match the current property to a user defined
     // row key token, if found we can process
-    UserDefinedRowKeyFieldConfig fieldConfig = this.graph
+    UserDefinedRowKeyFieldMapping fieldConfig = this.graph
         .getUserDefinedRowKeyField(this.contextPropertyPath);
     if (fieldConfig != null) {
       PlasmaProperty property = (PlasmaProperty) fieldConfig.getEndpointProperty();

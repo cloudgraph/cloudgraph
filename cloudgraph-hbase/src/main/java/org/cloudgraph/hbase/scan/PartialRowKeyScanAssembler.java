@@ -25,15 +25,15 @@ import javax.xml.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.util.Hash;
-import org.cloudgraph.config.CloudGraphConfig;
-import org.cloudgraph.config.DataGraphConfig;
-import org.cloudgraph.config.KeyFieldConfig;
-import org.cloudgraph.config.PreDefinedKeyFieldConfig;
-import org.cloudgraph.config.TableConfig;
-import org.cloudgraph.config.UserDefinedRowKeyFieldConfig;
 import org.cloudgraph.hbase.key.Hashing;
 import org.cloudgraph.hbase.key.KeySupport;
 import org.cloudgraph.hbase.key.Padding;
+import org.cloudgraph.store.mapping.DataGraphMapping;
+import org.cloudgraph.store.mapping.KeyFieldMapping;
+import org.cloudgraph.store.mapping.PreDefinedKeyFieldMapping;
+import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.TableMapping;
+import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.plasma.query.model.Where;
 import org.plasma.sdo.DataFlavor;
 import org.plasma.sdo.PlasmaType;
@@ -43,11 +43,11 @@ import org.plasma.sdo.PlasmaType;
  * within the composite start and stop row keys are constructed based a set of
  * query predicates.
  * 
- * @see org.cloudgraph.config.DataGraphConfig
- * @see org.cloudgraph.config.TableConfig
- * @see org.cloudgraph.config.UserDefinedField
- * @see org.cloudgraph.config.PredefinedField
- * @see org.cloudgraph.config.PreDefinedFieldName
+ * @see org.cloudgraph.store.mapping.DataGraphMapping
+ * @see org.cloudgraph.store.mapping.TableMapping
+ * @see org.cloudgraph.store.mapping.UserDefinedField
+ * @see org.cloudgraph.store.mapping.PredefinedField
+ * @see org.cloudgraph.store.mapping.PreDefinedFieldName
  * @author Scott Cinnamond
  * @since 0.5
  */
@@ -57,8 +57,8 @@ public class PartialRowKeyScanAssembler implements RowKeyScanAssembler, PartialR
   protected ByteBuffer startKey = ByteBuffer.allocate(bufsize);
   protected ByteBuffer stopKey = ByteBuffer.allocate(bufsize);
   protected PlasmaType rootType;
-  protected DataGraphConfig graph;
-  protected TableConfig table;
+  protected DataGraphMapping graph;
+  protected TableMapping table;
   protected KeySupport keySupport = new KeySupport();
   protected Charset charset;
   protected ScanLiterals scanLiterals;
@@ -81,10 +81,10 @@ public class PartialRowKeyScanAssembler implements RowKeyScanAssembler, PartialR
   public PartialRowKeyScanAssembler(PlasmaType rootType) {
     this.rootType = rootType;
     QName rootTypeQname = this.rootType.getQualifiedName();
-    this.graph = CloudGraphConfig.getInstance().getDataGraph(rootTypeQname);
-    this.table = CloudGraphConfig.getInstance().getTable(rootTypeQname);
+    this.graph = StoreMapping.getInstance().getDataGraph(rootTypeQname);
+    this.table = StoreMapping.getInstance().getTable(rootTypeQname);
     Hash hash = this.keySupport.getHashAlgorithm(this.table);
-    this.charset = CloudGraphConfig.getInstance().getCharset();
+    this.charset = StoreMapping.getInstance().getCharset();
     this.hashing = new Hashing(hash, this.charset);
     this.padding = new Padding(this.charset);
   }
@@ -107,8 +107,8 @@ public class PartialRowKeyScanAssembler implements RowKeyScanAssembler, PartialR
    * Assemble row key scan information based only on any pre-defined row-key
    * fields such as the data graph root type or URI.
    * 
-   * @see org.cloudgraph.config.PredefinedField
-   * @see org.cloudgraph.config.PreDefinedFieldName
+   * @see org.cloudgraph.store.mapping.PredefinedField
+   * @see org.cloudgraph.store.mapping.PreDefinedFieldName
    */
   @Override
   public void assemble() {
@@ -123,8 +123,8 @@ public class PartialRowKeyScanAssembler implements RowKeyScanAssembler, PartialR
    * 
    * @param literalList
    *          the scan literals
-   * @see org.cloudgraph.config.PredefinedField
-   * @see org.cloudgraph.config.PreDefinedFieldName
+   * @see org.cloudgraph.store.mapping.PredefinedField
+   * @see org.cloudgraph.store.mapping.PreDefinedFieldName
    */
   @Override
   public void assemble(ScanLiterals literals) {
@@ -164,9 +164,9 @@ public class PartialRowKeyScanAssembler implements RowKeyScanAssembler, PartialR
   }
 
   private void assemblePredefinedFields() {
-    List<PreDefinedKeyFieldConfig> resultFields = new ArrayList<PreDefinedKeyFieldConfig>();
+    List<PreDefinedKeyFieldMapping> resultFields = new ArrayList<PreDefinedKeyFieldMapping>();
 
-    for (PreDefinedKeyFieldConfig field : this.graph.getPreDefinedRowKeyFields()) {
+    for (PreDefinedKeyFieldMapping field : this.graph.getPreDefinedRowKeyFields()) {
       switch (field.getName()) {
       case URI:
       case TYPE:
@@ -180,7 +180,7 @@ public class PartialRowKeyScanAssembler implements RowKeyScanAssembler, PartialR
 
     int fieldCount = resultFields.size();
     for (int i = 0; i < fieldCount; i++) {
-      PreDefinedKeyFieldConfig preDefinedField = resultFields.get(i);
+      PreDefinedKeyFieldMapping preDefinedField = resultFields.get(i);
       if (startRowFieldCount > 0) {
         this.startKey.put(graph.getRowKeyFieldDelimiterBytes());
       }
@@ -203,10 +203,10 @@ public class PartialRowKeyScanAssembler implements RowKeyScanAssembler, PartialR
     // first collect the set of field configs which have literals or
     // predefined field config value(s), such that we can determine the
     // last field value.
-    List<KeyFieldConfig> resultFields = new ArrayList<KeyFieldConfig>();
-    for (KeyFieldConfig fieldConfig : this.graph.getRowKeyFields()) {
-      if (fieldConfig instanceof PreDefinedKeyFieldConfig) {
-        PreDefinedKeyFieldConfig predefinedConfig = (PreDefinedKeyFieldConfig) fieldConfig;
+    List<KeyFieldMapping> resultFields = new ArrayList<KeyFieldMapping>();
+    for (KeyFieldMapping fieldConfig : this.graph.getRowKeyFields()) {
+      if (fieldConfig instanceof PreDefinedKeyFieldMapping) {
+        PreDefinedKeyFieldMapping predefinedConfig = (PreDefinedKeyFieldMapping) fieldConfig;
         switch (predefinedConfig.getName()) {
         case UUID:
           if (this.rootUUID != null)
@@ -217,7 +217,7 @@ public class PartialRowKeyScanAssembler implements RowKeyScanAssembler, PartialR
           break;
         }
       } else {
-        UserDefinedRowKeyFieldConfig userFieldConfig = (UserDefinedRowKeyFieldConfig) fieldConfig;
+        UserDefinedRowKeyFieldMapping userFieldConfig = (UserDefinedRowKeyFieldMapping) fieldConfig;
         List<ScanLiteral> scanLiterals = this.scanLiterals.getLiterals(userFieldConfig);
         if (scanLiterals != null)
           resultFields.add(fieldConfig);
@@ -226,9 +226,9 @@ public class PartialRowKeyScanAssembler implements RowKeyScanAssembler, PartialR
 
     int fieldCount = resultFields.size();
     for (int i = 0; i < fieldCount; i++) {
-      KeyFieldConfig fieldConfig = resultFields.get(i);
-      if (fieldConfig instanceof PreDefinedKeyFieldConfig) {
-        PreDefinedKeyFieldConfig predefinedConfig = (PreDefinedKeyFieldConfig) fieldConfig;
+      KeyFieldMapping fieldConfig = resultFields.get(i);
+      if (fieldConfig instanceof PreDefinedKeyFieldMapping) {
+        PreDefinedKeyFieldMapping predefinedConfig = (PreDefinedKeyFieldMapping) fieldConfig;
 
         byte[] paddedStartValue = getStartBytes(predefinedConfig);
         byte[] paddedStopValue = getStopBytes(predefinedConfig, i >= (fieldCount - 1));
@@ -242,8 +242,8 @@ public class PartialRowKeyScanAssembler implements RowKeyScanAssembler, PartialR
         this.stopKey.put(paddedStopValue);
         this.startRowFieldCount++;
         this.stopRowFieldCount++;
-      } else if (fieldConfig instanceof UserDefinedRowKeyFieldConfig) {
-        UserDefinedRowKeyFieldConfig userFieldConfig = (UserDefinedRowKeyFieldConfig) fieldConfig;
+      } else if (fieldConfig instanceof UserDefinedRowKeyFieldMapping) {
+        UserDefinedRowKeyFieldMapping userFieldConfig = (UserDefinedRowKeyFieldMapping) fieldConfig;
         List<ScanLiteral> scanLiterals = this.scanLiterals.getLiterals(userFieldConfig);
         // We may have multiple literals but all may not have start/stop
         // bytes, e.g.
@@ -280,7 +280,7 @@ public class PartialRowKeyScanAssembler implements RowKeyScanAssembler, PartialR
     }
   }
 
-  private byte[] getStartBytes(PreDefinedKeyFieldConfig preDefinedField) {
+  private byte[] getStartBytes(PreDefinedKeyFieldMapping preDefinedField) {
     byte[] startValue = null;
     switch (preDefinedField.getName()) {
     case UUID:
@@ -304,7 +304,7 @@ public class PartialRowKeyScanAssembler implements RowKeyScanAssembler, PartialR
     return paddedStartValue;
   }
 
-  private byte[] getStopBytes(PreDefinedKeyFieldConfig preDefinedField, boolean lastField) {
+  private byte[] getStopBytes(PreDefinedKeyFieldMapping preDefinedField, boolean lastField) {
     byte[] stopValue = null;
     switch (preDefinedField.getName()) {
     case UUID:

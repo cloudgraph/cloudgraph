@@ -30,9 +30,9 @@ import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.cloudgraph.common.CloudGraphConstants;
-import org.cloudgraph.config.DataGraphConfig;
-import org.cloudgraph.config.TableConfig;
 import org.cloudgraph.store.key.EdgeMetaKey;
+import org.cloudgraph.store.mapping.DataGraphMapping;
+import org.cloudgraph.store.mapping.TableMapping;
 import org.plasma.sdo.PlasmaDataObject;
 import org.plasma.sdo.PlasmaEdge;
 import org.plasma.sdo.PlasmaNode;
@@ -49,8 +49,8 @@ public class GraphEdgeWriter extends DefaultEdgeOperation implements EdgeWriter 
 
   private Long typeSequenceNum;
 
-  GraphEdgeWriter(PlasmaDataObject source, PlasmaProperty sourceProp, TableConfig tableConfig,
-      DataGraphConfig graphConfig, RowWriter rowWriter) throws IOException {
+  GraphEdgeWriter(PlasmaDataObject source, PlasmaProperty sourceProp, TableMapping tableConfig,
+      DataGraphMapping graphConfig, RowWriter rowWriter) throws IOException {
     super((PlasmaType) source.getType(), sourceProp, tableConfig, graphConfig);
     this.dataObject = source;
     this.rowWriter = rowWriter;
@@ -73,7 +73,8 @@ public class GraphEdgeWriter extends DefaultEdgeOperation implements EdgeWriter 
   }
 
   GraphEdgeWriter(PlasmaDataObject source, PlasmaProperty sourceProp, Long typeSequenceNum,
-      TableConfig tableConfig, DataGraphConfig graphConfig, RowWriter rowWriter) throws IOException {
+      TableMapping tableConfig, DataGraphMapping graphConfig, RowWriter rowWriter)
+      throws IOException {
 
     super((PlasmaType) source.getType(), sourceProp, tableConfig, graphConfig);
     this.dataObject = source;

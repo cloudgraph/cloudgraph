@@ -17,8 +17,8 @@ package org.cloudgraph.state;
 
 import java.io.IOException;
 
-import org.cloudgraph.config.DataGraphConfig;
 import org.cloudgraph.store.key.GraphStatefullColumnKeyFactory;
+import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.plasma.sdo.PlasmaType;
 
 import commonj.sdo.DataObject;
@@ -41,7 +41,7 @@ public interface RowState {
    */
   public byte[] getRowKey();
 
-  public DataGraphConfig getDataGraph();
+  public DataGraphMapping getDataGraph();
 
   /**
    * Returns the root data object associated with the row operation.

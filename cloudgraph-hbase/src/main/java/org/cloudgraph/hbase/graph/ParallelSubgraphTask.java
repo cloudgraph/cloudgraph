@@ -27,8 +27,6 @@ import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.cloudgraph.common.CloudGraphConstants;
 import org.cloudgraph.common.concurrent.SubgraphTask;
-import org.cloudgraph.config.ThreadPoolConfigProps;
-import org.cloudgraph.config.TableConfig;
 import org.cloudgraph.hbase.io.CellValues;
 import org.cloudgraph.hbase.io.DistributedReader;
 import org.cloudgraph.hbase.io.EdgeReader;
@@ -38,6 +36,8 @@ import org.cloudgraph.hbase.io.TableReader;
 import org.cloudgraph.store.key.EntityMetaKey;
 import org.cloudgraph.store.key.GraphColumnKeyFactory;
 import org.cloudgraph.store.key.GraphMetaKey;
+import org.cloudgraph.store.mapping.TableMapping;
+import org.cloudgraph.store.mapping.ThreadPoolMappingProps;
 import org.cloudgraph.store.service.GraphServiceException;
 //import org.cloudgraph.state.GraphState.Edge;
 import org.plasma.query.collector.Selection;
@@ -95,7 +95,7 @@ class ParallelSubgraphTask extends DefaultSubgraphTask implements SubgraphTask {
   public ParallelSubgraphTask(PlasmaDataObject subroot, long subrootSequence, Selection selection,
       Timestamp snapshotDate, DistributedReader distributedReader, EdgeReader collection,
       PlasmaDataObject source, PlasmaProperty sourceProperty, RowReader rowReader, int level,
-      int taskSequence, ThreadPoolExecutor executorService, ThreadPoolConfigProps config) {
+      int taskSequence, ThreadPoolExecutor executorService, ThreadPoolMappingProps config) {
     super(subroot, subrootSequence, selection, snapshotDate, distributedReader, collection, source,
         sourceProperty, rowReader, level, taskSequence, executorService, config);
   }
@@ -130,7 +130,7 @@ class ParallelSubgraphTask extends DefaultSubgraphTask implements SubgraphTask {
       Selection selection, Timestamp snapshotDate, DistributedReader distributedReader,
       EdgeReader collection, PlasmaDataObject source, PlasmaProperty sourceProperty,
       RowReader rowReader, int level, int sequence, ThreadPoolExecutor executorService,
-      ThreadPoolConfigProps config) {
+      ThreadPoolMappingProps config) {
     return new ParallelSubgraphTask(subroot, subrootSequence, selection, snapshotDate,
         distributedReader, collection, source, sourceProperty, rowReader, level, sequence,
         executorService, config);
@@ -154,7 +154,7 @@ class ParallelSubgraphTask extends DefaultSubgraphTask implements SubgraphTask {
     }
 
     TableReader tableReader = rowReader.getTableReader();
-    TableConfig tableConfig = tableReader.getTableConfig();
+    TableMapping tableConfig = tableReader.getTableConfig();
 
     traversals.clear();
 

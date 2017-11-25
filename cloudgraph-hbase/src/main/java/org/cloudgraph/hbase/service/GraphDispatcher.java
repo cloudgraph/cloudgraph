@@ -46,10 +46,10 @@ import commonj.sdo.DataGraph;
  * For new (created) data graphs, a row key
  * {org.cloudgraph.hbase.key.HBaseRowKeyFactory factory} is used to create a new
  * composite HBase row key. The row key generation is driven by a configured
- * CloudGraph row key {@link org.cloudgraph.config.RowKeyModel model} for a
- * specific HTable {@link org.cloudgraph.config.Table configuration}. A minimal
- * set of {@link org.cloudgraph.state.SequenceGenerator state} information is
- * persisted with each new data graph.
+ * CloudGraph row key {@link org.cloudgraph.store.mapping.RowKeyModel model} for
+ * a specific HTable {@link org.cloudgraph.store.mapping.Table configuration}. A
+ * minimal set of {@link org.cloudgraph.state.SequenceGenerator state}
+ * information is persisted with each new data graph.
  * </p>
  * <p>
  * For data graphs with any other combination of changes, e.g. data object

@@ -15,8 +15,8 @@
  */
 package org.cloudgraph.hbase.key;
 
-import org.cloudgraph.config.DataGraphConfig;
-import org.cloudgraph.config.TableConfig;
+import org.cloudgraph.store.mapping.DataGraphMapping;
+import org.cloudgraph.store.mapping.TableMapping;
 import org.plasma.sdo.PlasmaType;
 
 /**
@@ -36,16 +36,16 @@ import org.plasma.sdo.PlasmaType;
  * type and property names.
  * </p>
  * 
- * @see org.cloudgraph.config.CloudGraphConfig
- * @see org.cloudgraph.config.TableConfig
- * @see org.cloudgraph.config.DataGraphConfig
+ * @see org.cloudgraph.store.mapping.StoreMapping
+ * @see org.cloudgraph.store.mapping.TableMapping
+ * @see org.cloudgraph.store.mapping.DataGraphMapping
  * @author Scott Cinnamond
  * @since 0.5
  */
 public interface ConfigurableKeyFactory {
-  public TableConfig getTable();
+  public TableMapping getTable();
 
-  public DataGraphConfig getGraph();
+  public DataGraphMapping getGraph();
 
   public PlasmaType getRootType();
 }

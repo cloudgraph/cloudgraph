@@ -26,7 +26,6 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.client.Result;
-import org.cloudgraph.config.TableConfig;
 import org.cloudgraph.hbase.io.CellValues;
 import org.cloudgraph.hbase.io.DistributedReader;
 import org.cloudgraph.hbase.io.EdgeReader;
@@ -34,6 +33,7 @@ import org.cloudgraph.hbase.io.RowReader;
 import org.cloudgraph.hbase.io.TableReader;
 import org.cloudgraph.recognizer.GraphRecognizerContext;
 import org.cloudgraph.recognizer.GraphRecognizerSyntaxTreeAssembler;
+import org.cloudgraph.store.mapping.TableMapping;
 import org.plasma.query.collector.Selection;
 import org.plasma.query.model.Where;
 import org.plasma.sdo.PlasmaDataObject;
@@ -104,7 +104,7 @@ public class GraphSliceAssembler extends DistributedAssembler {
     assembleData(target, targetSequence, props, rowReader);
 
     TableReader tableReader = rowReader.getTableReader();
-    TableConfig tableConfig = tableReader.getTableConfig();
+    TableMapping tableConfig = tableReader.getTableConfig();
 
     // reference props
     for (Property p : props) {

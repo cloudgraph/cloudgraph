@@ -29,8 +29,8 @@ import org.plasma.sdo.PlasmaType;
 
 /**
  * Generates an HBase column key based on the configured CloudGraph column key
- * {@link org.cloudgraph.config.ColumnKeyModel model} for a specific HTable
- * {@link org.cloudgraph.config.Table configuration}.
+ * {@link org.cloudgraph.store.mapping.ColumnKeyModel model} for a specific
+ * HTable {@link org.cloudgraph.store.mapping.Table configuration}.
  * <p>
  * The initial creation and subsequent reconstitution for query retrieval
  * purposes of both row and column keys in CloudGraph&#8482; is efficient, as it
@@ -44,8 +44,8 @@ import org.plasma.sdo.PlasmaType;
  * type and property names.
  * </p>
  * 
- * @see org.cloudgraph.config.ColumnKeyModel
- * @see org.cloudgraph.config.Table
+ * @see org.cloudgraph.store.mapping.ColumnKeyModel
+ * @see org.cloudgraph.store.mapping.Table
  * @see org.cloudgraph.state.SequenceGenerator
  * @author Scott Cinnamond
  * @since 0.5

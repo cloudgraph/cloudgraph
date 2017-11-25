@@ -15,8 +15,8 @@
  */
 package org.cloudgraph.hbase.scan;
 
-import org.cloudgraph.config.DataGraphConfig;
 import org.cloudgraph.query.expr.EvaluationContext;
+import org.cloudgraph.store.mapping.DataGraphMapping;
 
 /**
  * Context which supports the "recognition" of one or more {@link PartialRowKey
@@ -44,16 +44,16 @@ import org.cloudgraph.query.expr.EvaluationContext;
  */
 public class ScanRecognizerContext implements EvaluationContext {
 
-  private DataGraphConfig graph;
+  private DataGraphMapping graph;
 
   /**
    * Constructs an empty context.
    */
-  public ScanRecognizerContext(DataGraphConfig graph) {
+  public ScanRecognizerContext(DataGraphMapping graph) {
     this.graph = graph;
   }
 
-  public DataGraphConfig getGraph() {
+  public DataGraphMapping getGraph() {
     return graph;
   }
 

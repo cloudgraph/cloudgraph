@@ -17,15 +17,15 @@ package org.cloudgraph.hbase.service;
 
 import java.sql.Timestamp;
 
-import org.cloudgraph.config.CloudGraphConfigProp;
-import org.cloudgraph.config.FetchType;
-import org.cloudgraph.config.ThreadPoolConfigProps;
 import org.cloudgraph.hbase.graph.GraphAssembler;
 import org.cloudgraph.hbase.graph.GraphSliceAssembler;
 import org.cloudgraph.hbase.graph.HBaseGraphAssembler;
 import org.cloudgraph.hbase.graph.ParallelGraphAssembler;
 import org.cloudgraph.hbase.graph.ParallelGraphSliceAssembler;
 import org.cloudgraph.hbase.io.DistributedReader;
+import org.cloudgraph.store.mapping.FetchType;
+import org.cloudgraph.store.mapping.StoreMappingProp;
+import org.cloudgraph.store.mapping.ThreadPoolMappingProps;
 import org.plasma.query.collector.Selection;
 import org.plasma.query.model.Query;
 import org.plasma.sdo.PlasmaType;
@@ -65,10 +65,10 @@ public class GraphAssemblerFactory {
   public HBaseGraphAssembler createAssembler() {
     HBaseGraphAssembler graphAssembler = null;
 
-    FetchType fetchType = CloudGraphConfigProp.getQueryFetchType(query);
+    FetchType fetchType = StoreMappingProp.getQueryFetchType(query);
     switch (fetchType) {
     case PARALLEL:
-      ThreadPoolConfigProps config = new ThreadPoolConfigProps(query);
+      ThreadPoolMappingProps config = new ThreadPoolMappingProps(query);
       switch (config.getFetchDisposition()) {
       case WIDE:
         if (selection.hasPredicates()) {

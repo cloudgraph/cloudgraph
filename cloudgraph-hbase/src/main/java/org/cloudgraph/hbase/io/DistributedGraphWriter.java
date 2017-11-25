@@ -23,9 +23,9 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.cloudgraph.config.CloudGraphConfig;
-import org.cloudgraph.config.TableConfig;
 import org.cloudgraph.state.StateMarshalingContext;
+import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.TableMapping;
 import org.plasma.sdo.PlasmaType;
 
 import commonj.sdo.DataGraph;
@@ -201,7 +201,7 @@ public class DistributedGraphWriter extends WriterSupport implements Distributed
   @Override
   public RowWriter createRowWriter(DataObject dataObject) throws IOException {
     PlasmaType type = (PlasmaType) dataObject.getType();
-    TableConfig table = CloudGraphConfig.getInstance().findTable(type);
+    TableMapping table = StoreMapping.getInstance().findTable(type);
     RowWriter rowWriter = this.rowWriterMap.get(dataObject);
     if (rowWriter != null)
       throw new IllegalArgumentException("the given data object " + dataObject.toString()

@@ -20,12 +20,12 @@ import java.nio.charset.Charset;
 import javax.xml.namespace.QName;
 
 import org.apache.hadoop.hbase.util.Hash;
-import org.cloudgraph.config.CloudGraphConfig;
-import org.cloudgraph.config.TableConfig;
-import org.cloudgraph.config.UserDefinedRowKeyFieldConfig;
 import org.cloudgraph.hbase.key.Hashing;
 import org.cloudgraph.hbase.key.KeySupport;
 import org.cloudgraph.hbase.key.Padding;
+import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.TableMapping;
+import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.query.model.RelationalOperator;
 import org.plasma.sdo.PlasmaProperty;
@@ -40,7 +40,7 @@ import org.plasma.sdo.helper.DataConverter;
  * various configurable composite key-field hashing, formatting, padding and
  * other features.
  * 
- * @see org.cloudgraph.config.TableConfig
+ * @see org.cloudgraph.store.mapping.TableMapping
  * @author Scott Cinnamond
  * @since 0.5
  */
@@ -50,11 +50,11 @@ public abstract class ScanLiteral {
   protected String literal;
   @Deprecated
   protected RelationalOperator relationalOperator;
-  protected UserDefinedRowKeyFieldConfig fieldConfig;
+  protected UserDefinedRowKeyFieldMapping fieldConfig;
   protected DataConverter dataConverter = DataConverter.INSTANCE;
   protected PlasmaType rootType;
   protected Charset charset;
-  protected TableConfig table;
+  protected TableMapping table;
   protected KeySupport keySupport = new KeySupport();
   protected PlasmaProperty property;
   protected Hashing hashing;
@@ -65,7 +65,7 @@ public abstract class ScanLiteral {
   }
 
   public ScanLiteral(String literal, PlasmaType rootType, RelationalOperator relationalOperator,
-      UserDefinedRowKeyFieldConfig fieldConfig) {
+      UserDefinedRowKeyFieldMapping fieldConfig) {
     super();
     this.rootType = rootType;
     this.relationalOperator = relationalOperator;
@@ -74,9 +74,9 @@ public abstract class ScanLiteral {
     this.literal = literal;
 
     QName rootTypeQname = this.rootType.getQualifiedName();
-    this.table = CloudGraphConfig.getInstance().getTable(rootTypeQname);
+    this.table = StoreMapping.getInstance().getTable(rootTypeQname);
     Hash hash = this.keySupport.getHashAlgorithm(this.table);
-    this.charset = CloudGraphConfig.getInstance().getCharset();
+    this.charset = StoreMapping.getInstance().getCharset();
     this.hashing = new Hashing(hash, this.charset);
     this.padding = new Padding(this.charset);
   }
@@ -104,7 +104,7 @@ public abstract class ScanLiteral {
    * 
    * @return the composite row-key field configuration.
    */
-  public final UserDefinedRowKeyFieldConfig getFieldConfig() {
+  public final UserDefinedRowKeyFieldMapping getFieldConfig() {
     return fieldConfig;
   }
 

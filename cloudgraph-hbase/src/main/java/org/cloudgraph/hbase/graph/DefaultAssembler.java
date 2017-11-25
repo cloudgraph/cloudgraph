@@ -38,10 +38,6 @@ import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.filter.FilterList;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.cloudgraph.common.CloudGraphConstants;
-import org.cloudgraph.config.CloudGraphConfig;
-import org.cloudgraph.config.Config;
-import org.cloudgraph.config.DataGraphConfig;
-import org.cloudgraph.config.TableConfig;
 import org.cloudgraph.hbase.filter.GraphFetchColumnFilterAssembler;
 import org.cloudgraph.hbase.io.CellValues;
 import org.cloudgraph.hbase.io.EdgeOperation;
@@ -54,6 +50,10 @@ import org.cloudgraph.hbase.util.FilterUtil;
 import org.cloudgraph.state.GraphRow;
 import org.cloudgraph.store.key.EntityMetaKey;
 import org.cloudgraph.store.key.GraphColumnKeyFactory;
+import org.cloudgraph.store.mapping.Config;
+import org.cloudgraph.store.mapping.DataGraphMapping;
+import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.TableMapping;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.query.collector.Selection;
 import org.plasma.sdo.PlasmaDataGraph;
@@ -86,7 +86,7 @@ public abstract class DefaultAssembler {
 
   // FIXME: table context obj?
   // FIXME can this go in RowReader ?
-  protected DataGraphConfig graph;
+  protected DataGraphMapping graph;
   protected Charset charset;
 
   protected Selection selection;
@@ -119,7 +119,7 @@ public abstract class DefaultAssembler {
 
     // FIXME: table context obj?
     QName rootTypeQname = this.rootType.getQualifiedName();
-    Config config = CloudGraphConfig.getInstance();
+    Config config = StoreMapping.getInstance();
     this.graph = config.getDataGraph(rootTypeQname);
     this.charset = config.getCharset();
     this.keyFactories = new HashMap<>();
@@ -203,7 +203,7 @@ public abstract class DefaultAssembler {
 
   protected PlasmaDataObject createChild(long targetSequence, EdgeOperation collection,
       DataObject source, PlasmaProperty sourceProperty, RowReader rowReader,
-      DataGraphConfig graphConfig) throws IOException {
+      DataGraphMapping graphConfig) throws IOException {
     PlasmaType subType = collection.getSubType();
     if (subType == null)
       subType = collection.getBaseType();
@@ -355,7 +355,7 @@ public abstract class DefaultAssembler {
 
     // add concurrency fields
     targetDataNode.setValue(CoreConstants.PROPERTY_NAME_SNAPSHOT_TIMESTAMP, snapshotDate);
-    TableConfig tableConfig = rowReader.getTableReader().getTableConfig();
+    TableMapping tableConfig = rowReader.getTableReader().getTableConfig();
     // data props
     for (Property p : props) {
       PlasmaProperty prop = (PlasmaProperty) p;
@@ -383,7 +383,7 @@ public abstract class DefaultAssembler {
   }
 
   protected byte[] getMetaDataColumnValue(PlasmaType type, long sequence, EntityMetaKey keyField,
-      TableConfig tableConfig, RowReader rowReader) throws IOException {
+      TableMapping tableConfig, RowReader rowReader) throws IOException {
     byte[] family = tableConfig.getDataColumnFamilyNameBytes();
     byte[] qualifier = rowReader.getColumnKeyFactory().createColumnKey(type, sequence, keyField);
 
@@ -396,7 +396,7 @@ public abstract class DefaultAssembler {
   }
 
   protected byte[] getMetaDataColumnValue(PlasmaType type, EntityMetaKey keyField,
-      TableConfig tableConfig, CellValues result, RowReader rowReader) throws IOException {
+      TableMapping tableConfig, CellValues result, RowReader rowReader) throws IOException {
     byte[] family = tableConfig.getDataColumnFamilyNameBytes();
     byte[] qualifier = rowReader.getColumnKeyFactory().createColumnKey(type, keyField);
 
@@ -409,7 +409,7 @@ public abstract class DefaultAssembler {
   }
 
   protected byte[] findMetaDataColumnValue(PlasmaType type, PlasmaProperty property, long sequence,
-      EntityMetaKey keyField, TableConfig tableConfig, RowReader rowReader) throws IOException {
+      EntityMetaKey keyField, TableMapping tableConfig, RowReader rowReader) throws IOException {
     byte[] family = tableConfig.getDataColumnFamilyNameBytes();
 
     byte[] qualifier = rowReader.getColumnKeyFactory().createColumnKey(type, sequence, property,
@@ -427,7 +427,7 @@ public abstract class DefaultAssembler {
   }
 
   protected byte[] findMetaDataColumnValue(PlasmaType type, long sequence, EntityMetaKey keyField,
-      TableConfig tableConfig, RowReader rowReader) throws IOException {
+      TableMapping tableConfig, RowReader rowReader) throws IOException {
     byte[] family = tableConfig.getDataColumnFamilyNameBytes();
 
     byte[] qualifier = rowReader.getColumnKeyFactory().createColumnKey(type, sequence, keyField);
@@ -467,7 +467,7 @@ public abstract class DefaultAssembler {
    *           if a remote or network exception occurs.
    */
   protected byte[] getDataColumnValue(PlasmaType type, PlasmaProperty prop, long typeSequenceNum,
-      TableConfig tableConfig, RowReader rowReader) throws IOException {
+      TableMapping tableConfig, RowReader rowReader) throws IOException {
     byte[] family = tableConfig.getDataColumnFamilyNameBytes();
 
     byte[] qualifier = null;
@@ -488,7 +488,7 @@ public abstract class DefaultAssembler {
   }
 
   protected byte[] getDataColumnValue(PlasmaDataObject target, PlasmaProperty prop,
-      TableConfig tableConfig, RowReader rowReader) throws IOException {
+      TableMapping tableConfig, RowReader rowReader) throws IOException {
     byte[] family = tableConfig.getDataColumnFamilyNameBytes();
 
     byte[] qualifier = rowReader.getColumnKeyFactory().createColumnKey(

@@ -26,16 +26,16 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.util.Hash;
-import org.cloudgraph.config.CloudGraphConfig;
-import org.cloudgraph.config.DataGraphConfig;
-import org.cloudgraph.config.KeyFieldConfig;
-import org.cloudgraph.config.PreDefinedKeyFieldConfig;
-import org.cloudgraph.config.TableConfig;
-import org.cloudgraph.config.UserDefinedRowKeyFieldConfig;
 import org.cloudgraph.hbase.service.HBaseDataConverter;
 import org.cloudgraph.recognizer.Endpoint;
 import org.cloudgraph.state.RowState;
 import org.cloudgraph.store.key.KeyValue;
+import org.cloudgraph.store.mapping.DataGraphMapping;
+import org.cloudgraph.store.mapping.KeyFieldMapping;
+import org.cloudgraph.store.mapping.PreDefinedKeyFieldMapping;
+import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.TableMapping;
+import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.plasma.sdo.DataType;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
@@ -62,11 +62,11 @@ import commonj.sdo.Property;
  */
 public class CompositeRowKeyReader {
   private static final Log log = LogFactory.getLog(CompositeRowKeyReader.class);
-  private TableConfig table;
-  private DataGraphConfig graph;
+  private TableMapping table;
+  private DataGraphMapping graph;
   private PlasmaType contextType;
   private char rowKeyFieldDelimChar;
-  private Map<UserDefinedRowKeyFieldConfig, Endpoint> endpointMap;
+  private Map<UserDefinedRowKeyFieldMapping, Endpoint> endpointMap;
   private Map<Endpoint, KeyValue> valueMap;
 
   @SuppressWarnings("unused")
@@ -77,8 +77,8 @@ public class CompositeRowKeyReader {
     if (contextType == null)
       throw new IllegalArgumentException("expected arg contextType");
     this.contextType = contextType;
-    this.table = CloudGraphConfig.getInstance().getTable(this.contextType);
-    this.graph = CloudGraphConfig.getInstance().getDataGraph(this.contextType.getQualifiedName());
+    this.table = StoreMapping.getInstance().getTable(this.contextType);
+    this.graph = StoreMapping.getInstance().getDataGraph(this.contextType.getQualifiedName());
 
     this.valueMap = new HashMap<>();
     this.endpointMap = new HashMap<>();
@@ -92,14 +92,14 @@ public class CompositeRowKeyReader {
   }
 
   private void construct() {
-    for (KeyFieldConfig keyField : this.graph.getRowKeyFields()) {
-      if (PreDefinedKeyFieldConfig.class.isAssignableFrom(keyField.getClass())) {
+    for (KeyFieldMapping keyField : this.graph.getRowKeyFields()) {
+      if (PreDefinedKeyFieldMapping.class.isAssignableFrom(keyField.getClass())) {
         if (log.isDebugEnabled())
           log.debug("ignoring predefined field config, "
-              + ((PreDefinedKeyFieldConfig) keyField).getName());
+              + ((PreDefinedKeyFieldMapping) keyField).getName());
         continue;
       }
-      UserDefinedRowKeyFieldConfig userDefinedKeyField = (UserDefinedRowKeyFieldConfig) keyField;
+      UserDefinedRowKeyFieldMapping userDefinedKeyField = (UserDefinedRowKeyFieldMapping) keyField;
       PlasmaProperty endpointProp = userDefinedKeyField.getEndpointProperty();
       if (keyField.isHash()) {
         log.warn("cannot unmarshal hashed row key field for table, " + this.table.getName()
@@ -120,11 +120,11 @@ public class CompositeRowKeyReader {
     return this.endpointMap.values();
   }
 
-  public TableConfig getTable() {
+  public TableMapping getTable() {
     return table;
   }
 
-  public DataGraphConfig getGraph() {
+  public DataGraphMapping getGraph() {
     return graph;
   }
 
@@ -138,14 +138,14 @@ public class CompositeRowKeyReader {
     int i = 0;
     while (iter.hasNext()) {
       String token = iter.next().trim();
-      KeyFieldConfig keyField = this.graph.getRowKeyFields().get(i);
-      if (PreDefinedKeyFieldConfig.class.isAssignableFrom(keyField.getClass())) {
+      KeyFieldMapping keyField = this.graph.getRowKeyFields().get(i);
+      if (PreDefinedKeyFieldMapping.class.isAssignableFrom(keyField.getClass())) {
         if (log.isDebugEnabled())
           log.debug("ignoring predefined field config(" + i + "), "
-              + ((PreDefinedKeyFieldConfig) keyField).getName());
+              + ((PreDefinedKeyFieldMapping) keyField).getName());
         continue;
       }
-      UserDefinedRowKeyFieldConfig userDefinedKeyField = (UserDefinedRowKeyFieldConfig) keyField;
+      UserDefinedRowKeyFieldMapping userDefinedKeyField = (UserDefinedRowKeyFieldMapping) keyField;
       PlasmaProperty endpointProp = userDefinedKeyField.getEndpointProperty();
       if (keyField.isHash()) {
         log.warn("cannot unmarshal hashed row key field(" + i + ") for table, "

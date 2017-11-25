@@ -24,14 +24,14 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.cloudgraph.config.CloudGraphConfig;
-import org.cloudgraph.config.DataGraphConfig;
-import org.cloudgraph.config.UserDefinedRowKeyFieldConfig;
 import org.cloudgraph.query.expr.Expr;
 import org.cloudgraph.query.expr.ExprVisitor;
 import org.cloudgraph.query.expr.LogicalBinaryExpr;
 import org.cloudgraph.query.expr.RelationalBinaryExpr;
 import org.cloudgraph.query.expr.WildcardBinaryExpr;
+import org.cloudgraph.store.mapping.DataGraphMapping;
+import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.plasma.query.model.LogicalOperatorName;
 import org.plasma.query.model.RelationalOperatorName;
 import org.plasma.sdo.PlasmaProperty;
@@ -62,7 +62,7 @@ import org.plasma.sdo.PlasmaType;
  * @see org.cloudgraph.hbase.expr.Expr
  * @see org.cloudgraph.hbase.expr.BinaryExpr
  * @see org.cloudgraph.hbase.expr.ExprVisitor
- * @see org.cloudgraph.config.DataGraphConfig
+ * @see org.cloudgraph.store.mapping.DataGraphMapping
  * @see org.cloudgraph.hbase.expr.LogicalBinaryExpr
  * @see org.cloudgraph.hbase.expr.RelationalBinaryExpr
  * @see org.cloudgraph.hbase.expr.WildcardBinaryExpr
@@ -70,10 +70,10 @@ import org.plasma.sdo.PlasmaType;
 public class ScanCollector implements ExprVisitor {
 
   private static Log log = LogFactory.getLog(ScanCollector.class);
-  private List<Map<UserDefinedRowKeyFieldConfig, List<ScanLiteral>>> literals = new ArrayList<Map<UserDefinedRowKeyFieldConfig, List<ScanLiteral>>>();
+  private List<Map<UserDefinedRowKeyFieldMapping, List<ScanLiteral>>> literals = new ArrayList<Map<UserDefinedRowKeyFieldMapping, List<ScanLiteral>>>();
 
   private PlasmaType rootType;
-  private DataGraphConfig graph;
+  private DataGraphMapping graph;
   private List<PartialRowKey> partialKeyScans;
   private List<FuzzyRowKey> fuzzyKeyScans;
   private List<CompleteRowKey> completeKeys;
@@ -83,7 +83,7 @@ public class ScanCollector implements ExprVisitor {
   public ScanCollector(PlasmaType rootType) {
     this.rootType = rootType;
     QName rootTypeQname = this.rootType.getQualifiedName();
-    this.graph = CloudGraphConfig.getInstance().getDataGraph(rootTypeQname);
+    this.graph = StoreMapping.getInstance().getDataGraph(rootTypeQname);
   }
 
   private void init() {
@@ -91,7 +91,7 @@ public class ScanCollector implements ExprVisitor {
       this.partialKeyScans = new ArrayList<PartialRowKey>(this.literals.size());
       this.fuzzyKeyScans = new ArrayList<FuzzyRowKey>(this.literals.size());
       this.completeKeys = new ArrayList<CompleteRowKey>(this.literals.size());
-      for (Map<UserDefinedRowKeyFieldConfig, List<ScanLiteral>> existing : this.literals) {
+      for (Map<UserDefinedRowKeyFieldMapping, List<ScanLiteral>> existing : this.literals) {
         ScanLiterals scanLiterals = new ScanLiterals();
         for (List<ScanLiteral> literalList : existing.values()) {
           for (ScanLiteral literal : literalList)
@@ -150,7 +150,7 @@ public class ScanCollector implements ExprVisitor {
   }
 
   private void collect(RelationalBinaryExpr target, Expr source) {
-    UserDefinedRowKeyFieldConfig fieldConfig = graph.getUserDefinedRowKeyField(target
+    UserDefinedRowKeyFieldMapping fieldConfig = graph.getUserDefinedRowKeyField(target
         .getPropertyPath());
     if (fieldConfig == null) {
       log.warn("no user defined row-key field for query path '" + target.getPropertyPath()
@@ -168,7 +168,7 @@ public class ScanCollector implements ExprVisitor {
   }
 
   private void collect(WildcardBinaryExpr target, Expr source) {
-    UserDefinedRowKeyFieldConfig fieldConfig = graph.getUserDefinedRowKeyField(target
+    UserDefinedRowKeyFieldMapping fieldConfig = graph.getUserDefinedRowKeyField(target
         .getPropertyPath());
     if (fieldConfig == null) {
       log.warn("no user defined row-key field for query path '" + target.getPropertyPath()
@@ -185,7 +185,7 @@ public class ScanCollector implements ExprVisitor {
     collect(scanLiteral, fieldConfig, source);
   }
 
-  private void collect(ScanLiteral scanLiteral, UserDefinedRowKeyFieldConfig fieldConfig,
+  private void collect(ScanLiteral scanLiteral, UserDefinedRowKeyFieldMapping fieldConfig,
       Expr source) {
     if (source != null) {
       if (source instanceof LogicalBinaryExpr) {
@@ -199,10 +199,10 @@ public class ScanCollector implements ExprVisitor {
     }
   }
 
-  private void collect(UserDefinedRowKeyFieldConfig fieldConfig, LogicalBinaryExpr source,
+  private void collect(UserDefinedRowKeyFieldMapping fieldConfig, LogicalBinaryExpr source,
       ScanLiteral scanLiteral) {
     if (this.literals.size() == 0) {
-      Map<UserDefinedRowKeyFieldConfig, List<ScanLiteral>> map = new HashMap<UserDefinedRowKeyFieldConfig, List<ScanLiteral>>();
+      Map<UserDefinedRowKeyFieldMapping, List<ScanLiteral>> map = new HashMap<UserDefinedRowKeyFieldMapping, List<ScanLiteral>>();
       List<ScanLiteral> list = new ArrayList<ScanLiteral>(2);
       list.add(scanLiteral);
       map.put(fieldConfig, list);
@@ -210,7 +210,7 @@ public class ScanCollector implements ExprVisitor {
     } else if (this.literals.size() > 0) {
       boolean foundField = false;
 
-      for (Map<UserDefinedRowKeyFieldConfig, List<ScanLiteral>> existingMap : literals) {
+      for (Map<UserDefinedRowKeyFieldMapping, List<ScanLiteral>> existingMap : literals) {
         if (source == null
             || source.getOperator().getValue().ordinal() == LogicalOperatorName.AND.ordinal()) {
           List<ScanLiteral> list = existingMap.get(fieldConfig);
@@ -282,7 +282,7 @@ public class ScanCollector implements ExprVisitor {
 
       if (foundField) {
         // duplicate any map with new literal
-        Map<UserDefinedRowKeyFieldConfig, List<ScanLiteral>> next = newMap(literals.get(0),
+        Map<UserDefinedRowKeyFieldMapping, List<ScanLiteral>> next = newMap(literals.get(0),
             fieldConfig, scanLiteral);
         literals.add(next);
       }
@@ -301,11 +301,11 @@ public class ScanCollector implements ExprVisitor {
    *          the literal
    * @return the new map
    */
-  private Map<UserDefinedRowKeyFieldConfig, List<ScanLiteral>> newMap(
-      Map<UserDefinedRowKeyFieldConfig, List<ScanLiteral>> existing,
-      UserDefinedRowKeyFieldConfig fieldConfig, ScanLiteral scanLiteral) {
-    Map<UserDefinedRowKeyFieldConfig, List<ScanLiteral>> next = new HashMap<UserDefinedRowKeyFieldConfig, List<ScanLiteral>>();
-    for (UserDefinedRowKeyFieldConfig config : existing.keySet()) {
+  private Map<UserDefinedRowKeyFieldMapping, List<ScanLiteral>> newMap(
+      Map<UserDefinedRowKeyFieldMapping, List<ScanLiteral>> existing,
+      UserDefinedRowKeyFieldMapping fieldConfig, ScanLiteral scanLiteral) {
+    Map<UserDefinedRowKeyFieldMapping, List<ScanLiteral>> next = new HashMap<UserDefinedRowKeyFieldMapping, List<ScanLiteral>>();
+    for (UserDefinedRowKeyFieldMapping config : existing.keySet()) {
       if (!config.equals(fieldConfig)) {
         next.put(config, existing.get(config));
       } else {

@@ -18,8 +18,8 @@ package org.cloudgraph.hbase.scan;
 import java.util.Arrays;
 import java.util.Date;
 
-import org.cloudgraph.config.UserDefinedRowKeyFieldConfig;
 import org.cloudgraph.hbase.service.HBaseDataConverter;
+import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.plasma.query.model.RelationalOperator;
 import org.plasma.sdo.DataFlavor;
 import org.plasma.sdo.DataType;
@@ -35,7 +35,7 @@ import org.plasma.sdo.PlasmaType;
  * composite row key and therefore implements {@link FuzzyRowKeyLiteral}
  * supplying only default key and info bytes.
  * 
- * @see org.cloudgraph.config.TableConfig
+ * @see org.cloudgraph.store.mapping.TableMapping
  * @see org.cloudgraph.hbase.service.HBaseDataConverter
  */
 public class TemporalLiteral extends ScanLiteral implements PartialRowKeyLiteral,
@@ -49,7 +49,7 @@ public class TemporalLiteral extends ScanLiteral implements PartialRowKeyLiteral
   // resolution is seconds
 
   public TemporalLiteral(String literal, PlasmaType rootType,
-      RelationalOperator relationalOperator, UserDefinedRowKeyFieldConfig fieldConfig) {
+      RelationalOperator relationalOperator, UserDefinedRowKeyFieldMapping fieldConfig) {
     super(literal, rootType, relationalOperator, fieldConfig);
   }
 

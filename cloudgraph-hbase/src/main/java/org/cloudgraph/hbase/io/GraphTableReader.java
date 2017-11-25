@@ -31,10 +31,10 @@ import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.cloudgraph.common.CloudGraphConstants;
-import org.cloudgraph.config.TableConfig;
 import org.cloudgraph.hbase.connect.Connection;
 import org.cloudgraph.hbase.connect.HBaseConnectionManager;
 import org.cloudgraph.state.GraphTable;
+import org.cloudgraph.store.mapping.TableMapping;
 //import org.cloudgraph.state.UUID;
 import org.plasma.sdo.PlasmaDataObject;
 import org.plasma.sdo.core.CoreDataObject;
@@ -63,7 +63,7 @@ public class GraphTableReader extends GraphTable implements TableReader {
   private Map<String, RowReader> rowReaderMap = new HashMap<String, RowReader>();
   private DistributedOperation distributedOperation;
 
-  public GraphTableReader(TableConfig table, DistributedOperation distributedOperation) {
+  public GraphTableReader(TableMapping table, DistributedOperation distributedOperation) {
     super(table);
     this.distributedOperation = distributedOperation;
   }

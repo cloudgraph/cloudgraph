@@ -31,13 +31,13 @@ import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.Row;
 import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.cloudgraph.config.TableConfig;
 import org.cloudgraph.hbase.key.StatefullColumnKeyFactory;
 import org.cloudgraph.state.ProtoSequenceGenerator;
 import org.cloudgraph.state.SequenceGenerator;
 import org.cloudgraph.store.key.EntityMetaKey;
 import org.cloudgraph.store.key.GraphMetaKey;
 import org.cloudgraph.store.key.GraphStatefullColumnKeyFactory;
+import org.cloudgraph.store.mapping.TableMapping;
 import org.cloudgraph.store.service.DuplicateRowException;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.cloudgraph.store.service.MissingRowException;
@@ -226,7 +226,7 @@ public class GraphRowWriter extends DefaultRowOperation implements RowWriter {
     // if entirely new graph for the given
     // distributed or sub-graph root
     if (changeSummary.isCreated(dataObject)) {
-      TableConfig tableConfig = this.tableWriter.getTableConfig();
+      TableMapping tableConfig = this.tableWriter.getTableConfig();
       if (tableConfig.uniqueChecks()) {
         Result result = getMinimalRow(rowKey, tableConfig, this.tableWriter.getTable());
         if (!result.isEmpty()) {
@@ -250,7 +250,7 @@ public class GraphRowWriter extends DefaultRowOperation implements RowWriter {
       if (log.isDebugEnabled())
         log.debug(graphState.toString());
     } else { // modify or delete
-      TableConfig tableConfig = this.tableWriter.getTableConfig();
+      TableMapping tableConfig = this.tableWriter.getTableConfig();
       Result result = getStateRow(rowKey, tableConfig, this.tableWriter.getTable());
       if (result.isEmpty()) {
         throw new MissingRowException(tableConfig.getTable().getName(), Bytes.toString(rowKey));
@@ -308,7 +308,7 @@ public class GraphRowWriter extends DefaultRowOperation implements RowWriter {
     return graphState;
   }
 
-  private Result getMinimalRow(byte[] rowKey, TableConfig tableConfig, Table table)
+  private Result getMinimalRow(byte[] rowKey, TableMapping tableConfig, Table table)
       throws IOException {
     Get existing = new Get(rowKey);
     byte[] fam = tableConfig.getDataColumnFamilyNameBytes();
@@ -321,7 +321,7 @@ public class GraphRowWriter extends DefaultRowOperation implements RowWriter {
     return table.get(existing);
   }
 
-  private Result getStateRow(byte[] rowKey, TableConfig tableConfig, Table table)
+  private Result getStateRow(byte[] rowKey, TableMapping tableConfig, Table table)
       throws IOException {
     Get existing = new Get(rowKey);
     byte[] fam = tableConfig.getDataColumnFamilyNameBytes();

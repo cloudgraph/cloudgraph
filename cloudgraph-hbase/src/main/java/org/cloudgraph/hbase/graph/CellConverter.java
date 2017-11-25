@@ -5,7 +5,6 @@ import java.util.Collection;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.cloudgraph.config.TableConfig;
 import org.cloudgraph.hbase.io.CellValues;
 import org.cloudgraph.hbase.io.DefaultEdgeOperation;
 import org.cloudgraph.hbase.io.GraphRowWriter;
@@ -14,6 +13,7 @@ import org.cloudgraph.hbase.service.HBaseDataConverter;
 import org.cloudgraph.store.key.EntityMetaKey;
 import org.cloudgraph.store.key.GraphColumnKeyFactory;
 import org.cloudgraph.store.key.KeyValue;
+import org.cloudgraph.store.mapping.TableMapping;
 import org.plasma.sdo.Key;
 import org.plasma.sdo.PlasmaType;
 import org.plasma.sdo.profile.KeyStructure;
@@ -21,11 +21,11 @@ import org.plasma.sdo.profile.KeyStructure;
 public class CellConverter {
   private static Log log = LogFactory.getLog(CellConverter.class);
   private PlasmaType rootType;
-  private TableConfig rootTableConfig;
+  private TableMapping rootTableConfig;
   private GraphColumnKeyFactory keyFactory;
   private HBaseDataConverter hbaseConverter = HBaseDataConverter.INSTANCE;
 
-  public CellConverter(PlasmaType rootType, TableConfig rootTableConfig) {
+  public CellConverter(PlasmaType rootType, TableMapping rootTableConfig) {
     super();
     this.rootType = rootType;
     this.rootTableConfig = rootTableConfig;

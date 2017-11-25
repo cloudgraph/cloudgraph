@@ -19,13 +19,13 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.cloudgraph.config.CloudGraphConfig;
-import org.cloudgraph.config.DataGraphConfig;
-import org.cloudgraph.config.UserDefinedRowKeyFieldConfig;
 import org.cloudgraph.query.expr.Expr;
 import org.cloudgraph.query.expr.ExprVisitor;
 import org.cloudgraph.query.expr.RelationalBinaryExpr;
 import org.cloudgraph.query.expr.WildcardBinaryExpr;
+import org.cloudgraph.store.mapping.DataGraphMapping;
+import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.plasma.sdo.PlasmaType;
 
 /**
@@ -36,10 +36,10 @@ import org.plasma.sdo.PlasmaType;
  * <p>
  * Visits the expression tree and for each expression determines whether the
  * property and its path are represented within the row key model for the
- * current {@link DataGraphConfig graph} by a user defined
- * {@link UserDefinedRowKeyFieldConfig field}. If not, then the property and its
- * {@link Expr expression} are outside the row key and can't be represented by a
- * scan. Therefore a recognizer is required.
+ * current {@link DataGraphMapping graph} by a user defined
+ * {@link UserDefinedRowKeyFieldMapping field}. If not, then the property and
+ * its {@link Expr expression} are outside the row key and can't be represented
+ * by a scan. Therefore a recognizer is required.
  * </p>
  * 
  * @author Scott Cinnamond
@@ -47,8 +47,8 @@ import org.plasma.sdo.PlasmaType;
  * @see org.cloudgraph.query.expr.Expr
  * @see org.cloudgraph.query.expr.RelationalBinaryExpr
  * @see org.cloudgraph.query.expr.ExprVisitor
- * @see org.cloudgraph.config.DataGraphConfig
- * @see org.cloudgraph.config.UserDefinedRowKeyFieldConfig
+ * @see org.cloudgraph.store.mapping.DataGraphMapping
+ * @see org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping
  * @see org.cloudgraph.query.expr.LogicalBinaryExpr
  * @see org.cloudgraph.query.expr.RelationalBinaryExpr
  * @see org.cloudgraph.query.expr.WildcardBinaryExpr
@@ -58,13 +58,13 @@ public class GraphRecognizerDetector implements ExprVisitor {
   private static Log log = LogFactory.getLog(GraphRecognizerDetector.class);
 
   private PlasmaType rootType;
-  private DataGraphConfig graph;
+  private DataGraphMapping graph;
   private boolean queryRequiresGraphRecognizer = false;
 
   public GraphRecognizerDetector(PlasmaType rootType) {
     this.rootType = rootType;
     QName rootTypeQname = this.rootType.getQualifiedName();
-    this.graph = CloudGraphConfig.getInstance().getDataGraph(rootTypeQname);
+    this.graph = StoreMapping.getInstance().getDataGraph(rootTypeQname);
   }
 
   public boolean isQueryRequiresGraphRecognizer() {
@@ -75,7 +75,7 @@ public class GraphRecognizerDetector implements ExprVisitor {
   public void visit(Expr target, Expr source, int level) {
     if (target instanceof RelationalBinaryExpr) {
       RelationalBinaryExpr expr = (RelationalBinaryExpr) target;
-      UserDefinedRowKeyFieldConfig fieldConfig = graph.getUserDefinedRowKeyField(expr
+      UserDefinedRowKeyFieldMapping fieldConfig = graph.getUserDefinedRowKeyField(expr
           .getPropertyPath());
       if (fieldConfig == null) {
         this.queryRequiresGraphRecognizer = true;
@@ -83,7 +83,7 @@ public class GraphRecognizerDetector implements ExprVisitor {
       }
     } else if (target instanceof WildcardBinaryExpr) {
       WildcardBinaryExpr expr = (WildcardBinaryExpr) target;
-      UserDefinedRowKeyFieldConfig fieldConfig = graph.getUserDefinedRowKeyField(expr
+      UserDefinedRowKeyFieldMapping fieldConfig = graph.getUserDefinedRowKeyField(expr
           .getPropertyPath());
       if (fieldConfig == null) {
         this.queryRequiresGraphRecognizer = true;

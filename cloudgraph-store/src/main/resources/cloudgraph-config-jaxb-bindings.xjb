@@ -17,8 +17,8 @@
  
 	<jxb:bindings schemaLocation="cloudgraph-config.xsd" node="/xsd:schema">
 	    <jxb:schemaBindings>
-	        <jxb:package name="org.cloudgraph.config">
-	            <jxb:javadoc><![CDATA[<body>Package level documentation for package org.cloudgraph.config.</body>]]></jxb:javadoc>
+	        <jxb:package name="org.cloudgraph.store.mapping">
+	            <jxb:javadoc><![CDATA[<body>Package level documentation for package org.cloudgraph.store.mapping</body>]]></jxb:javadoc>
             </jxb:package>
 	    </jxb:schemaBindings>
 	</jxb:bindings>

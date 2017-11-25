@@ -23,9 +23,9 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.cloudgraph.config.CloudGraphConfig;
-import org.cloudgraph.config.Config;
-import org.cloudgraph.config.TableConfig;
+import org.cloudgraph.store.mapping.Config;
+import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.TableMapping;
 import org.plasma.sdo.PlasmaDataObject;
 import org.plasma.sdo.PlasmaType;
 import org.plasma.sdo.access.provider.common.DeletedObjectCollector;
@@ -50,8 +50,8 @@ import commonj.sdo.DataObject;
  * nodes (if exist) are ignored.
  * </p>
  * 
- * @see org.cloudgraph.config.CloudGraphConfig
- * @see org.cloudgraph.config.TableConfig
+ * @see org.cloudgraph.store.mapping.StoreMapping
+ * @see org.cloudgraph.store.mapping.TableMapping
  * @see org.cloudgraph.hbase.io.TableWriter
  * @see org.cloudgraph.hbase.io.RowWriter
  * @see commonj.sdo.ChangeSummary
@@ -70,7 +70,7 @@ public class TableWriterCollector extends WriterSupport {
   private PlasmaDataObject[] created;
   private ModifiedObjectCollector modified;
   private DeletedObjectCollector deleted;
-  private Config config = CloudGraphConfig.getInstance();
+  private Config config = StoreMapping.getInstance();
 
   public TableWriterCollector(DataGraph dataGraph, PlasmaDataObject[] created,
       ModifiedObjectCollector modified, DeletedObjectCollector deleted) throws IOException {
@@ -109,14 +109,14 @@ public class TableWriterCollector extends WriterSupport {
     // Note: The root may NOT be part of the change summary, but regardless
     // it must be associated with a table in order to
     // associate any linked un-bound types
-    TableConfig rootTable = this.config.findTable(this.root.getType());
+    TableMapping rootTable = this.config.findTable(this.root.getType());
     if (rootTable != null)
       associate(rootTable, this.root);
 
     // Collect all "bound" data objects associated w/the change summary
     for (DataObject dataObject : this.changeSummary.getChangedDataObjects()) {
       PlasmaType type = (PlasmaType) dataObject.getType();
-      TableConfig table = this.config.findTable(type);
+      TableMapping table = this.config.findTable(type);
       if (table != null)
         associate(table, dataObject);
     }
@@ -127,7 +127,7 @@ public class TableWriterCollector extends WriterSupport {
 
     for (PlasmaDataObject dataObject : this.created) {
       PlasmaType type = (PlasmaType) dataObject.getType();
-      TableConfig table = this.config.findTable(type);
+      TableMapping table = this.config.findTable(type);
       if (table == null) {
         if (log.isDebugEnabled())
           log.debug("collecting unbound created: " + dataObject);
@@ -140,7 +140,7 @@ public class TableWriterCollector extends WriterSupport {
 
     for (PlasmaDataObject dataObject : this.modified.getResult()) {
       PlasmaType type = (PlasmaType) dataObject.getType();
-      TableConfig table = this.config.findTable(type);
+      TableMapping table = this.config.findTable(type);
       if (table == null) {
         if (log.isDebugEnabled())
           log.debug("collecting unbound modified: " + dataObject);
@@ -155,7 +155,7 @@ public class TableWriterCollector extends WriterSupport {
     for (int i = deletedResult.size() - 1; i >= 0; i--) {
       PlasmaDataObject dataObject = deletedResult.get(i);
       PlasmaType type = (PlasmaType) dataObject.getType();
-      TableConfig table = this.config.findTable(type);
+      TableMapping table = this.config.findTable(type);
       if (table == null) {
         if (log.isDebugEnabled())
           log.debug("collecting unbound deleted: " + dataObject);
@@ -185,7 +185,7 @@ public class TableWriterCollector extends WriterSupport {
    * @throws IOException
    */
   private void associate(DataObject target) throws IOException {
-    TableConfig table = this.config.findTable((PlasmaType) target.getType());
+    TableMapping table = this.config.findTable((PlasmaType) target.getType());
     if (table != null)
       throw new IllegalArgumentException("expected unbound data object - given data object "
           + target + " is bound to table, " + table.getQualifiedName());
@@ -194,7 +194,7 @@ public class TableWriterCollector extends WriterSupport {
     if (rowWriter == null) {
       RowWriter containerRowWriter = null;
       for (DataObject container : this.getContainerAncestry(target)) {
-        TableConfig containerTable = this.config.findTable((PlasmaType) container.getType());
+        TableMapping containerTable = this.config.findTable((PlasmaType) container.getType());
         if (containerTable == null)
           continue; // need a bound DO to associate to
         containerRowWriter = this.rowWriterMap.get(container);
@@ -231,7 +231,7 @@ public class TableWriterCollector extends WriterSupport {
    *          the data object
    * @return the row writer.
    */
-  private RowWriter associate(TableConfig table, DataObject target) throws IOException {
+  private RowWriter associate(TableMapping table, DataObject target) throws IOException {
 
     // a table is configured with this type as root
     TableWriter tableWriter = (TableWriter) result.get(table.getName());

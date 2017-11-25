@@ -64,10 +64,6 @@ import org.apache.hadoop.io.WritableComparable;
 import org.apache.hadoop.mapreduce.InputFormat;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.util.StringUtils;
-import org.cloudgraph.config.CloudGraphConfig;
-import org.cloudgraph.config.Config;
-import org.cloudgraph.config.DataGraphConfig;
-import org.cloudgraph.config.UserDefinedRowKeyFieldConfig;
 import org.cloudgraph.hbase.filter.GraphFetchColumnFilterAssembler;
 import org.cloudgraph.hbase.filter.HBaseFilterAssembler;
 import org.cloudgraph.hbase.io.DistributedGraphReader;
@@ -84,6 +80,10 @@ import org.cloudgraph.query.expr.ExprPrinter;
 import org.cloudgraph.state.SimpleStateMarshallingContext;
 import org.cloudgraph.state.StateMarshalingContext;
 import org.cloudgraph.state.StateNonValidatingDataBinding;
+import org.cloudgraph.store.mapping.Config;
+import org.cloudgraph.store.mapping.DataGraphMapping;
+import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.common.bind.DefaultValidationEventHandler;
 import org.plasma.query.From;
@@ -95,6 +95,7 @@ import org.plasma.sdo.PlasmaType;
 import org.xml.sax.SAXException;
 
 import com.google.protobuf.InvalidProtocolBufferException;
+
 import commonj.sdo.Type;
 
 /**
@@ -852,13 +853,13 @@ public class GraphMapReduceSetup extends JobSetup {
   }
 
   private static void collectRowKeyProperties(SelectionCollector collector, PlasmaType type) {
-    Config config = CloudGraphConfig.getInstance();
-    DataGraphConfig graph = config.findDataGraph(type.getQualifiedName());
+    Config config = StoreMapping.getInstance();
+    DataGraphMapping graph = config.findDataGraph(type.getQualifiedName());
     if (graph != null) {
-      UserDefinedRowKeyFieldConfig[] fields = new UserDefinedRowKeyFieldConfig[graph
+      UserDefinedRowKeyFieldMapping[] fields = new UserDefinedRowKeyFieldMapping[graph
           .getUserDefinedRowKeyFields().size()];
       graph.getUserDefinedRowKeyFields().toArray(fields);
-      for (UserDefinedRowKeyFieldConfig field : fields) {
+      for (UserDefinedRowKeyFieldMapping field : fields) {
         List<Type> types = collector.addProperty(graph.getRootType(), field.getPropertyPath());
         for (Type nextType : types)
           collectRowKeyProperties(collector, (PlasmaType) nextType);

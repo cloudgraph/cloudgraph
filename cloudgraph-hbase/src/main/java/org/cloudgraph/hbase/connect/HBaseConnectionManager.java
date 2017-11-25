@@ -30,17 +30,17 @@ import org.apache.hadoop.hbase.NamespaceNotFoundException;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.ZooKeeperConnectionException;
 import org.apache.hadoop.hbase.client.Admin;
-import org.cloudgraph.config.CloudGraphConfig;
-import org.cloudgraph.config.TableConfig;
 import org.cloudgraph.hbase.service.CloudGraphContext;
 import org.cloudgraph.state.StateException;
+import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.TableMapping;
 import org.cloudgraph.store.service.GraphServiceException;
 
 /**
  * Manages HBase table pool and table interface access.
  * 
  * @see CloudGraphContext
- * @see TableConfig
+ * @see TableMapping
  * @author Scott Cinnamond
  * @since 0.5
  */
@@ -108,8 +108,8 @@ public class HBaseConnectionManager {
     Admin admin = null;
     try {
       admin = connection.getAdmin();
-      TableConfig tableConfig = CloudGraphConfig.getInstance().getTable(
-          name.getNamespaceAsString(), name.getNameAsString());
+      TableMapping tableConfig = StoreMapping.getInstance().getTable(name.getNamespaceAsString(),
+          name.getNameAsString());
       HTableDescriptor tableDesc = new HTableDescriptor(name);
       HColumnDescriptor fam1 = new HColumnDescriptor(tableConfig.getDataColumnFamilyName()
           .getBytes());

@@ -17,7 +17,7 @@ package org.cloudgraph.hbase.scan;
 
 import java.util.Arrays;
 
-import org.cloudgraph.config.UserDefinedRowKeyFieldConfig;
+import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.plasma.query.model.RelationalOperator;
 import org.plasma.sdo.DataFlavor;
 import org.plasma.sdo.PlasmaType;
@@ -33,7 +33,7 @@ import org.plasma.sdo.PlasmaType;
  * implements {@link FuzzyRowKeyLiteral} supplying only default key and info
  * bytes.
  * 
- * @see org.cloudgraph.config.TableConfig
+ * @see org.cloudgraph.store.mapping.TableMapping
  * @see org.cloudgraph.hbase.service.HBaseDataConverter
  * @see WildcardStringLiteral
  * @author Scott Cinnamond
@@ -45,7 +45,7 @@ public class StringLiteral extends ScanLiteral implements PartialRowKeyLiteral, 
   public static final byte INCREMENT = Byte.MIN_VALUE;
 
   public StringLiteral(String literal, PlasmaType rootType, RelationalOperator relationalOperator,
-      UserDefinedRowKeyFieldConfig fieldConfig) {
+      UserDefinedRowKeyFieldMapping fieldConfig) {
     super(literal, rootType, relationalOperator, fieldConfig);
   }
 

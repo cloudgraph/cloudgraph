@@ -37,15 +37,6 @@ import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.util.StringUtils;
 import org.cloudgraph.common.CloudGraphConstants;
-import org.cloudgraph.config.CloudGraphConfig;
-import org.cloudgraph.config.CloudGraphConfigDataBinding;
-import org.cloudgraph.config.CloudGraphConfigValidationEventHandler;
-import org.cloudgraph.config.CloudGraphConfiguration;
-import org.cloudgraph.config.CloudGraphConfigurationException;
-import org.cloudgraph.config.Config;
-import org.cloudgraph.config.DataGraphConfig;
-import org.cloudgraph.config.TableConfig;
-import org.cloudgraph.config.UserDefinedRowKeyFieldConfig;
 import org.cloudgraph.hbase.graph.GraphAssembler;
 import org.cloudgraph.hbase.graph.GraphSliceAssembler;
 import org.cloudgraph.hbase.graph.HBaseGraphAssembler;
@@ -63,6 +54,15 @@ import org.cloudgraph.state.SimpleStateMarshallingContext;
 import org.cloudgraph.state.StateMarshalingContext;
 import org.cloudgraph.state.StateNonValidatingDataBinding;
 import org.cloudgraph.store.key.GraphMetaKey;
+import org.cloudgraph.store.mapping.CloudGraphStoreMapping;
+import org.cloudgraph.store.mapping.Config;
+import org.cloudgraph.store.mapping.DataGraphMapping;
+import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.StoreMappingDataBinding;
+import org.cloudgraph.store.mapping.StoreMappingException;
+import org.cloudgraph.store.mapping.StoreMappingValidationEventHandler;
+import org.cloudgraph.store.mapping.TableMapping;
+import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.common.bind.DefaultValidationEventHandler;
 import org.plasma.query.bind.PlasmaQueryDataBinding;
@@ -228,19 +228,19 @@ public class GraphRecordRecognizer {
       String mappingXml = context.getConfiguration().get(GraphInputFormat.TABLE_MAPPINGS);
       if (mappingXml != null) {
         try {
-          CloudGraphConfigDataBinding binding = new CloudGraphConfigDataBinding(
-              new CloudGraphConfigValidationEventHandler());
-          CloudGraphConfiguration result = (CloudGraphConfiguration) binding.validate(mappingXml);
-          for (org.cloudgraph.config.Table mapping : result.getTables()) {
-            for (org.cloudgraph.config.DataGraph graph : mapping.getDataGraphs())
+          StoreMappingDataBinding binding = new StoreMappingDataBinding(
+              new StoreMappingValidationEventHandler());
+          CloudGraphStoreMapping result = (CloudGraphStoreMapping) binding.validate(mappingXml);
+          for (org.cloudgraph.store.mapping.Table mapping : result.getTables()) {
+            for (org.cloudgraph.store.mapping.DataGraph graph : mapping.getDataGraphs())
               if (!PlasmaRuntime.getInstance().hasSDONamespace(graph.getUri()))
                 PlasmaRuntime.getInstance().addDynamicSDONamespace(graph.getUri(), null);
             loadMapping(mapping);
           }
         } catch (JAXBException e) {
-          throw new CloudGraphConfigurationException(e);
+          throw new StoreMappingException(e);
         } catch (SAXException e) {
-          throw new CloudGraphConfigurationException(e);
+          throw new StoreMappingException(e);
         }
       }
 
@@ -290,10 +290,10 @@ public class GraphRecordRecognizer {
     restart(scan.getStartRow());
   }
 
-  private void loadMapping(org.cloudgraph.config.Table table) {
-    TableConfig tableCondig = new TableConfig(table);
-    if (CloudGraphConfig.getInstance().findTable(tableCondig.getQualifiedName()) == null)
-      CloudGraphConfig.getInstance().addTable(tableCondig);
+  private void loadMapping(org.cloudgraph.store.mapping.Table table) {
+    TableMapping tableCondig = new TableMapping(table);
+    if (StoreMapping.getInstance().findTable(tableCondig.getQualifiedName()) == null)
+      StoreMapping.getInstance().addTable(tableCondig);
   }
 
   /**
@@ -530,13 +530,13 @@ public class GraphRecordRecognizer {
   }
 
   private static void collectRowKeyProperties(SelectionCollector collector, PlasmaType type) {
-    Config config = CloudGraphConfig.getInstance();
-    DataGraphConfig graph = config.findDataGraph(type.getQualifiedName());
+    Config config = StoreMapping.getInstance();
+    DataGraphMapping graph = config.findDataGraph(type.getQualifiedName());
     if (graph != null) {
-      UserDefinedRowKeyFieldConfig[] fields = new UserDefinedRowKeyFieldConfig[graph
+      UserDefinedRowKeyFieldMapping[] fields = new UserDefinedRowKeyFieldMapping[graph
           .getUserDefinedRowKeyFields().size()];
       graph.getUserDefinedRowKeyFields().toArray(fields);
-      for (UserDefinedRowKeyFieldConfig field : fields) {
+      for (UserDefinedRowKeyFieldMapping field : fields) {
         List<Type> types = collector.addProperty(graph.getRootType(), field.getPropertyPath());
         for (Type nextType : types)
           collectRowKeyProperties(collector, (PlasmaType) nextType);

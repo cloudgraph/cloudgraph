@@ -26,14 +26,14 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.cloudgraph.config.CloudGraphConfig;
-import org.cloudgraph.config.DataGraphConfig;
-import org.cloudgraph.config.TableConfig;
-import org.cloudgraph.config.UserDefinedRowKeyFieldConfig;
 import org.cloudgraph.hbase.io.DistributedWriter;
 import org.cloudgraph.hbase.io.RowWriter;
 import org.cloudgraph.hbase.service.HBaseDataConverter;
 import org.cloudgraph.hbase.service.ServiceContext;
+import org.cloudgraph.store.mapping.DataGraphMapping;
+import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.TableMapping;
+import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.plasma.sdo.PlasmaDataObject;
 import org.plasma.sdo.PlasmaEdge;
 import org.plasma.sdo.PlasmaNode;
@@ -185,7 +185,7 @@ abstract class DefaultMutation {
     for (PlasmaEdge edge : edges) {
       PlasmaDataObject opposite = edge.getOpposite(dataNode).getDataObject();
       PlasmaType oppositeType = (PlasmaType) opposite.getType();
-      boolean oppositeTypeBound = CloudGraphConfig.getInstance().findTable(
+      boolean oppositeTypeBound = StoreMapping.getInstance().findTable(
           oppositeType.getQualifiedName()) != null;
       RowWriter oppositeRowWriter = graphWriter.findRowWriter(opposite);
       if (oppositeRowWriter == null) {
@@ -211,7 +211,7 @@ abstract class DefaultMutation {
     PlasmaProperty prop = (PlasmaProperty) property;
     byte[] qualifier = rowContext.getColumnKeyFactory().createColumnKey(
         (PlasmaType) dataObject.getType(), sequence, prop);
-    TableConfig table = rowContext.getTableWriter().getTableConfig();
+    TableMapping table = rowContext.getTableWriter().getTableConfig();
     if (log.isDebugEnabled()) {
       if (prop.getType().isDataType()) {
         Object objectValue = HBaseDataConverter.INSTANCE.fromBytes(prop, value);
@@ -241,7 +241,7 @@ abstract class DefaultMutation {
       PlasmaProperty property) throws IOException {
     byte[] qualifier = rowContext.getColumnKeyFactory().createColumnKey(dataObject, sequence,
         property);
-    TableConfig table = rowContext.getTableWriter().getTableConfig();
+    TableMapping table = rowContext.getTableWriter().getTableConfig();
     if (log.isDebugEnabled())
       log.debug("deleting " + property + " / " + table.getName() + "."
           + new String(qualifier, table.getCharset()));
@@ -447,7 +447,7 @@ abstract class DefaultMutation {
     PlasmaNode dataNode = (PlasmaNode) dataObject;
 
     PlasmaType rootType = (PlasmaType) rowWriter.getRootDataObject().getType();
-    DataGraphConfig dataGraphConfig = CloudGraphConfig.getInstance().getDataGraph(
+    DataGraphMapping dataGraphConfig = StoreMapping.getInstance().getDataGraph(
         rootType.getQualifiedName());
 
     List<Property> properties = type.getProperties();
@@ -462,7 +462,7 @@ abstract class DefaultMutation {
         throw new IllegalAccessException("attempt to modify read-only property, " + type.getURI()
             + "#" + type.getName() + "." + property.getName());
 
-      UserDefinedRowKeyFieldConfig userDefinedField = dataGraphConfig
+      UserDefinedRowKeyFieldMapping userDefinedField = dataGraphConfig
           .findUserDefinedRowKeyField(property);
       if (userDefinedField != null) {
         throw new IllegalAccessException("attempt to modify row-key property, " + type.getURI()

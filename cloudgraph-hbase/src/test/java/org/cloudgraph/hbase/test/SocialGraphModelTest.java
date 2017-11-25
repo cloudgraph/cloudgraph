@@ -295,9 +295,9 @@ public abstract class SocialGraphModelTest extends HBaseTestCase {
 
     root.where(root
         .name()
-        .like(name1.substring(0, 21) + "*")
+        .like(name1.substring(0, 10) + "*")
         .or(root.name().eq(name2))
-        .or(root.name().like(name3.substring(0, 21) + "*"))
+        .or(root.name().like(name3.substring(0, 10) + "*"))
         .and(
             root.blog().topic().name().eq(topic1.getName())
                 .and(root.blog().topic().name().eq(topic2.getName()))));

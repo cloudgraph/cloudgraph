@@ -1,6 +1,5 @@
 org.cloudgraph.common
 org.cloudgraph.common.concurrent
-org.cloudgraph.config
 org.cloudgraph.hbase.connect
 org.cloudgraph.hbase.expr
 org.cloudgraph.hbase.filter
@@ -25,4 +24,6 @@ org.cloudgraph.state
 org.cloudgraph.state.proto
 org.cloudgraph.store.key
 org.cloudgraph.store.lang
+org.cloudgraph.store.mapping
+org.cloudgraph.store.mapping.annotation
 org.cloudgraph.store.service

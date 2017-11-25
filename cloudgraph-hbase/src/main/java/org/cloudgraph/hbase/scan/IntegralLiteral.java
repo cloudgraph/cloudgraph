@@ -18,7 +18,7 @@ package org.cloudgraph.hbase.scan;
 import java.math.BigInteger;
 import java.util.Arrays;
 
-import org.cloudgraph.config.UserDefinedRowKeyFieldConfig;
+import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.plasma.query.model.RelationalOperator;
 import org.plasma.sdo.DataFlavor;
 import org.plasma.sdo.DataType;
@@ -36,7 +36,7 @@ import commonj.sdo.Type;
  * composite row key and therefore implements {@link FuzzyRowKeyLiteral}
  * supplying only default key and info bytes.
  * 
- * @see org.cloudgraph.config.TableConfig
+ * @see org.cloudgraph.store.mapping.TableMapping
  * @see org.cloudgraph.hbase.service.HBaseDataConverter
  * @author Scott Cinnamond
  * @since 0.5
@@ -47,7 +47,7 @@ public class IntegralLiteral extends ScanLiteral implements PartialRowKeyLiteral
   public static final int INCREMENT = 1;
 
   public IntegralLiteral(String literal, PlasmaType rootType,
-      RelationalOperator relationalOperator, UserDefinedRowKeyFieldConfig fieldConfig) {
+      RelationalOperator relationalOperator, UserDefinedRowKeyFieldMapping fieldConfig) {
     super(literal, rootType, relationalOperator, fieldConfig);
   }
 

@@ -15,12 +15,12 @@
  */
 package org.cloudgraph.hbase.scan;
 
-import org.cloudgraph.config.DataGraphConfig;
 import org.cloudgraph.query.expr.DefaultBinaryExprTreeAssembler;
 import org.cloudgraph.query.expr.Expr;
 import org.cloudgraph.query.expr.ExprAssembler;
 import org.cloudgraph.query.expr.LogicalBinaryExpr;
 import org.cloudgraph.query.expr.RelationalBinaryExpr;
+import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.plasma.query.model.Literal;
 import org.plasma.query.model.LogicalOperator;
 import org.plasma.query.model.Property;
@@ -53,7 +53,7 @@ import org.plasma.sdo.PlasmaType;
  * @see ScanRecognizerContext
  */
 public class ScanRecognizerSyntaxTreeAssembler extends DefaultBinaryExprTreeAssembler {
-  protected DataGraphConfig graphConfig;
+  protected DataGraphMapping graphConfig;
 
   /**
    * Constructs an assembler based on the given predicate data graph
