@@ -13,6 +13,8 @@ See https://github.com/cloudgraph/cloudgraph/issues.
 
 Major Changes
 [Issue #10] -  Upgrade to Plasma 2.0.1
+[Issue #11] -  Add Annotations for Auto Discovery of Store Mappings 
+
 Bugs
 
 Improvements
