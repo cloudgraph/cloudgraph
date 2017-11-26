@@ -118,8 +118,6 @@ public abstract class PathPredicateBinaryExprTreeAssembler extends DefaultBinary
     this.contextQueryProperty = property;
     byte[] columnKey = this.columnKeyFactory.createColumnKey(this.edgeType, this.contextProperty);
     this.contextQueryProperty.setPhysicalNameBytes(columnKey);
-
-    super.end(property);
   }
 
 }
