@@ -20,6 +20,7 @@ CloudGraph is a suite of Java™ data-graph wide-row mapping and ad hoc query se
 | [**CloudGraph Quickstart HBase (POJO)**](http://cloudgraph.github.io/cloudgraph/quickstart/CloudGraph-Quickstart-HBase-Pojo) | Step by step guide for end-to-end HBase persistence with code samples using Plasma annotated Java POJO's as sole metadata source |
 | [**CloudGraph Quickstart MySql (POJO)**](http://cloudgraph.github.io/cloudgraph/quickstart/CloudGraph-Quickstart-MySql-Pojo) | Step by step guide for end-to-end MySql persistence with code samples using Plasma annotated Java POJO's as sole metadata source |
 | [**CloudGraph Quickstart MySql (UML)**](http://cloudgraph.github.io/cloudgraph/quickstart/CloudGraph-Quickstart-MySql-UML) | Step by step guide for end-to-end MySql persistence with code samples using Plasma annotated UML as metadata source |
+| [**CloudGraph HBase Easy Wide Rows**](http://cloudgraph.github.io/cloudgraph/quickstart/CloudGraph-HBase-Easy-Wide-Rows) | This step-by-step guide shows how to build a Maven project which generates a simple HBase data model with 1 “wide row” table with example row slice queries. It uses only annotated Java (POJO) objects as the source of schema or metadata |
 | [**CloudGraph Architecture Overview**](http://cloudgraph.github.io/cloudgraph/arch_overview/CloudGraph-Architecture-Overview) | General technical background plus architecture components |
 | [**CloudGraph API DOCS**](http://cloudgraph.github.io/cloudgraph/apidocs/index.html)                                          | Generated javadoc API documentation tree |
 
@@ -110,6 +111,7 @@ For the CloudGraph RDB data store library use the following artefact.
 | [**CloudGraph Quickstart HBase (POJO)**](http://cloudgraph.github.io/cloudgraph/quickstart/CloudGraph-Quickstart-HBase-Pojo) | Step by step guide for end-to-end HBase persistence with code samples using Plasma annotated Java POJO's as sole metadata source |
 | [**CloudGraph Quickstart MySql (POJO)**](http://cloudgraph.github.io/cloudgraph/quickstart/CloudGraph-Quickstart-MySql-Pojo) | Step by step guide for end-to-end MySql persistence with code samples using Plasma annotated Java POJO's as sole metadata source |
 | [**CloudGraph Quickstart MySql (UML)**](http://cloudgraph.github.io/cloudgraph/quickstart/CloudGraph-Quickstart-MySql-UML) | Step by step guide for end-to-end MySql persistence with code samples using Plasma annotated UML as metadata source |
+| [**CloudGraph HBase Easy Wide Rows**](http://cloudgraph.github.io/cloudgraph/quickstart/CloudGraph-HBase-Easy-Wide-Rows) | This step-by-step guide shows how to build a Maven project which generates a simple HBase data model with 1 “wide row” table with example row slice queries. It uses only annotated Java (POJO) objects as the source of schema or metadata |
 | [**CloudGraph Architecture Overview**](http://cloudgraph.github.io/cloudgraph/arch_overview/CloudGraph-Architecture-Overview) | General technical background plus architecture components |
 | [**CloudGraph API DOCS**](http://cloudgraph.github.io/cloudgraph/apidocs/index.html)                                          | Generated javadoc API documentation tree |
 
