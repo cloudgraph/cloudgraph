@@ -1,5 +1,5 @@
-﻿<sup><img src="media/favicon.jpg" alt="big-icon" width="24" height="24" /></sup>**CloudGraph**
-=============================================================  
+﻿<img src="media/b9e70b66a78db9c9c881976a6f21b06f.png" alt="big-icon" />
+
 TerraMeta Software, Inc.
 
 **CloudGraph Quick Start MySql (POJO)**

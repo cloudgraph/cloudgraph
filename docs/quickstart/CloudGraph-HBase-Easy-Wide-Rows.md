@@ -2,29 +2,35 @@
 
 TerraMeta Software, Inc.
 
-**CloudGraph Quick Start HBase (POJO)**
+**CloudGraph HBase Easy Wide Rows**
 ===================================
 Cloudgraph<sup>®</sup>, PlasmaSDO<sup>®</sup> and PlasmaQuery<sup>®</sup> are registered of Trademarks of TerraMeta Software, Inc.
 
 **Introduction**
 ================
 
-
-This step-by-step guide uses only annotated Java (POJO) objects as the source of
-schema or metadata. It shows how to build a Maven project which generates a
-simple HBase data model with 2 tables which inserts, queries and prints test
-data from HBase. It requires basic knowledge of the Java programing language,
-Apache Maven, HBase Server administration and assumes the following software
-install prerequisites.
+The term “wide row” is used in relation to columnar key-value stores such as
+HBase and others and refers to rows that have a large (and variable) number of
+columns. Such rows can be returned in a single ‘GET’ operation but ideally with
+only the desired subset or “slice” of columns. Such row “slice” GET operations
+are typically much faster than SCAN operations, and HBase data models that
+facilitate slice operations can be very advantageous. This step-by-step guide
+shows how to build a Maven project which generates a simple HBase data model
+with 1 “wide row” table with example row slice queries. It uses only annotated
+Java (POJO) objects as the source of schema or metadata. It requires basic
+knowledge of the Java programing language, Apache Maven, HBase Server
+administration and assumes the following software install prerequisites.
 
 -   Java JDK 1.7 or Above
 -   Maven 3.x or Above
 -   HBase 1.0 or Above
 
-See <https://github.com/plasma-framework/plasma-examples-quickstart> for working
+For more information on wide column stores, see
+<https://en.wikipedia.org/wiki/Wide_column_store>. See
+<https://github.com/cloudgraph/cloudgraph-examples-quickstart> for working
 examples which accomplany this guide.
 
-**CloudGraph Quick Start HBase (POJO)**
+**CloudGraph HBase Easy Wide Rows**
 ===================================
 
 **Add Dependencies**
@@ -49,12 +55,13 @@ Add the following dependency to your Maven project to get started.
 **Create Entity POJOs** 
 ------------------------
 
-Next create a classic “Person-Org” data model using just Java POJO’s. Create 4
-Java enumeration classes annotated as below in a Java package called
-**examples.quickstart.hbase.pojo***. (Note: Enumerations rather than Java
-classes are annotated to facilitate reuse across multiple code generation and
-metadata integration contexts. Your metadata is too valuable to relegate to a
-single context)*
+Next we create a “Banking” data model using just Java POJO’s. Create 3 Java
+enumeration classes annotated as below in a Java package called
+**examples.quickstart.types***. (Note: Enumerations rather than Java classes are
+annotated to facilitate reuse across multiple code generation and metadata
+integration contexts. Your metadata is too valuable to relegate to a single
+context)*
+
 
 The annotations capture typical structural metadata elements.
 
@@ -84,117 +91,110 @@ annotation and
 annotations in order to map specific entities to HBase tables and map specific
 entity fields to row key fields.
 
-Enumeration 1 – OrgCat.java
+Enumeration 1 – Issuer.java
 
 ```java
-package examples.quickstart.hbase.pojo;
+package examples.quickstart.types;
+
 import org.plasma.sdo.annotation.Alias;
 import org.plasma.sdo.annotation.Enumeration;
 
-@Enumeration(name = "OrgCat")
-public enum OrgCat {
-  @Alias(physicalName = "N")
-  nonprofit,
-  @Alias(physicalName = "G")
-  government,
-  @Alias(physicalName = "R")
-  retail,
-  @Alias(physicalName = "W")
-  wholesale
+@Enumeration(name = "Issuer")
+public enum Issuer {
+  @Alias(physicalName = "V")
+  visa,
+
+  @Alias(physicalName = "M")
+  mastercard,
+
+  @Alias(physicalName = "A")
+  americanexpress,
+
+  @Alias(physicalName = "O")
+  other
 }
 ```
 
-**Entity 1 – Party.java**
+**Entity 1 – Card.java**
 
-```java
-@Type(name = "Party", isAbstract = true)
-public enum Party {
-  @Alias(physicalName = "CRTD_DT")
-  @DataProperty(dataType = DataType.Date, isNullable = false)
-  createdDate
-}
-```
-
-**Entity 2 – Person.java**
-
-```java
-package examples.quickstart.hbase.pojo;
+```javapackage examples.quickstart.types;
 
 import org.cloudgraph.store.mapping.annotation.RowKeyField;
 import org.cloudgraph.store.mapping.annotation.Table;
 import org.plasma.sdo.DataType;
 import org.plasma.sdo.annotation.Alias;
-import org.plasma.sdo.annotation.DataProperty;
-import org.plasma.sdo.annotation.ReferenceProperty;
-import org.plasma.sdo.annotation.Type;
-import org.plasma.sdo.annotation.ValueConstraint;
-
-@Table(name = "PERSON")
-@Alias(physicalName = "PRS")
-@Type(superTypes = { Party.class })
-public enum Person {
-  @RowKeyField
-  @ValueConstraint(maxLength = "36")
-  @Alias(physicalName = "FN")
-  @DataProperty(dataType = DataType.String, isNullable = false)
-  firstName,
-  @RowKeyField
-  @ValueConstraint(maxLength = "36")
-  @Alias(physicalName = "LN")
-  @DataProperty(dataType = DataType.String, isNullable = false)
-  lastName,
-  @ValueConstraint(totalDigits = "3")
-  @Alias(physicalName = "AGE")
-  @DataProperty(dataType = DataType.Int)
-  age,
-  @Alias(physicalName = "DOB")
-  @DataProperty(dataType = DataType.Date)
-  dateOfBirth,
-  @Alias(physicalName = "EMP")
-  @ReferenceProperty(targetClass = Organization.class, targetProperty = "employee")
-  employer;
-}
-```
-
-**Entity 3 – Organization.java**
-
-```java
-package examples.quickstart.hbase.pojo;
-
-import org.cloudgraph.store.mapping.annotation.RowKeyField;
-import org.cloudgraph.store.mapping.annotation.Table;
-import org.plasma.sdo.DataType;
-import org.plasma.sdo.annotation.Alias;
+import org.plasma.sdo.annotation.Comment;
 import org.plasma.sdo.annotation.DataProperty;
 import org.plasma.sdo.annotation.EnumConstraint;
 import org.plasma.sdo.annotation.ReferenceProperty;
 import org.plasma.sdo.annotation.Type;
 import org.plasma.sdo.annotation.ValueConstraint;
 
-@Table(name = "ORGAINZATION")
-@Alias(physicalName = "ORG")
-@Type(superTypes = { Party.class })
-public enum Organization {
+@Comment(body = "A simple example bank card entity with associated transactions")
+@Table(name = "CARD")
+@Alias(physicalName = "CD")
+@Type
+public enum Card {
+  @Comment(body = "The card issuer")
   @RowKeyField
-  @ValueConstraint(maxLength = "36")
-  @Alias(physicalName = "NAME")
+  @ValueConstraint(maxLength = "1")
+  @EnumConstraint(targetEnum = Issuer.class)
+  @Alias(physicalName = "ISU")
   @DataProperty(dataType = DataType.String, isNullable = false)
-  name,
-  @EnumConstraint(targetEnum = OrgCat.class)
-  @Alias(physicalName = "ORG_CAT")
+  issuer,
+
+  @Comment(body = "The card 16 digit (plastic) number")
+  @RowKeyField
+  @ValueConstraint(maxLength = "16")
+  @Alias(physicalName = "NUM")
   @DataProperty(dataType = DataType.String, isNullable = false)
-  category,
-  @Alias(physicalName = "PARENT")
-  @ReferenceProperty(isNullable = true, isMany = false, targetClass = Organization.class, targetProperty = "child")
-  parent,
-  @Alias(physicalName = "CHILD")
-  @ReferenceProperty(isNullable = true, isMany = true, targetClass = Organization.class, targetProperty = "parent")
-  child,
-  @Alias(physicalName = "EMPLOYEE")
-  @ReferenceProperty(isNullable = true, isMany = true, targetClass = Person.class, targetProperty = "employer")
-  employee;
+  number,
+
+  @Comment(body = "Links the card to any number of transaction entities")
+  @Alias(physicalName = "TNS")
+  @ReferenceProperty(isNullable = true, isMany = true, targetClass = Transaction.class, targetProperty = "")
+  transaction;
 }
 ```
+
+**Entity 2 – Transaction.java**
+
+```java
+package examples.quickstart.types;
+
+import org.cloudgraph.store.mapping.annotation.Table;
+import org.plasma.sdo.DataType;
+import org.plasma.sdo.annotation.Alias;
+import org.plasma.sdo.annotation.Comment;
+import org.plasma.sdo.annotation.DataProperty;
+import org.plasma.sdo.annotation.Type;
+
+/**
+ * Transaction entity. Note: not bound to a {@link Table} but linked to a
+ * {@link Card}, forming a wide row with {@link Card} as the root entity.
+ */
+@Comment(body = "An example banking transaction entity")
+@Alias(physicalName = "T")
+@Type
+public enum Transaction {
+
+  @Comment(body = "The dollar amount component for the transaction")
+  @Alias(physicalName = "D")
+  @DataProperty(dataType = DataType.Int)
+  dollars,
+
+  @Comment(body = "The cents amount component for the transaction")
+  @Alias(physicalName = "C")
+  @DataProperty(dataType = DataType.Short)
+  cents,
+
+  @Comment(body = "The date the transaction occurred")
+  @Alias(physicalName = "TD")
+  @DataProperty(dataType = DataType.Date)
+  transactionDate,
+}
+```
+
 
 **Create Namespace POJO**
 -------------------------
@@ -206,15 +206,15 @@ on applying annotations to package_into.java see
 <https://www.intertech.com/Blog/whats-package-info-java-for>
 
 ```java
-@Alias(physicalName = "HR")
-@Namespace(uri = "http://plasma-quickstart-pojo/humanresources")
-@NamespaceProvisioning(rootPackageName = "quickstart.pojo.model")
+@Alias(physicalName = "BNK")
+@Namespace(uri = "http://cloudgraph-easy-wide-rows/banking")
+@NamespaceProvisioning(rootPackageName = "examples.quickstart.model")
 @NamespaceService(storeType = DataStoreType.NOSQL, providerName = DataAccessProviderName.HBASE, properties = {
-    "hbase.zookeeper.quorum=zookeeper-host1:2181,zookeeper-host2:2181,zookeeper-host3:2181",
+    "hbase.zookeeper.quorum=zk1:2181,zk2:2181,zk3:2181",
     "hbase.zookeeper.property.clientPort=2181",
     "org.plasma.sdo.access.provider.hbase.ConnectionPoolMinSize=1",
     "org.plasma.sdo.access.provider.hbase.ConnectionPoolMaxSize=80" })
-package examples.quickstart.hbase.pojo;
+package examples.quickstart.types;
 
 import org.plasma.runtime.DataAccessProviderName;
 import org.plasma.runtime.DataStoreType;
@@ -223,6 +223,7 @@ import org.plasma.runtime.annotation.NamespaceService;
 import org.plasma.sdo.annotation.Alias;
 import org.plasma.sdo.annotation.Namespace;
 ```
+
 **Add CloudGraph Maven Plugin**
 ---------------------------
 
@@ -261,89 +262,114 @@ an HBase data access service provider (CloudGraph HBase).
 **Insert and Query HBase Data**
 -------------------------------
 
-And finally create a class as below which inserts 2 organizations (parent and
-child) with a single employee under the child. The example then queries for the
-“graph” traversing the foreign key refrences from the person (as a root) back to
-the employer organization and then the parent organization. Then final y the
-example prints the serialized result graph as formatted XML for easy
-visualization and debugging. The final output should look like the below XML
-example. See <https://github.com/plasma-framework/plasma-examples-quickstart>
-for working examples which accomplany this guide.
-
-Figure 3 – Result Graph, Serialized as XML
-
-```xml
-<ns1:Person xmlns:ns1="http://plasma-quickstart-pojo/humanresources" xmlns:xs="http://www.w3.org/2001/XMLSchema" 
-  firstName="Mark" lastName="Hamburg (097161)" age="55" createdDate="2017-10-06T07:00:00">
-  <employer name="Best Buy Sales (097161)">
-    <parent name="Best Buy Corporation Inc. (097161)" category="R"></parent>
-  </employer>
-</ns1:Person>
-```
+And finally create a class as below which inserts a single Card with random card
+number and several child Transaction entities. This will result ina single
+(wide) HBase row. The example then queries for a “slice” of the transactions
+within a specific dollar amount range. Then finaly the example prints the
+serialized result graphs as formatted XML for easy visualization and debugging.
+The final output should look like the below XML example. See
+<https://github.com/cloudgraph/cloudgraph-examples-quickstart> for working
+examples which accomplany this guide.
 
 
-Figure 4 – Inser/Query HBase Data
+Figure 3 – Insert/Query HBase Data
 
 ```java
 package examples.quickstart;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.Random;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.plasma.query.Expression;
 import org.plasma.runtime.*;
 import org.plasma.sdo.*;
 import org.plasma.sdo.access.client.*;
 import org.plasma.sdo.helper.*;
-import quickstart.pojo.model.*;
-import quickstart.pojo.model.query.QPerson;
+
 import commonj.sdo.*;
+import examples.quickstart.model.Card;
+import examples.quickstart.model.Issuer;
+import examples.quickstart.model.Transaction;
+import examples.quickstart.model.query.QCard;
+import examples.quickstart.model.query.QTransaction;
 
 public class ExampleRunner {
+  private static final Log log = LogFactory.getLog(ExampleRunner.class);
+  public static final int MIN_DOLLARS = 500;
+  public static final int MAX_DOLLARS = 600;
+  static Random random = new Random();
 
-  public static CloudGraphDataGraph runExample() throws IOException {
+  public static DataGraph[] runExample() throws IOException {
     SDODataAccessClient client = new SDODataAccessClient(new PojoDataAccessClient(
         DataAccessProviderName.HBASE));
 
-    DataGraph dataGraph = CloudGraphDataFactory.INSTANCE.createDataGraph();
+    DataGraph dataGraph = PlasmaDataFactory.INSTANCE.createDataGraph();
     dataGraph.getChangeSummary().beginLogging();
-    Type rootType = CloudGraphTypeHelper.INSTANCE.getType(Organization.class);
-    String randomSuffix = String.valueOf(System.nanoTime()).substring(10);
+    Type rootType = PlasmaTypeHelper.INSTANCE.getType(Card.class);
 
-    Organization org = (Organization) dataGraph.createRootObject(rootType);
-    org.setName("Best Buy Corporation Inc. (" + randomSuffix + ")");
-    org.setCategory(OrgCat.RETAIL.getInstanceName());
-    org.setCreatedDate(new Date());
+    Card card = (Card) dataGraph.createRootObject(rootType);
+    card.setNumber(randomCard());
+    card.setIssuer(Issuer.VISA.getInstanceName());
 
-    Organization child = org.createChild();
-    child.setName("Best Buy Sales (" + randomSuffix + ")");
-    child.setCategory(OrgCat.RETAIL.getInstanceName());
-    child.setCreatedDate(new Date());
-
-    Person pers = child.createEmployee();
-    pers.setFirstName("Mark");
-    pers.setLastName("Hamburg (" + randomSuffix + ")");
-    pers.setAge(55);
-    pers.setCreatedDate(new Date());
+    for (int i = 0; i < 100; i++) {
+      Transaction trans = card.createTransaction();
+      trans.setTransactionDate(new Date());
+      trans.setDollars(random.nextInt(1000));
+      trans.setCents((short) random.nextInt(99));
+    }
 
     client.commit(dataGraph, ExampleRunner.class.getSimpleName());
 
-    QPerson query = QPerson.newQuery();
-    query.select(query.wildcard()).select(query.employer().name())
-        .select(query.employer().parent().name()).select(query.employer().parent().category());
-    query.where(query.firstName().eq("Mark").and(query.lastName().like("Ham*")));
+    QCard query = QCard.newQuery();
+    QTransaction transaction = QTransaction.newQuery();
+    Expression slice = transaction.dollars().between(MIN_DOLLARS, MAX_DOLLARS);
+    query.select(query.wildcard()).select(query.transaction(slice).wildcard());
+    query.where(query.issuer().eq(Issuer.VISA.getInstanceName()));
 
     DataGraph[] results = client.find(query);
-    return (CloudGraphDataGraph) results[0];
+    return results;
+  }
+
+  private static String randomCard() {
+    StringBuilder buf = new StringBuilder();
+    buf.append(String.format("%04d", random.nextInt(9999)));
+    buf.append(String.format("%04d", random.nextInt(9999)));
+    buf.append(String.format("%04d", random.nextInt(9999)));
+    buf.append(String.format("%04d", random.nextInt(9999)));
+    return buf.toString();
   }
 
   public static void main(String[] args) {
     try {
-      CloudGraphDataGraph graph = runExample();
-      System.out.println(graph.asXml());
+      DataGraph[] results = runExample();
+      for (DataGraph graph : results)
+        log.info(((PlasmaDataGraph) graph).asXml());
     } catch (IOException e) {
-      e.printStackTrace();
+      log.error(e.getMessage(), e);
     }
   }
 }
+
+```
+
+
+Figure 4 – Result Graph, Serialized as XML
+
+```xml
+<ns1:Card xmlns:ns1="http://cloudgraph-easy-wide-rows/banking"      
+    issuer="V" number="9770236769916284">
+  <transaction dollars="584" cents="67" transactionDate="2017-11-26T22:40:14"></transaction>
+  <transaction dollars="577" cents="26" transactionDate="2017-11-26T22:40:15"></transaction>
+  <transaction dollars="594" cents="82" transactionDate="2017-11-26T22:40:15"></transaction>
+  <transaction dollars="546" cents="50" transactionDate="2017-11-26T22:40:15"></transaction>
+  <transaction dollars="562" cents="25" transactionDate="2017-11-26T22:40:15"></transaction>
+  <transaction dollars="541" cents="98" transactionDate="2017-11-26T22:40:15"></transaction>
+  <transaction dollars="563" cents="57" transactionDate="2017-11-26T22:40:15"></transaction>
+  <transaction dollars="582" cents="38" transactionDate="2017-11-26T22:40:14"></transaction>
+</ns1:Card>
 
 ```
 
