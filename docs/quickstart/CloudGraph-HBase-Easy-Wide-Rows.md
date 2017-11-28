@@ -117,7 +117,8 @@ public enum Issuer {
 
 **Entity 1 – Card.java**
 
-```javapackage examples.quickstart.types;
+```java
+package examples.quickstart.types;
 
 import org.cloudgraph.store.mapping.annotation.RowKeyField;
 import org.cloudgraph.store.mapping.annotation.Table;
