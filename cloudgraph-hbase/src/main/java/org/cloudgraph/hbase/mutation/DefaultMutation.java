@@ -32,7 +32,6 @@ import org.cloudgraph.hbase.service.HBaseDataConverter;
 import org.cloudgraph.hbase.service.ServiceContext;
 import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.cloudgraph.store.mapping.StoreMapping;
-import org.cloudgraph.store.mapping.TableMapping;
 import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.plasma.sdo.PlasmaDataObject;
 import org.plasma.sdo.PlasmaEdge;
@@ -206,26 +205,29 @@ abstract class DefaultMutation {
     return result;
   }
 
-  protected void updateCell(RowWriter rowContext, PlasmaDataObject dataObject, long sequence,
-      Property property, byte[] value) throws IOException {
-    PlasmaProperty prop = (PlasmaProperty) property;
-    byte[] qualifier = rowContext.getColumnKeyFactory().createColumnKey(
-        (PlasmaType) dataObject.getType(), sequence, prop);
-    TableMapping table = rowContext.getTableWriter().getTableConfig();
-    if (log.isDebugEnabled()) {
-      if (prop.getType().isDataType()) {
-        Object objectValue = HBaseDataConverter.INSTANCE.fromBytes(prop, value);
-        log.debug("setting " + property + " / " + table.getName() + "."
-            + new String(qualifier, table.getCharset()) + " = '" + String.valueOf(objectValue)
-            + "'");
-      } else {
-        log.debug("setting " + property + " / " + table.getName() + "."
-            + new String(qualifier, table.getCharset()) + " = '"
-            + new String(value, table.getCharset()) + "'");
-      }
-    }
-    rowContext.getRow().add(table.getDataColumnFamilyNameBytes(), qualifier, value);
-  }
+  // protected void updateCell(RowWriter rowContext, PlasmaDataObject
+  // dataObject, long sequence,
+  // Property property, byte[] value) throws IOException {
+  // PlasmaProperty prop = (PlasmaProperty) property;
+  // byte[] qualifier = rowContext.getColumnKeyFactory().createColumnKey(
+  // (PlasmaType) dataObject.getType(), sequence, prop);
+  // TableMapping table = rowContext.getTableWriter().getTableConfig();
+  // if (log.isDebugEnabled()) {
+  // if (prop.getType().isDataType()) {
+  // Object objectValue = HBaseDataConverter.INSTANCE.fromBytes(prop, value);
+  // log.debug("setting " + property + " / " + table.getName() + "."
+  // + new String(qualifier, table.getCharset()) + " = '" +
+  // String.valueOf(objectValue)
+  // + "'");
+  // } else {
+  // log.debug("setting " + property + " / " + table.getName() + "."
+  // + new String(qualifier, table.getCharset()) + " = '"
+  // + new String(value, table.getCharset()) + "'");
+  // }
+  // }
+  // rowContext.getPut().add(table.getDataColumnFamilyNameBytes(), qualifier,
+  // value);
+  // }
 
   /**
    * Removes all versions of the associated cell.
@@ -237,16 +239,19 @@ abstract class DefaultMutation {
    * @param property
    * @throws IOException
    */
-  protected void deleteDataCell(RowWriter rowContext, PlasmaDataObject dataObject, long sequence,
-      PlasmaProperty property) throws IOException {
-    byte[] qualifier = rowContext.getColumnKeyFactory().createColumnKey(dataObject, sequence,
-        property);
-    TableMapping table = rowContext.getTableWriter().getTableConfig();
-    if (log.isDebugEnabled())
-      log.debug("deleting " + property + " / " + table.getName() + "."
-          + new String(qualifier, table.getCharset()));
-    rowContext.getRowDelete().addColumns(table.getDataColumnFamilyNameBytes(), qualifier);
-  }
+  // protected void deleteDataCell(RowWriter rowContext, PlasmaDataObject
+  // dataObject, long sequence,
+  // PlasmaProperty property) throws IOException {
+  // byte[] qualifier =
+  // rowContext.getColumnKeyFactory().createColumnKey(dataObject, sequence,
+  // property);
+  // TableMapping table = rowContext.getTableWriter().getTableConfig();
+  // if (log.isDebugEnabled())
+  // log.debug("deleting " + property + " / " + table.getName() + "."
+  // + new String(qualifier, table.getCharset()));
+  // rowContext.getDelete().addColumns(table.getDataColumnFamilyNameBytes(),
+  // qualifier);
+  // }
 
   protected void setOrigination(PlasmaDataObject dataObject, PlasmaType type) {
     // FIXME - could be a reference to a user

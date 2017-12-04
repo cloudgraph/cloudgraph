@@ -16,12 +16,9 @@
 package org.cloudgraph.hbase.io;
 
 import java.io.IOException;
-import java.util.List;
 
-import org.apache.hadoop.hbase.client.Delete;
-import org.apache.hadoop.hbase.client.Put;
-import org.apache.hadoop.hbase.client.Row;
 import org.cloudgraph.hbase.key.StatefullColumnKeyFactory;
+import org.cloudgraph.hbase.mutation.Mutations;
 import org.plasma.sdo.PlasmaDataObject;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
@@ -52,19 +49,26 @@ public interface RowWriter extends RowOperation {
    * 
    * @return the row put mutation.
    */
-  public Put getRow();
-
-  /**
-   * Creates a new row delete mutation, is not exists.
-   */
-  public void deleteRow();
+  // public Put getPut();
 
   /**
    * Returns the existing (or creates a new) row delete mutation.
    * 
    * @return the existing (or creates a new) row delete mutation.
    */
-  public Delete getRowDelete();
+  // public Delete getDelete();
+
+  /**
+   * Returns the existing (or creates a new) row increment mutation.
+   * 
+   * @return the existing (or creates a new) row increment mutation.
+   */
+  // public Increment getIncrement();
+
+  /**
+   * Creates a new row delete mutation, is not exists.
+   */
+  public void deleteRow();
 
   /**
    * Returns whether there is an existing row delete mutation.
@@ -78,7 +82,7 @@ public interface RowWriter extends RowOperation {
    * 
    * @return the write operations for a row.
    */
-  public List<Row> getWriteOperations();
+  public Mutations getWriteOperations();
 
   /**
    * Returns a single column value for this row given a context data object and
@@ -128,23 +132,15 @@ public interface RowWriter extends RowOperation {
   public void writeRowData(PlasmaDataObject dataObject, long sequence, PlasmaProperty property,
       byte[] value) throws IOException;
 
+  public void writeRowData(byte[] fam, byte[] qualifier, byte[] value) throws IOException;
+
   public void deleteRowData(PlasmaDataObject dataObject, long sequence, PlasmaProperty property)
       throws IOException;
 
-  /**
-   * Returns an existing or new edge writer for the given data object and source
-   * edge property
-   * 
-   * @param dataObject
-   *          the data object
-   * @param property
-   *          the source edge property
-   * @return an existing or new edge writer for the given data object and source
-   *         edge property
-   * @throws IOException
-   */
-  // public EdgeWriter getEdgeWriter(PlasmaDataObject dataObject,
-  // PlasmaProperty property) throws IOException;
+  public void deleteRowData(byte[] fam, byte[] qualifier) throws IOException;
+
+  public void incrementRowData(PlasmaDataObject dataObject, long sequence, PlasmaProperty property,
+      long value) throws IOException;
 
   /**
    * Returns an existing or new edge writer for the given data object, sequence
@@ -163,19 +159,6 @@ public interface RowWriter extends RowOperation {
    */
   public EdgeWriter getEdgeWriter(PlasmaDataObject dataObject, PlasmaProperty property,
       long sequence) throws IOException;
-
-  /**
-   * Returns the edge writer for the source edge or null if not exists.
-   * 
-   * @param dataObject
-   *          the data object
-   * @param sequence
-   *          the sequence
-   * @return the edge writer for the source edge or null if not exists.
-   * @throws IOException
-   */
-  // public EdgeWriter getEdgeWriter(PlasmaDataObject dataObject, long
-  // sequence) throws IOException;
 
   /**
    * 

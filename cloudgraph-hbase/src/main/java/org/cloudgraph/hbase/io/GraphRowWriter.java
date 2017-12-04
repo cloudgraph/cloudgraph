@@ -26,12 +26,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
+import org.apache.hadoop.hbase.client.Increment;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.Row;
 import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.cloudgraph.hbase.key.StatefullColumnKeyFactory;
+import org.cloudgraph.hbase.mutation.Mutations;
+import org.cloudgraph.hbase.mutation.Qualifiers;
 import org.cloudgraph.state.ProtoSequenceGenerator;
 import org.cloudgraph.state.SequenceGenerator;
 import org.cloudgraph.store.key.EntityMetaKey;
@@ -42,6 +45,7 @@ import org.cloudgraph.store.service.DuplicateRowException;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.cloudgraph.store.service.MissingRowException;
 import org.cloudgraph.store.service.ToumbstoneRowException;
+import org.plasma.sdo.DataType;
 import org.plasma.sdo.PlasmaDataObject;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
@@ -70,9 +74,14 @@ public class GraphRowWriter extends DefaultRowOperation implements RowWriter {
 
   private static Log log = LogFactory.getLog(GraphRowWriter.class);
   private TableWriter tableWriter;
+
   private Put row;
-  private Delete rowDelete;
+  private Delete delete;
+  private Increment increment;
+
   private Map<Integer, EdgeWriter> edgeWriterMap = new HashMap<Integer, EdgeWriter>();
+  private Qualifiers qualifierMap = new Qualifiers();
+  private Map<DataObject, Long> dataObjectSequenceMap = new HashMap<>();
 
   public GraphRowWriter(byte[] rowKey, DataObject rootDataObject, TableWriter tableWriter) {
     super(rowKey, rootDataObject);
@@ -97,14 +106,16 @@ public class GraphRowWriter extends DefaultRowOperation implements RowWriter {
     return this.columnKeyFactory;
   }
 
-  @Override
-  public Put getRow() {
+  // @Override
+  private Put getPut() {
     return this.row;
   }
 
   @Override
   public void deleteRow() {
-    getRowDelete();
+    if (this.delete == null) {
+      this.delete = new Delete(this.getRowKey());
+    }
   }
 
   /**
@@ -112,12 +123,12 @@ public class GraphRowWriter extends DefaultRowOperation implements RowWriter {
    * 
    * @return the existing (or creates a new) row delete mutation.
    */
-  @Override
-  public Delete getRowDelete() {
-    if (this.rowDelete == null) {
-      this.rowDelete = new Delete(this.getRowKey());
+  // @Override
+  private Delete getDelete() {
+    if (this.delete == null) {
+      this.delete = new Delete(this.getRowKey());
     }
-    return this.rowDelete;
+    return this.delete;
   }
 
   /**
@@ -127,7 +138,15 @@ public class GraphRowWriter extends DefaultRowOperation implements RowWriter {
    */
   @Override
   public boolean hasRowDelete() {
-    return this.rowDelete != null;
+    return this.delete != null;
+  }
+
+  // @Override
+  private Increment getIncrement() {
+    if (this.increment == null) {
+      this.increment = new Increment(this.getRowKey());
+    }
+    return this.increment;
   }
 
   /**
@@ -185,16 +204,19 @@ public class GraphRowWriter extends DefaultRowOperation implements RowWriter {
   }
 
   @Override
-  public List<Row> getWriteOperations() {
-    List<Row> result = new ArrayList<>(2);
+  public Mutations getWriteOperations() {
+    List<Row> rows = new ArrayList<>(2);
     // if any qualifiers
     if (this.row != null && this.row.size() > 0)
-      result.add(this.row);
+      rows.add(this.row);
     // for delete , can be just the oper with no qualifiers
-    if (this.rowDelete != null)
-      result.add(this.rowDelete);
+    if (this.delete != null)
+      rows.add(this.delete);
 
-    return result;
+    if (this.increment != null)
+      rows.add(this.increment);
+
+    return new Mutations(rows, this.qualifierMap);
   }
 
   /**
@@ -376,8 +398,8 @@ public class GraphRowWriter extends DefaultRowOperation implements RowWriter {
       uuidQual = this.getColumnKeyFactory().createColumnKey(plasmaType, EntityMetaKey.UUID);
       typeQual = this.getColumnKeyFactory().createColumnKey(plasmaType, EntityMetaKey.TYPE);
     }
-    this.getRow().addColumn(fam, uuidQual, Bytes.toBytes(dataObject.getUUIDAsString()));
-    this.getRow().addColumn(fam, typeQual, encodeType(plasmaType));
+    this.getPut().addColumn(fam, uuidQual, Bytes.toBytes(dataObject.getUUIDAsString()));
+    this.getPut().addColumn(fam, typeQual, encodeType(plasmaType));
   }
 
   @Override
@@ -392,7 +414,7 @@ public class GraphRowWriter extends DefaultRowOperation implements RowWriter {
         qual = keyFac.createColumnKey(plasmaType, sequence, metaField);
       else
         qual = keyFac.createColumnKey(plasmaType, metaField);
-      this.getRowDelete().addColumn(fam, qual);
+      this.getDelete().addColumns(fam, qual); // deletes all cell versions
     }
   }
 
@@ -408,10 +430,16 @@ public class GraphRowWriter extends DefaultRowOperation implements RowWriter {
       qual = keyFac.createColumnKey(plasmaType, sequence, property);
     else
       qual = keyFac.createColumnKey(plasmaType, property);
-    this.getRow().addColumn(fam, qual, value);
+    this.getPut().addColumn(fam, qual, value);
+    this.qualifierMap.add(fam, qual, dataObject, property);
 
     if (log.isDebugEnabled())
       log.debug("writing " + Bytes.toString(qual) + " / " + Bytes.toString(value));
+  }
+
+  @Override
+  public void writeRowData(byte[] fam, byte[] qualifier, byte[] value) throws IOException {
+    getPut().addColumn(fam, qualifier, value);
   }
 
   @Override
@@ -426,13 +454,37 @@ public class GraphRowWriter extends DefaultRowOperation implements RowWriter {
       qual = keyFac.createColumnKey(plasmaType, sequence, property);
     else
       qual = keyFac.createColumnKey(plasmaType, property);
-    this.getRowDelete().addColumn(fam, qual);
+    this.getDelete().addColumns(fam, qual); // deletes all cell versions
+    this.qualifierMap.add(fam, qual, dataObject, property);
 
     if (log.isDebugEnabled())
       log.debug("deleting " + Bytes.toString(qual));
   }
 
-  private Map<DataObject, Long> dataObjectSequenceMap = new HashMap<>();
+  @Override
+  public void deleteRowData(byte[] fam, byte[] qualifier) throws IOException {
+    getDelete().addColumns(fam, qualifier); // deletes all cell version
+  }
+
+  @Override
+  public void incrementRowData(PlasmaDataObject dataObject, long sequence, PlasmaProperty property,
+      long value) throws IOException {
+    byte[] fam = this.getTableWriter().getTableConfig().getDataColumnFamilyNameBytes();
+    PlasmaType plasmaType = (PlasmaType) dataObject.getType();
+    GraphStatefullColumnKeyFactory keyFac = this.getColumnKeyFactory();
+
+    byte[] qual = null;
+    if (sequence > 0)
+      qual = keyFac.createColumnKey(plasmaType, sequence, property);
+    else
+      qual = keyFac.createColumnKey(plasmaType, property);
+
+    this.getIncrement().addColumn(fam, qual, value);
+    this.qualifierMap.add(fam, qual, dataObject, property);
+
+    if (log.isDebugEnabled())
+      log.debug("incrementing " + Bytes.toString(qual) + " / " + value);
+  }
 
   @Override
   public void addSequence(DataObject dataObject, long sequence) {
@@ -481,4 +533,5 @@ public class GraphRowWriter extends DefaultRowOperation implements RowWriter {
       return org.cloudgraph.common.Bytes.concat(uri, Bytes.toBytes(ROOT_TYPE_DELIM), name);
     }
   }
+
 }

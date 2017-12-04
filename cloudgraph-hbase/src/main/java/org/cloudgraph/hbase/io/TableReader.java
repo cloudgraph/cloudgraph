@@ -19,8 +19,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.hadoop.hbase.client.Result;
-
 import commonj.sdo.DataObject;
 
 /**

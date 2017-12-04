@@ -28,7 +28,9 @@ import org.apache.hadoop.hbase.client.Row;
 import org.apache.hadoop.mapreduce.JobContext;
 import org.cloudgraph.hbase.io.TableWriter;
 import org.cloudgraph.hbase.mutation.GraphMutationCollector;
+import org.cloudgraph.hbase.mutation.GraphMutationWriter;
 import org.cloudgraph.hbase.mutation.MutationCollector;
+import org.cloudgraph.hbase.mutation.Mutations;
 import org.cloudgraph.hbase.service.GraphQuery;
 import org.cloudgraph.hbase.service.LazyServiceContext;
 import org.cloudgraph.hbase.service.ServiceContext;
@@ -80,7 +82,9 @@ public class GraphServiceDelegate implements GraphService {
       // to close
       // as required by the 1.0.0 HBase client API. Will cause resource
       // bleed
-      Map<TableWriter, List<Row>> mutations = new HashMap<TableWriter, List<Row>>();
+      // Map<TableWriter, List<Row>> mutations = new HashMap<TableWriter,
+      // List<Row>>();
+      Map<TableWriter, Map<String, Mutations>> mutations = new HashMap<>();
       try {
         mutations = collector.collectChanges(graph);
       } catch (IllegalAccessException e) {
@@ -89,8 +93,9 @@ public class GraphServiceDelegate implements GraphService {
 
       TableWriter[] tableWriters = new TableWriter[mutations.keySet().size()];
       mutations.keySet().toArray(tableWriters);
+      GraphMutationWriter writer = new GraphMutationWriter();
       try {
-        writeChanges(tableWriters, mutations, jobName);
+        writer.writeChanges(tableWriters, mutations, snapshotMap, jobName);
       } finally {
         for (TableWriter tableWriter : tableWriters)
           tableWriter.close();
@@ -113,7 +118,9 @@ public class GraphServiceDelegate implements GraphService {
     if (jobContext != null)
       jobName = jobContext.getJobName();
     SnapshotMap snapshotMap = new SnapshotMap(new Timestamp((new Date()).getTime()));
-    Map<TableWriter, List<Row>> mutations = new HashMap<TableWriter, List<Row>>();
+    // Map<TableWriter, List<Row>> mutations = new HashMap<TableWriter,
+    // List<Row>>();
+    Map<TableWriter, Map<String, Mutations>> mutations = new HashMap<>();
     MutationCollector collector = null;
     try {
       collector = new GraphMutationCollector(this.context, snapshotMap, jobName);
@@ -124,8 +131,10 @@ public class GraphServiceDelegate implements GraphService {
       }
       TableWriter[] tableWriters = new TableWriter[mutations.keySet().size()];
       mutations.keySet().toArray(tableWriters);
+
+      GraphMutationWriter writer = new GraphMutationWriter();
       try {
-        writeChanges(tableWriters, mutations, jobName);
+        writer.writeChanges(tableWriters, mutations, snapshotMap, jobName);
       } finally {
         for (TableWriter tableWriter : tableWriters)
           tableWriter.close();

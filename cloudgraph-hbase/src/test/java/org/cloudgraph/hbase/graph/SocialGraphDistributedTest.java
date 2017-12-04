@@ -449,4 +449,55 @@ public class SocialGraphDistributedTest extends SocialGraphModelTest {
     }
   }
 
+  public void testIncrementBlogLikes() throws IOException {
+    GraphInfo info = createGraph();
+
+    String xml = this.serializeGraph(info.actor.getDataGraph());
+    log.debug("inserting initial graph:");
+    log.debug(xml);
+    this.service.commit(info.actor.getDataGraph(), "actor1");
+
+    log.debug("fetching initial graph");
+    Actor fetchedActor = fetchGraph(createGraphQuery(info.actor.getName()));
+    xml = this.serializeGraph(fetchedActor.getDataGraph());
+    log.debug(xml);
+
+    assertTrue(fetchedActor.getBlogCount() == 2);
+    Blog fetchedBlog = (Blog) fetchedActor.get("blog[@name='" + info.electionBlog.getName() + "']");
+    assertTrue(fetchedBlog != null);
+    assertTrue(fetchedBlog.getTopicCount() == 1);
+    assertTrue(fetchedBlog.getLikes() == 0);
+
+    fetchedBlog.incrementLikes(1);
+    this.service.commit(fetchedActor.getDataGraph(), "actor1");
+    assertTrue(fetchedBlog.getLikes() == 1);
+
+    Actor fetchedActor2 = fetchGraph(createGraphQuery(info.actor.getName()));
+    xml = this.serializeGraph(fetchedActor2.getDataGraph());
+    log.debug(xml);
+
+    assertTrue(fetchedActor2.getBlogCount() == 2);
+    Blog fetchedBlog2 = (Blog) fetchedActor2.get("blog[@name='" + info.electionBlog.getName()
+        + "']");
+    assertTrue(fetchedBlog2 != null);
+    assertTrue(fetchedBlog2.getTopicCount() == 1);
+    assertTrue(fetchedBlog2.getLikes() == 1);
+
+    fetchedBlog2.incrementLikes(4);
+    this.service.commit(fetchedActor2.getDataGraph(), "actor2");
+    assertTrue(fetchedBlog2.getLikes() == 5); // expect the accumulated value
+
+    fetchedBlog2.unsetLikes();
+    this.service.commit(fetchedActor2.getDataGraph(), "actor2");
+    assertTrue(fetchedBlog2.getLikes() == 0); // expect zero after unset
+
+    fetchedBlog.incrementLikes(25);
+    this.service.commit(fetchedActor.getDataGraph(), "actor1");
+    assertTrue("unexpected, " + fetchedBlog.getLikes(), fetchedBlog.getLikes() == 25);
+
+    fetchedBlog2.incrementLikes(10);
+    this.service.commit(fetchedActor2.getDataGraph(), "actor2");
+    assertTrue(fetchedBlog2.getLikes() == 35); // expect the accumulated value
+
+  }
 }

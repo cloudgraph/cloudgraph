@@ -24,7 +24,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.hbase.client.Row;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.cloudgraph.hbase.io.DistributedGraphWriter;
 import org.cloudgraph.hbase.io.DistributedWriter;
@@ -99,9 +98,9 @@ public class GraphMutationCollector extends DefaultMutation implements MutationC
    * .sdo.DataGraph)
    */
   @Override
-  public Map<TableWriter, List<Row>> collectChanges(DataGraph dataGraph) throws IOException,
-      IllegalAccessException {
-    Map<TableWriter, List<Row>> mutations = new HashMap<TableWriter, List<Row>>();
+  public Map<TableWriter, Map<String, Mutations>> collectChanges(DataGraph dataGraph)
+      throws IOException, IllegalAccessException {
+    Map<TableWriter, Map<String, Mutations>> mutations = new HashMap<TableWriter, Map<String, Mutations>>();
 
     PlasmaChangeSummary changeSummary = (PlasmaChangeSummary) dataGraph.getChangeSummary();
     if (log.isDebugEnabled())
@@ -130,9 +129,9 @@ public class GraphMutationCollector extends DefaultMutation implements MutationC
     this.delete(dataGraph, deleted, graphWriter);
 
     for (TableWriter tableWriter : graphWriter.getTableWriters()) {
-      List<Row> rowMutations = mutations.get(tableWriter);
+      Map<String, Mutations> rowMutations = mutations.get(tableWriter);
       if (rowMutations == null) {
-        rowMutations = new ArrayList<Row>();
+        rowMutations = new HashMap<String, Mutations>();
         mutations.put(tableWriter, rowMutations);
       }
 
@@ -151,9 +150,9 @@ public class GraphMutationCollector extends DefaultMutation implements MutationC
    * .sdo.DataGraph[])
    */
   @Override
-  public Map<TableWriter, List<Row>> collectChanges(DataGraph[] dataGraphs) throws IOException,
-      IllegalAccessException {
-    Map<TableWriter, List<Row>> mutations = new HashMap<TableWriter, List<Row>>();
+  public Map<TableWriter, Map<String, Mutations>> collectChanges(DataGraph[] dataGraphs)
+      throws IOException, IllegalAccessException {
+    Map<TableWriter, Map<String, Mutations>> mutations = new HashMap<TableWriter, Map<String, Mutations>>();
 
     boolean hasChanges = false;
     for (DataGraph dataGraph : dataGraphs) {
@@ -202,9 +201,9 @@ public class GraphMutationCollector extends DefaultMutation implements MutationC
     for (DistributedWriter graphWriter : graphWriters) {
 
       for (TableWriter tableWriter : graphWriter.getTableWriters()) {
-        List<Row> rowMutations = mutations.get(tableWriter);
+        Map<String, Mutations> rowMutations = mutations.get(tableWriter);
         if (rowMutations == null) {
-          rowMutations = new ArrayList<Row>();
+          rowMutations = new HashMap<String, Mutations>();
           mutations.put(tableWriter, rowMutations);
         }
 
@@ -283,8 +282,8 @@ public class GraphMutationCollector extends DefaultMutation implements MutationC
   }
 
   private void collectRowMutations(TableWriter tableWriter, RowWriter rowWriter,
-      List<Row> rowMutations) throws IOException {
-    rowMutations.addAll(rowWriter.getWriteOperations());
+      Map<String, Mutations> rowMutations) throws IOException {
+    rowMutations.put(Bytes.toString(rowWriter.getRowKey()), rowWriter.getWriteOperations());
   }
 
   private void addRemoveStateColumns(TableWriter tableWriter, RowWriter rowWriter)
@@ -298,11 +297,11 @@ public class GraphMutationCollector extends DefaultMutation implements MutationC
       // rowWriter.getRow().addColumn(tableWriter.getTableConfig().getDataColumnFamilyNameBytes(),
       // GraphMetaField.__RT__.asBytes(),
       // rowWriter.encodeRootType());
-      rowWriter.getRow().addColumn(fam, GraphMetaKey.TIMESTAMP.codeAsBytes(),
+      rowWriter.writeRowData(fam, GraphMetaKey.TIMESTAMP.codeAsBytes(),
           Bytes.toBytes(String.valueOf(this.snapshotMap.getSnapshotNannoTime())));
 
       if (tableWriter.getTableConfig().tombstoneRowsOverwriteable()) {
-        rowWriter.getRowDelete().addColumns( // deletes all versions
+        rowWriter.deleteRowData( // deletes all versions
             fam, GraphMetaKey.TOMBSTONE.codeAsBytes());
       }
     }
@@ -311,7 +310,7 @@ public class GraphMutationCollector extends DefaultMutation implements MutationC
       // String xml = rowWriter.getSequenceMapping().marshalAsString();
       byte[] bytes = rowWriter.getSequenceMapping().marshal();
       if (rowWriter.getSequenceMapping().isUpdated()) {
-        rowWriter.getRow().addColumn(fam, GraphMetaKey.SEQUENCE_MAPPING.codeAsBytes(), bytes);
+        rowWriter.writeRowData(fam, GraphMetaKey.SEQUENCE_MAPPING.codeAsBytes(), bytes);
       }
     } else { // root is deleted
       if (log.isDebugEnabled())
@@ -321,9 +320,9 @@ public class GraphMutationCollector extends DefaultMutation implements MutationC
         // add a tombstone column
         if (log.isDebugEnabled())
           log.debug("adding toumbstone for root " + rowWriter.getRootDataObject().toString());
-        rowWriter.getRow().addColumn(fam, GraphMetaKey.TOMBSTONE.codeAsBytes(),
+        rowWriter.writeRowData(fam, GraphMetaKey.TOMBSTONE.codeAsBytes(),
             Bytes.toBytes(this.snapshotMap.getSnapshotDate().getTime()));
-        rowWriter.getRowDelete().addColumns( // deletes all version
+        rowWriter.deleteRowData( // deletes all version
             fam, GraphMetaKey.SEQUENCE_MAPPING.codeAsBytes());
       }
     }

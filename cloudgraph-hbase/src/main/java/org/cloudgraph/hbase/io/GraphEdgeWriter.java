@@ -488,25 +488,25 @@ public class GraphEdgeWriter extends DefaultEdgeOperation implements EdgeWriter 
       return;
     }
     byte[] typeBytes = this.encodeCollectionBaseType();
-    rowWriter.getRow().addColumn(this.family, this.baseTypeQual, typeBytes);
+    rowWriter.writeRowData(this.family, this.baseTypeQual, typeBytes);
 
     if (this.sequences != null && this.sequences.size() > 0) {
       byte[] sequenceBytes = this.encodeSequences();
-      rowWriter.getRow().addColumn(family, this.sequencesQual, sequenceBytes);
+      rowWriter.writeRowData(family, this.sequencesQual, sequenceBytes);
     }
 
     if (this.rowKeys != null && this.rowKeys.size() > 0) {
       byte[] rowKeysBytes = this.encodeRowKeys();
-      rowWriter.getRow().addColumn(this.family, this.keysQual, rowKeysBytes);
+      rowWriter.writeRowData(this.family, this.keysQual, rowKeysBytes);
     }
 
     if (this.collectionDefaultSubType != null) {
       byte[] subTypesBytes = this.encodeDefaultSubType();
-      rowWriter.getRow().addColumn(family, this.subTypeQual, subTypesBytes);
+      rowWriter.writeRowData(family, this.subTypeQual, subTypesBytes);
     }
 
     byte[] countBytes = String.valueOf(this.getCount()).getBytes(charset);
-    rowWriter.getRow().addColumn(this.family, this.countQual, countBytes);
+    rowWriter.writeRowData(this.family, this.countQual, countBytes);
   }
 
   // Flag it deleted and write the data on exit
@@ -517,13 +517,13 @@ public class GraphEdgeWriter extends DefaultEdgeOperation implements EdgeWriter 
    */
   @Override
   public void delete() throws IOException {
-    rowWriter.getRowDelete().addColumns(family, this.baseTypeQual);
-    rowWriter.getRowDelete().addColumns(family, this.subTypeQual);
-    rowWriter.getRowDelete().addColumns(family, this.pathQual);
-    rowWriter.getRowDelete().addColumns(family, this.sequencesQual);
-    // rowWriter.getRowDelete().addColumns(family, tableQual);
-    rowWriter.getRowDelete().addColumns(family, this.keysQual);
-    rowWriter.getRowDelete().addColumns(family, this.countQual);
+    rowWriter.deleteRowData(family, this.baseTypeQual);
+    rowWriter.deleteRowData(family, this.subTypeQual);
+    rowWriter.deleteRowData(family, this.pathQual);
+    rowWriter.deleteRowData(family, this.sequencesQual);
+    // rowWriter.deleteRowData(family, tableQual);
+    rowWriter.deleteRowData(family, this.keysQual);
+    rowWriter.deleteRowData(family, this.countQual);
   }
 
   private void addRowKey(String rowKey) throws IOException {

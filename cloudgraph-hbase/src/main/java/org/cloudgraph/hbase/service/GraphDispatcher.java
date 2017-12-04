@@ -16,6 +16,8 @@
 package org.cloudgraph.hbase.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -26,14 +28,21 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.CellUtil;
 import org.apache.hadoop.hbase.client.Mutation;
+import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.Row;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.cloudgraph.common.Pair;
 import org.cloudgraph.hbase.io.TableWriter;
 import org.cloudgraph.hbase.mutation.GraphMutationCollector;
+import org.cloudgraph.hbase.mutation.GraphMutationWriter;
+import org.cloudgraph.hbase.mutation.Mutations;
 import org.cloudgraph.store.service.DuplicateRowException;
 import org.cloudgraph.store.service.GraphServiceException;
+import org.plasma.sdo.PlasmaDataObject;
+import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.access.DataAccessException;
 import org.plasma.sdo.access.DataGraphDispatcher;
+import org.plasma.sdo.access.provider.common.PropertyPair;
 import org.plasma.sdo.core.SnapshotMap;
 
 import commonj.sdo.DataGraph;
@@ -103,13 +112,14 @@ public class GraphDispatcher extends GraphMutationCollector implements DataGraph
       // FIXME: if an exception happens here we don't have table writers to
       // close
       // as required by the 1.0.0 HBase client API. Will cause resource bleed
-      Map<TableWriter, List<Row>> mutations = collectChanges(dataGraph);
+      Map<TableWriter, Map<String, Mutations>> mutations = collectChanges(dataGraph);
       if (log.isDebugEnabled())
         log.debug("collected " + mutations.keySet().size() + " table changes");
       TableWriter[] tableWriters = new TableWriter[mutations.keySet().size()];
       mutations.keySet().toArray(tableWriters);
+      GraphMutationWriter writer = new GraphMutationWriter();
       try {
-        this.writeChanges(tableWriters, mutations, this.username);
+        writer.writeChanges(tableWriters, mutations, this.snapshotMap, this.username);
       } finally {
         for (TableWriter tableWriter : tableWriters)
           tableWriter.close();
@@ -154,13 +164,15 @@ public class GraphDispatcher extends GraphMutationCollector implements DataGraph
           log.debug("collecting changes graph " + i + " of " + dataGraphs.length + "");
         TableWriter[] tableWriters = null;
         try {
-          Map<TableWriter, List<Row>> mutations = collectChanges(dataGraph);
+          Map<TableWriter, Map<String, Mutations>> mutations = collectChanges(dataGraph);
           if (log.isDebugEnabled())
             log.debug("graph " + i + " of " + dataGraphs.length + " - collected "
                 + mutations.keySet().size() + " table changes");
           tableWriters = new TableWriter[mutations.keySet().size()];
           mutations.keySet().toArray(tableWriters);
-          this.writeChanges(tableWriters, mutations, this.username);
+          GraphMutationWriter writer = new GraphMutationWriter();
+
+          writer.writeChanges(tableWriters, mutations, this.snapshotMap, this.username);
         } finally {
           if (tableWriters != null)
             for (TableWriter tableWriter : tableWriters)
@@ -174,65 +186,4 @@ public class GraphDispatcher extends GraphMutationCollector implements DataGraph
     }
   }
 
-  private void writeChanges(TableWriter[] tableWriters, Map<TableWriter, List<Row>> mutations,
-      String jobName) throws IOException {
-    for (TableWriter tableWriter : tableWriters) {
-      List<Row> tableMutations = mutations.get(tableWriter);
-      if (log.isDebugEnabled())
-        log.debug("commiting " + tableMutations.size() + " mutations to table: "
-            + tableWriter.getTableConfig().getName());
-      if (log.isDebugEnabled()) {
-        for (Row row : tableMutations) {
-          log.debug("commiting " + row.getClass().getSimpleName() + " mutation to table: "
-              + tableWriter.getTableConfig().getName());
-          debugRowValues(row);
-        }
-      }
-      Object[] results = new Object[tableMutations.size()];
-      try {
-        tableWriter.getTable().batch(tableMutations, results);
-      } catch (InterruptedException e) {
-        throw new GraphServiceException(e);
-      }
-      for (int i = 0; i < results.length; i++) {
-        if (results[i] == null) {
-          log.error("batch action (" + i + ") for job '" + jobName + "' failed with null result");
-        } else {
-          if (log.isDebugEnabled())
-            log.debug("batch action (" + i + ") for job '" + jobName + "' succeeded with "
-                + String.valueOf(results[i]) + " result");
-        }
-      }
-      // tableWriter.getTable().flushCommits();
-      // FIXME: find what happened to flush
-    }
-  }
-
-  private void debugRowValues(Row row) {
-    if (row instanceof Mutation) {
-      Mutation mutation = (Mutation) row;
-      NavigableMap<byte[], List<Cell>> map = mutation.getFamilyCellMap();
-      StringBuilder buf = new StringBuilder();
-      Iterator<byte[]> iter = map.keySet().iterator();
-      buf.append("[");
-      int i = 0;
-      while (iter.hasNext()) {
-        if (i > 0)
-          buf.append(", ");
-        byte[] family = iter.next();
-        List<Cell> list = map.get(family);
-        for (Cell cell : list) {
-          buf.append(Bytes.toString(family));
-          buf.append(":");
-          byte[] qual = CellUtil.cloneQualifier(cell);
-          buf.append(Bytes.toString(qual));
-          buf.append("=");
-          byte[] value = CellUtil.cloneValue(cell);
-          buf.append(Bytes.toString(value));
-        }
-      }
-      buf.append("]");
-      log.debug("values: " + buf.toString());
-    }
-  }
 }

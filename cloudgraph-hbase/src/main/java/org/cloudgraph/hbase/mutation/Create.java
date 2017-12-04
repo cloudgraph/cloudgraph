@@ -81,6 +81,7 @@ public class Create extends DefaultMutation implements Collector {
 
     // Set<EdgeWriter> edgeWriters = null;
     // For 'create' change summary has no changed property specifics
+    // FIXME: use new DO value iterator
     List<Property> properties = type.getProperties();
     for (Property p : properties) {
       PlasmaProperty property = (PlasmaProperty) p;

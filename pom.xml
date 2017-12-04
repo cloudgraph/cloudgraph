@@ -4,12 +4,12 @@
 	<groupId>org.cloudgraph</groupId>
 	<artifactId>cloudgraph</artifactId>
 	<packaging>pom</packaging>
-	<version>1.0.8</version>
+	<version>1.0.9</version>
 	<name>CloudGraph</name>
     <description>CloudGraph(tm) is a suite of Service Data Object (SDO) 2.1 services designed for relational and big-table style "cloud" databases, such as HBase and others.</description>
 	<properties>
-		<cloudgraph.version>1.0.8</cloudgraph.version>
-		<plasma.version>2.0.1</plasma.version>
+		<cloudgraph.version>1.0.9</cloudgraph.version>
+		<plasma.version>2.0.2</plasma.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
     <url>http://cloudgraph.org</url>
@@ -40,7 +40,6 @@
         <module>cloudgraph-hbase</module>
         <module>cloudgraph-rdb</module>
         <!--  
-        <module>cloudgraph-examples</module> 
         <module>cloudgraph-docs</module>
         -->
         <module>cloudgraph-maprdb</module>
@@ -101,7 +100,7 @@
             </configuration>
               
 		  </plugin>	  
-                            
+          <!--                  
           <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-javadoc-plugin</artifactId>
@@ -118,9 +117,9 @@
                 </execution>
               </executions>
           </plugin>
-                             	         
+             -->                  	         
           <!-- Sign Artifacts -->     
-                        
+         <!--               
 	      <plugin>
 	        <groupId>org.apache.maven.plugins</groupId>
 	        <artifactId>maven-gpg-plugin</artifactId>
@@ -135,7 +134,7 @@
 	          </execution>
 	        </executions>
 	      </plugin>	              
-	           
+	      -->     
 	      <!--
 	          Release Plugin (Update version in POM before/after release, create
 	          tag, deploy) to try: mvn release:prepare -DdryRun=true && mvn

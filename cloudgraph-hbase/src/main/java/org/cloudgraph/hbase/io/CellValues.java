@@ -15,21 +15,15 @@
  */
 package org.cloudgraph.hbase.io;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.CellUtil;
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.cloudgraph.hbase.key.CompositeColumnKeyFactory;
-import org.cloudgraph.store.key.GraphColumnKeyFactory;
-import org.plasma.sdo.PlasmaType;
 
 /**
  * Local column qualifier/value map which is mutable such that column results

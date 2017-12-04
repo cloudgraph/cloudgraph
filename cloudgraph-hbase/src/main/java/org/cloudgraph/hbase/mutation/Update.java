@@ -31,6 +31,8 @@ import org.cloudgraph.hbase.io.TableWriter;
 import org.cloudgraph.hbase.service.HBaseDataConverter;
 import org.cloudgraph.hbase.service.ServiceContext;
 import org.cloudgraph.store.service.GraphServiceException;
+import org.plasma.sdo.DataType;
+import org.plasma.sdo.Increment;
 import org.plasma.sdo.PlasmaDataObject;
 import org.plasma.sdo.PlasmaEdge;
 import org.plasma.sdo.PlasmaNode;
@@ -40,6 +42,7 @@ import org.plasma.sdo.access.RequiredPropertyException;
 import org.plasma.sdo.core.CoreConstants;
 import org.plasma.sdo.core.CoreNode;
 import org.plasma.sdo.core.SnapshotMap;
+import org.plasma.sdo.helper.DataConverter;
 
 import commonj.sdo.ChangeSummary.Setting;
 import commonj.sdo.DataGraph;
@@ -118,10 +121,18 @@ public class Update extends DefaultMutation implements Collector {
         // FIXME: research best way to encode multiple
         // primitives as bytes
         if (dataValue != null) {
-          byte[] valueBytes = HBaseDataConverter.INSTANCE.toBytes(property, dataValue);
-          rowWriter.writeRowData(dataObject, sequence, property, valueBytes);
-          // this.updateCell(rowWriter, dataObject, sequence,
-          // property, valueBytes);
+          Increment increment = property.getIncrement();
+          if (increment == null) {
+            byte[] valueBytes = HBaseDataConverter.INSTANCE.toBytes(property, dataValue);
+            rowWriter.writeRowData(dataObject, sequence, property, valueBytes);
+          } else {
+            DataType dataType = DataType.valueOf(property.getType().getName());
+            if (dataType.ordinal() != DataType.Long.ordinal())
+              throw new GraphServiceException("property, " + property + ", must be datatype "
+                  + DataType.Long + " for increment operation");
+            long longDataValue = DataConverter.INSTANCE.toLong(property.getType(), dataValue);
+            rowWriter.incrementRowData(dataObject, sequence, property, longDataValue);
+          }
         } else {
           rowWriter.deleteRowData(dataObject, sequence, property);
           // this.deleteDataCell(rowWriter, dataObject, sequence,

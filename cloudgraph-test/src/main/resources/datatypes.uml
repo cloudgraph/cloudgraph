@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:PlasmaSDOProfile="http:///schemas/PlasmaSDOProfile/_Hd_cELa3EeeGwOelpq04nA/8" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xsi:schemaLocation="http:///schemas/PlasmaSDOProfile/_Hd_cELa3EeeGwOelpq04nA/8 pathmap://PLASMA_PROFILES/PlasmaSDO.profile_v1_2.uml#_HeBRQLa3EeeGwOelpq04nA">
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:PlasmaSDOProfile="http:///schemas/PlasmaSDOProfile/_8izAcNhNEeeROooqUVImmw/9" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xsi:schemaLocation="http:///schemas/PlasmaSDOProfile/_8izAcNhNEeeROooqUVImmw/9 pathmap://PLASMA_PROFILES/PlasmaSDO.profile_v1_2.uml#_8izAcdhNEeeROooqUVImmw">
   <uml:Model xmi:id="8f07a441-7327-4bf7-aff4-cd60402bf83a" name="datatypes">
     <packagedElement xmi:type="uml:Class" xmi:id="9880e6a9-d36f-4054-a754-3e05e445bade" name="DateTimeNode">
       <generalization xmi:type="uml:Generalization" xmi:id="a5d7f221-1ebc-451e-8b9d-c1769a18c293" general="91ceab15-96f3-4697-b01a-9c481f165dc5"/>
@@ -223,23 +223,7 @@
       <generalization xmi:type="uml:Generalization" xmi:id="99c1dff9-60b1-4f8f-9375-dc54f0e69e54" general="91ceab15-96f3-4697-b01a-9c481f165dc5"/>
     </packagedElement>
     <packagedElement xmi:type="uml:Association" xmi:id="164a53b1-6b2a-46c4-9c5c-418da4e48e7b" memberEnd="b8777ad8-12e0-45a2-a5fb-3ee689444fa2 d2ec2528-6504-484b-b10a-42d46382830d"/>
-    <profileApplication xmi:type="uml:ProfileApplication" xmi:id="_S1_TgJZUEeeDI8eHVQACiw">
-      <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_NvxPoMDdEeexn__ZPNFqlw" source="PapyrusVersion">
-        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_NvxPocDdEeexn__ZPNFqlw" key="Version" value="1.0.0"/>
-        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_NvxPosDdEeexn__ZPNFqlw" key="Comment" value=""/>
-        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_NvxPo8DdEeexn__ZPNFqlw" key="Copyright" value="Copyright 2015, TerraMeta Software Inc. All rights reserved."/>
-        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_NvxPpMDdEeexn__ZPNFqlw" key="Date" value="2015-03-07"/>
-        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_NvxPpcDdEeexn__ZPNFqlw" key="Author" value="TerraMeta Software Inc."/>
-      </eAnnotations>
-      <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_S2SOcJZUEeeDI8eHVQACiw" source="http://www.eclipse.org/uml2/2.0.0/UML">
-        <references xmi:type="ecore:EPackage" href="pathmap://PLASMA_PROFILES/PlasmaSDO.profile_v1_1.uml#_Ta1lIsTtEeSkYpwPkZ5I3w"/>
-      </eAnnotations>
-      <appliedProfile xmi:type="uml:Profile" href="pathmap://PLASMA_PROFILES/PlasmaSDO.profile_v1_1.uml#_NlmngCJUEeSXvPZh3aumVA"/>
-    </profileApplication>
-    <profileApplication xmi:type="uml:ProfileApplication" xmi:id="_NBaU0MDdEeexn__ZPNFqlw">
-      <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_NBiQoMDdEeexn__ZPNFqlw" source="http://www.eclipse.org/uml2/2.0.0/UML">
-        <references xmi:type="ecore:EPackage" href="pathmap://PLASMA_PROFILES/PlasmaSDO.profile_v1_2.uml#_HeBRQLa3EeeGwOelpq04nA"/>
-      </eAnnotations>
+    <profileApplication xmi:type="uml:ProfileApplication" xmi:id="__RIADbhxEeempbWo52e7Lg">
       <appliedProfile xmi:type="uml:Profile" href="pathmap://PLASMA_PROFILES/PlasmaSDO.profile_v1_2.uml#_NlmngCJUEeSXvPZh3aumVA"/>
     </profileApplication>
   </uml:Model>
@@ -299,4 +283,5 @@
   <PlasmaSDOProfile:SDOAlias xmi:id="_NBYfoMDdEeexn__ZPNFqlw" base_NamedElement="9880e6a9-d36f-4054-a754-3e05e445bade" physicalName="DTND"/>
   <PlasmaSDOProfile:SDOAlias xmi:id="_NBZGsMDdEeexn__ZPNFqlw" base_NamedElement="edaadd8c-eba5-42ff-9a4e-de2154f0587e" physicalName="DBLND"/>
   <PlasmaSDOProfile:SDOValueConstraint xmi:id="_NBZGscDdEeexn__ZPNFqlw" base_Property="0e0e9340-fce0-49a3-a909-b71e1d554074" totalDigits="22" fractionDigits="11"/>
+  <PlasmaSDOProfile:SDOKey xmi:id="_RcZiENeJEeePxdgdN17-AQ" base_Property="a6a71782-47df-414d-ab7a-3a652a2d5b40" type="primary"/>
 </xmi:XMI>
