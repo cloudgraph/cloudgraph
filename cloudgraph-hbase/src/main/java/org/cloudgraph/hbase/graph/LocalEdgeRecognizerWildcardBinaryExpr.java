@@ -18,7 +18,7 @@ package org.cloudgraph.hbase.graph;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.KeyValue;
-import org.cloudgraph.query.expr.DefaultWildcardBinaryExpr;
+import org.cloudgraph.query.expr.DefaultPredicateBinaryExpr;
 import org.cloudgraph.query.expr.EvaluationContext;
 import org.cloudgraph.query.expr.PredicateBinaryExpr;
 import org.plasma.query.model.Literal;
@@ -40,7 +40,7 @@ import org.plasma.query.model.Property;
  * @since 0.5.2
  * @see LocalEdgeRecognizerContext
  */
-public class LocalEdgeRecognizerWildcardBinaryExpr extends DefaultWildcardBinaryExpr implements
+public class LocalEdgeRecognizerWildcardBinaryExpr extends DefaultPredicateBinaryExpr implements
     PredicateBinaryExpr {
   private static Log log = LogFactory.getLog(LocalEdgeRecognizerWildcardBinaryExpr.class);
   private String columnQualifierPrefix;

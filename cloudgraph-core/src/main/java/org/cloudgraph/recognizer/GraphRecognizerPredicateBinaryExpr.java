@@ -20,7 +20,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.cloudgraph.query.expr.DefaultWildcardBinaryExpr;
+import org.cloudgraph.query.expr.DefaultPredicateBinaryExpr;
 import org.cloudgraph.query.expr.EvaluationContext;
 import org.cloudgraph.query.expr.PredicateBinaryExpr;
 import org.plasma.query.model.Literal;
@@ -40,7 +40,7 @@ import org.plasma.sdo.PlasmaType;
  * @see GraphRecognizerContext
  * @see GraphRecognizerSupport
  */
-public class GraphRecognizerPredicateBinaryExpr extends DefaultWildcardBinaryExpr implements
+public class GraphRecognizerPredicateBinaryExpr extends DefaultPredicateBinaryExpr implements
     PredicateBinaryExpr {
   private static Log log = LogFactory.getLog(GraphRecognizerPredicateBinaryExpr.class);
   protected Endpoint endpoint;

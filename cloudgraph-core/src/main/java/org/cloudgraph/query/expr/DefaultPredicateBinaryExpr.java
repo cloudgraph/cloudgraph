@@ -30,7 +30,7 @@ import org.plasma.query.model.PredicateOperator;
  * @see ExprVisitor
  * @see EvaluationContext
  */
-public class DefaultWildcardBinaryExpr extends DefaultBinaryExpr implements PredicateBinaryExpr {
+public class DefaultPredicateBinaryExpr extends DefaultBinaryExpr implements PredicateBinaryExpr {
   protected Property property;
   protected Literal literal;
   protected PredicateOperator operator;
@@ -50,7 +50,7 @@ public class DefaultWildcardBinaryExpr extends DefaultBinaryExpr implements Pred
    * @param contextProperty
    *          the context or graph traversal path endpoint property
    */
-  public DefaultWildcardBinaryExpr(Property property, Literal literal, PredicateOperator operator) {
+  public DefaultPredicateBinaryExpr(Property property, Literal literal, PredicateOperator operator) {
     super(property, literal);
     if (property == null)
       throw new IllegalArgumentException("expected arg 'property'");

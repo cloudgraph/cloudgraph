@@ -17,7 +17,7 @@ package org.cloudgraph.hbase.graph;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.cloudgraph.query.expr.DefaultWildcardBinaryExpr;
+import org.cloudgraph.query.expr.DefaultPredicateBinaryExpr;
 import org.cloudgraph.query.expr.EvaluationContext;
 import org.cloudgraph.query.expr.PredicateBinaryExpr;
 import org.cloudgraph.recognizer.Endpoint;
@@ -44,7 +44,7 @@ import org.plasma.sdo.PlasmaType;
  * @since 1.0.4
  * @see ExternalEdgeRecognizerContext
  */
-public class ExternalEdgeRecognizerWildcardBinaryExpr extends DefaultWildcardBinaryExpr implements
+public class ExternalEdgeRecognizerWildcardBinaryExpr extends DefaultPredicateBinaryExpr implements
     PredicateBinaryExpr {
   private static Log log = LogFactory.getLog(ExternalEdgeRecognizerWildcardBinaryExpr.class);
   protected Endpoint endpoint;

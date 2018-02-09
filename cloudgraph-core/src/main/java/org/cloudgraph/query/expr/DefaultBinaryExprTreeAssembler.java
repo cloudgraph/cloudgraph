@@ -390,7 +390,7 @@ public abstract class DefaultBinaryExprTreeAssembler extends ExpresionVisitorSup
   @Override
   public PredicateBinaryExpr createPredicateBinaryExpr(Property property, Literal literal,
       PredicateOperator operator) {
-    return new DefaultWildcardBinaryExpr(property, literal, operator);
+    return new DefaultPredicateBinaryExpr(property, literal, operator);
   }
 
   /**
