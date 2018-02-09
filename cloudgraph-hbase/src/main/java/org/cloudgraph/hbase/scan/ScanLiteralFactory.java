@@ -87,7 +87,7 @@ public class ScanLiteralFactory {
   /**
    * Creates and returns a data "flavor" and data type specific scan literal
    * given various configuration specific as well as predicate context specific
-   * wildcard and logical operators.
+   * predicate and logical operators.
    * 
    * @param content
    *          the literal string content
@@ -95,8 +95,8 @@ public class ScanLiteralFactory {
    *          the context property
    * @param rootType
    *          the graph root type
-   * @param wildcardOperator
-   *          the context wildcard operator
+   * @param predicateOperator
+   *          the context predicate operator
    * @param fieldConfig
    *          the row-key field configuration
    * @return the data "flavor" and data type specific scan literal given various
@@ -104,21 +104,54 @@ public class ScanLiteralFactory {
    *         relational and logical operators.
    */
   public ScanLiteral createLiteral(String content, PlasmaProperty property, PlasmaType rootType,
-      PredicateOperator wildcardOperator, UserDefinedRowKeyFieldMapping fieldConfig) {
+      PredicateOperator predicateOperator, UserDefinedRowKeyFieldMapping fieldConfig) {
 
     ScanLiteral result = null;
     DataType dataType = DataType.valueOf(property.getType().getName());
-
-    switch (property.getDataFlavor()) {
-    case string:
-      result = new WildcardStringLiteral(content, rootType, wildcardOperator, fieldConfig);
+    switch (predicateOperator.getValue()) {
+    case LIKE:
+      switch (property.getDataFlavor()) {
+      case string:
+        result = new WildcardStringLiteral(content, rootType, predicateOperator, fieldConfig);
+        break;
+      case integral:
+      case real:
+      case temporal:
+      case other:
+        throw new ScanException("data flavor '" + property.getDataFlavor()
+            + "' not supported for predicate operator, '" + predicateOperator.getValue() + "'");
+      }
       break;
-    case integral:
-    case real:
-    case temporal:
-    case other:
-      throw new ScanException("data flavor '" + property.getDataFlavor()
-          + "' not supported for wildcard operator, '" + wildcardOperator.getValue() + "'");
+    case IN:
+      switch (property.getDataFlavor()) {
+      case integral:
+        result = new IntegralLiteral(content, rootType, RelationalOperatorName.EQUALS, fieldConfig);
+        break;
+      case string:
+        result = new StringLiteral(content, rootType, RelationalOperatorName.EQUALS, fieldConfig);
+        break;
+      case real:
+        result = new RealLiteral(content, rootType, RelationalOperatorName.EQUALS, fieldConfig);
+        break;
+      case temporal:
+        switch (dataType) {
+        case Date:
+        case DateTime:
+        default:
+          result = new TemporalLiteral(content, rootType, RelationalOperatorName.EQUALS,
+              fieldConfig);
+        }
+        break;
+      default:
+        throw new ScanException("data flavor '" + property.getDataFlavor()
+            + "' not supported for predicate operator, '" + predicateOperator.getValue() + "'");
+      }
+
+      break;
+    default:
+      throw new ScanException("unsupported predicate operator '" + predicateOperator.getValue()
+          + "'");
+
     }
     return result;
   }
