@@ -20,6 +20,7 @@ import java.util.Arrays;
 
 import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.plasma.query.model.RelationalOperator;
+import org.plasma.query.model.RelationalOperatorName;
 import org.plasma.sdo.DataFlavor;
 import org.plasma.sdo.DataType;
 import org.plasma.sdo.PlasmaType;
@@ -49,8 +50,8 @@ public class RealLiteral extends ScanLiteral implements PartialRowKeyLiteral, Fu
   public static final double INCREMENT_DOUBLE = Double.MIN_VALUE;
   public static final BigDecimal INCREMENT_DECIMAL = BigDecimal.valueOf(Double.MIN_VALUE);
 
-  public RealLiteral(String literal, PlasmaType rootType, RelationalOperator relationalOperator,
-      UserDefinedRowKeyFieldMapping fieldConfig) {
+  public RealLiteral(String literal, PlasmaType rootType,
+      RelationalOperatorName relationalOperator, UserDefinedRowKeyFieldMapping fieldConfig) {
     super(literal, rootType, relationalOperator, fieldConfig);
   }
 

@@ -30,7 +30,7 @@ import org.plasma.query.model.PredicateOperator;
  * @see ExprVisitor
  * @see EvaluationContext
  */
-public class DefaultWildcardBinaryExpr extends DefaultBinaryExpr implements WildcardBinaryExpr {
+public class DefaultWildcardBinaryExpr extends DefaultBinaryExpr implements PredicateBinaryExpr {
   protected Property property;
   protected Literal literal;
   protected PredicateOperator operator;

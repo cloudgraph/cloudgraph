@@ -26,7 +26,8 @@ import org.plasma.sdo.PlasmaProperty;
  * Associates a {@link Row} mutation collection with the qualifiers (as String)
  * mapped to meta data properties used to create the qualifiers, used to quickly
  * map results from update operations (e.g. an HBase Increment) back from the
- * qualifiers given in the client result.
+ * qualifiers given in the client result, in order to populate the returned
+ * results back to the originating data object properties.
  * 
  * @author Scott Cinnamond
  * @since 1.0.9

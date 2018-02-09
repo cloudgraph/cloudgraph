@@ -1,0 +1,29 @@
+Release Notes
+
+CloudGraph 1.0.9 Release Notes
+
+CloudGraph 1.0.9 is a production release of CloudGraph.
+
+The full list of changes can be found in our issue management system github, and is reproduced below.
+See https://github.com/cloudgraph/cloudgraph/issues. 
+
+For issues created during beta testing see:
+See https://github.com/cloudgraph/cloudgraph/issues. 
+
+
+Major Changes
+[Issue #15] -  Upgrade to Plasma 2.0.2
+
+Bugs
+
+Improvements
+[Issue #11] -  Add Annotations for Auto Discovery of Store Mappings 
+[Issue #12] -  Support HBase Increment with Results Round trip 
+[Issue #13] -  Change Naming of Syntax-Tree Related Classes from Wildcard to Predicate
+[Issue #14] -  Add Support for 'IN' Predicate Operator 
+ 
+New Features
+
+Tasks
+
+Wish

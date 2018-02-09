@@ -21,6 +21,7 @@ import java.util.Date;
 import org.cloudgraph.hbase.service.HBaseDataConverter;
 import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.plasma.query.model.RelationalOperator;
+import org.plasma.query.model.RelationalOperatorName;
 import org.plasma.sdo.DataFlavor;
 import org.plasma.sdo.DataType;
 import org.plasma.sdo.PlasmaType;
@@ -49,7 +50,7 @@ public class TemporalLiteral extends ScanLiteral implements PartialRowKeyLiteral
   // resolution is seconds
 
   public TemporalLiteral(String literal, PlasmaType rootType,
-      RelationalOperator relationalOperator, UserDefinedRowKeyFieldMapping fieldConfig) {
+      RelationalOperatorName relationalOperator, UserDefinedRowKeyFieldMapping fieldConfig) {
     super(literal, rootType, relationalOperator, fieldConfig);
   }
 

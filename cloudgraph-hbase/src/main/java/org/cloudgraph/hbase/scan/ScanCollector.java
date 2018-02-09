@@ -28,7 +28,7 @@ import org.cloudgraph.query.expr.Expr;
 import org.cloudgraph.query.expr.ExprVisitor;
 import org.cloudgraph.query.expr.LogicalBinaryExpr;
 import org.cloudgraph.query.expr.RelationalBinaryExpr;
-import org.cloudgraph.query.expr.WildcardBinaryExpr;
+import org.cloudgraph.query.expr.PredicateBinaryExpr;
 import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.cloudgraph.store.mapping.StoreMapping;
 import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
@@ -65,7 +65,7 @@ import org.plasma.sdo.PlasmaType;
  * @see org.cloudgraph.store.mapping.DataGraphMapping
  * @see org.cloudgraph.hbase.expr.LogicalBinaryExpr
  * @see org.cloudgraph.hbase.expr.RelationalBinaryExpr
- * @see org.cloudgraph.hbase.expr.WildcardBinaryExpr
+ * @see org.cloudgraph.hbase.expr.PredicateBinaryExpr
  */
 public class ScanCollector implements ExprVisitor {
 
@@ -143,8 +143,8 @@ public class ScanCollector implements ExprVisitor {
     if (target instanceof RelationalBinaryExpr) {
       RelationalBinaryExpr expr = (RelationalBinaryExpr) target;
       collect(expr, source);
-    } else if (target instanceof WildcardBinaryExpr) {
-      WildcardBinaryExpr expr = (WildcardBinaryExpr) target;
+    } else if (target instanceof PredicateBinaryExpr) {
+      PredicateBinaryExpr expr = (PredicateBinaryExpr) target;
       collect(expr, source);
     }
   }
@@ -167,7 +167,7 @@ public class ScanCollector implements ExprVisitor {
     collect(scanLiteral, fieldConfig, source);
   }
 
-  private void collect(WildcardBinaryExpr target, Expr source) {
+  private void collect(PredicateBinaryExpr target, Expr source) {
     UserDefinedRowKeyFieldMapping fieldConfig = graph.getUserDefinedRowKeyField(target
         .getPropertyPath());
     if (fieldConfig == null) {
@@ -177,12 +177,23 @@ public class ScanCollector implements ExprVisitor {
       return;
     }
     PlasmaProperty property = (PlasmaProperty) fieldConfig.getEndpointProperty();
+    switch (target.getOperator().getValue()) {
+    case IN:
+      String[] literals = target.getLiteral().getValue().split(" ");
+      for (String literal : literals) {
+        ScanLiteral scanLiteral = factory.createLiteral(literal, property,
+            (PlasmaType) graph.getRootType(), target.getOperator(), fieldConfig);
+        this.collect(fieldConfig, LogicalOperatorName.OR, scanLiteral);
+      }
+      break;
+    default:
+      ScanLiteral scanLiteral = factory.createLiteral(target.getLiteral().getValue(), property,
+          (PlasmaType) graph.getRootType(), target.getOperator(), fieldConfig);
+      if (log.isDebugEnabled())
+        log.debug("collecting path: " + target.getPropertyPath());
+      collect(scanLiteral, fieldConfig, source);
+    }
 
-    ScanLiteral scanLiteral = factory.createLiteral(target.getLiteral().getValue(), property,
-        (PlasmaType) graph.getRootType(), target.getOperator(), fieldConfig);
-    if (log.isDebugEnabled())
-      log.debug("collecting path: " + target.getPropertyPath());
-    collect(scanLiteral, fieldConfig, source);
   }
 
   private void collect(ScanLiteral scanLiteral, UserDefinedRowKeyFieldMapping fieldConfig,
@@ -190,7 +201,7 @@ public class ScanCollector implements ExprVisitor {
     if (source != null) {
       if (source instanceof LogicalBinaryExpr) {
         LogicalBinaryExpr lbe = (LogicalBinaryExpr) source;
-        this.collect(fieldConfig, lbe, scanLiteral);
+        this.collect(fieldConfig, lbe.getOperator().getValue(), scanLiteral);
       } else
         throw new IllegalOperatorMappingException("expected logical binary expression parent not, "
             + source.getClass().getName());
@@ -199,8 +210,8 @@ public class ScanCollector implements ExprVisitor {
     }
   }
 
-  private void collect(UserDefinedRowKeyFieldMapping fieldConfig, LogicalBinaryExpr source,
-      ScanLiteral scanLiteral) {
+  private void collect(UserDefinedRowKeyFieldMapping fieldConfig,
+      LogicalOperatorName logicalOperatorContext, ScanLiteral scanLiteral) {
     if (this.literals.size() == 0) {
       Map<UserDefinedRowKeyFieldMapping, List<ScanLiteral>> map = new HashMap<UserDefinedRowKeyFieldMapping, List<ScanLiteral>>();
       List<ScanLiteral> list = new ArrayList<ScanLiteral>(2);
@@ -211,8 +222,8 @@ public class ScanCollector implements ExprVisitor {
       boolean foundField = false;
 
       for (Map<UserDefinedRowKeyFieldMapping, List<ScanLiteral>> existingMap : literals) {
-        if (source == null
-            || source.getOperator().getValue().ordinal() == LogicalOperatorName.AND.ordinal()) {
+        if (logicalOperatorContext == null
+            || logicalOperatorContext.ordinal() == LogicalOperatorName.AND.ordinal()) {
           List<ScanLiteral> list = existingMap.get(fieldConfig);
           if (list == null) {
             list = new ArrayList<ScanLiteral>();
@@ -222,16 +233,15 @@ public class ScanCollector implements ExprVisitor {
             ScanLiteral existingLiteral = list.get(0);
             // FIXME: 2 and-ed wildcard expressions cause a NPE here
             // as there is no relational operator in a WC
-            RelationalOperatorName existingOperator = existingLiteral.getRelationalOperator()
-                .getValue();
-            switch (scanLiteral.getRelationalOperator().getValue()) {
+            RelationalOperatorName existingOperator = existingLiteral.getRelationalOperator();
+            switch (scanLiteral.getRelationalOperator()) {
             case GREATER_THAN:
             case GREATER_THAN_EQUALS:
               if (existingOperator.ordinal() != RelationalOperatorName.LESS_THAN.ordinal()
                   && existingOperator.ordinal() != RelationalOperatorName.LESS_THAN_EQUALS
                       .ordinal())
-                throw new ImbalancedOperatorMappingException(scanLiteral.getRelationalOperator()
-                    .getValue(), LogicalOperatorName.AND, existingOperator, fieldConfig);
+                throw new ImbalancedOperatorMappingException(scanLiteral.getRelationalOperator(),
+                    LogicalOperatorName.AND, existingOperator, fieldConfig);
               list.add(scanLiteral);
               break;
             case LESS_THAN:
@@ -239,17 +249,16 @@ public class ScanCollector implements ExprVisitor {
               if (existingOperator.ordinal() != RelationalOperatorName.GREATER_THAN.ordinal()
                   && existingOperator.ordinal() != RelationalOperatorName.GREATER_THAN_EQUALS
                       .ordinal())
-                throw new ImbalancedOperatorMappingException(scanLiteral.getRelationalOperator()
-                    .getValue(), LogicalOperatorName.AND, existingOperator, fieldConfig);
+                throw new ImbalancedOperatorMappingException(scanLiteral.getRelationalOperator(),
+                    LogicalOperatorName.AND, existingOperator, fieldConfig);
               list.add(scanLiteral);
               break;
             case EQUALS:
             case NOT_EQUALS:
             default:
               throw new IllegalOperatorMappingException("relational operator '"
-                  + scanLiteral.getRelationalOperator().getValue()
-                  + "' linked through logical operator '" + LogicalOperatorName.AND
-                  + "to row key field property, "
+                  + scanLiteral.getRelationalOperator() + "' linked through logical operator '"
+                  + LogicalOperatorName.AND + "to row key field property, "
                   + fieldConfig.getEndpointProperty().getContainingType().toString() + "."
                   + fieldConfig.getEndpointProperty().getName());
             }
@@ -260,7 +269,7 @@ public class ScanCollector implements ExprVisitor {
                 + fieldConfig.getEndpointProperty().getContainingType().toString() + "."
                 + fieldConfig.getEndpointProperty().getName());
           }
-        } else if (source.getOperator().getValue().ordinal() == LogicalOperatorName.OR.ordinal()) {
+        } else if (logicalOperatorContext.ordinal() == LogicalOperatorName.OR.ordinal()) {
           List<ScanLiteral> list = existingMap.get(fieldConfig);
           if (list == null) {
             if (foundField)
@@ -275,8 +284,7 @@ public class ScanCollector implements ExprVisitor {
             foundField = true;
           }
         } else {
-          log.warn("unsuported logical operator, " + source.getOperator().getValue()
-              + " - ignoring");
+          log.warn("unsuported logical operator, " + logicalOperatorContext + " - ignoring");
         }
       }
 

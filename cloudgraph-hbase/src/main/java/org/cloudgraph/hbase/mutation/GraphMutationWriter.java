@@ -78,23 +78,24 @@ public class GraphMutationWriter {
                   + String.valueOf(results[i]) + " result");
             Result result = (Result) results[i];
             Mutations rowMutations = tableMutations.get(Bytes.toString(result.getRow()));
+            if (result.rawCells() != null)
+              for (Cell cell : result.rawCells()) {
 
-            for (Cell cell : result.rawCells()) {
+                String fam = Bytes.toString(cell.getFamilyArray(), cell.getFamilyOffset(),
+                    cell.getFamilyLength());
+                String qual = Bytes.toString(cell.getQualifierArray(), cell.getQualifierOffset(),
+                    cell.getQualifierLength());
 
-              String fam = Bytes.toString(cell.getFamilyArray(), cell.getFamilyOffset(),
-                  cell.getFamilyLength());
-              String qual = Bytes.toString(cell.getQualifierArray(), cell.getQualifierOffset(),
-                  cell.getQualifierLength());
+                Pair<PlasmaDataObject, PlasmaProperty> pair = rowMutations.get(Bytes.toBytes(fam),
+                    Bytes.toBytes(qual));
 
-              Pair<PlasmaDataObject, PlasmaProperty> pair = rowMutations.get(Bytes.toBytes(fam),
-                  Bytes.toBytes(qual));
-
-              if (pair.getRight().getIncrement() != null) {
-                Long value = Bytes.toLong(cell.getValueArray(), cell.getValueOffset(),
-                    cell.getValueLength());
-                snapshotMap.put(pair.getLeft().getUUID(), new PropertyPair(pair.getRight(), value));
+                if (pair.getRight().getIncrement() != null) {
+                  Long value = Bytes.toLong(cell.getValueArray(), cell.getValueOffset(),
+                      cell.getValueLength());
+                  snapshotMap.put(pair.getLeft().getUUID(),
+                      new PropertyPair(pair.getRight(), value));
+                }
               }
-            }
           } else {
             if (log.isDebugEnabled())
               log.debug("batch action (" + i + ") for job '" + jobName + "' succeeded with "

@@ -214,7 +214,7 @@ public abstract class DefaultBinaryExprTreeAssembler extends ExpresionVisitorSup
       if (oper.getOperator() instanceof RelationalOperator)
         expr = createRelationalBinaryExpr(prop, literal, (RelationalOperator) oper.getOperator());
       else if (oper.getOperator() instanceof PredicateOperator) {
-        expr = createWildcardBinaryExpr(prop, literal, (PredicateOperator) oper.getOperator());
+        expr = createPredicateBinaryExpr(prop, literal, (PredicateOperator) oper.getOperator());
       } else
         throw new IllegalStateException("unknown operator, " + oper.toString());
     } else if (this.operands.peek() instanceof Expr) {
@@ -388,7 +388,7 @@ public abstract class DefaultBinaryExprTreeAssembler extends ExpresionVisitorSup
    *         >wildcard</a> operator.
    */
   @Override
-  public WildcardBinaryExpr createWildcardBinaryExpr(Property property, Literal literal,
+  public PredicateBinaryExpr createPredicateBinaryExpr(Property property, Literal literal,
       PredicateOperator operator) {
     return new DefaultWildcardBinaryExpr(property, literal, operator);
   }

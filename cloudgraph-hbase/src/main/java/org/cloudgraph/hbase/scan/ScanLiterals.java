@@ -27,6 +27,7 @@ import org.cloudgraph.store.mapping.PreDefinedKeyFieldMapping;
 import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.plasma.query.Wildcard;
 import org.plasma.query.model.RelationalOperator;
+import org.plasma.query.model.RelationalOperatorName;
 
 /**
  * A collection of scan literals which provides various accessor methods which
@@ -83,9 +84,9 @@ public class ScanLiterals {
       }
     }
 
-    RelationalOperator oper = scanLiteral.getRelationalOperator();
+    RelationalOperatorName oper = scanLiteral.getRelationalOperator();
     if (oper != null) {
-      switch (oper.getValue()) {
+      switch (oper) {
       case EQUALS:
         break;
       default:

@@ -206,23 +206,65 @@ public class GraphRecognizerSupport {
       PredicateOperatorName operator, String literal) {
     boolean result = true;
 
+    switch (operator) {
+    case LIKE:
+      switch (property.getDataFlavor()) {
+      case string:
+        String propertyStringValue = (String) propertyValue;
+        // as trailing newlines confuse regexp greatly
+        propertyStringValue = propertyStringValue.trim();
+        String literalStringValue = (String) this.dataConverter
+            .convert(property.getType(), literal);
+        result = evaluate(propertyStringValue, operator, literalStringValue);
+        break;
+      case integral:
+      case real:
+      case temporal:
+      case other:
+        throw new GraphServiceException("data flavor '" + property.getDataFlavor()
+            + "' not supported for wildcard operator '" + operator + "'");
+      }
+      break;
+    case IN:
+      // evals true if property value equals any or given literals
+      String[] literals = null;
+      if (literal != null)
+        literals = literal.split(" ");
+      boolean anySuccess = false;
+      for (String lit : literals) {
+        if (evaluate(property, propertyValue, lit)) {
+          anySuccess = true;
+          break;
+        }
+      }
+      result = anySuccess;
+      break;
+    default:
+      throw new GraphServiceException("operator '+operator+' not supported for context");
+    }
+    return result;
+  }
+
+  private boolean evaluate(PlasmaProperty property, Object propertyValue, String literal) {
+    boolean result = true;
     switch (property.getDataFlavor()) {
     case string:
       String propertyStringValue = (String) propertyValue;
-      propertyStringValue = propertyStringValue.trim(); // as trailing
-      // newlines
-      // confuse
-      // regexp
-      // greatly
+      propertyStringValue = propertyStringValue.trim();
       String literalStringValue = (String) this.dataConverter.convert(property.getType(), literal);
-      result = evaluate(propertyStringValue, operator, literalStringValue);
+      result = evaluate(propertyStringValue, RelationalOperatorName.EQUALS, literalStringValue);
       break;
     case integral:
     case real:
+      Number propertyNumberValue = (Number) propertyValue;
+      Number literalNumberValue = (Number) this.dataConverter.convert(property.getType(), literal);
+      result = evaluate(propertyNumberValue, RelationalOperatorName.EQUALS, literalNumberValue);
+      break;
     case temporal:
     case other:
-      throw new GraphServiceException("data flavor '" + property.getDataFlavor()
-          + "' not supported for wildcard operator '" + operator + "'");
+    default:
+      throw new GraphServiceException(
+          "data flavor '+property.getDataFlavor()+' not supported for context");
     }
     return result;
   }

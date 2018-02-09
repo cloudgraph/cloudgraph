@@ -272,7 +272,8 @@ public class GraphInputFormat extends InputFormat<ImmutableBytesWritable, GraphW
           // resolution.
           InetSocketAddress isa = new InetSocketAddress(location.getHostname(), location.getPort());
           if (isa.isUnresolved()) {
-            log.warn("Failed resolve " + isa);
+            log.error("Failed to resolve host: " + isa + " - ignoring entire split for this host!");
+            continue;
           }
           InetAddress regionAddress = isa.getAddress();
           String regionLocation;

@@ -18,7 +18,7 @@ package org.cloudgraph.recognizer;
 import org.cloudgraph.query.expr.DefaultBinaryExprTreeAssembler;
 import org.cloudgraph.query.expr.ExprAssembler;
 import org.cloudgraph.query.expr.RelationalBinaryExpr;
-import org.cloudgraph.query.expr.WildcardBinaryExpr;
+import org.cloudgraph.query.expr.PredicateBinaryExpr;
 import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.plasma.query.model.Literal;
 import org.plasma.query.model.PredicateOperator;
@@ -72,8 +72,8 @@ public class GraphRecognizerSyntaxTreeAssembler extends DefaultBinaryExprTreeAss
   }
 
   @Override
-  public WildcardBinaryExpr createWildcardBinaryExpr(Property property, Literal literal,
+  public PredicateBinaryExpr createPredicateBinaryExpr(Property property, Literal literal,
       PredicateOperator operator) {
-    return new GraphRecognizerWildcardBinaryExpr(property, literal, operator);
+    return new GraphRecognizerPredicateBinaryExpr(property, literal, operator);
   }
 }

@@ -25,6 +25,7 @@ import org.plasma.sdo.PlasmaProperty;
 import com.google.common.primitives.Bytes;
 
 /**
+ * Maps column family and column qualifiers to data object property pairs.
  * 
  * @author Scott Cinnamond
  * @since 1.0.9

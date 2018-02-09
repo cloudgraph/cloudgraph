@@ -324,11 +324,15 @@ public class ColumnPredicateVisitor extends PredicateVisitor {
           orList.addFilter(filter);
         top.getFilters().clear();
         this.filterStack.pop();
-        FilterList previous = this.filterStack.peek();
-        if (!previous.getFilters().remove(top))
-          throw new IllegalStateException("could not remove filter list");
-        previous.addFilter(orList);
-        this.filterStack.push(orList);
+        if (this.filterStack.size() > 0) {
+          FilterList previous = this.filterStack.peek();
+          if (!previous.getFilters().remove(top))
+            throw new IllegalStateException("could not remove filter list");
+          previous.addFilter(orList);
+        } else {
+          this.filterStack.push(orList);
+          this.rootFilter = orList;
+        }
       }
       break;
     }

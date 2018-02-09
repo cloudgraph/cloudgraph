@@ -19,7 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.cloudgraph.query.expr.DefaultWildcardBinaryExpr;
 import org.cloudgraph.query.expr.EvaluationContext;
-import org.cloudgraph.query.expr.WildcardBinaryExpr;
+import org.cloudgraph.query.expr.PredicateBinaryExpr;
 import org.cloudgraph.recognizer.Endpoint;
 import org.cloudgraph.recognizer.GraphRecognizerSupport;
 import org.plasma.query.model.Literal;
@@ -29,9 +29,9 @@ import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
 
 /**
- * An {@link WildcardBinaryExpr} implementation which uses a specific evaluation
- * {@link ExternalEdgeRecognizerContext context} to locate or recognize a given
- * row key field within the context of the expression.
+ * An {@link PredicateBinaryExpr} implementation which uses a specific
+ * evaluation {@link ExternalEdgeRecognizerContext context} to locate or
+ * recognize a given row key field within the context of the expression.
  * 
  * <p>
  * For external edges, we have only the row key fields to evaluate and the
@@ -45,7 +45,7 @@ import org.plasma.sdo.PlasmaType;
  * @see ExternalEdgeRecognizerContext
  */
 public class ExternalEdgeRecognizerWildcardBinaryExpr extends DefaultWildcardBinaryExpr implements
-    WildcardBinaryExpr {
+    PredicateBinaryExpr {
   private static Log log = LogFactory.getLog(ExternalEdgeRecognizerWildcardBinaryExpr.class);
   protected Endpoint endpoint;
   protected GraphRecognizerSupport recognizer = new GraphRecognizerSupport();

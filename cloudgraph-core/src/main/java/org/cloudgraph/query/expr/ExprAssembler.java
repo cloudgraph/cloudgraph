@@ -72,7 +72,7 @@ public interface ExprAssembler {
    *         "http://docs.plasma-sdo.org/api/org/plasma/query/model/WildcardOperator.html"
    *         >wildcard</a> operator.
    */
-  public WildcardBinaryExpr createWildcardBinaryExpr(Property property, Literal literal,
+  public PredicateBinaryExpr createPredicateBinaryExpr(Property property, Literal literal,
       PredicateOperator operator);
 
   /**

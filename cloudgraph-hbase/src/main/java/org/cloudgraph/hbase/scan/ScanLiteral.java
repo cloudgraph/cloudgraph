@@ -27,7 +27,7 @@ import org.cloudgraph.store.mapping.StoreMapping;
 import org.cloudgraph.store.mapping.TableMapping;
 import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.cloudgraph.store.service.GraphServiceException;
-import org.plasma.query.model.RelationalOperator;
+import org.plasma.query.model.RelationalOperatorName;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
 import org.plasma.sdo.helper.DataConverter;
@@ -49,7 +49,7 @@ public abstract class ScanLiteral {
 
   protected String literal;
   @Deprecated
-  protected RelationalOperator relationalOperator;
+  protected RelationalOperatorName relationalOperator;
   protected UserDefinedRowKeyFieldMapping fieldConfig;
   protected DataConverter dataConverter = DataConverter.INSTANCE;
   protected PlasmaType rootType;
@@ -64,8 +64,8 @@ public abstract class ScanLiteral {
   private ScanLiteral() {
   }
 
-  public ScanLiteral(String literal, PlasmaType rootType, RelationalOperator relationalOperator,
-      UserDefinedRowKeyFieldMapping fieldConfig) {
+  public ScanLiteral(String literal, PlasmaType rootType,
+      RelationalOperatorName relationalOperator, UserDefinedRowKeyFieldMapping fieldConfig) {
     super();
     this.rootType = rootType;
     this.relationalOperator = relationalOperator;
@@ -95,7 +95,7 @@ public abstract class ScanLiteral {
    * 
    * @return the context relational operator.
    */
-  public final RelationalOperator getRelationalOperator() {
+  public final RelationalOperatorName getRelationalOperator() {
     return relationalOperator;
   }
 
@@ -118,7 +118,7 @@ public abstract class ScanLiteral {
    *         optionally configurable hashing, formatting and padding features.
    */
   public byte[] getStartBytes() {
-    switch (this.relationalOperator.getValue()) {
+    switch (this.relationalOperator) {
     case EQUALS:
       return getEqualsStartBytes();
     case GREATER_THAN:
@@ -131,8 +131,7 @@ public abstract class ScanLiteral {
       return getLessThanEqualStartBytes();
     case NOT_EQUALS:
     default:
-      throw new GraphServiceException("relational operator '"
-          + this.relationalOperator.getValue().toString()
+      throw new GraphServiceException("relational operator '" + this.relationalOperator.toString()
           + "' not supported for integral row key fields");
     }
   }
@@ -147,7 +146,7 @@ public abstract class ScanLiteral {
    *         optionally configurable hashing, formatting and padding features.
    */
   public byte[] getStopBytes() {
-    switch (this.relationalOperator.getValue()) {
+    switch (this.relationalOperator) {
     case EQUALS:
       return getEqualsStopBytes();
     case GREATER_THAN:
@@ -160,8 +159,7 @@ public abstract class ScanLiteral {
       return getLessThanEqualStopBytes();
     case NOT_EQUALS:
     default:
-      throw new GraphServiceException("relational operator '"
-          + this.relationalOperator.getValue().toString()
+      throw new GraphServiceException("relational operator '" + this.relationalOperator.toString()
           + "' not supported for integral row key fields");
     }
   }

@@ -343,6 +343,11 @@ class GraphSliceSupport {
   public Set<Long> fetchSequences(PlasmaType contextType, Where where, RowReader rowReader)
       throws IOException {
 
+    if (log.isDebugEnabled()) {
+      log.debug("root type: " + rowReader.getRootType());
+      log.debug("context type: " + contextType);
+      log.debug("fetch sequences: " + this.marshal(where));
+    }
     PlasmaType rootType = (PlasmaType) rowReader.getRootType();
     DataGraphMapping graphConfig = StoreMapping.getInstance().getDataGraph(
         rootType.getQualifiedName());
@@ -365,6 +370,8 @@ class GraphSliceSupport {
 
     Result result = fetchResult(get, rowReader.getTableReader(), graphConfig);
     Map<Long, Map<String, KeyValue>> buckets = buketizeResult(result, graphConfig);
+    if (log.isDebugEnabled())
+      log.debug("found " + buckets.size() + " sequence buckets");
 
     Set<Long> sequences = new HashSet<Long>();
     // filter sequence results using edge recognizer
@@ -382,6 +389,8 @@ class GraphSliceSupport {
       if (recogniser.evaluate(context))
         sequences.add(seq);
     }
+    if (log.isDebugEnabled())
+      log.debug("returning " + sequences.size() + " sequences");
     return sequences;
   }
 
@@ -457,6 +466,12 @@ class GraphSliceSupport {
         if (log.isDebugEnabled())
           log.debug("\tkey: " + qual + "\tvalue: " + Bytes.toString(keyValue.getValue()));
         String[] sections = qual.split(graphConfig.getColumnKeySequenceDelimiter());
+        if (sections.length < 2) {
+          log.warn("ignoring non statefull qualifier '"
+              + qual
+              + "' - can be caused by multiple physical property names for multiple entities within the same (bound) data graph");
+          continue;
+        }
         Long seq = Long.valueOf(sections[1]);
         Map<String, KeyValue> subMap = resultMap.get(seq);
         if (subMap == null) {
@@ -699,6 +714,10 @@ class GraphSliceSupport {
   }
 
   protected void log(Where predicates) {
+    log.debug("query: " + marshal(predicates));
+  }
+
+  protected String marshal(Where predicates) {
     String xml = "";
     PlasmaQueryDataBinding binding;
     try {
@@ -709,6 +728,6 @@ class GraphSliceSupport {
     } catch (SAXException e) {
       log.debug(e);
     }
-    log.debug("query: " + xml);
+    return xml;
   }
 }

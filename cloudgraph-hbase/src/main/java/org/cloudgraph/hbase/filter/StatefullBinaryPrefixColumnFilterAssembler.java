@@ -70,6 +70,8 @@ public class StatefullBinaryPrefixColumnFilterAssembler extends FilterListAssemb
   }
 
   public void assemble(Set<Property> properies, Set<Long> sequences, PlasmaType contextType) {
+    if (sequences == null || sequences.size() == 0)
+      throw new IllegalArgumentException("expected one or more sequences");
     byte[] colKey = null;
     QualifierFilter qualFilter = null;
     PlasmaType subType = edgeReader.getSubType();

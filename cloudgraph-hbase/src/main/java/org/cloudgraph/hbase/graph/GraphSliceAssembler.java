@@ -129,26 +129,31 @@ public class GraphSliceAssembler extends DistributedAssembler {
         Set<Long> sequences = null;
         if (prop.isMany() && where != null) {
           sequences = this.slice.fetchSequences((PlasmaType) prop.getType(), where, rowReader);
-          // preload properties for the NEXT level into the current
-          // row so we have something to assemble
-          Set<Property> childProperies = this.selection.getInheritedProperties(prop.getType(),
-              level + 1);
-          this.slice
-              .loadBySequenceList(sequences, childProperies, childType, rowReader, edgeReader);
+          if (sequences.size() > 0) {
+            // preload properties for the NEXT level into the current
+            // row so we have something to assemble
+            Set<Property> childProperies = this.selection.getInheritedProperties(prop.getType(),
+                level + 1);
+            this.slice.loadBySequenceList(sequences, childProperies, childType, rowReader,
+                edgeReader);
+          }
         } else {
           // preload properties for the NEXT level into the current
           // row so we have something to assemble
           sequences = new HashSet<Long>();
           for (Long seq : edgeReader.getSequences())
             sequences.add(seq);
-          Set<Property> childProperies = this.selection.getInheritedProperties(prop.getType(),
-              level + 1);
-          this.slice
-              .loadBySequenceList(sequences, childProperies, childType, rowReader, edgeReader);
+          if (sequences.size() > 0) {
+            Set<Property> childProperies = this.selection.getInheritedProperties(prop.getType(),
+                level + 1);
+            this.slice.loadBySequenceList(sequences, childProperies, childType, rowReader,
+                edgeReader);
+          }
         }
-
-        assembleEdges(target, targetSequence, prop, edgeReader, sequences, rowReader,
-            rowReader.getTableReader(), rowReader, level);
+        if (sequences.size() > 0) {
+          assembleEdges(target, targetSequence, prop, edgeReader, sequences, rowReader,
+              rowReader.getTableReader(), rowReader, level);
+        }
       } else {
         String childTable = edgeReader.getTable();
         TableReader externalTableReader = distributedReader.getTableReader(childTable);

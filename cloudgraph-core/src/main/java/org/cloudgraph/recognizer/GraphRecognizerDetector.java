@@ -22,7 +22,7 @@ import org.apache.commons.logging.LogFactory;
 import org.cloudgraph.query.expr.Expr;
 import org.cloudgraph.query.expr.ExprVisitor;
 import org.cloudgraph.query.expr.RelationalBinaryExpr;
-import org.cloudgraph.query.expr.WildcardBinaryExpr;
+import org.cloudgraph.query.expr.PredicateBinaryExpr;
 import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.cloudgraph.store.mapping.StoreMapping;
 import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
@@ -51,7 +51,7 @@ import org.plasma.sdo.PlasmaType;
  * @see org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping
  * @see org.cloudgraph.query.expr.LogicalBinaryExpr
  * @see org.cloudgraph.query.expr.RelationalBinaryExpr
- * @see org.cloudgraph.query.expr.WildcardBinaryExpr
+ * @see org.cloudgraph.query.expr.PredicateBinaryExpr
  */
 public class GraphRecognizerDetector implements ExprVisitor {
 
@@ -81,8 +81,8 @@ public class GraphRecognizerDetector implements ExprVisitor {
         this.queryRequiresGraphRecognizer = true;
         return;
       }
-    } else if (target instanceof WildcardBinaryExpr) {
-      WildcardBinaryExpr expr = (WildcardBinaryExpr) target;
+    } else if (target instanceof PredicateBinaryExpr) {
+      PredicateBinaryExpr expr = (PredicateBinaryExpr) target;
       UserDefinedRowKeyFieldMapping fieldConfig = graph.getUserDefinedRowKeyField(expr
           .getPropertyPath());
       if (fieldConfig == null) {

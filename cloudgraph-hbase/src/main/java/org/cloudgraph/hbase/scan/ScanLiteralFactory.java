@@ -18,6 +18,7 @@ package org.cloudgraph.hbase.scan;
 import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.plasma.query.model.RelationalOperator;
 import org.plasma.query.model.PredicateOperator;
+import org.plasma.query.model.RelationalOperatorName;
 import org.plasma.sdo.DataType;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
@@ -60,25 +61,25 @@ public class ScanLiteralFactory {
 
     switch (property.getDataFlavor()) {
     case integral:
-      result = new IntegralLiteral(content, rootType, relationalOperator, fieldConfig);
+      result = new IntegralLiteral(content, rootType, relationalOperator.getValue(), fieldConfig);
       break;
     case string:
-      result = new StringLiteral(content, rootType, relationalOperator, fieldConfig);
+      result = new StringLiteral(content, rootType, relationalOperator.getValue(), fieldConfig);
       break;
     case real:
-      result = new RealLiteral(content, rootType, relationalOperator, fieldConfig);
+      result = new RealLiteral(content, rootType, relationalOperator.getValue(), fieldConfig);
       break;
     case temporal:
       switch (dataType) {
       case Date:
       case DateTime:
       default:
-        result = new TemporalLiteral(content, rootType, relationalOperator, fieldConfig);
+        result = new TemporalLiteral(content, rootType, relationalOperator.getValue(), fieldConfig);
       }
       break;
     case other:
       throw new ScanException("data flavor '" + property.getDataFlavor()
-          + "' not supported for relational operator, '" + relationalOperator.getValue() + "'");
+          + "' not supported for relational operator, '" + relationalOperator + "'");
     }
     return result;
   }

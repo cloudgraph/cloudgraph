@@ -20,6 +20,7 @@ import java.util.Arrays;
 
 import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.plasma.query.model.RelationalOperator;
+import org.plasma.query.model.RelationalOperatorName;
 import org.plasma.sdo.DataFlavor;
 import org.plasma.sdo.DataType;
 import org.plasma.sdo.PlasmaType;
@@ -47,7 +48,7 @@ public class IntegralLiteral extends ScanLiteral implements PartialRowKeyLiteral
   public static final int INCREMENT = 1;
 
   public IntegralLiteral(String literal, PlasmaType rootType,
-      RelationalOperator relationalOperator, UserDefinedRowKeyFieldMapping fieldConfig) {
+      RelationalOperatorName relationalOperator, UserDefinedRowKeyFieldMapping fieldConfig) {
     super(literal, rootType, relationalOperator, fieldConfig);
   }
 

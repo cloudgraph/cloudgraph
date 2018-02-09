@@ -22,7 +22,7 @@ import org.cloudgraph.query.expr.Expr;
 import org.cloudgraph.query.expr.ExprAssembler;
 import org.cloudgraph.query.expr.LogicalBinaryExpr;
 import org.cloudgraph.query.expr.RelationalBinaryExpr;
-import org.cloudgraph.query.expr.WildcardBinaryExpr;
+import org.cloudgraph.query.expr.PredicateBinaryExpr;
 import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.plasma.query.model.Literal;
 import org.plasma.query.model.LogicalOperator;
@@ -101,7 +101,7 @@ public class LocalEdgeRecognizerSyntaxTreeAssembler extends PathPredicateBinaryE
   }
 
   @Override
-  public WildcardBinaryExpr createWildcardBinaryExpr(Property property, Literal literal,
+  public PredicateBinaryExpr createPredicateBinaryExpr(Property property, Literal literal,
       PredicateOperator operator) {
     String qual = Bytes.toString(this.contextQueryProperty.getPhysicalNameBytes());
     String delim = this.graphConfig.getColumnKeySequenceDelimiter();

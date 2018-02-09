@@ -20,15 +20,15 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.KeyValue;
 import org.cloudgraph.query.expr.DefaultWildcardBinaryExpr;
 import org.cloudgraph.query.expr.EvaluationContext;
-import org.cloudgraph.query.expr.WildcardBinaryExpr;
+import org.cloudgraph.query.expr.PredicateBinaryExpr;
 import org.plasma.query.model.Literal;
 import org.plasma.query.model.PredicateOperator;
 import org.plasma.query.model.Property;
 
 /**
- * An {@link WildcardBinaryExpr} implementation which uses a specific evaluation
- * {@link LocalEdgeRecognizerContext context} to locate or recognize a given
- * sequence based column qualifier within the context of the expression.
+ * An {@link PredicateBinaryExpr} implementation which uses a specific
+ * evaluation {@link LocalEdgeRecognizerContext context} to locate or recognize
+ * a given sequence based column qualifier within the context of the expression.
  * 
  * <p>
  * A sequence uniquely identifies an data graph entity within a local data graph
@@ -41,7 +41,7 @@ import org.plasma.query.model.Property;
  * @see LocalEdgeRecognizerContext
  */
 public class LocalEdgeRecognizerWildcardBinaryExpr extends DefaultWildcardBinaryExpr implements
-    WildcardBinaryExpr {
+    PredicateBinaryExpr {
   private static Log log = LogFactory.getLog(LocalEdgeRecognizerWildcardBinaryExpr.class);
   private String columnQualifierPrefix;
 

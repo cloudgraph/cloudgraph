@@ -27,7 +27,7 @@ import org.plasma.query.model.PredicateOperator;
  * @author Scott Cinnamond
  * @since 0.5.2
  */
-public interface WildcardBinaryExpr extends BinaryExpr {
+public interface PredicateBinaryExpr extends BinaryExpr {
   /**
    * Returns the wildcard operator.
    * 

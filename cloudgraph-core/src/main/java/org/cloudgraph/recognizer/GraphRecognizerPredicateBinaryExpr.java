@@ -22,7 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.cloudgraph.query.expr.DefaultWildcardBinaryExpr;
 import org.cloudgraph.query.expr.EvaluationContext;
-import org.cloudgraph.query.expr.WildcardBinaryExpr;
+import org.cloudgraph.query.expr.PredicateBinaryExpr;
 import org.plasma.query.model.Literal;
 import org.plasma.query.model.PredicateOperator;
 import org.plasma.query.model.Property;
@@ -30,19 +30,19 @@ import org.plasma.sdo.PlasmaDataGraph;
 import org.plasma.sdo.PlasmaType;
 
 /**
- * An {@link WildcardBinaryExpr} implementation which uses a specific evaluation
- * {@link GraphRecognizerContext context} to evaluate the value(s) of a data
- * graph property along the query property traversal path within the context of
- * a binary expression (syntax) tree.
+ * An {@link PredicateBinaryExpr} implementation which uses a specific
+ * evaluation {@link GraphRecognizerContext context} to evaluate the value(s) of
+ * a data graph property along the query property traversal path within the
+ * context of a binary expression (syntax) tree.
  * 
  * @author Scott Cinnamond
  * @since 0.5.3
  * @see GraphRecognizerContext
  * @see GraphRecognizerSupport
  */
-public class GraphRecognizerWildcardBinaryExpr extends DefaultWildcardBinaryExpr implements
-    WildcardBinaryExpr {
-  private static Log log = LogFactory.getLog(GraphRecognizerWildcardBinaryExpr.class);
+public class GraphRecognizerPredicateBinaryExpr extends DefaultWildcardBinaryExpr implements
+    PredicateBinaryExpr {
+  private static Log log = LogFactory.getLog(GraphRecognizerPredicateBinaryExpr.class);
   protected Endpoint endpoint;
   protected GraphRecognizerSupport recognizer = new GraphRecognizerSupport();
 
@@ -61,7 +61,7 @@ public class GraphRecognizerWildcardBinaryExpr extends DefaultWildcardBinaryExpr
    *          the relational operator
    * @see EdgeRecognizerContext
    */
-  public GraphRecognizerWildcardBinaryExpr(Property property, Literal literal,
+  public GraphRecognizerPredicateBinaryExpr(Property property, Literal literal,
       PredicateOperator operator) {
     super(property, literal, operator);
   }
