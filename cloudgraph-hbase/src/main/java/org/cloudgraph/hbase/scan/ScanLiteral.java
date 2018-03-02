@@ -22,7 +22,7 @@ import javax.xml.namespace.QName;
 import org.apache.hadoop.hbase.util.Hash;
 import org.cloudgraph.hbase.key.Hashing;
 import org.cloudgraph.hbase.key.KeySupport;
-import org.cloudgraph.hbase.key.Padding;
+//import org.cloudgraph.store.mapping.Padding;
 import org.cloudgraph.store.mapping.StoreMapping;
 import org.cloudgraph.store.mapping.TableMapping;
 import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
@@ -58,7 +58,8 @@ public abstract class ScanLiteral {
   protected KeySupport keySupport = new KeySupport();
   protected PlasmaProperty property;
   protected Hashing hashing;
-  protected Padding padding;
+
+  // protected Padding padding;
 
   @SuppressWarnings("unused")
   private ScanLiteral() {
@@ -75,10 +76,10 @@ public abstract class ScanLiteral {
 
     QName rootTypeQname = this.rootType.getQualifiedName();
     this.table = StoreMapping.getInstance().getTable(rootTypeQname);
-    Hash hash = this.keySupport.getHashAlgorithm(this.table);
+    // Hash hash = this.keySupport.getHashAlgorithm(this.table);
     this.charset = StoreMapping.getInstance().getCharset();
-    this.hashing = new Hashing(hash, this.charset);
-    this.padding = new Padding(this.charset);
+    // this.hashing = new Hashing(hash, this.charset);
+    // this.padding = new Padding(this.charset);
   }
 
   /**

@@ -14,10 +14,10 @@
         <DataGraph uri="http://cloudgraph.org/test/socialgraph/actor" type="Actor">
             <RowKeyModel>
                 <RowKeyField>
-                    <PredefinedField name="uri" hash="true"/>
+                    <PredefinedField name="uri" />
                 </RowKeyField>
                 <RowKeyField>
-                    <PredefinedField name="type" hash="false"/>
+                    <PredefinedField name="type" />
                 </RowKeyField>
                 <RowKeyField>
                     <UserDefinedField path="name"/>

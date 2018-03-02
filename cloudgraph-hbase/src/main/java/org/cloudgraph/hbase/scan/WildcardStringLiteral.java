@@ -15,6 +15,7 @@
  */
 package org.cloudgraph.hbase.scan;
 
+import org.cloudgraph.common.Padding;
 import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.query.Wildcard;
@@ -38,11 +39,13 @@ public class WildcardStringLiteral extends StringLiteral implements WildcardPart
 
   @Deprecated
   private PredicateOperator wildcardOperator;
+  protected Padding padding;
 
   public WildcardStringLiteral(String literal, PlasmaType rootType,
       PredicateOperator wildcardOperator, UserDefinedRowKeyFieldMapping fieldConfig) {
     super(literal, rootType, null, fieldConfig);
     this.wildcardOperator = wildcardOperator;
+    this.padding = new Padding(this.charset);
   }
 
   public PredicateOperator getWildcardOperator() {
@@ -95,7 +98,14 @@ public class WildcardStringLiteral extends StringLiteral implements WildcardPart
   public byte[] getFuzzyKeyBytes() {
     byte[] keyBytes = null;
     String keyValueStr = this.literal.trim();
-    if (!fieldConfig.isHash()) {
+    switch (fieldConfig.getCodecType()) {
+    case HASH:
+      throw new ScanException("cannot create fuzzy scan literal "
+          + "with interviening wildcards ('" + keyValueStr
+          + "') for fixed length row key field with path '" + this.fieldConfig.getPropertyPath()
+          + "' within table " + this.table.getName() + " for graph root type, "
+          + this.rootType.toString());
+    default:
       if (keyValueStr.endsWith(Wildcard.WILDCARD_CHAR)) {
         keyValueStr = this.padding.back(keyValueStr, this.fieldConfig.getMaxLength(),
             Wildcard.WILDCARD_CHAR.charAt(0));
@@ -111,11 +121,8 @@ public class WildcardStringLiteral extends StringLiteral implements WildcardPart
             + this.rootType.toString());
       }
       keyBytes = keyValueStr.getBytes(this.charset);
-    } else
-      throw new ScanException("cannot create fuzzy scan literal "
-          + "for hashed key field - field with path '" + this.fieldConfig.getPropertyPath()
-          + "' within table " + this.table.getName() + " for graph root type, "
-          + this.rootType.toString() + "is configured as 'hashed'");
+      break;
+    }
     return keyBytes;
   }
 
@@ -146,16 +153,18 @@ public class WildcardStringLiteral extends StringLiteral implements WildcardPart
   public byte[] getBetweenStartBytes() {
     byte[] startBytes = null;
     String startValueStr = this.literal.substring(0, this.literal.length() - 1);
-    if (!fieldConfig.isHash()) {
-      startBytes = startValueStr.getBytes(this.charset);
-      startBytes = this.padding.pad(startBytes, this.fieldConfig.getMaxLength(),
-          this.fieldConfig.getDataFlavor());
-    } else
+    switch (fieldConfig.getCodecType()) {
+    case HASH:
       throw new ScanException("cannot create scan literal "
           + "for hashed key field - field with path '" + this.fieldConfig.getPropertyPath()
           + "' within table " + this.table.getName() + " for graph root type, "
-          + this.rootType.toString() + "is configured as 'hashed'");
-
+          + this.rootType.toString());
+    default:
+      startBytes = startValueStr.getBytes(this.charset);
+      startBytes = this.padding.pad(startBytes, this.fieldConfig.getMaxLength(),
+          this.fieldConfig.getDataFlavor());
+      break;
+    }
     return startBytes;
   }
 
@@ -173,18 +182,22 @@ public class WildcardStringLiteral extends StringLiteral implements WildcardPart
   public byte[] getBetweenStopBytes() {
     byte[] stopBytes = null;
     String stopValueStr = this.literal.substring(0, this.literal.length() - 1);
-    if (!fieldConfig.isHash()) {
+
+    switch (fieldConfig.getCodecType()) {
+    case HASH:
+      throw new ScanException("cannot create scan literal "
+          + "for hashed key field - field with path '" + this.fieldConfig.getPropertyPath()
+          + "' within table " + this.table.getName() + " for graph root type, "
+          + this.rootType.toString() + "is configured as 'hashed'");
+    default:
       byte[] literalStopBytes = stopValueStr.getBytes(this.charset);
       stopBytes = new byte[literalStopBytes.length + 1];
       System.arraycopy(literalStopBytes, 0, stopBytes, 0, literalStopBytes.length);
       stopBytes[stopBytes.length - 1] = INCREMENT;
       stopBytes = this.padding.pad(stopBytes, this.fieldConfig.getMaxLength(),
           this.fieldConfig.getDataFlavor());
-    } else
-      throw new ScanException("cannot create scan literal "
-          + "for hashed key field - field with path '" + this.fieldConfig.getPropertyPath()
-          + "' within table " + this.table.getName() + " for graph root type, "
-          + this.rootType.toString() + "is configured as 'hashed'");
+      break;
+    }
     return stopBytes;
   }
 

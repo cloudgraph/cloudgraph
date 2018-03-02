@@ -93,7 +93,7 @@ public class DataGraphMapping {
     for (RowKeyField rowKeyField : this.graph.getRowKeyModel().getRowKeyFields()) {
       if (rowKeyField.getPredefinedField() != null) {
         PredefinedField predefinedField = rowKeyField.getPredefinedField();
-        PreDefinedKeyFieldMapping predefinedFieldConfig = new PreDefinedKeyFieldMapping(
+        PreDefinedKeyFieldMapping predefinedFieldConfig = new PreDefinedKeyFieldMapping(this,
             predefinedField, seqNum, totalRowKeyFields);
         preDefinedRowKeyFieldMap.put(predefinedField.getName(), predefinedFieldConfig);
         preDefinedRowKeyFieldList.add(predefinedFieldConfig);
@@ -148,7 +148,7 @@ public class DataGraphMapping {
     int totalColumnKeyFields = columnKeyModel.getColumnKeyFields().size();
     seqNum = 1;
     for (ColumnKeyField ctoken : columnKeyModel.getColumnKeyFields()) {
-      ColumnKeyFieldMapping columnFieldConfig = new ColumnKeyFieldMapping(ctoken, seqNum,
+      ColumnKeyFieldMapping columnFieldConfig = new ColumnKeyFieldMapping(this, ctoken, seqNum,
           totalColumnKeyFields);
       preDefinedColumnKeyFieldMap.put(ctoken.getName(), columnFieldConfig);
       this.columnKeyFieldList.add(columnFieldConfig);

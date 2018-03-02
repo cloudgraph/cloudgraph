@@ -14,10 +14,10 @@
         <DataGraph uri="http://cloudgraph.org/test/datatypes" type="DateTimeNode">
             <RowKeyModel>
                 <RowKeyField>
-                    <PredefinedField name="uri" hash="true"/>
+                    <PredefinedField name="uri" />
                 </RowKeyField>
                 <RowKeyField>
-                    <PredefinedField name="type" hash="false"/>
+                    <PredefinedField name="type" />
                 </RowKeyField>
                 <RowKeyField>
                     <UserDefinedField path="rootId"/>
@@ -26,7 +26,7 @@
                     <UserDefinedField path="dateTimeField"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <PredefinedField name="uuid" hash="false"/>
+                    <PredefinedField name="uuid" />
                 </RowKeyField>
             </RowKeyModel>
             
@@ -40,10 +40,10 @@
         <DataGraph uri="http://cloudgraph.org/test/datatypes" type="DateNode">
             <RowKeyModel>
                 <RowKeyField>
-                    <PredefinedField name="uri" hash="true"/>
+                    <PredefinedField name="uri" />
                 </RowKeyField>
                 <RowKeyField>
-                    <PredefinedField name="type" hash="false"/>
+                    <PredefinedField name="type" />
                 </RowKeyField>
                 <RowKeyField>
                     <UserDefinedField path="rootId"/>
@@ -52,7 +52,7 @@
                     <UserDefinedField path="dateField"/>
                 </RowKeyField>                    
                 <RowKeyField>
-                    <PredefinedField name="uuid" hash="false"/>
+                    <PredefinedField name="uuid" />
                 </RowKeyField>
                   
             </RowKeyModel>
@@ -71,10 +71,10 @@
          <DataGraph uri="http://cloudgraph.org/test/datatypes" type="IntNode">
             <RowKeyModel>
                 <RowKeyField>
-                    <PredefinedField name="uri" hash="true"/>
+                    <PredefinedField name="uri" />
                 </RowKeyField>
                 <RowKeyField>
-                    <PredefinedField name="type" hash="false"/>
+                    <PredefinedField name="type" />
                 </RowKeyField>
                 <RowKeyField>
                     <UserDefinedField path="rootId"/>
@@ -83,7 +83,7 @@
                     <UserDefinedField path="intField"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <PredefinedField name="uuid" hash="false"/>
+                    <PredefinedField name="uuid" />
                 </RowKeyField>
             </RowKeyModel>
             
@@ -97,10 +97,10 @@
         <DataGraph uri="http://cloudgraph.org/test/datatypes" type="LongNode">
             <RowKeyModel>
                 <RowKeyField>
-                    <PredefinedField name="uri" hash="true"/>
+                    <PredefinedField name="uri" />
                 </RowKeyField>
                 <RowKeyField>
-                    <PredefinedField name="type" hash="false"/>
+                    <PredefinedField name="type" />
                 </RowKeyField>
                 <RowKeyField>
                     <UserDefinedField path="rootId"/>
@@ -109,7 +109,7 @@
                     <UserDefinedField path="longField"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <PredefinedField name="uuid" hash="false"/>
+                    <PredefinedField name="uuid" />
                 </RowKeyField>
             </RowKeyModel>
             
@@ -127,10 +127,10 @@
         <DataGraph uri="http://cloudgraph.org/test/datatypes" type="FloatNode">
             <RowKeyModel>
                 <RowKeyField>
-                    <PredefinedField name="uri" hash="true"/>
+                    <PredefinedField name="uri" />
                 </RowKeyField>
                 <RowKeyField>
-                    <PredefinedField name="type" hash="false"/>
+                    <PredefinedField name="type" />
                 </RowKeyField>
                 <RowKeyField>
                     <UserDefinedField path="rootId"/>
@@ -139,7 +139,7 @@
                     <UserDefinedField path="floatField"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <PredefinedField name="uuid" hash="false"/>
+                    <PredefinedField name="uuid" />
                 </RowKeyField>
                 
             </RowKeyModel>
@@ -157,10 +157,10 @@
         <DataGraph uri="http://cloudgraph.org/test/datatypes" type="StringNode">
             <RowKeyModel>
                 <RowKeyField>
-                    <PredefinedField name="uri" hash="true"/>
+                    <PredefinedField name="uri" />
                 </RowKeyField>
                 <RowKeyField>
-                    <PredefinedField name="type" hash="false"/>
+                    <PredefinedField name="type" />
                 </RowKeyField>
                 <RowKeyField>
                     <UserDefinedField path="rootId"/>
@@ -169,7 +169,7 @@
                     <UserDefinedField path="stringField"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <PredefinedField name="uuid" hash="false"/>
+                    <PredefinedField name="uuid" />
                 </RowKeyField>
             </RowKeyModel>
             

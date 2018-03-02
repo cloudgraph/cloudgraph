@@ -26,6 +26,8 @@ import org.plasma.sdo.DataFlavor;
 import org.plasma.sdo.DataType;
 import org.plasma.sdo.PlasmaType;
 
+import commonj.sdo.Type;
+
 /**
  * A temporal data "flavor" specific literal class used to abstract the
  * complexities involved in assembling the various segments and fields of
@@ -77,20 +79,61 @@ public class TemporalLiteral extends ScanLiteral implements PartialRowKeyLiteral
    *         formatting and padding features.
    */
   public byte[] getEqualsStartBytes() {
-    byte[] startBytes = null;
+    return this.literalToBytes();
+  }
+
+  private byte[] literalToBytes() {
     // FIXME: convert to native type as we create literals
-    Object value = this.dataConverter.convert(property.getType(), this.literal);
-    if (fieldConfig.isHash()) {
-      startBytes = HBaseDataConverter.INSTANCE.toBytes(property, value);
-      startBytes = this.hashing.toStringBytes(startBytes);
-      startBytes = this.padding.pad(startBytes, this.fieldConfig.getMaxLength(),
-          DataFlavor.temporal);
-    } else {
-      startBytes = HBaseDataConverter.INSTANCE.toBytes(property, value);
-      startBytes = this.padding.pad(startBytes, this.fieldConfig.getMaxLength(),
-          DataFlavor.temporal);
+    switch (this.fieldConfig.getCodecType()) {
+    case HASH:
+      throw new ScanException("cannot create scan literal " + "for "
+          + this.fieldConfig.getCodecType() + " encoded key field with path '"
+          + this.fieldConfig.getPropertyPath() + "' within table " + this.table.getName()
+          + " for graph root type, " + this.rootType.toString());
+    default:
+      Object value = this.dataConverter.convert(property.getType(), this.literal);
+      String valueStr = this.dataConverter.toString(property.getType(), value);
+      byte[] valueBytes = valueStr.getBytes(this.charset);
+      return this.fieldConfig.getCodec().encode(valueBytes);
     }
-    return startBytes;
+  }
+
+  private byte[] nextLiteralToBytes() {
+    // FIXME: convert to native type as we create literals
+    switch (this.fieldConfig.getCodecType()) {
+    case HASH:
+      throw new ScanException("cannot create scan literal " + "for "
+          + this.fieldConfig.getCodecType() + " encoded key field with path '"
+          + this.fieldConfig.getPropertyPath() + "' within table " + this.table.getName()
+          + " for graph root type, " + this.rootType.toString());
+    default:
+      Object value = this.dataConverter.convert(property.getType(), this.literal);
+      String valueStr = increment(property.getType(), value);
+      byte[] valueBytes = valueStr.getBytes(this.charset);
+      return this.fieldConfig.getCodec().encode(valueBytes);
+    }
+  }
+
+  /**
+   * As per SDO 2.1 spec every temporal data type can be converted to a date,
+   * not a long however. So get to a date then a long, then manipulate/increment
+   * the value and convert back..
+   * 
+   * @param type
+   * @param value
+   * @return
+   */
+  private String increment(Type type, Object value) {
+    Date dateValue = this.dataConverter.toDate(property.getType(), value);
+    Long longValue = dateValue.getTime();
+    DataType dataType = DataType.valueOf(property.getType().getName());
+    Long incrementLongValue = longValue + getIncrement(dataType);
+    Date incrementDate = new Date(incrementLongValue);
+    // back to whatever its native type is
+    Object incrementValue = this.dataConverter.convert(property.getType(), incrementDate);
+    // re format the string under its native type
+    String result = this.dataConverter.toString(property.getType(), incrementValue);
+    return result;
   }
 
   /**
@@ -105,34 +148,7 @@ public class TemporalLiteral extends ScanLiteral implements PartialRowKeyLiteral
    *         formatting and padding features.
    */
   public byte[] getEqualsStopBytes() {
-    byte[] stopBytes = null;
-    Object value = this.dataConverter.convert(property.getType(), this.literal);
-    DataType dataType = DataType.valueOf(property.getType().getName());
-    // As per SDO 2.1 spec every temporal data type can be
-    // converted to a date, not a long however.
-    // So get to a date then a long, then manipulate/increment the
-    // value and convert back...
-    Date dateValue = this.dataConverter.toDate(property.getType(), value);
-    Long longValue = dateValue.getTime();
-
-    // Note: the partial scan stop row bytes are exclusive
-    // which is why we are incrementing below.
-
-    if (this.fieldConfig.isHash()) {
-      stopBytes = HBaseDataConverter.INSTANCE.toBytes(property, value);
-      stopBytes = this.hashing.toStringBytes(stopBytes, HASH_INCREMENT);
-      stopBytes = this.padding.pad(stopBytes, this.fieldConfig.getMaxLength(), DataFlavor.temporal);
-    } else {
-      Long stopLongValue = longValue + getIncrement(dataType);
-      Date stopDate = new Date(stopLongValue);
-      // back to whatever its native type is
-      Object stopValue = this.dataConverter.convert(property.getType(), stopDate);
-      // re format the string under its native type
-      String stopValueStr = this.dataConverter.toString(property.getType(), stopValue);
-      stopBytes = stopValueStr.getBytes(this.charset);
-      stopBytes = this.padding.pad(stopBytes, this.fieldConfig.getMaxLength(), DataFlavor.temporal);
-    }
-    return stopBytes;
+    return this.nextLiteralToBytes();
   }
 
   /**
@@ -147,34 +163,7 @@ public class TemporalLiteral extends ScanLiteral implements PartialRowKeyLiteral
    *         formatting and padding features.
    */
   public byte[] getGreaterThanStartBytes() {
-    byte[] startBytes = null;
-    Object value = this.dataConverter.convert(property.getType(), this.literal);
-    DataType dataType = DataType.valueOf(property.getType().getName());
-    // As per SDO 2.1 spec every temporal data type can be
-    // converted to a date, not a long however.
-    // So get to a date then a long, then manipulate/increment the
-    // value and convert back...
-    Date dateValue = this.dataConverter.toDate(property.getType(), value);
-    Long longValue = dateValue.getTime();
-
-    if (this.fieldConfig.isHash()) {
-      startBytes = HBaseDataConverter.INSTANCE.toBytes(property, value);
-      startBytes = this.hashing.toStringBytes(startBytes, HASH_INCREMENT);
-      startBytes = this.padding.pad(startBytes, this.fieldConfig.getMaxLength(),
-          DataFlavor.temporal);
-    } else {
-      Long startLongValue = longValue + getIncrement(dataType);
-      Date startDate = new Date(startLongValue);
-      // back to whatever its native type is
-      Object startValue = this.dataConverter.convert(property.getType(), startDate);
-      // re format the string under its native type
-      String startValueStr = this.dataConverter.toString(property.getType(), startValue);
-
-      startBytes = startValueStr.getBytes(this.charset);
-      startBytes = this.padding.pad(startBytes, this.fieldConfig.getMaxLength(),
-          DataFlavor.temporal);
-    }
-    return startBytes;
+    return this.nextLiteralToBytes();
   }
 
   /**
@@ -237,34 +226,9 @@ public class TemporalLiteral extends ScanLiteral implements PartialRowKeyLiteral
    *         formatting and padding features.
    */
   public byte[] getLessThanStopBytes() {
-    byte[] stopBytes = null;
-    Object value = this.dataConverter.convert(property.getType(), this.literal);
-    // As per SDO 2.1 spec every temporal data type can be
-    // converted to a date, not a long however.
-    // So get to a date then a long, then manipulate/increment the
-    // value and convert back...
-    Date dateValue = this.dataConverter.toDate(property.getType(), value);
-    Long longValue = dateValue.getTime();
-
     // Note: the partial scan stop row bytes are exclusive
     // which is why we are incrementing below.
-
-    if (this.fieldConfig.isHash()) {
-      stopBytes = HBaseDataConverter.INSTANCE.toBytes(property, value);
-      stopBytes = this.hashing.toStringBytes(stopBytes);
-      stopBytes = this.padding.pad(stopBytes, this.fieldConfig.getMaxLength(), DataFlavor.temporal);
-    } else {
-      Long stopLongValue = longValue;
-      Date stopDate = new Date(stopLongValue);
-      // back to whatever its native type is
-      Object stopValue = this.dataConverter.convert(property.getType(), stopDate);
-      // re format the string under its native type
-      String stopValueStr = this.dataConverter.toString(property.getType(), stopValue);
-
-      stopBytes = stopValueStr.getBytes(this.charset);
-      stopBytes = this.padding.pad(stopBytes, this.fieldConfig.getMaxLength(), DataFlavor.temporal);
-    }
-    return stopBytes;
+    return this.literalToBytes();
   }
 
   /**

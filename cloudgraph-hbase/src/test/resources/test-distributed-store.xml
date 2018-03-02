@@ -14,7 +14,7 @@
         <DataGraph uri="http://cloudgraph.org/test/socialgraph/actor" type="Actor">
             <RowKeyModel>
                 <RowKeyField>
-                    <PredefinedField name="type" hash="false"/>
+                    <PredefinedField name="type" />
                 </RowKeyField>
                 <RowKeyField>
                     <UserDefinedField path="name"/>
@@ -33,13 +33,13 @@
         <DataGraph uri="http://cloudgraph.org/test/socialgraph/story" type="Blog">
             <RowKeyModel>
                 <RowKeyField>
-                    <PredefinedField name="type" hash="false"/>
+                    <PredefinedField name="type" />
                 </RowKeyField>
                 <RowKeyField>
                     <UserDefinedField path="name"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <PredefinedField name="uuid" hash="false"/>
+                    <PredefinedField name="uuid" />
                 </RowKeyField>
             </RowKeyModel>
             
@@ -55,7 +55,7 @@
         <DataGraph uri="http://cloudgraph.org/test/socialgraph/actor" type="Photo">
             <RowKeyModel>
                 <RowKeyField>
-                    <PredefinedField name="type" hash="false"/>
+                    <PredefinedField name="type" />
                 </RowKeyField>
                 <RowKeyField>
                     <UserDefinedField path="name"/>
@@ -79,7 +79,7 @@
         <DataGraph uri="http://cloudgraph.org/test/socialgraph/actor" type="Topic">
             <RowKeyModel>
                 <RowKeyField>
-                    <PredefinedField name="type" hash="false"/>
+                    <PredefinedField name="type" />
                 </RowKeyField>
                 <RowKeyField>
                     <UserDefinedField path="name"/>
@@ -104,10 +104,10 @@
         <DataGraph uri="http://cloudgraph.org/test/datatypes" type="DateTimeNode">
             <RowKeyModel>
                 <RowKeyField>
-                    <PredefinedField name="uri" hash="true"/>
+                    <PredefinedField name="uri" />
                 </RowKeyField>
                 <RowKeyField>
-                    <PredefinedField name="type" hash="false"/>
+                    <PredefinedField name="type" />
                 </RowKeyField>
                 <RowKeyField>
                     <UserDefinedField path="dateTimeField"/>
@@ -124,10 +124,10 @@
         <DataGraph uri="http://cloudgraph.org/test/datatypes" type="DateNode">
             <RowKeyModel>
                 <RowKeyField>
-                    <PredefinedField name="uri" hash="true"/>
+                    <PredefinedField name="uri" />
                 </RowKeyField>
                 <RowKeyField>
-                    <PredefinedField name="type" hash="false"/>
+                    <PredefinedField name="type" />
                 </RowKeyField>
                 <RowKeyField>
                     <UserDefinedField path="dateField" />

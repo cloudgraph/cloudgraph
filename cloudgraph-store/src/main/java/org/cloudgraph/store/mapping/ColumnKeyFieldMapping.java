@@ -27,8 +27,9 @@ public class ColumnKeyFieldMapping extends PreDefinedKeyFieldMapping {
 
   private ColumnKeyField columnKeyField;
 
-  public ColumnKeyFieldMapping(ColumnKeyField field, int seqNum, int totalFields) {
-    super(field, seqNum, totalFields);
+  public ColumnKeyFieldMapping(DataGraphMapping dataGraph, ColumnKeyField field, int seqNum,
+      int totalFields) {
+    super(dataGraph, field, seqNum, totalFields);
     this.columnKeyField = field;
   }
 }

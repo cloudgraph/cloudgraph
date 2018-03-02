@@ -37,7 +37,6 @@ import commonj.sdo.Type;
 public class UserDefinedRowKeyFieldMapping extends KeyFieldMapping {
   private static Log log = LogFactory.getLog(UserDefinedRowKeyFieldMapping.class);
 
-  private DataGraphMapping dataGraph;
   private UserDefinedField userDefinedField;
   /** The simple property path with any XPath traversal elements removed */
   private String propertyPath;
@@ -46,8 +45,7 @@ public class UserDefinedRowKeyFieldMapping extends KeyFieldMapping {
 
   public UserDefinedRowKeyFieldMapping(DataGraphMapping dataGraph,
       UserDefinedField userDefinedField, int sequenceNum, int totalFields) {
-    super(userDefinedField, sequenceNum, totalFields);
-    this.dataGraph = dataGraph;
+    super(dataGraph, userDefinedField, sequenceNum, totalFields);
     this.userDefinedField = userDefinedField;
 
     try {
@@ -278,10 +276,6 @@ public class UserDefinedRowKeyFieldMapping extends KeyFieldMapping {
 
   public String getPathExpression() {
     return this.userDefinedField.getPath();
-  }
-
-  public boolean isHash() {
-    return this.userDefinedField.isHash();
   }
 
   public String getPropertyPath() {

@@ -27,9 +27,9 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.util.Hash;
 import org.cloudgraph.hbase.key.Hashing;
 import org.cloudgraph.hbase.key.KeySupport;
-import org.cloudgraph.hbase.key.Padding;
 import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.cloudgraph.store.mapping.KeyFieldMapping;
+//import org.cloudgraph.store.mapping.Padding;
 import org.cloudgraph.store.mapping.PreDefinedKeyFieldMapping;
 import org.cloudgraph.store.mapping.StoreMapping;
 import org.cloudgraph.store.mapping.TableMapping;
@@ -65,8 +65,9 @@ public class PartialRowKeyScanAssembler implements RowKeyScanAssembler, PartialR
   protected int startRowFieldCount;
   protected int stopRowFieldCount;
   protected String rootUUID;
-  protected Hashing hashing;
-  protected Padding padding;
+
+  // protected Hashing hashing;
+  // protected Padding padding;
 
   @SuppressWarnings("unused")
   private PartialRowKeyScanAssembler() {
@@ -83,10 +84,10 @@ public class PartialRowKeyScanAssembler implements RowKeyScanAssembler, PartialR
     QName rootTypeQname = this.rootType.getQualifiedName();
     this.graph = StoreMapping.getInstance().getDataGraph(rootTypeQname);
     this.table = StoreMapping.getInstance().getTable(rootTypeQname);
-    Hash hash = this.keySupport.getHashAlgorithm(this.table);
+    // Hash hash = this.keySupport.getHashAlgorithm(this.table);
     this.charset = StoreMapping.getInstance().getCharset();
-    this.hashing = new Hashing(hash, this.charset);
-    this.padding = new Padding(this.charset);
+    // this.hashing = new Hashing(hash, this.charset);
+    // this.padding = new Padding(this.charset);
   }
 
   /**
@@ -289,23 +290,27 @@ public class PartialRowKeyScanAssembler implements RowKeyScanAssembler, PartialR
       }
       break;
     default:
-      startValue = this.keySupport.getPredefinedFieldValueStartBytes(this.rootType, hashing,
+      startValue = this.keySupport.getPredefinedFieldValueBytes(this.rootType, // hashing,
           preDefinedField);
       break;
     }
-    byte[] paddedStartValue = null;
-    if (preDefinedField.isHash()) {
-      paddedStartValue = this.padding.pad(startValue, preDefinedField.getMaxLength(),
-          DataFlavor.integral);
-    } else {
-      paddedStartValue = this.padding.pad(startValue, preDefinedField.getMaxLength(),
-          preDefinedField.getDataFlavor());
-    }
+    byte[] paddedStartValue = preDefinedField.getCodec().encode(startValue);
+    // byte[] paddedStartValue = null;
+    // if (preDefinedField.isHash()) {
+    // paddedStartValue = this.padding.pad(startValue,
+    // preDefinedField.getMaxLength(),
+    // DataFlavor.integral);
+    // } else {
+    // paddedStartValue = this.padding.pad(startValue,
+    // preDefinedField.getMaxLength(),
+    // preDefinedField.getDataFlavor());
+    // }
     return paddedStartValue;
   }
 
   private byte[] getStopBytes(PreDefinedKeyFieldMapping preDefinedField, boolean lastField) {
-    byte[] stopValue = null;
+    byte[] stopValue = new byte[0];
+    byte[] paddedStopValue = null;
     switch (preDefinedField.getName()) {
     case UUID:
       if (this.rootUUID != null) {
@@ -313,22 +318,27 @@ public class PartialRowKeyScanAssembler implements RowKeyScanAssembler, PartialR
       }
       break;
     default:
+      stopValue = this.keySupport.getPredefinedFieldValueBytes(this.rootType, // hashing,
+          preDefinedField);
       if (!lastField)
-        stopValue = this.keySupport.getPredefinedFieldValueStartBytes(this.rootType, hashing,
-            preDefinedField);
+        paddedStopValue = preDefinedField.getCodec().encode(stopValue);
       else
-        stopValue = this.keySupport.getPredefinedFieldValueStopBytes(this.rootType, hashing,
-            preDefinedField);
+        paddedStopValue = preDefinedField.getCodec().encodeNext(stopValue);
+      // stopValue =
+      // this.keySupport.getPredefinedFieldValueStopBytes(this.rootType,
+      // hashing,
+      // preDefinedField);
       break;
     }
-    byte[] paddedStopValue = null;
-    if (preDefinedField.isHash()) {
-      paddedStopValue = this.padding.pad(stopValue, preDefinedField.getMaxLength(),
-          DataFlavor.integral);
-    } else {
-      paddedStopValue = this.padding.pad(stopValue, preDefinedField.getMaxLength(),
-          preDefinedField.getDataFlavor());
-    }
+    // if (preDefinedField.isHash()) {
+    // paddedStopValue = this.padding.pad(stopValue,
+    // preDefinedField.getMaxLength(),
+    // DataFlavor.integral);
+    // } else {
+    // paddedStopValue = this.padding.pad(stopValue,
+    // preDefinedField.getMaxLength(),
+    // preDefinedField.getDataFlavor());
+    // }
     return paddedStopValue;
   }
 

@@ -63,18 +63,8 @@ public class StringLiteral extends ScanLiteral implements PartialRowKeyLiteral, 
    */
   @Override
   public byte[] getEqualsStartBytes() {
-    byte[] startBytes = null;
-    String startValueStr = this.literal;
-    if (fieldConfig.isHash()) {
-      startBytes = this.hashing.toStringBytes(startValueStr);
-      startBytes = this.padding.pad(startBytes, this.fieldConfig.getMaxLength(),
-          DataFlavor.integral);
-    } else {
-      startBytes = startValueStr.getBytes(this.charset);
-      startBytes = this.padding.pad(startBytes, this.fieldConfig.getMaxLength(),
-          this.fieldConfig.getDataFlavor());
-    }
-    return startBytes;
+    byte[] startBytes = this.literal.getBytes(this.charset);
+    return this.fieldConfig.getCodec().encode(startBytes);
   }
 
   /**
@@ -90,20 +80,23 @@ public class StringLiteral extends ScanLiteral implements PartialRowKeyLiteral, 
    */
   @Override
   public byte[] getEqualsStopBytes() {
-    byte[] stopBytes = null;
-    String stopValueStr = this.literal;
-    if (fieldConfig.isHash()) {
-      stopBytes = this.hashing.toStringBytes(stopValueStr, this.HASH_INCREMENT);
-      stopBytes = this.padding.pad(stopBytes, this.fieldConfig.getMaxLength(), DataFlavor.integral);
-    } else {
-      byte[] literalBytes = stopValueStr.getBytes(this.charset);
-      literalBytes = this.padding.pad(literalBytes, this.fieldConfig.getMaxLength(),
-          this.fieldConfig.getDataFlavor());
-      stopBytes = new byte[literalBytes.length + 1];
-      System.arraycopy(literalBytes, 0, stopBytes, 0, literalBytes.length);
-      stopBytes[stopBytes.length - 1] = INCREMENT;
-    }
-    return stopBytes;
+    byte[] stopBytes = this.literal.getBytes(this.charset);
+    return this.fieldConfig.getCodec().encodeNext(stopBytes);
+    // if (fieldConfig.isHash()) {
+    // stopBytes = this.hashing.toStringBytes(stopValueStr,
+    // this.HASH_INCREMENT);
+    // stopBytes = this.padding.pad(stopBytes, this.fieldConfig.getMaxLength(),
+    // DataFlavor.integral);
+    // } else {
+    // byte[] literalBytes = stopValueStr.getBytes(this.charset);
+    // literalBytes = this.padding.pad(literalBytes,
+    // this.fieldConfig.getMaxLength(),
+    // this.fieldConfig.getDataFlavor());
+    // stopBytes = new byte[literalBytes.length + 1];
+    // System.arraycopy(literalBytes, 0, stopBytes, 0, literalBytes.length);
+    // stopBytes[stopBytes.length - 1] = INCREMENT;
+    // }
+    // return stopBytes;
   }
 
   /**
@@ -119,21 +112,28 @@ public class StringLiteral extends ScanLiteral implements PartialRowKeyLiteral, 
    */
   @Override
   public byte[] getGreaterThanStartBytes() {
-    byte[] startBytes = null;
-    String startValueStr = this.literal;
-    if (fieldConfig.isHash()) {
-      startBytes = this.hashing.toStringBytes(startValueStr, this.HASH_INCREMENT);
-      startBytes = this.padding.pad(startBytes, this.fieldConfig.getMaxLength(),
-          DataFlavor.integral);
-    } else {
-      byte[] literalStartBytes = startValueStr.getBytes(this.charset);
-      startBytes = new byte[literalStartBytes.length + 1];
-      System.arraycopy(literalStartBytes, 0, startBytes, 0, literalStartBytes.length);
-      startBytes[startBytes.length - 1] = INCREMENT;
-      startBytes = this.padding.pad(startBytes, this.fieldConfig.getMaxLength(),
-          this.fieldConfig.getDataFlavor());
-    }
-    return startBytes;
+    byte[] startBytes = this.literal.getBytes(this.charset);
+    return this.fieldConfig.getCodec().encodeNext(startBytes);
+
+    // byte[] startBytes = null;
+    // String startValueStr = this.literal;
+    // if (fieldConfig.isHash()) {
+    // startBytes = this.hashing.toStringBytes(startValueStr,
+    // this.HASH_INCREMENT);
+    // startBytes = this.padding.pad(startBytes,
+    // this.fieldConfig.getMaxLength(),
+    // DataFlavor.integral);
+    // } else {
+    // byte[] literalStartBytes = startValueStr.getBytes(this.charset);
+    // startBytes = new byte[literalStartBytes.length + 1];
+    // System.arraycopy(literalStartBytes, 0, startBytes, 0,
+    // literalStartBytes.length);
+    // startBytes[startBytes.length - 1] = INCREMENT;
+    // startBytes = this.padding.pad(startBytes,
+    // this.fieldConfig.getMaxLength(),
+    // this.fieldConfig.getDataFlavor());
+    // }
+    // return startBytes;
   }
 
   /**
@@ -201,19 +201,26 @@ public class StringLiteral extends ScanLiteral implements PartialRowKeyLiteral, 
    */
   @Override
   public byte[] getLessThanStopBytes() {
-    byte[] stopBytes = null;
-    String stopValueStr = this.literal;
+    byte[] stopBytes = this.literal.getBytes(this.charset);
     // Note: in HBase the stop row is exclusive, so just use
     // the literal value, no need to decrement it
-    if (fieldConfig.isHash()) {
-      stopBytes = this.hashing.toStringBytes(stopValueStr);
-      stopBytes = this.padding.pad(stopBytes, this.fieldConfig.getMaxLength(), DataFlavor.integral);
-    } else {
-      stopBytes = stopValueStr.getBytes(this.charset);
-      stopBytes = this.padding.pad(stopBytes, this.fieldConfig.getMaxLength(),
-          this.fieldConfig.getDataFlavor());
-    }
-    return stopBytes;
+    return this.fieldConfig.getCodec().encode(stopBytes);
+    //
+    //
+    // byte[] stopBytes = null;
+    // String stopValueStr = this.literal;
+    // // Note: in HBase the stop row is exclusive, so just use
+    // // the literal value, no need to decrement it
+    // if (fieldConfig.isHash()) {
+    // stopBytes = this.hashing.toStringBytes(stopValueStr);
+    // stopBytes = this.padding.pad(stopBytes, this.fieldConfig.getMaxLength(),
+    // DataFlavor.integral);
+    // } else {
+    // stopBytes = stopValueStr.getBytes(this.charset);
+    // stopBytes = this.padding.pad(stopBytes, this.fieldConfig.getMaxLength(),
+    // this.fieldConfig.getDataFlavor());
+    // }
+    // return stopBytes;
   }
 
   /**
@@ -241,41 +248,63 @@ public class StringLiteral extends ScanLiteral implements PartialRowKeyLiteral, 
    */
   @Override
   public byte[] getLessThanEqualStopBytes() {
-    byte[] stopBytes = null;
-    String stopValueStr = this.literal;
+
+    byte[] stopBytes = this.literal.getBytes(this.charset);
     // Note: in HBase the stop row is exclusive, so increment
     // stop value to get this row for this field/literal
-    if (fieldConfig.isHash()) {
-      stopBytes = this.hashing.toStringBytes(stopValueStr, this.HASH_INCREMENT);
-      stopBytes = this.padding.pad(stopBytes, this.fieldConfig.getMaxLength(), DataFlavor.integral);
-    } else {
-      byte[] literalStopBytes = stopValueStr.getBytes(this.charset);
-      stopBytes = new byte[literalStopBytes.length + 1];
-      System.arraycopy(literalStopBytes, 0, stopBytes, 0, literalStopBytes.length);
-      stopBytes[stopBytes.length - 1] = INCREMENT;
-      stopBytes = this.padding.pad(stopBytes, this.fieldConfig.getMaxLength(),
-          this.fieldConfig.getDataFlavor());
-    }
-    return stopBytes;
+    return this.fieldConfig.getCodec().encodeNext(stopBytes);
+
+    // byte[] stopBytes = null;
+    // String stopValueStr = this.literal;
+    // // Note: in HBase the stop row is exclusive, so increment
+    // // stop value to get this row for this field/literal
+    // if (fieldConfig.isHash()) {
+    // stopBytes = this.hashing.toStringBytes(stopValueStr,
+    // this.HASH_INCREMENT);
+    // stopBytes = this.padding.pad(stopBytes, this.fieldConfig.getMaxLength(),
+    // DataFlavor.integral);
+    // } else {
+    // byte[] literalStopBytes = stopValueStr.getBytes(this.charset);
+    // stopBytes = new byte[literalStopBytes.length + 1];
+    // System.arraycopy(literalStopBytes, 0, stopBytes, 0,
+    // literalStopBytes.length);
+    // stopBytes[stopBytes.length - 1] = INCREMENT;
+    // stopBytes = this.padding.pad(stopBytes, this.fieldConfig.getMaxLength(),
+    // this.fieldConfig.getDataFlavor());
+    // }
+    // return stopBytes;
   }
 
   @Override
   public byte[] getFuzzyKeyBytes() {
-    byte[] keyBytes = null;
-    String keyValueStr = this.literal;
+    byte[] keyBytes = this.literal.getBytes(this.charset);
 
-    if (fieldConfig.isHash()) {
-      keyBytes = hashing.toStringBytes(keyValueStr);
-      keyBytes = this.padding.pad(keyBytes, this.fieldConfig.getMaxLength(), DataFlavor.integral);
-    } else {
-      // no need for data-type conversion as
-      // literal is data-type/data-flavor specific
-      keyBytes = keyValueStr.getBytes(this.charset);
-      keyBytes = this.padding.pad(keyBytes, this.fieldConfig.getMaxLength(),
-          this.fieldConfig.getDataFlavor());
+    switch (this.fieldConfig.getCodecType()) {
+    case HASH:
+      throw new ScanException("cannot create scan literal "
+          + "for hash encoded key field - field with path '" + this.fieldConfig.getPropertyPath()
+          + "' within table " + this.table.getName() + " for graph root type, "
+          + this.rootType.toString());
+    default:
+      return this.fieldConfig.getCodec().encode(keyBytes);
     }
-
-    return keyBytes;
+    //
+    //
+    // String keyValueStr = this.literal;
+    //
+    // if (fieldConfig.isHash()) {
+    // keyBytes = hashing.toStringBytes(keyValueStr);
+    // keyBytes = this.padding.pad(keyBytes, this.fieldConfig.getMaxLength(),
+    // DataFlavor.integral);
+    // } else {
+    // // no need for data-type conversion as
+    // // literal is data-type/data-flavor specific
+    // keyBytes = keyValueStr.getBytes(this.charset);
+    // keyBytes = this.padding.pad(keyBytes, this.fieldConfig.getMaxLength(),
+    // this.fieldConfig.getDataFlavor());
+    // }
+    //
+    // return keyBytes;
   }
 
   @Override

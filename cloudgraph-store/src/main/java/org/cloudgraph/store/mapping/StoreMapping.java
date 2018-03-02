@@ -225,7 +225,8 @@ public class StoreMapping implements Config {
           UserDefinedField userDefinedField = new UserDefinedField();
           rowKeyField.setUserDefinedField(userDefinedField);
           userDefinedField.setPath(field.getName());
-          userDefinedField.setHash(rowKeyFieldAnnot.hash());
+
+          userDefinedField.setWriter(rowKeyFieldAnnot.fieldWriter());
         }
       }
 

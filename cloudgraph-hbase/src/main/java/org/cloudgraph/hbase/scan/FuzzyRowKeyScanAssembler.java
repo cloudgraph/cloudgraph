@@ -32,9 +32,9 @@ import org.apache.hadoop.hbase.util.Pair;
 import org.cloudgraph.hbase.filter.HBaseFilterAssembler;
 import org.cloudgraph.hbase.key.Hashing;
 import org.cloudgraph.hbase.key.KeySupport;
-import org.cloudgraph.hbase.key.Padding;
 import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.cloudgraph.store.mapping.KeyFieldMapping;
+//import org.cloudgraph.store.mapping.Padding;
 import org.cloudgraph.store.mapping.PreDefinedKeyFieldMapping;
 import org.cloudgraph.store.mapping.StoreMapping;
 import org.cloudgraph.store.mapping.TableMapping;
@@ -74,8 +74,9 @@ public class FuzzyRowKeyScanAssembler implements RowKeyScanAssembler, FuzzyRowKe
   protected byte fixedMaskByte = 0;
   protected byte variableMaskByte = 1;
   protected byte[] delimMask;
-  protected Hashing hashing;
-  protected Padding padding;
+
+  // protected Hashing hashing;
+  // protected Padding padding;
 
   @SuppressWarnings("unused")
   private FuzzyRowKeyScanAssembler() {
@@ -96,9 +97,9 @@ public class FuzzyRowKeyScanAssembler implements RowKeyScanAssembler, FuzzyRowKe
     this.delimMask = new byte[graph.getRowKeyFieldDelimiterBytes().length];
     for (int i = 0; i < delimMask.length; i++)
       delimMask[i] = fixedMaskByte;
-    Hash hash = this.keySupport.getHashAlgorithm(this.table);
-    this.hashing = new Hashing(hash, this.charset);
-    this.padding = new Padding(this.charset);
+    // Hash hash = this.keySupport.getHashAlgorithm(this.table);
+    // this.hashing = new Hashing(hash, this.charset);
+    // this.padding = new Padding(this.charset);
 
   }
 
@@ -179,17 +180,19 @@ public class FuzzyRowKeyScanAssembler implements RowKeyScanAssembler, FuzzyRowKe
         this.keyBytes.put(graph.getRowKeyFieldDelimiterBytes());
         this.infoBytes.put(delimMask);
       }
-      byte[] tokenValue = this.keySupport.getPredefinedFieldValueStartBytes(this.rootType, hashing,
+      byte[] tokenValue = this.keySupport.getPredefinedFieldValueBytes(this.rootType, // hashing,
           preDefinedField);
 
-      byte[] paddedTokenValue = null;
-      if (preDefinedField.isHash()) {
-        paddedTokenValue = this.padding.pad(tokenValue, preDefinedField.getMaxLength(),
-            DataFlavor.integral);
-      } else {
-        paddedTokenValue = this.padding.pad(tokenValue, preDefinedField.getMaxLength(),
-            preDefinedField.getDataFlavor());
-      }
+      byte[] paddedTokenValue = preDefinedField.getCodec().encode(tokenValue);
+      // if (preDefinedField.isHash()) {
+      // paddedTokenValue = this.padding.pad(tokenValue,
+      // preDefinedField.getMaxLength(),
+      // DataFlavor.integral);
+      // } else {
+      // paddedTokenValue = this.padding.pad(tokenValue,
+      // preDefinedField.getMaxLength(),
+      // preDefinedField.getDataFlavor());
+      // }
 
       this.keyBytes.put(paddedTokenValue);
       byte[] tokenMask = new byte[tokenValue.length];
@@ -212,16 +215,18 @@ public class FuzzyRowKeyScanAssembler implements RowKeyScanAssembler, FuzzyRowKe
         PreDefinedKeyFieldMapping predefinedConfig = (PreDefinedKeyFieldMapping) fieldConfig;
         byte[] tokenValue = getPredefinedToken(predefinedConfig);
 
-        byte[] paddedTokenValue = null;
-        if (predefinedConfig.isHash()) {
-          paddedTokenValue = this.padding.pad(tokenValue, predefinedConfig.getMaxLength(),
-              DataFlavor.integral);
-        } else {
-          paddedTokenValue = this.padding.pad(tokenValue, predefinedConfig.getMaxLength(),
-              predefinedConfig.getDataFlavor());
-        }
-        this.keyBytes.put(paddedTokenValue);
-        byte[] tokenMask = getPredefinedTokenMask(predefinedConfig, paddedTokenValue.length);
+        byte[] encodedTokenValue = fieldConfig.getCodec().encode(tokenValue);
+        // if (predefinedConfig.isHash()) {
+        // paddedTokenValue = this.padding.pad(tokenValue,
+        // predefinedConfig.getMaxLength(),
+        // DataFlavor.integral);
+        // } else {
+        // paddedTokenValue = this.padding.pad(tokenValue,
+        // predefinedConfig.getMaxLength(),
+        // predefinedConfig.getDataFlavor());
+        // }
+        this.keyBytes.put(encodedTokenValue);
+        byte[] tokenMask = getPredefinedTokenMask(predefinedConfig, encodedTokenValue.length);
         this.infoBytes.put(tokenMask);
 
         this.fieldCount++;
@@ -293,10 +298,10 @@ public class FuzzyRowKeyScanAssembler implements RowKeyScanAssembler, FuzzyRowKe
       tokenValue = predefinedConfig.getKeyBytes(this.rootType);
       break;
     }
-
-    if (predefinedConfig.isHash()) {
-      tokenValue = hashing.toStringBytes(tokenValue);
-    }
+    //
+    // if (predefinedConfig.isHash()) {
+    // tokenValue = hashing.toStringBytes(tokenValue);
+    // }
     return tokenValue;
   }
 

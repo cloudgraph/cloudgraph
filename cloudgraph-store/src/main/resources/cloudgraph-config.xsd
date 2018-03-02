@@ -236,14 +236,9 @@ which greatly improves query performance.
         <xsd:annotation>
             <xsd:documentation>The settings for one field within a composite row or column key.</xsd:documentation>
         </xsd:annotation>
-        <!--
-        Note: Applying a hash function can introuduce negative numbers into the
-        composite key which seems to invalidate lexicographic comparisons
-        for the composite key as a whole. 
-        -->
-        <xsd:attribute name="hash" type="xsd:boolean" use="optional" default="false">
+        <xsd:attribute name="writer" type="cloudgraph:KeyFieldCodecType" use="optional" default="pad">
             <xsd:annotation>
-                <xsd:documentation>Whether to apply the specified non-cryptographic hash algorithm to this field</xsd:documentation>
+                <xsd:documentation>Provides hint for which key field formatter to use for a particular composite key field</xsd:documentation>
             </xsd:annotation>
         </xsd:attribute>
     </xsd:complexType>
@@ -253,7 +248,56 @@ which greatly improves query performance.
             <xsd:documentation></xsd:documentation>
         </xsd:annotation>
     </xsd:element>
-    
+  
+    <xsd:simpleType name="KeyFieldCodecType">
+        <xsd:annotation>
+            <xsd:documentation>Specifies which built in key field codec to use for a particular composite key field</xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="pad">
+              <xsd:annotation>
+                <xsd:documentation>Indicates a padding codec where keys are padded to support lexicographic
+                ordering for the particular data type. In general String fields are rear padded 
+                and integral keys are front padded. The padding writer best facilitates lexicographic
+                ordering as well as wildcard searches. Wildcard searches are facilitated because
+                the field is padded up to its maximum defined capacity as required for e.g. Hbase fuzzy 
+                row-key filters. The padding formatter will cause a potentially large data size increase
+                if the defined capacity for the field far exceeds the actual data length.  
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="hash">
+              <xsd:annotation>
+                <xsd:documentation>Indicates a one-way hashing codec where the configured hashing 
+                 algorithm is used to convert a bytes representation of the data to an integer.
+                 The data is stored natively as a 4 byte integer representation.  
+                 Fields should only be stored as hashes when lexicographic ordering
+                 is not necessary for the field.
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="native">
+             <xsd:annotation>
+                <xsd:documentation>When formatting key fields, indicates to leave the data 
+                for a key field in its native data type (bytes representation) and omit any formatting 
+                rather than representing the field as a formatted string. Representing fields as 
+                string data typically supports lexicographic ordering, which is imperative for certain fields
+                within a composite key. Fields should only be formatted as the native data type when lexicographic ordering
+                is not necessary for the field, such as for trailing fields within a composite key which are introduced
+                only for the purpose of uniqueness. 
+                </xsd:documentation>
+            </xsd:annotation>
+            </xsd:enumeration>
+             <xsd:enumeration value="byte_terminator">
+              <xsd:annotation>
+                <xsd:documentation>Indicates key fields are terminated with the minimum value for a
+                    byte facilitating lexicographic ordering and wildcard searches.
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:enumeration>
+          </xsd:restriction>
+    </xsd:simpleType>
+          
     <xsd:complexType name="PredefinedField">
         <xsd:annotation>
             <xsd:documentation>The settings for one pre-defined field within a composite row-key.</xsd:documentation>

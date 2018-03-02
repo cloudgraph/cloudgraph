@@ -17,7 +17,7 @@ package org.cloudgraph.hbase.key;
 
 import java.nio.charset.Charset;
 
-import org.apache.hadoop.hbase.util.Hash;
+import org.cloudgraph.common.hash.Hash;
 
 /**
  * Delegate for composite row and column key hashing.

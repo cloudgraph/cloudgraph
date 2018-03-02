@@ -20,7 +20,7 @@ import java.nio.charset.Charset;
 
 import javax.xml.namespace.QName;
 
-import org.apache.hadoop.hbase.util.Hash;
+import org.cloudgraph.common.hash.Hash;
 import org.cloudgraph.state.RowState;
 import org.cloudgraph.store.mapping.Config;
 import org.cloudgraph.store.mapping.DataGraphMapping;
@@ -61,7 +61,6 @@ public abstract class ByteBufferKeyFactory implements ConfigurableKeyFactory {
 
   protected Charset charset;
   protected KeySupport keySupport = new KeySupport();
-  protected Hashing hashing;
   protected TableMapping table;
   protected DataGraphMapping graph;
   protected PlasmaType rootType;
@@ -80,8 +79,6 @@ public abstract class ByteBufferKeyFactory implements ConfigurableKeyFactory {
   protected ByteBufferKeyFactory(RowState graphRow) {
     this.table = graphRow.getDataGraph().getTable();
     this.charset = table.getCharset();
-    Hash hash = this.keySupport.getHashAlgorithm(table);
-    this.hashing = new Hashing(hash, this.charset);
     this.graph = graphRow.getDataGraph();
   }
 
@@ -103,8 +100,6 @@ public abstract class ByteBufferKeyFactory implements ConfigurableKeyFactory {
     this.table = config.getTable(rootTypeQname);
     this.graph = config.getDataGraph(rootTypeQname);
     this.charset = config.getCharset();
-    Hash hash = this.keySupport.getHashAlgorithm(this.table);
-    this.hashing = new Hashing(hash, this.charset);
   }
 
   public TableMapping getTable() {

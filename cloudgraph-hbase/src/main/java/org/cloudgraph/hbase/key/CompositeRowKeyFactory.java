@@ -26,6 +26,7 @@ import org.cloudgraph.store.key.GraphRowKeyFactory;
 import org.cloudgraph.store.key.KeyFieldOverflowException;
 import org.cloudgraph.store.key.KeyValue;
 import org.cloudgraph.store.mapping.KeyFieldMapping;
+//import org.cloudgraph.store.mapping.Padding;
 import org.cloudgraph.store.mapping.PreDefinedKeyFieldMapping;
 import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.plasma.sdo.DataFlavor;
@@ -58,16 +59,13 @@ import commonj.sdo.Type;
  */
 public class CompositeRowKeyFactory extends ByteBufferKeyFactory implements GraphRowKeyFactory {
   private static final Log log = LogFactory.getLog(CompositeRowKeyFactory.class);
-  protected Padding padding;
 
   public CompositeRowKeyFactory(RowState graphRow) {
     super(graphRow);
-    this.padding = new Padding(this.charset);
   }
 
   public CompositeRowKeyFactory(PlasmaType rootType) {
     super(rootType);
-    this.padding = new Padding(this.charset);
   }
 
   /**
@@ -87,12 +85,9 @@ public class CompositeRowKeyFactory extends ByteBufferKeyFactory implements Grap
       PreDefinedKeyFieldMapping preDefinedField = preDefinedFields.get(i);
       if (i > 0)
         result.append(this.getGraph().getRowKeyFieldDelimiter());
-      String tokenValue = this.keySupport.getPredefinedFieldValue(plasmaType, this.hashing,
+      String tokenValue = this.keySupport.getPredefinedFieldValue(plasmaType, // this.hashing,
           preDefinedField);
-
-      String padded = this.padding.pad(tokenValue, preDefinedField.getMaxLength(),
-          preDefinedField.getDataFlavor());
-      result.append(padded);
+      result.append(tokenValue);
     }
     return result.toString();
   }
@@ -121,14 +116,8 @@ public class CompositeRowKeyFactory extends ByteBufferKeyFactory implements Grap
       PreDefinedKeyFieldMapping preDefinedField = preDefinedFields.get(i);
       if (i > 0)
         this.buf.put(this.getGraph().getRowKeyFieldDelimiterBytes());
-      byte[] tokenValue = this.keySupport.getPredefinedFieldValueBytes(type, this.hashing,
+      byte[] tokenValue = this.keySupport.getPredefinedFieldValueBytes(type, // this.hashing,
           preDefinedField);
-      if (preDefinedField.isHash()) {
-        tokenValue = padding.pad(tokenValue, preDefinedField.getMaxLength(), DataFlavor.integral);
-      } else {
-        tokenValue = padding.pad(tokenValue, preDefinedField.getMaxLength(),
-            preDefinedField.getDataFlavor());
-      }
 
       this.buf.put(tokenValue);
     }
@@ -150,11 +139,12 @@ public class CompositeRowKeyFactory extends ByteBufferKeyFactory implements Grap
         this.buf.put(this.getGraph().getRowKeyFieldDelimiterBytes());
 
       byte[] keyValue = fieldConfig.getKeyBytes(rootDataObject);
-      byte[] paddedKeyValue = null;
-      if (fieldConfig.isHash()) {
-        keyValue = this.hashing.toStringBytes(keyValue);
-        paddedKeyValue = padding.pad(keyValue, fieldConfig.getMaxLength(), DataFlavor.integral);
-      } else {
+      byte[] encodedKeyValue = null;
+      switch (fieldConfig.getCodecType()) {
+      case HASH:
+        encodedKeyValue = fieldConfig.getCodec().encode(keyValue);
+        break;
+      default:
         if (fieldConfig instanceof UserDefinedRowKeyFieldMapping) {
           UserDefinedRowKeyFieldMapping userField = (UserDefinedRowKeyFieldMapping) fieldConfig;
           PlasmaProperty endpointProp = userField.getEndpointProperty();
@@ -164,15 +154,12 @@ public class CompositeRowKeyFactory extends ByteBufferKeyFactory implements Grap
                 + new String(keyValue, this.charset) + "' for path endpoint (property), "
                 + endpointProp + ", with dataflavor, " + endpointProp.getDataFlavor()
                 + ", exceeded max length (" + String.valueOf(userField.getMaxLength()) + ")");
-          paddedKeyValue = padding.pad(keyValue, userField.getMaxLength(),
-              endpointProp.getDataFlavor());
-        } else {
-          paddedKeyValue = padding.pad(keyValue, fieldConfig.getMaxLength(),
-              fieldConfig.getDataFlavor());
         }
+        encodedKeyValue = fieldConfig.getCodec().encode(keyValue);
+        break;
       }
 
-      this.buf.put(paddedKeyValue);
+      this.buf.put(encodedKeyValue);
 
       i++;
     }
@@ -219,11 +206,13 @@ public class CompositeRowKeyFactory extends ByteBufferKeyFactory implements Grap
         }
       }
 
-      byte[] paddedKeyValue = null;
-      if (fieldConfig.isHash()) {
-        fieldValue = this.hashing.toStringBytes(fieldValue);
-        paddedKeyValue = padding.pad(fieldValue, fieldConfig.getMaxLength(), DataFlavor.integral);
-      } else {
+      byte[] encodedKeyValue = null;
+
+      switch (fieldConfig.getCodecType()) {
+      case HASH:
+        encodedKeyValue = fieldConfig.getCodec().encode(fieldValue);
+        break;
+      default:
         if (fieldConfig instanceof UserDefinedRowKeyFieldMapping) {
           UserDefinedRowKeyFieldMapping userField = (UserDefinedRowKeyFieldMapping) fieldConfig;
           PlasmaProperty endpointProp = userField.getEndpointProperty();
@@ -233,16 +222,12 @@ public class CompositeRowKeyFactory extends ByteBufferKeyFactory implements Grap
                 + new String(fieldValue, this.charset) + "' for path endpoint (property), "
                 + endpointProp + ", with dataflavor, " + endpointProp.getDataFlavor()
                 + ", exceeded max length (" + String.valueOf(userField.getMaxLength()) + ")");
-
-          paddedKeyValue = padding.pad(fieldValue, userField.getMaxLength(), userField
-              .getEndpointProperty().getDataFlavor());
-        } else {
-          paddedKeyValue = padding.pad(fieldValue, fieldConfig.getMaxLength(),
-              fieldConfig.getDataFlavor());
         }
+        encodedKeyValue = fieldConfig.getCodec().encode(fieldValue);
+        break;
       }
 
-      this.buf.put(paddedKeyValue);
+      this.buf.put(encodedKeyValue);
       i++;
     }
 

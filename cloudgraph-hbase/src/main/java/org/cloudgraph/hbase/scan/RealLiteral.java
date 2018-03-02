@@ -67,19 +67,7 @@ public class RealLiteral extends ScanLiteral implements PartialRowKeyLiteral, Fu
    *         formatting and padding features.
    */
   public byte[] getEqualsStartBytes() {
-    byte[] startBytes = null;
-    Object startValue = this.dataConverter.convert(property.getType(), this.literal);
-    String startValueStr = this.dataConverter.toString(property.getType(), startValue);
-    if (this.fieldConfig.isHash()) {
-      startBytes = this.hashing.toStringBytes(startValueStr);
-      startBytes = this.padding.pad(startBytes, this.fieldConfig.getMaxLength(),
-          DataFlavor.integral);
-    } else {
-      startBytes = startValueStr.getBytes(this.charset);
-      startBytes = this.padding.pad(startBytes, this.fieldConfig.getMaxLength(),
-          this.fieldConfig.getDataFlavor());
-    }
-    return startBytes;
+    return this.literalToBytes();
   }
 
   /**
@@ -94,19 +82,7 @@ public class RealLiteral extends ScanLiteral implements PartialRowKeyLiteral, Fu
    *         formatting and padding features.
    */
   public byte[] getEqualsStopBytes() {
-    byte[] stopBytes = null;
-    Object value = this.dataConverter.convert(property.getType(), this.literal);
-    if (this.fieldConfig.isHash()) {
-      String stopValueStr = incrementHash(property.getType(), value);
-      stopBytes = stopValueStr.getBytes(this.charset);
-      stopBytes = this.padding.pad(stopBytes, this.fieldConfig.getMaxLength(), DataFlavor.integral);
-    } else {
-      String stopValueStr = increment(property.getType(), value);
-      stopBytes = stopValueStr.getBytes(this.charset);
-      stopBytes = this.padding.pad(stopBytes, this.fieldConfig.getMaxLength(),
-          this.fieldConfig.getDataFlavor());
-    }
-    return stopBytes;
+    return this.nextLiteralToBytes();
   }
 
   /**
@@ -121,20 +97,7 @@ public class RealLiteral extends ScanLiteral implements PartialRowKeyLiteral, Fu
    *         formatting and padding features.
    */
   public byte[] getGreaterThanStartBytes() {
-    byte[] startBytes = null;
-    Object value = this.dataConverter.convert(property.getType(), this.literal);
-    if (this.fieldConfig.isHash()) {
-      String startValueStr = incrementHash(property.getType(), value);
-      startBytes = startValueStr.getBytes(this.charset);
-      startBytes = this.padding.pad(startBytes, this.fieldConfig.getMaxLength(),
-          DataFlavor.integral);
-    } else {
-      String startValueStr = increment(property.getType(), value);
-      startBytes = startValueStr.getBytes(this.charset);
-      startBytes = this.padding.pad(startBytes, this.fieldConfig.getMaxLength(),
-          this.fieldConfig.getDataFlavor());
-    }
-    return startBytes;
+    return this.nextLiteralToBytes();
   }
 
   /**
@@ -164,19 +127,7 @@ public class RealLiteral extends ScanLiteral implements PartialRowKeyLiteral, Fu
    *         configurable hashing, formatting and padding features.
    */
   public byte[] getGreaterThanEqualStartBytes() {
-    byte[] startBytes = null;
-    Object startValue = this.dataConverter.convert(property.getType(), this.literal);
-    String startValueStr = this.dataConverter.toString(property.getType(), startValue);
-    if (fieldConfig.isHash()) {
-      startBytes = this.hashing.toStringBytes(startValueStr);
-      startBytes = this.padding.pad(startBytes, this.fieldConfig.getMaxLength(),
-          DataFlavor.integral);
-    } else {
-      startBytes = startValueStr.getBytes(this.charset);
-      startBytes = this.padding.pad(startBytes, this.fieldConfig.getMaxLength(),
-          this.fieldConfig.getDataFlavor());
-    }
-    return startBytes;
+    return this.literalToBytes();
   }
 
   /**
@@ -221,20 +172,9 @@ public class RealLiteral extends ScanLiteral implements PartialRowKeyLiteral, Fu
    *         formatting and padding features.
    */
   public byte[] getLessThanStopBytes() {
-    byte[] stopBytes = null;
-    Object stopValue = this.dataConverter.convert(property.getType(), this.literal);
     // Note: in HBase the stop row is exclusive, so just use
     // the literal value, no need to decrement it
-    String stopValueStr = this.dataConverter.toString(property.getType(), stopValue);
-    if (fieldConfig.isHash()) {
-      stopBytes = this.hashing.toStringBytes(stopValueStr);
-      stopBytes = this.padding.pad(stopBytes, this.fieldConfig.getMaxLength(), DataFlavor.integral);
-    } else {
-      stopBytes = stopValueStr.getBytes(this.charset);
-      stopBytes = this.padding.pad(stopBytes, this.fieldConfig.getMaxLength(),
-          this.fieldConfig.getDataFlavor());
-    }
-    return stopBytes;
+    return this.literalToBytes();
   }
 
   /**
@@ -264,19 +204,7 @@ public class RealLiteral extends ScanLiteral implements PartialRowKeyLiteral, Fu
    *         configurable hashing, formatting and padding features.
    */
   public byte[] getLessThanEqualStopBytes() {
-    byte[] stopBytes = null;
-    Object value = this.dataConverter.convert(property.getType(), this.literal);
-    if (this.fieldConfig.isHash()) {
-      String stopValueStr = incrementHash(property.getType(), value);
-      stopBytes = stopValueStr.getBytes(this.charset);
-      stopBytes = this.padding.pad(stopBytes, this.fieldConfig.getMaxLength(), DataFlavor.integral);
-    } else {
-      String stopValueStr = increment(property.getType(), value);
-      stopBytes = stopValueStr.getBytes(this.charset);
-      stopBytes = this.padding.pad(stopBytes, this.fieldConfig.getMaxLength(),
-          this.fieldConfig.getDataFlavor());
-    }
-    return stopBytes;
+    return this.nextLiteralToBytes();
   }
 
   /**
@@ -306,10 +234,39 @@ public class RealLiteral extends ScanLiteral implements PartialRowKeyLiteral, Fu
     return infoBytes;
   }
 
-  private String incrementHash(Type type, Object value) {
-    String valueStr = this.dataConverter.toString(property.getType(), value);
-    String result = this.hashing.toString(valueStr, HASH_INCREMENT);
-    return result;
+  private byte[] literalToBytes() {
+    switch (this.fieldConfig.getCodecType()) {
+    case BYTE___TERMINATOR:
+    case PAD:
+      Object value = this.dataConverter.convert(property.getType(), this.literal);
+      String valueStr = this.dataConverter.toString(property.getType(), value);
+      byte[] valueBytes = valueStr.getBytes(this.charset);
+      return this.fieldConfig.getCodec().encode(valueBytes);
+    default:
+      // FIXME: Is the entire row key encoded as string or native or ??
+      // or can there be mixed encoding among fields?
+      throw new ScanException("cannot create scan literal " + "for "
+          + this.fieldConfig.getCodecType() + " encoded key field with path '"
+          + this.fieldConfig.getPropertyPath() + "' within table " + this.table.getName()
+          + " for graph root type, " + this.rootType.toString());
+    }
+  }
+
+  private byte[] nextLiteralToBytes() {
+
+    switch (this.fieldConfig.getCodecType()) {
+    case BYTE___TERMINATOR:
+    case PAD:
+      Object value = this.dataConverter.convert(property.getType(), this.literal);
+      String valueStr = increment(property.getType(), value);
+      byte[] valueBytes = valueStr.getBytes(this.charset);
+      return this.fieldConfig.getCodec().encode(valueBytes);
+    default:
+      throw new ScanException("cannot create scan literal " + "for "
+          + this.fieldConfig.getCodecType() + " encoded key field with path '"
+          + this.fieldConfig.getPropertyPath() + "' within table " + this.table.getName()
+          + " for graph root type, " + this.rootType.toString());
+    }
   }
 
   private String increment(Type type, Object value) {

@@ -24,12 +24,12 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.hbase.util.Hash;
+import org.cloudgraph.common.hash.Hash;
 import org.cloudgraph.hbase.key.Hashing;
 import org.cloudgraph.hbase.key.KeySupport;
-import org.cloudgraph.hbase.key.Padding;
 import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.cloudgraph.store.mapping.KeyFieldMapping;
+//import org.cloudgraph.store.mapping.Padding;
 import org.cloudgraph.store.mapping.PreDefinedKeyFieldMapping;
 import org.cloudgraph.store.mapping.StoreMapping;
 import org.cloudgraph.store.mapping.TableMapping;
@@ -62,8 +62,9 @@ public class CompleteRowKeyAssembler implements RowKeyScanAssembler, CompleteRow
   protected ScanLiterals scanLiterals;
   protected int startRowFieldCount;
   protected String rootUUID;
-  protected Hashing hashing;
-  protected Padding padding;
+
+  // protected Hashing hashing;
+  // protected Padding padding;
 
   @SuppressWarnings("unused")
   private CompleteRowKeyAssembler() {
@@ -80,10 +81,10 @@ public class CompleteRowKeyAssembler implements RowKeyScanAssembler, CompleteRow
     QName rootTypeQname = this.rootType.getQualifiedName();
     this.graph = StoreMapping.getInstance().getDataGraph(rootTypeQname);
     this.table = StoreMapping.getInstance().getTable(rootTypeQname);
-    Hash hash = this.keySupport.getHashAlgorithm(this.table);
+    // Hash hash = this.keySupport.getHashAlgorithm(this.table);
     this.charset = StoreMapping.getInstance().getCharset();
-    this.hashing = new Hashing(hash, this.charset);
-    this.padding = new Padding(this.charset);
+    // this.hashing = new Hashing(hash, this.charset);
+    // this.padding = new Padding(this.charset);
   }
 
   /**
@@ -179,18 +180,21 @@ public class CompleteRowKeyAssembler implements RowKeyScanAssembler, CompleteRow
         this.startKey.put(graph.getRowKeyFieldDelimiterBytes());
       }
 
-      byte[] startValue = this.keySupport.getPredefinedFieldValueStartBytes(this.rootType, hashing,
+      byte[] startValue = this.keySupport.getPredefinedFieldValueBytes(this.rootType, // hashing,
           preDefinedField);
-      byte[] paddedStartValue = null;
-      if (preDefinedField.isHash()) {
-        paddedStartValue = this.padding.pad(startValue, preDefinedField.getMaxLength(),
-            DataFlavor.integral);
-      } else {
-        paddedStartValue = this.padding.pad(startValue, preDefinedField.getMaxLength(),
-            preDefinedField.getDataFlavor());
-      }
+      byte[] encodedValue = preDefinedField.getCodec().encode(startValue);
+      // byte[] paddedStartValue = null;
+      // if (preDefinedField.isHash()) {
+      // paddedStartValue = this.padding.pad(startValue,
+      // preDefinedField.getMaxLength(),
+      // DataFlavor.integral);
+      // } else {
+      // paddedStartValue = this.padding.pad(startValue,
+      // preDefinedField.getMaxLength(),
+      // preDefinedField.getDataFlavor());
+      // }
 
-      this.startKey.put(paddedStartValue);
+      this.startKey.put(encodedValue);
     }
   }
 
@@ -211,21 +215,23 @@ public class CompleteRowKeyAssembler implements RowKeyScanAssembler, CompleteRow
           tokenValue = predefinedConfig.getKeyBytes(this.rootType);
           break;
         }
+        byte[] encodedValue = fieldConfig.getCodec().encode(tokenValue);
         // FIXME: if predefined field is last, need stop bytes
-
-        byte[] paddedTokenValue = null;
-        if (fieldConfig.isHash()) {
-          tokenValue = hashing.toStringBytes(tokenValue);
-          paddedTokenValue = this.padding.pad(tokenValue, predefinedConfig.getMaxLength(),
-              DataFlavor.integral);
-        } else {
-          paddedTokenValue = this.padding.pad(tokenValue, predefinedConfig.getMaxLength(),
-              predefinedConfig.getDataFlavor());
-        }
+        // byte[] paddedTokenValue = null;
+        // if (fieldConfig.isHash()) {
+        // tokenValue = hashing.toStringBytes(tokenValue);
+        // paddedTokenValue = this.padding.pad(tokenValue,
+        // predefinedConfig.getMaxLength(),
+        // DataFlavor.integral);
+        // } else {
+        // paddedTokenValue = this.padding.pad(tokenValue,
+        // predefinedConfig.getMaxLength(),
+        // predefinedConfig.getDataFlavor());
+        // }
 
         if (startRowFieldCount > 0)
           this.startKey.put(graph.getRowKeyFieldDelimiterBytes());
-        this.startKey.put(paddedTokenValue);
+        this.startKey.put(encodedValue);
         this.startRowFieldCount++;
       } else if (fieldConfig instanceof UserDefinedRowKeyFieldMapping) {
         UserDefinedRowKeyFieldMapping userFieldConfig = (UserDefinedRowKeyFieldMapping) fieldConfig;

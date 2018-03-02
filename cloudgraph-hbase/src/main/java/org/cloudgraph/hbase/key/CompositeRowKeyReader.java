@@ -30,6 +30,7 @@ import org.cloudgraph.hbase.service.HBaseDataConverter;
 import org.cloudgraph.recognizer.Endpoint;
 import org.cloudgraph.state.RowState;
 import org.cloudgraph.store.key.KeyValue;
+import org.cloudgraph.store.mapping.KeyFieldCodecType;
 import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.cloudgraph.store.mapping.KeyFieldMapping;
 import org.cloudgraph.store.mapping.PreDefinedKeyFieldMapping;
@@ -101,7 +102,7 @@ public class CompositeRowKeyReader {
       }
       UserDefinedRowKeyFieldMapping userDefinedKeyField = (UserDefinedRowKeyFieldMapping) keyField;
       PlasmaProperty endpointProp = userDefinedKeyField.getEndpointProperty();
-      if (keyField.isHash()) {
+      if (keyField.getCodecType().ordinal() == KeyFieldCodecType.HASH.ordinal()) {
         log.warn("cannot unmarshal hashed row key field for table, " + this.table.getName()
             + ", with graph, " + this.graph + ", and endpoint property, " + endpointProp
             + " - continuing");
@@ -147,7 +148,7 @@ public class CompositeRowKeyReader {
       }
       UserDefinedRowKeyFieldMapping userDefinedKeyField = (UserDefinedRowKeyFieldMapping) keyField;
       PlasmaProperty endpointProp = userDefinedKeyField.getEndpointProperty();
-      if (keyField.isHash()) {
+      if (keyField.getCodecType().ordinal() == KeyFieldCodecType.HASH.ordinal()) {
         log.warn("cannot unmarshal hashed row key field(" + i + ") for table, "
             + this.table.getName() + ", with graph, " + this.graph + ", and endpoint property, "
             + endpointProp + " - continuing");

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cloudgraph.hbase.key;
+package org.cloudgraph.common;
 
 import java.nio.charset.Charset;
 import java.util.Arrays;
@@ -80,6 +80,23 @@ public class Padding {
     return result;
   }
 
+  public final byte[] strip(byte[] value, int maxLength, DataFlavor dataFlavor) {
+    byte[] result = null;
+    switch (dataFlavor) {
+    case integral:
+    case real: // front pad with zeros
+      result = strip(value, maxLength, zero);
+      break;
+    case temporal:
+    case string:
+    case other:
+    default: // end pad with spaces
+      result = strip(value, maxLength, space);
+      break;
+    }
+    return result;
+  }
+
   public byte[] front(byte[] src, int maxLength, byte pad) {
     byte[] result = new byte[maxLength];
     int delta = maxLength - src.length;
@@ -93,6 +110,22 @@ public class Padding {
     int delta = maxLength - src.length;
     System.arraycopy(src, 0, result, 0, src.length);
     Arrays.fill(result, src.length, src.length + delta, pad);
+    return result;
+  }
+
+  public byte[] strip(byte[] src, int maxLength, byte pad) {
+    if (src.length != maxLength)
+      throw new IllegalArgumentException("expected src length of " + maxLength);
+    byte[] stripped = new byte[maxLength];
+    int idx = 0;
+    for (int i = 0; i < maxLength; i++) {
+      if (src[i] != pad) {
+        stripped[idx] = src[i];
+        idx++;
+      }
+    }
+    byte[] result = new byte[idx + 1];
+    System.arraycopy(stripped, 0, result, 0, result.length);
     return result;
   }
 

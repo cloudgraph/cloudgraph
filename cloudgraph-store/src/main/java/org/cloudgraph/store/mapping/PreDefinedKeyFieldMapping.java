@@ -15,6 +15,8 @@
  */
 package org.cloudgraph.store.mapping;
 
+import java.nio.charset.Charset;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.cloudgraph.store.key.EdgeMetaKey;
@@ -39,23 +41,20 @@ import commonj.sdo.DataObject;
 public class PreDefinedKeyFieldMapping extends KeyFieldMapping {
 
   private static final Log log = LogFactory.getLog(PreDefinedKeyFieldMapping.class);
-  private PredefinedField field;
+  private PredefinedField preDefinedField;
 
-  public PreDefinedKeyFieldMapping(PredefinedField field, int seqNum, int totalFields) {
-    super(field, seqNum, totalFields);
-    this.field = field;
+  public PreDefinedKeyFieldMapping(DataGraphMapping dataGraph, PredefinedField field, int seqNum,
+      int totalFields) {
+    super(dataGraph, field, seqNum, totalFields);
+    this.preDefinedField = field;
   }
 
   public PredefinedField getField() {
-    return field;
+    return preDefinedField;
   }
 
   public PreDefinedFieldName getName() {
-    return field.getName();
-  }
-
-  public boolean isHash() {
-    return field.isHash();
+    return preDefinedField.getName();
   }
 
   @Override
@@ -333,6 +332,7 @@ public class PreDefinedKeyFieldMapping extends KeyFieldMapping {
     }
   }
 
+  @Override
   public DataFlavor getDataFlavor() {
     switch (this.getName()) {
     case URI:

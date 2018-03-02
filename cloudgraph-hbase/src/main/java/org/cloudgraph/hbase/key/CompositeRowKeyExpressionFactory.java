@@ -86,7 +86,8 @@ public class CompositeRowKeyExpressionFactory extends ByteBufferKeyFactory imple
         // user has a configuration for this path
         if (found != null) {
           keyValue = String.valueOf(found.getValue());
-          if (userFieldConfig.isHash()) {
+          switch (userFieldConfig.getCodecType()) {
+          case HASH:
             if (found.isWildcard())
               throw new GraphKeyException(
                   "cannot create wildcard expression for user"
@@ -96,13 +97,18 @@ public class CompositeRowKeyExpressionFactory extends ByteBufferKeyFactory imple
                       + " for table '"
                       + this.getTable().getName()
                       + "' - this field is defined as using an integral hash algorithm which prevents the use of wildcards");
-          } else if (found.isWildcard()) {
-            String expr = getDataFlavorRegex(found.getProp().getDataFlavor());
-            String replaceExpr = "\\" + found.getWildcard();
-            keyValue = keyValue.replaceAll(replaceExpr, expr);
+            break;
+          default:
+            if (found.isWildcard()) {
+              String expr = getDataFlavorRegex(found.getProp().getDataFlavor());
+              String replaceExpr = "\\" + found.getWildcard();
+              keyValue = keyValue.replaceAll(replaceExpr, expr);
+            }
+            break;
           }
         } else {
-          if (userFieldConfig.isHash())
+          switch (userFieldConfig.getCodecType()) {
+          case HASH:
             throw new GraphKeyException(
                 "cannot default datatype expression for user"
                     + " defined row-key field with XPath expression '"
@@ -111,14 +117,17 @@ public class CompositeRowKeyExpressionFactory extends ByteBufferKeyFactory imple
                     + " for table '"
                     + this.getTable().getName()
                     + "' - this field is defined as using an integral hash algorithm which prevents the use of wildcards");
-          PlasmaProperty prop = (PlasmaProperty) userFieldConfig.getEndpointProperty();
-          keyValue = getDataFlavorRegex(prop.getDataFlavor());
+          default:
+            PlasmaProperty prop = (PlasmaProperty) userFieldConfig.getEndpointProperty();
+            keyValue = getDataFlavorRegex(prop.getDataFlavor());
+            break;
+          }
         }
       }
 
-      if (fieldConfig.isHash()) {
-        keyValue = this.hashing.toString(keyValue);
-      }
+      // if (fieldConfig.isHash()) {
+      // keyValue = this.hashing.toString(keyValue);
+      // }
 
       result.append(keyValue);
 
@@ -151,7 +160,8 @@ public class CompositeRowKeyExpressionFactory extends ByteBufferKeyFactory imple
         // user has a configuration for this path
         if (found != null) {
           String keyValueString = String.valueOf(found.getValue());
-          if (userFieldConfig.isHash()) {
+          switch (userFieldConfig.getCodecType()) {
+          case HASH:
             if (found.isWildcard())
               throw new GraphKeyException(
                   "cannot create wildcard expression for user"
@@ -161,14 +171,19 @@ public class CompositeRowKeyExpressionFactory extends ByteBufferKeyFactory imple
                       + " for table '"
                       + this.getTable().getName()
                       + "' - this field is defined as using an integral hash algorithm which prevents the use of wildcards");
-          } else if (found.isWildcard()) {
-            String expr = getDataFlavorRegex(found.getProp().getDataFlavor());
-            String replaceExpr = "\\" + found.getWildcard();
-            keyValueString = keyValueString.replaceAll(replaceExpr, expr);
+            break;
+          default:
+            if (found.isWildcard()) {
+              String expr = getDataFlavorRegex(found.getProp().getDataFlavor());
+              String replaceExpr = "\\" + found.getWildcard();
+              keyValueString = keyValueString.replaceAll(replaceExpr, expr);
+            }
+            break;
           }
           keyValue = keyValueString.getBytes(charset);
         } else {
-          if (userFieldConfig.isHash())
+          switch (userFieldConfig.getCodecType()) {
+          case HASH:
             throw new GraphKeyException(
                 "cannot default datatype expression for user"
                     + " defined row-key field with XPath expression '"
@@ -177,14 +192,17 @@ public class CompositeRowKeyExpressionFactory extends ByteBufferKeyFactory imple
                     + " for table '"
                     + this.getTable().getName()
                     + "' - this field is defined as using an integral hash algorithm which prevents the use of wildcards");
-          PlasmaProperty prop = (PlasmaProperty) userFieldConfig.getEndpointProperty();
-          keyValue = getDataFlavorRegex(prop.getDataFlavor()).getBytes(charset);
+          default:
+            PlasmaProperty prop = (PlasmaProperty) userFieldConfig.getEndpointProperty();
+            keyValue = getDataFlavorRegex(prop.getDataFlavor()).getBytes(charset);
+            break;
+          }
         }
       }
 
-      if (fieldConfig.isHash()) {
-        keyValue = this.hashing.toStringBytes(keyValue);
-      }
+      // if (fieldConfig.isHash()) {
+      // keyValue = this.hashing.toStringBytes(keyValue);
+      // }
 
       buf.put(keyValue);
 

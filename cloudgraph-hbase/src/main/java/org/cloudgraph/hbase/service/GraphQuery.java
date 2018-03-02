@@ -294,7 +294,7 @@ public class GraphQuery implements QueryDispatcher {
       long before = System.currentTimeMillis();
       if (partialScans.size() > 0 || fuzzyScans.size() > 0 || completeKeys.size() > 0) {
         if (completeKeys.size() > 0) {
-          if (completeKeys.size() > 1) 
+          if (completeKeys.size() > 1)
             execute(completeKeys, rootTableReader, columnFilter, resultsCollector);
           else
             execute(completeKeys.get(0), rootTableReader, columnFilter, resultsCollector);
@@ -392,8 +392,8 @@ public class GraphQuery implements QueryDispatcher {
     execute(get, rootTableReader, collector);
   }
 
-  private void execute(List<CompleteRowKey> rowKeys, TableReader rootTableReader, Filter columnFilter,
-      ResultsAssembler collector) throws IOException {
+  private void execute(List<CompleteRowKey> rowKeys, TableReader rootTableReader,
+      Filter columnFilter, ResultsAssembler collector) throws IOException {
     FilterList rootFilter = new FilterList(FilterList.Operator.MUST_PASS_ALL);
     rootFilter.addFilter(columnFilter);
     List<Get> gets = new ArrayList<>(rowKeys.size());
@@ -408,12 +408,12 @@ public class GraphQuery implements QueryDispatcher {
       for (Get get : gets) {
         if (i > 0)
           buf.append(", ");
-        buf.append("'");   
-        buf.append(Bytes.toString(get.getRow()));   
-        buf.append("'");   
+        buf.append("'");
+        buf.append(Bytes.toString(get.getRow()));
+        buf.append("'");
         i++;
       }
-      log.debug("using row key multi-get - " + "rows: " + buf );
+      log.debug("using row key multi-get - " + "rows: " + buf);
     }
     execute(gets, rootTableReader, collector);
   }
@@ -461,7 +461,7 @@ public class GraphQuery implements QueryDispatcher {
     }
     collector.collect(resultRow);
   }
-  
+
   private void execute(List<Get> gets, TableReader rootTableReader, ResultsAssembler collector)
       throws IOException {
 
@@ -479,21 +479,21 @@ public class GraphQuery implements QueryDispatcher {
     for (Result resultRow : resultRows) {
       if (!resultRow.isEmpty()) {
         if (log.isDebugEnabled()) {
-          log.debug(rootTableReader.getTableConfig().getName() + ": " + new String(resultRow.getRow()));
+          log.debug(rootTableReader.getTableConfig().getName() + ": "
+              + new String(resultRow.getRow()));
           for (KeyValue keyValue : resultRow.list()) {
             log.debug("\tkey: " + new String(keyValue.getQualifier()) + "\tvalue: "
                 + new String(keyValue.getValue()));
           }
         }
         if (!collector.isResultEndRangeReached())
-          collector.collect(resultRow);        
-      }
-      else {
+          collector.collect(resultRow);
+      } else {
         if (log.isDebugEnabled())
           log.debug("no results from table " + rootTableReader.getTableConfig().getName()
-            + " for row '" + new String(resultRow.getRow()) + "' - returning no results graph");        
+              + " for row '" + new String(resultRow.getRow()) + "' - returning no results graph");
       }
-    }   
+    }
   }
 
   private void execute(Scan scan, TableReader rootTableReader, ResultsAssembler collector)

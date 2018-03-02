@@ -34,14 +34,18 @@ public abstract class KeyFieldMapping {
   /** the total number of fields in the row or column composite key */
   protected int totalFields;
   protected Charset charset = Charset.forName(CoreConstants.UTF8_ENCODING);
+  protected DataGraphMapping dataGraph;
   private KeyField field;
+  protected KeyFieldCodec keyFieldWriter;
 
   @SuppressWarnings("unused")
   private KeyFieldMapping() {
   }
 
-  public KeyFieldMapping(KeyField field, int sequenceNum, int totalFields) {
+  public KeyFieldMapping(DataGraphMapping dataGraph, KeyField field, int sequenceNum,
+      int totalFields) {
     super();
+    this.dataGraph = dataGraph;
     this.field = field;
     this.sequenceNum = sequenceNum;
     this.totalFields = totalFields;
@@ -53,10 +57,6 @@ public abstract class KeyFieldMapping {
 
   public int getTotalFields() {
     return totalFields;
-  }
-
-  public boolean isHash() {
-    return this.field.isHash();
   }
 
   /**
@@ -103,5 +103,44 @@ public abstract class KeyFieldMapping {
   public abstract int getMaxLength();
 
   public abstract DataFlavor getDataFlavor();
+
+  public KeyFieldCodecType getCodecType() {
+    return this.field.getWriter();
+  }
+
+  /**
+   * Returns the specified key field codec for the field.
+   * 
+   * @return the specified key field codec for the field.
+   */
+  public KeyFieldCodec getCodec() {
+    if (this.keyFieldWriter == null) {
+      switch (this.field.getWriter()) {
+      case PAD:
+        this.keyFieldWriter = new PaddingKeyFieldCodec(charset, getMaxLength(), getDataFlavor());
+        break;
+      case HASH:
+        if (this.dataGraph.getTable().hasHashAlgorithm()) {
+          if (this.dataGraph.getTable().getTable().getHashAlgorithm() != null) {
+            HashAlgorithm algo = this.dataGraph.getTable().getTable().getHashAlgorithm();
+            this.keyFieldWriter = new HashingKeyFieldCodec(charset, algo.getName());
+          }
+        }
+        if (this.keyFieldWriter == null)
+          this.keyFieldWriter = new HashingKeyFieldCodec(charset, HashAlgorithmName.JENKINS);
+        break;
+      case NATIVE:
+        this.keyFieldWriter = new NativeKeyFieldCodec(getDataFlavor());
+        break;
+      case BYTE___TERMINATOR:
+        this.keyFieldWriter = new ByteTerminatorKeyFieldCodec(getDataFlavor());
+        break;
+      default:
+        this.keyFieldWriter = new PaddingKeyFieldCodec(charset, getMaxLength(), getDataFlavor());
+        break;
+      }
+    }
+    return this.keyFieldWriter;
+  }
 
 }

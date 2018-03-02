@@ -130,9 +130,6 @@ public class CompositeColumnKeyFactory extends ByteBufferKeyFactory implements
         this.buf.put(this.getGraph().getColumnKeyFieldDelimiterBytes());
       PreDefinedKeyFieldMapping predefinedFieldConfig = (PreDefinedKeyFieldMapping) fieldConfig;
       byte[] keyValue = predefinedFieldConfig.getKeyBytes(type, metaField);
-      if (fieldConfig.isHash()) {
-        keyValue = this.hashing.toStringBytes(keyValue);
-      }
       this.buf.put(keyValue);
       i++;
     }
@@ -145,9 +142,6 @@ public class CompositeColumnKeyFactory extends ByteBufferKeyFactory implements
         this.buf.put(this.getGraph().getColumnKeyFieldDelimiterBytes());
       PreDefinedKeyFieldMapping predefinedFieldConfig = (PreDefinedKeyFieldMapping) fieldConfig;
       byte[] keyValue = predefinedFieldConfig.getKeyBytes(type, metaField);
-      if (fieldConfig.isHash()) {
-        keyValue = this.hashing.toStringBytes(keyValue);
-      }
       this.buf.put(keyValue);
       i++;
     }
@@ -160,24 +154,22 @@ public class CompositeColumnKeyFactory extends ByteBufferKeyFactory implements
         this.buf.put(this.getGraph().getColumnKeyFieldDelimiterBytes());
       PreDefinedKeyFieldMapping predefinedFieldConfig = (PreDefinedKeyFieldMapping) fieldConfig;
       byte[] keyValue = predefinedFieldConfig.getKeyBytes(type, property);
-      if (fieldConfig.isHash()) {
-        keyValue = this.hashing.toStringBytes(keyValue);
-      }
       this.buf.put(keyValue);
       i++;
     }
   }
 
-  protected byte[] configureTokenBytes(byte[] token, DataGraphMapping graph, Hashing hashing,
-      PreDefinedFieldName tokenName) {
-    byte[] result = token;
-    ColumnKeyFieldMapping tokenConfig = graph.getColumnKeyField(tokenName);
-    if (tokenConfig != null) {
-      if (tokenConfig.isHash()) {
-        result = hashing.toStringBytes(result);
-      }
-    }
-    return result;
-  }
-
+  // protected byte[] configureTokenBytes(byte[] token, DataGraphMapping graph,
+  // Hashing hashing,
+  // PreDefinedFieldName tokenName) {
+  // byte[] result = token;
+  // ColumnKeyFieldMapping tokenConfig = graph.getColumnKeyField(tokenName);
+  // if (tokenConfig != null) {
+  // if (tokenConfig.isHash()) {
+  // result = hashing.toStringBytes(result);
+  // }
+  // }
+  // return result;
+  // }
+  //
 }
