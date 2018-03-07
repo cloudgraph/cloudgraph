@@ -15,8 +15,6 @@
  */
 package org.cloudgraph.store.mapping;
 
-import org.cloudgraph.store.mapping.RowKeyModel;
-
 /**
  * Encapsulates logic related to access of row key model configuration
  * information.

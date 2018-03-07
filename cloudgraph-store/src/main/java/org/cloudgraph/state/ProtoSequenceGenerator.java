@@ -21,9 +21,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
-
-import javax.xml.bind.JAXBException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,7 +29,6 @@ import org.plasma.sdo.PlasmaType;
 import org.plasma.sdo.core.CoreConstants;
 
 import commonj.sdo.DataObject;
-import commonj.sdo.Type;
 
 public class ProtoSequenceGenerator implements SequenceGenerator {
   private static Log log = LogFactory.getLog(ProtoSequenceGenerator.class);

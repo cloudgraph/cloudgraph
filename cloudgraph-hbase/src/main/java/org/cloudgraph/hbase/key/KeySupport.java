@@ -57,30 +57,30 @@ public class KeySupport {
    * 
    * @return the specific configured hash algorithm configured for an HTable.
    */
-  public Hash getHashAlgorithm(TableMapping table) {
-    Hash hash = null;
-    if (table.hasHashAlgorithm()) {
-      switch (table.getTable().getHashAlgorithm().getName()) {
-      case JENKINS:
-        hash = JenkinsHash.instance();
-        break;
-      case MURMUR:
-        hash = MurmurHash.instance();
-        break;
-      }
-    } else {
-      String algorithm = CloudGraphContext.instance().getConfig()
-          .get(CloudGraphConstants.PROPERTY_CONFIG_HASH_TYPE);
-      if (algorithm != null) {
-        if ("jenkins".equalsIgnoreCase(algorithm)) {
-          hash = JenkinsHash.instance();
-        } else if ("murmur".equalsIgnoreCase(algorithm)) {
-          hash = MurmurHash.instance();
-        }
-      }
-    }
-    return hash;
-  }
+  // public Hash getHashAlgorithm(TableMapping table) {
+  // Hash hash = null;
+  // if (table.hasHashAlgorithm()) {
+  // switch (table.getTable().getHashAlgorithm().getName()) {
+  // case JENKINS:
+  // hash = JenkinsHash.instance();
+  // break;
+  // case MURMUR:
+  // hash = MurmurHash.instance();
+  // break;
+  // }
+  // } else {
+  // String algorithm = CloudGraphContext.instance().getConfig()
+  // .get(CloudGraphConstants.PROPERTY_CONFIG_HASH_TYPE);
+  // if (algorithm != null) {
+  // if ("jenkins".equalsIgnoreCase(algorithm)) {
+  // hash = JenkinsHash.instance();
+  // } else if ("murmur".equalsIgnoreCase(algorithm)) {
+  // hash = MurmurHash.instance();
+  // }
+  // }
+  // }
+  // return hash;
+  // }
 
   public KeyValue findKeyValue(UserDefinedRowKeyFieldMapping fieldConfig, List<KeyValue> pairs) {
 
@@ -110,36 +110,39 @@ public class KeySupport {
    *          the pre-defined row key token configuration
    * @return the token value
    */
-  @Deprecated
-  public String getPredefinedFieldValue(PlasmaType type, PreDefinedKeyFieldMapping preDefinedField) {
-    String result = null;
-    switch (preDefinedField.getName()) {
-    case URI:
-      result = type.getURIPhysicalName();
-      if (result == null || result.length() == 0) {
-        if (log.isDebugEnabled())
-          log.debug("no URI physical name for type, " + type + ", defined - using logical name");
-        result = type.getURI();
-      }
-      break;
-    case TYPE:
-      result = type.getPhysicalName();
-      if (result == null || result.length() == 0) {
-        if (log.isDebugEnabled())
-          log.debug("no physical name for type, " + type + ", defined - using logical name");
-        result = type.getName();
-      }
-      break;
-    default:
-      throw new StoreMappingException("invalid row key token name, "
-          + preDefinedField.getName().name() + " - cannot get this token from a SDO Type");
-    }
-
-    // FIXME:
-    byte[] byteResult = preDefinedField.getCodec().encode(Bytes.toBytes(result));
-
-    return Bytes.toString(byteResult);
-  }
+  // @Deprecated
+  // public String getEncodedPredefinedFieldAsString(PlasmaType type,
+  // PreDefinedKeyFieldMapping preDefinedField) {
+  // String result = null;
+  // switch (preDefinedField.getName()) {
+  // case URI:
+  // result = type.getURIPhysicalName();
+  // if (result == null || result.length() == 0) {
+  // if (log.isDebugEnabled())
+  // log.debug("no URI physical name for type, " + type +
+  // ", defined - using logical name");
+  // result = type.getURI();
+  // }
+  // break;
+  // case TYPE:
+  // result = type.getPhysicalName();
+  // if (result == null || result.length() == 0) {
+  // if (log.isDebugEnabled())
+  // log.debug("no physical name for type, " + type +
+  // ", defined - using logical name");
+  // result = type.getName();
+  // }
+  // break;
+  // default:
+  // throw new StoreMappingException("invalid row key token name, "
+  // + preDefinedField.getName().name() +
+  // " - cannot get this token from a SDO Type");
+  // }
+  //
+  // byte[] byteResult =
+  // preDefinedField.getCodec().encode(Bytes.toBytes(result));
+  // return Bytes.toString(byteResult);
+  // }
 
   // public byte[] getPredefinedFieldValueStartBytes(PlasmaType type, Hashing
   // hashing,
@@ -204,35 +207,38 @@ public class KeySupport {
   //
   // return result;
   // }
-
-  public byte[] getPredefinedFieldValueBytes(PlasmaType type,
-      PreDefinedKeyFieldMapping preDefinedField) {
-    byte[] result = null;
-    switch (preDefinedField.getName()) {
-    case URI:
-      result = type.getURIPhysicalNameBytes();
-      if (result == null || result.length == 0) {
-        if (log.isDebugEnabled())
-          log.debug("no URI physical name for type, " + type + ", defined - using logical name");
-        result = type.getURIBytes();
-      }
-      break;
-    case TYPE:
-      result = type.getPhysicalNameBytes();
-      if (result == null || result.length == 0) {
-        if (log.isDebugEnabled())
-          log.debug("no physical name for type, " + type + ", defined - using logical name");
-        result = type.getNameBytes();
-      }
-      break;
-    default:
-      throw new StoreMappingException("invalid row key token name, "
-          + preDefinedField.getName().name() + " - cannot get this token from a SDO Type");
-    }
-
-    result = preDefinedField.getCodec().encode(result);
-    return result;
-  }
+  // @Deprecated
+  // public byte[] getEncodedPredefinedField(PlasmaType type,
+  // PreDefinedKeyFieldMapping preDefinedField) {
+  // String value = null;
+  // switch (preDefinedField.getName()) {
+  // case URI:
+  // value = type.getURIPhysicalName();
+  // if (value == null || value.length() == 0) {
+  // if (log.isDebugEnabled())
+  // log.debug("no URI physical name for type, " + type +
+  // ", defined - using logical name");
+  // value = type.getURI();
+  // }
+  // break;
+  // case TYPE:
+  // value = type.getPhysicalName();
+  // if (value == null || value.length() == 0) {
+  // if (log.isDebugEnabled())
+  // log.debug("no physical name for type, " + type +
+  // ", defined - using logical name");
+  // value = type.getName();
+  // }
+  // break;
+  // default:
+  // throw new StoreMappingException("invalid row key token name, "
+  // + preDefinedField.getName().name() +
+  // " - cannot get this token from a SDO Type");
+  // }
+  //
+  // byte[] result = preDefinedField.getCodec().encode(value);
+  // return result;
+  // }
 
   /**
    * Returns a token value from the given Data Graph

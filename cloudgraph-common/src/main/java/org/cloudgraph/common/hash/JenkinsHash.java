@@ -38,7 +38,7 @@ public class JenkinsHash implements Hash {
 
   @Override
   public int hash(byte[] bytes) {
-    return hash(bytes, bytes.length, -1);
+    return hash(bytes, 0, bytes.length, -1);
   }
 
   @Override

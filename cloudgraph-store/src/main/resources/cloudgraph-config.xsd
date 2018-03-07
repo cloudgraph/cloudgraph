@@ -236,7 +236,7 @@ which greatly improves query performance.
         <xsd:annotation>
             <xsd:documentation>The settings for one field within a composite row or column key.</xsd:documentation>
         </xsd:annotation>
-        <xsd:attribute name="writer" type="cloudgraph:KeyFieldCodecType" use="optional" default="pad">
+        <xsd:attribute name="codecType" type="cloudgraph:KeyFieldCodecType" use="optional" default="pad">
             <xsd:annotation>
                 <xsd:documentation>Provides hint for which key field formatter to use for a particular composite key field</xsd:documentation>
             </xsd:annotation>
@@ -268,11 +268,20 @@ which greatly improves query performance.
             </xsd:enumeration>
             <xsd:enumeration value="hash">
               <xsd:annotation>
-                <xsd:documentation>Indicates a one-way hashing codec where the configured hashing 
+                <xsd:documentation>Indicates a non-lexicographic one-way hashing codec where the configured hashing 
                  algorithm is used to convert a bytes representation of the data to an integer.
                  The data is stored natively as a 4 byte integer representation.  
                  Fields should only be stored as hashes when lexicographic ordering
                  is not necessary for the field.
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="lexicohash">
+              <xsd:annotation>
+                <xsd:documentation>Indicates a lexicographic one-way hashing codec where the configured hashing 
+                 algorithm is used to convert a bytes representation of the data to an integer.
+                 The data is stored as a string representation of the integer hash supporting lexicographic sorting
+                 and related scan operations.  
                 </xsd:documentation>
               </xsd:annotation>
             </xsd:enumeration>
@@ -288,7 +297,7 @@ which greatly improves query performance.
                 </xsd:documentation>
             </xsd:annotation>
             </xsd:enumeration>
-             <xsd:enumeration value="byte_terminator">
+             <xsd:enumeration value="minbyte">
               <xsd:annotation>
                 <xsd:documentation>Indicates key fields are terminated with the minimum value for a
                     byte facilitating lexicographic ordering and wildcard searches.

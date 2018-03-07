@@ -13,21 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cloudgraph.store.mapping;
+package org.cloudgraph.store.mapping.codec;
+
+import org.cloudgraph.store.mapping.StoreMappingException;
 
 /**
- * The configuration for a column key.
- * 
  * @author Scott Cinnamond
- * @since 0.5.1
+ * @since 0.5
  */
-public class ColumnKeyFieldMapping extends PreDefinedKeyFieldMapping {
+public class CodecException extends StoreMappingException {
+  private static final long serialVersionUID = 1L;
 
-  private ColumnKeyField columnKeyField;
-
-  public ColumnKeyFieldMapping(DataGraphMapping dataGraph, ColumnKeyField field, int seqNum,
-      int totalFields) {
-    super(dataGraph, field, seqNum, totalFields);
-    this.columnKeyField = field;
+  public CodecException(String message) {
+    super(message);
   }
+
+  public CodecException(Throwable t) {
+    super(t);
+  }
+
+  public CodecException(String message, Throwable cause) {
+    super(message, cause);
+  }
+
 }

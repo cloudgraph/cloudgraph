@@ -224,7 +224,13 @@ public class RealLiteral extends ScanLiteral implements PartialRowKeyLiteral, Fu
 
   @Override
   public byte[] getFuzzyKeyBytes() {
-    return getEqualsStartBytes();
+    if (this.fieldConfig.getCodec().isLexicographic() && !this.fieldConfig.getCodec().isTransforming())
+      return getEqualsStartBytes();
+    else
+      throw new ScanException("cannot create fuzzy scan literal " + "for "
+          + this.fieldConfig.getCodecType() + " encoded key field with path '"
+          + this.fieldConfig.getPropertyPath() + "' within table " + this.table.getName()
+          + " for graph root type, " + this.rootType.toString());
   }
 
   @Override
@@ -235,38 +241,13 @@ public class RealLiteral extends ScanLiteral implements PartialRowKeyLiteral, Fu
   }
 
   private byte[] literalToBytes() {
-    switch (this.fieldConfig.getCodecType()) {
-    case BYTE___TERMINATOR:
-    case PAD:
-      Object value = this.dataConverter.convert(property.getType(), this.literal);
-      String valueStr = this.dataConverter.toString(property.getType(), value);
-      byte[] valueBytes = valueStr.getBytes(this.charset);
-      return this.fieldConfig.getCodec().encode(valueBytes);
-    default:
-      // FIXME: Is the entire row key encoded as string or native or ??
-      // or can there be mixed encoding among fields?
-      throw new ScanException("cannot create scan literal " + "for "
-          + this.fieldConfig.getCodecType() + " encoded key field with path '"
-          + this.fieldConfig.getPropertyPath() + "' within table " + this.table.getName()
-          + " for graph root type, " + this.rootType.toString());
-    }
+    Object value = this.dataConverter.convert(property.getType(), this.literal);
+    return this.fieldConfig.getCodec().encode(value);
   }
 
   private byte[] nextLiteralToBytes() {
-
-    switch (this.fieldConfig.getCodecType()) {
-    case BYTE___TERMINATOR:
-    case PAD:
-      Object value = this.dataConverter.convert(property.getType(), this.literal);
-      String valueStr = increment(property.getType(), value);
-      byte[] valueBytes = valueStr.getBytes(this.charset);
-      return this.fieldConfig.getCodec().encode(valueBytes);
-    default:
-      throw new ScanException("cannot create scan literal " + "for "
-          + this.fieldConfig.getCodecType() + " encoded key field with path '"
-          + this.fieldConfig.getPropertyPath() + "' within table " + this.table.getName()
-          + " for graph root type, " + this.rootType.toString());
-    }
+    Object value = this.dataConverter.convert(property.getType(), this.literal);
+    return this.fieldConfig.getCodec().encodeNext(value);
   }
 
   private String increment(Type type, Object value) {

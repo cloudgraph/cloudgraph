@@ -208,21 +208,16 @@ public class IntegralLiteral extends ScanLiteral implements PartialRowKeyLiteral
 
   @Override
   public byte[] getFuzzyKeyBytes() {
-    byte[] keyBytes = null;
-    Object value = this.dataConverter.convert(property.getType(), this.literal);
-    String valueStr = this.dataConverter.toString(property.getType(), value);
-
-    switch (this.fieldConfig.getCodecType()) {
-    case BYTE___TERMINATOR:
-    case PAD:
-      keyBytes = valueStr.getBytes(this.charset);
+    if (this.fieldConfig.getCodec().isLexicographic() && !this.fieldConfig.getCodec().isTransforming()) {
+      Object value = this.dataConverter.convert(property.getType(), this.literal);
+      String valueStr = this.dataConverter.toString(property.getType(), value);
+      byte[] keyBytes = valueStr.getBytes(this.charset);
       return this.fieldConfig.getCodec().encode(keyBytes);
-    default:
-      throw new ScanException("cannot create scan literal " + "for "
+    } else
+      throw new ScanException("cannot fuzzy create scan literal " + "for "
           + this.fieldConfig.getCodecType() + " encoded key field with path '"
           + this.fieldConfig.getPropertyPath() + "' within table " + this.table.getName()
           + " for graph root type, " + this.rootType.toString());
-    }
   }
 
   @Override
@@ -248,80 +243,12 @@ public class IntegralLiteral extends ScanLiteral implements PartialRowKeyLiteral
   }
 
   private byte[] literalToBytes() {
-    switch (this.fieldConfig.getCodecType()) {
-    case BYTE___TERMINATOR:
-    case PAD:
-      Object value = this.dataConverter.convert(property.getType(), this.literal);
-      String valueStr = this.dataConverter.toString(property.getType(), value);
-      byte[] valueBytes = valueStr.getBytes(this.charset);
-      return this.fieldConfig.getCodec().encode(valueBytes);
-    default:
-      // FIXME: Is the entire row key encoded as string or native or ??
-      // or can there be mixed encoding among fields?
-      throw new ScanException("cannot create scan literal " + "for "
-          + this.fieldConfig.getCodecType() + " encoded key field with path '"
-          + this.fieldConfig.getPropertyPath() + "' within table " + this.table.getName()
-          + " for graph root type, " + this.rootType.toString());
-    }
+    Object value = this.dataConverter.convert(property.getType(), this.literal);
+    return this.fieldConfig.getCodec().encode(value);
   }
 
   private byte[] nextLiteralToBytes() {
-
-    switch (this.fieldConfig.getCodecType()) {
-    case BYTE___TERMINATOR:
-    case PAD:
-      Object value = this.dataConverter.convert(property.getType(), this.literal);
-      String valueStr = increment(property.getType(), value);
-      byte[] valueBytes = valueStr.getBytes(this.charset);
-      return this.fieldConfig.getCodec().encode(valueBytes);
-    default:
-      throw new ScanException("cannot create scan literal " + "for "
-          + this.fieldConfig.getCodecType() + " encoded key field with path '"
-          + this.fieldConfig.getPropertyPath() + "' within table " + this.table.getName()
-          + " for graph root type, " + this.rootType.toString());
-    }
-  }
-
-  private String increment(Type type, Object value) {
-    String result = "";
-    DataType sourceDataType = DataType.valueOf(type.getName());
-    switch (sourceDataType) {
-    case Short:
-      Short shortValue = this.dataConverter.toShort(property.getType(), value);
-      Short shortResult = Short.valueOf((short) (shortValue.shortValue() + INCREMENT));
-      result = this.dataConverter.toString(type, shortResult);
-      break;
-    case Int:
-      Integer intValue = this.dataConverter.toInt(property.getType(), value);
-      Integer intResult = Integer.valueOf(intValue.intValue() + INCREMENT);
-      result = this.dataConverter.toString(type, intResult);
-      break;
-    case UnsignedInt:
-      UnsignedInteger uintValue = this.dataConverter.toUnsignedInt(property.getType(), value);
-      uintValue = UnsignedInteger.valueOf(uintValue.longValue() + INCREMENT);
-      result = this.dataConverter.toString(type, uintValue);
-      break;
-    case Long:
-      Long longValue = this.dataConverter.toLong(property.getType(), value);
-      Long longResult = Long.valueOf(longValue.longValue() + INCREMENT);
-      result = this.dataConverter.toString(type, longResult);
-      break;
-    case UnsignedLong:
-      UnsignedLong ulongValue = this.dataConverter.toUnsignedLong(property.getType(), value);
-      BigInteger bigIntValue = ulongValue.bigIntegerValue();
-      bigIntValue = bigIntValue.add(BigInteger.valueOf(INCREMENT));
-      ulongValue = UnsignedLong.valueOf(bigIntValue);
-      result = this.dataConverter.toString(type, ulongValue);
-      break;
-    case Integer:
-      BigInteger integerValue = this.dataConverter.toInteger(property.getType(), value);
-      BigInteger integerResult = integerValue.add(BigInteger.valueOf(INCREMENT));
-      result = this.dataConverter.toString(type, integerResult);
-      break;
-    default:
-      throw new ScanException("expected integral (Float, Double, Decinal)datatype not, "
-          + sourceDataType.name());
-    }
-    return result;
+    Object value = this.dataConverter.convert(property.getType(), this.literal);
+    return this.fieldConfig.getCodec().encodeNext(value);
   }
 }

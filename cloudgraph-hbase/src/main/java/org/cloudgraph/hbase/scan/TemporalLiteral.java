@@ -82,60 +82,6 @@ public class TemporalLiteral extends ScanLiteral implements PartialRowKeyLiteral
     return this.literalToBytes();
   }
 
-  private byte[] literalToBytes() {
-    // FIXME: convert to native type as we create literals
-    switch (this.fieldConfig.getCodecType()) {
-    case HASH:
-      throw new ScanException("cannot create scan literal " + "for "
-          + this.fieldConfig.getCodecType() + " encoded key field with path '"
-          + this.fieldConfig.getPropertyPath() + "' within table " + this.table.getName()
-          + " for graph root type, " + this.rootType.toString());
-    default:
-      Object value = this.dataConverter.convert(property.getType(), this.literal);
-      String valueStr = this.dataConverter.toString(property.getType(), value);
-      byte[] valueBytes = valueStr.getBytes(this.charset);
-      return this.fieldConfig.getCodec().encode(valueBytes);
-    }
-  }
-
-  private byte[] nextLiteralToBytes() {
-    // FIXME: convert to native type as we create literals
-    switch (this.fieldConfig.getCodecType()) {
-    case HASH:
-      throw new ScanException("cannot create scan literal " + "for "
-          + this.fieldConfig.getCodecType() + " encoded key field with path '"
-          + this.fieldConfig.getPropertyPath() + "' within table " + this.table.getName()
-          + " for graph root type, " + this.rootType.toString());
-    default:
-      Object value = this.dataConverter.convert(property.getType(), this.literal);
-      String valueStr = increment(property.getType(), value);
-      byte[] valueBytes = valueStr.getBytes(this.charset);
-      return this.fieldConfig.getCodec().encode(valueBytes);
-    }
-  }
-
-  /**
-   * As per SDO 2.1 spec every temporal data type can be converted to a date,
-   * not a long however. So get to a date then a long, then manipulate/increment
-   * the value and convert back..
-   * 
-   * @param type
-   * @param value
-   * @return
-   */
-  private String increment(Type type, Object value) {
-    Date dateValue = this.dataConverter.toDate(property.getType(), value);
-    Long longValue = dateValue.getTime();
-    DataType dataType = DataType.valueOf(property.getType().getName());
-    Long incrementLongValue = longValue + getIncrement(dataType);
-    Date incrementDate = new Date(incrementLongValue);
-    // back to whatever its native type is
-    Object incrementValue = this.dataConverter.convert(property.getType(), incrementDate);
-    // re format the string under its native type
-    String result = this.dataConverter.toString(property.getType(), incrementValue);
-    return result;
-  }
-
   /**
    * Returns the "stop row" bytes used to represent "equals" relational operator
    * under an HBase partial row-key scan for this string (data flavor) literal
@@ -274,7 +220,13 @@ public class TemporalLiteral extends ScanLiteral implements PartialRowKeyLiteral
 
   @Override
   public byte[] getFuzzyKeyBytes() {
-    return getEqualsStartBytes();
+    if (this.fieldConfig.getCodec().isLexicographic() && !this.fieldConfig.getCodec().isTransforming())
+      return getEqualsStartBytes();
+    else
+      throw new ScanException("cannot create fuzzy scan literal " + "for "
+          + this.fieldConfig.getCodecType() + " encoded key field with path '"
+          + this.fieldConfig.getPropertyPath() + "' within table " + this.table.getName()
+          + " for graph root type, " + this.rootType.toString());
   }
 
   @Override
@@ -283,4 +235,37 @@ public class TemporalLiteral extends ScanLiteral implements PartialRowKeyLiteral
     Arrays.fill(infoBytes, (byte) 0); // fixed char
     return infoBytes;
   }
+
+  private byte[] literalToBytes() {
+    Object value = this.dataConverter.convert(property.getType(), this.literal);
+    return this.fieldConfig.getCodec().encode(value);
+  }
+
+  private byte[] nextLiteralToBytes() {
+    Object value = this.dataConverter.convert(property.getType(), this.literal);
+    return this.fieldConfig.getCodec().encodeNext(value);
+  }
+
+  /**
+   * As per SDO 2.1 spec every temporal data type can be converted to a date,
+   * not a long however. So get to a date then a long, then manipulate/increment
+   * the value and convert back..
+   * 
+   * @param type
+   * @param value
+   * @return
+   */
+  private String increment(Type type, Object value) {
+    Date dateValue = this.dataConverter.toDate(property.getType(), value);
+    Long longValue = dateValue.getTime();
+    DataType dataType = DataType.valueOf(property.getType().getName());
+    Long incrementLongValue = longValue + getIncrement(dataType);
+    Date incrementDate = new Date(incrementLongValue);
+    // back to whatever its native type is
+    Object incrementValue = this.dataConverter.convert(property.getType(), incrementDate);
+    // re format the string under its native type
+    String result = this.dataConverter.toString(property.getType(), incrementValue);
+    return result;
+  }
+
 }

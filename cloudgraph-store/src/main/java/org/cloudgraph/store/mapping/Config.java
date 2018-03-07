@@ -21,8 +21,6 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.cloudgraph.store.mapping.Property;
-
 import commonj.sdo.Type;
 
 public interface Config {

@@ -17,8 +17,15 @@ package org.cloudgraph.store.mapping;
 
 import java.nio.charset.Charset;
 
-import org.cloudgraph.store.mapping.KeyField;
+import org.cloudgraph.store.mapping.codec.HashingKeyFieldCodec;
+import org.cloudgraph.store.mapping.codec.KeyFieldCodec;
+import org.cloudgraph.store.mapping.codec.LexicographicHashingKeyFieldCodec;
+import org.cloudgraph.store.mapping.codec.MinBytesKeyFieldCodec;
+import org.cloudgraph.store.mapping.codec.NativeKeyFieldCodec;
+import org.cloudgraph.store.mapping.codec.PaddingKeyFieldCodec;
 import org.plasma.sdo.DataFlavor;
+import org.plasma.sdo.DataType;
+import org.plasma.sdo.PlasmaType;
 import org.plasma.sdo.core.CoreConstants;
 
 import commonj.sdo.DataObject;
@@ -33,7 +40,7 @@ public abstract class KeyFieldMapping {
   protected int sequenceNum;
   /** the total number of fields in the row or column composite key */
   protected int totalFields;
-  protected Charset charset = Charset.forName(CoreConstants.UTF8_ENCODING);
+  public static Charset CHARSET = Charset.forName(CoreConstants.UTF8_ENCODING);
   protected DataGraphMapping dataGraph;
   private KeyField field;
   protected KeyFieldCodec keyFieldWriter;
@@ -66,7 +73,7 @@ public abstract class KeyFieldMapping {
    *          the data graph
    * @return the key value
    */
-  public abstract String getKey(commonj.sdo.DataGraph dataGraph);
+  public abstract Object getKey(commonj.sdo.DataGraph dataGraph);
 
   /**
    * Returns a key value as string from the given data object
@@ -75,7 +82,16 @@ public abstract class KeyFieldMapping {
    *          the root data object
    * @return the key value
    */
-  public abstract String getKey(DataObject dataObject);
+  public abstract Object getKey(DataObject dataObject);
+
+  /**
+   * Returns a key value as string from the given type
+   * 
+   * @param type
+   *          the type
+   * @return the key value
+   */
+  public abstract Object getKey(PlasmaType type);
 
   /**
    * Returns a key value as bytes from the given data graph
@@ -84,7 +100,7 @@ public abstract class KeyFieldMapping {
    *          the data graph
    * @return the key value
    */
-  public abstract byte[] getKeyBytes(commonj.sdo.DataGraph dataGraph);
+  // public abstract byte[] getKeyBytes(commonj.sdo.DataGraph dataGraph);
 
   /**
    * Returns a key value as bytes from the given data object
@@ -93,7 +109,7 @@ public abstract class KeyFieldMapping {
    *          the root data object
    * @return the key value
    */
-  public abstract byte[] getKeyBytes(DataObject dataObject);
+  // public abstract byte[] getKeyBytes(DataObject dataObject);
 
   /**
    * Returns the maximum length allowed for this key field.
@@ -102,10 +118,12 @@ public abstract class KeyFieldMapping {
    */
   public abstract int getMaxLength();
 
+  public abstract DataType getDataType();
+
   public abstract DataFlavor getDataFlavor();
 
   public KeyFieldCodecType getCodecType() {
-    return this.field.getWriter();
+    return this.field.getCodecType();
   }
 
   /**
@@ -115,28 +133,39 @@ public abstract class KeyFieldMapping {
    */
   public KeyFieldCodec getCodec() {
     if (this.keyFieldWriter == null) {
-      switch (this.field.getWriter()) {
+      switch (this.field.getCodecType()) {
       case PAD:
-        this.keyFieldWriter = new PaddingKeyFieldCodec(charset, getMaxLength(), getDataFlavor());
+        this.keyFieldWriter = new PaddingKeyFieldCodec(this);
         break;
       case HASH:
         if (this.dataGraph.getTable().hasHashAlgorithm()) {
           if (this.dataGraph.getTable().getTable().getHashAlgorithm() != null) {
             HashAlgorithm algo = this.dataGraph.getTable().getTable().getHashAlgorithm();
-            this.keyFieldWriter = new HashingKeyFieldCodec(charset, algo.getName());
+            this.keyFieldWriter = new HashingKeyFieldCodec(this, algo.getName());
           }
         }
         if (this.keyFieldWriter == null)
-          this.keyFieldWriter = new HashingKeyFieldCodec(charset, HashAlgorithmName.JENKINS);
+          this.keyFieldWriter = new HashingKeyFieldCodec(this, HashAlgorithmName.JENKINS);
+        break;
+      case LEXICOHASH:
+        if (this.dataGraph.getTable().hasHashAlgorithm()) {
+          if (this.dataGraph.getTable().getTable().getHashAlgorithm() != null) {
+            HashAlgorithm algo = this.dataGraph.getTable().getTable().getHashAlgorithm();
+            this.keyFieldWriter = new LexicographicHashingKeyFieldCodec(this, algo.getName());
+          }
+        }
+        if (this.keyFieldWriter == null)
+          this.keyFieldWriter = new LexicographicHashingKeyFieldCodec(this,
+              HashAlgorithmName.JENKINS);
         break;
       case NATIVE:
-        this.keyFieldWriter = new NativeKeyFieldCodec(getDataFlavor());
+        this.keyFieldWriter = new NativeKeyFieldCodec(this);
         break;
-      case BYTE___TERMINATOR:
-        this.keyFieldWriter = new ByteTerminatorKeyFieldCodec(getDataFlavor());
+      case MINBYTE:
+        this.keyFieldWriter = new MinBytesKeyFieldCodec(this);
         break;
       default:
-        this.keyFieldWriter = new PaddingKeyFieldCodec(charset, getMaxLength(), getDataFlavor());
+        this.keyFieldWriter = new PaddingKeyFieldCodec(this);
         break;
       }
     }

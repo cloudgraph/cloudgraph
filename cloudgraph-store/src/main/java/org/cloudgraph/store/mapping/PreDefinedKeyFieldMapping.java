@@ -15,15 +15,12 @@
  */
 package org.cloudgraph.store.mapping;
 
-import java.nio.charset.Charset;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.cloudgraph.store.key.EdgeMetaKey;
 import org.cloudgraph.store.key.EntityMetaKey;
-import org.cloudgraph.store.mapping.PreDefinedFieldName;
-import org.cloudgraph.store.mapping.PredefinedField;
 import org.plasma.sdo.DataFlavor;
+import org.plasma.sdo.DataType;
 import org.plasma.sdo.PlasmaDataObject;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
@@ -113,6 +110,7 @@ public class PreDefinedKeyFieldMapping extends KeyFieldMapping {
    *          the data graph
    * @return the key value
    */
+  @Deprecated
   public byte[] getKeyBytes(commonj.sdo.DataGraph dataGraph) {
     return this.getKeyBytes(dataGraph.getRootObject());
   }
@@ -124,6 +122,7 @@ public class PreDefinedKeyFieldMapping extends KeyFieldMapping {
    *          the root data object
    * @return the key value
    */
+  @Deprecated
   public byte[] getKeyBytes(DataObject dataObject) {
     PlasmaType rootType = (PlasmaType) dataObject.getType();
 
@@ -157,7 +156,7 @@ public class PreDefinedKeyFieldMapping extends KeyFieldMapping {
       }
       break;
     case UUID:
-      result = ((PlasmaDataObject) dataObject).getUUIDAsString().getBytes(charset);
+      result = ((PlasmaDataObject) dataObject).getUUIDAsString().getBytes(CHARSET);
       break;
     default:
       throw new StoreMappingException("invalid row key field name, " + this.getName().name()
@@ -174,6 +173,7 @@ public class PreDefinedKeyFieldMapping extends KeyFieldMapping {
    *          the type
    * @return the key value
    */
+  @Deprecated
   public byte[] getKeyBytes(PlasmaType type, PlasmaProperty property) {
     switch (this.getName()) {
     case URI:
@@ -188,6 +188,7 @@ public class PreDefinedKeyFieldMapping extends KeyFieldMapping {
     }
   }
 
+  @Deprecated
   public byte[] getKeyBytes(PlasmaType type, EntityMetaKey metaField) {
     switch (this.getName()) {
     case URI:
@@ -202,6 +203,7 @@ public class PreDefinedKeyFieldMapping extends KeyFieldMapping {
     }
   }
 
+  @Deprecated
   public byte[] getKeyBytes(PlasmaType type, EdgeMetaKey metaField) {
     switch (this.getName()) {
     case URI:
@@ -223,6 +225,7 @@ public class PreDefinedKeyFieldMapping extends KeyFieldMapping {
    *          the type
    * @return the key value
    */
+  @Deprecated
   public byte[] getKeyBytes(PlasmaType type) {
     byte[] result = null;
     switch (this.getName()) {
@@ -268,6 +271,53 @@ public class PreDefinedKeyFieldMapping extends KeyFieldMapping {
    *          the type
    * @return the key value
    */
+  @Override
+  public Object getKey(PlasmaType type) {
+    String result = null;
+    switch (this.getName()) {
+    case URI:
+      result = type.getURIPhysicalName();
+      if (result == null || result.length() == 0) {
+        if (log.isDebugEnabled())
+          log.debug("no physical URI name bytes for type, " + type.toString()
+              + ", defined - using URI bytes");
+        result = type.getURI();
+      }
+      break;
+    case TYPE:
+      result = type.getPhysicalName();
+      if (result == null || result.length() == 0) {
+        if (log.isDebugEnabled())
+          log.debug("no physical name for type, " + type.toString()
+              + ", defined - using logical name");
+        result = type.getName();
+      }
+      break;
+    case PKG:
+      result = type.getPackagePhysicalName();
+      if (result == null || result.length() == 0) {
+        if (log.isDebugEnabled())
+          log.debug("no physical package name bytes for type, " + type.toString()
+              + ", defined - using URI bytes");
+        result = type.getURI();
+      }
+      break;
+    default:
+      throw new StoreMappingException("invalid predefined key field name, " + this.getName().name()
+          + " - cannot get this predefined field from a type");
+    }
+
+    return result;
+  }
+
+  /**
+   * Returns a key value from the given type
+   * 
+   * @param type
+   *          the type
+   * @return the key value
+   */
+  @Deprecated
   public byte[] getKeyBytes(PlasmaProperty property) {
     byte[] result = null;
     switch (this.getName()) {
@@ -333,6 +383,20 @@ public class PreDefinedKeyFieldMapping extends KeyFieldMapping {
   }
 
   @Override
+  public DataType getDataType() {
+    switch (this.getName()) {
+    case URI:
+      return DataType.String;
+    case TYPE:
+      return DataType.String;
+    case UUID:
+      return DataType.String;
+    default:
+      return DataType.String;
+    }
+  }
+
+  @Override
   public DataFlavor getDataFlavor() {
     switch (this.getName()) {
     case URI:
@@ -344,6 +408,11 @@ public class PreDefinedKeyFieldMapping extends KeyFieldMapping {
     default:
       return DataFlavor.string;
     }
+  }
+
+  @Override
+  public String toString() {
+    return "PreDefinedKeyFieldMapping [preDefinedField=" + preDefinedField + "]";
   }
 
 }

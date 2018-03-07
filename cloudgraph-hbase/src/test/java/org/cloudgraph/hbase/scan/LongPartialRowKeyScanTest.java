@@ -77,9 +77,11 @@ public class LongPartialRowKeyScanTest extends DataTypeGraphModelTest {
     // fetch a slice
     String sliceName = root1.getChild(3).getName();
     Node fetched = this.fetchSingleGraph(rootId, id1, sliceName, root1.getDateTimeField());
-    log.debug(serializeGraph(fetched.getDataGraph()));
+    log.debug("FETCHED: " + serializeGraph(fetched.getDataGraph()));
     debugGraph(fetched.getDataGraph());
-    assertTrue(fetched.getChildCount() == 1); // expect single slice
+    assertTrue("expected 1 child not " + fetched.getChildCount(), fetched.getChildCount() == 1); // expect
+                                                                                                 // single
+                                                                                                 // slice
     assertTrue(fetched.getRootId() == rootId);
     assertTrue(fetched.getLongField() == id1);
     String name = fetched.getString("child[@name='" + sliceName + "']/@name");

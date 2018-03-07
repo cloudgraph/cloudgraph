@@ -76,21 +76,24 @@ public class CompositeRowKeyFactory extends ByteBufferKeyFactory implements Grap
    *          the data object type
    * @return the row key
    */
-  public String createRowKey(Type type) {
-    StringBuilder result = new StringBuilder();
-    PlasmaType plasmaType = (PlasmaType) type;
-
-    List<PreDefinedKeyFieldMapping> preDefinedFields = this.getGraph().getPreDefinedRowKeyFields();
-    for (int i = 0; i < preDefinedFields.size(); i++) {
-      PreDefinedKeyFieldMapping preDefinedField = preDefinedFields.get(i);
-      if (i > 0)
-        result.append(this.getGraph().getRowKeyFieldDelimiter());
-      String tokenValue = this.keySupport.getPredefinedFieldValue(plasmaType, // this.hashing,
-          preDefinedField);
-      result.append(tokenValue);
-    }
-    return result.toString();
-  }
+  // public String createRowKey(Type type) {
+  // StringBuilder result = new StringBuilder();
+  // PlasmaType plasmaType = (PlasmaType) type;
+  //
+  // List<PreDefinedKeyFieldMapping> preDefinedFields =
+  // this.getGraph().getPreDefinedRowKeyFields();
+  // for (int i = 0; i < preDefinedFields.size(); i++) {
+  // PreDefinedKeyFieldMapping preDefinedField = preDefinedFields.get(i);
+  // if (i > 0)
+  // result.append(this.getGraph().getRowKeyFieldDelimiter());
+  // String tokenValue =
+  // this.keySupport.getEncodedPredefinedFieldAsString(plasmaType, //
+  // this.hashing,
+  // preDefinedField);
+  // result.append(tokenValue);
+  // }
+  // return result.toString();
+  // }
 
   @Override
   public byte[] createRowKeyBytes(Type type) {
@@ -116,10 +119,14 @@ public class CompositeRowKeyFactory extends ByteBufferKeyFactory implements Grap
       PreDefinedKeyFieldMapping preDefinedField = preDefinedFields.get(i);
       if (i > 0)
         this.buf.put(this.getGraph().getRowKeyFieldDelimiterBytes());
-      byte[] tokenValue = this.keySupport.getPredefinedFieldValueBytes(type, // this.hashing,
-          preDefinedField);
 
-      this.buf.put(tokenValue);
+      Object keyValue = preDefinedField.getKey(type);
+      byte[] encodedKeyValue = preDefinedField.getCodec().encode(keyValue);
+      // byte[] tokenValue = this.keySupport.getEncodedPredefinedField(type, //
+      // this.hashing,
+      // preDefinedField);
+
+      this.buf.put(encodedKeyValue);
     }
   }
 
@@ -138,27 +145,8 @@ public class CompositeRowKeyFactory extends ByteBufferKeyFactory implements Grap
       if (i > 0)
         this.buf.put(this.getGraph().getRowKeyFieldDelimiterBytes());
 
-      byte[] keyValue = fieldConfig.getKeyBytes(rootDataObject);
-      byte[] encodedKeyValue = null;
-      switch (fieldConfig.getCodecType()) {
-      case HASH:
-        encodedKeyValue = fieldConfig.getCodec().encode(keyValue);
-        break;
-      default:
-        if (fieldConfig instanceof UserDefinedRowKeyFieldMapping) {
-          UserDefinedRowKeyFieldMapping userField = (UserDefinedRowKeyFieldMapping) fieldConfig;
-          PlasmaProperty endpointProp = userField.getEndpointProperty();
-          int delta = userField.getMaxLength() - keyValue.length;
-          if (delta < 0)
-            throw new KeyFieldOverflowException("user-defined field value '"
-                + new String(keyValue, this.charset) + "' for path endpoint (property), "
-                + endpointProp + ", with dataflavor, " + endpointProp.getDataFlavor()
-                + ", exceeded max length (" + String.valueOf(userField.getMaxLength()) + ")");
-        }
-        encodedKeyValue = fieldConfig.getCodec().encode(keyValue);
-        break;
-      }
-
+      Object keyValue = fieldConfig.getKey(rootDataObject);
+      byte[] encodedKeyValue = fieldConfig.getCodec().encode(keyValue);
       this.buf.put(encodedKeyValue);
 
       i++;
@@ -181,7 +169,7 @@ public class CompositeRowKeyFactory extends ByteBufferKeyFactory implements Grap
   public byte[] createRowKeyBytes(List<KeyValue> values) {
     this.buf.clear();
 
-    byte[] fieldValue = null;
+    Object fieldValue = null;
     int i = 0;
     for (KeyFieldMapping fieldConfig : this.getGraph().getRowKeyFields()) {
       if (i > 0)
@@ -189,18 +177,13 @@ public class CompositeRowKeyFactory extends ByteBufferKeyFactory implements Grap
 
       if (fieldConfig instanceof PreDefinedKeyFieldMapping) {
         PreDefinedKeyFieldMapping predefinedConfig = (PreDefinedKeyFieldMapping) fieldConfig;
-        fieldValue = predefinedConfig.getKeyBytes(this.getRootType());
+        fieldValue = predefinedConfig.getKey(this.getRootType());
       } else {
         UserDefinedRowKeyFieldMapping userFieldConfig = (UserDefinedRowKeyFieldMapping) fieldConfig;
         KeyValue keyValue = this.keySupport.findKeyValue(userFieldConfig, values);
 
         if (keyValue != null) {
-
-          // FIXME: do we want to invoke a converter here?
-          // FIXME: do we want to transform this value somehow?
-          String stringValue = String.valueOf(keyValue.getValue());
-          fieldValue = stringValue.getBytes(this.charset);
-
+          fieldValue = keyValue.getValue();
         } else {
           continue; // could be a partial row key scan
         }
@@ -213,16 +196,6 @@ public class CompositeRowKeyFactory extends ByteBufferKeyFactory implements Grap
         encodedKeyValue = fieldConfig.getCodec().encode(fieldValue);
         break;
       default:
-        if (fieldConfig instanceof UserDefinedRowKeyFieldMapping) {
-          UserDefinedRowKeyFieldMapping userField = (UserDefinedRowKeyFieldMapping) fieldConfig;
-          PlasmaProperty endpointProp = userField.getEndpointProperty();
-          int delta = userField.getMaxLength() - fieldValue.length;
-          if (delta < 0)
-            throw new KeyFieldOverflowException("user-defined field value '"
-                + new String(fieldValue, this.charset) + "' for path endpoint (property), "
-                + endpointProp + ", with dataflavor, " + endpointProp.getDataFlavor()
-                + ", exceeded max length (" + String.valueOf(userField.getMaxLength()) + ")");
-        }
         encodedKeyValue = fieldConfig.getCodec().encode(fieldValue);
         break;
       }
@@ -231,9 +204,8 @@ public class CompositeRowKeyFactory extends ByteBufferKeyFactory implements Grap
       i++;
     }
 
-    // ByteBuffer.array() returns unsized array so don't sent that back to
-    // clients
-    // to misuse.
+    // ByteBuffer.array() returns unsized array so don't send that back to
+    // clients to misuse.
     // Use native arraycopy() method as it uses native memcopy to create
     // result array
     // and because and

@@ -5,8 +5,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.cloudgraph.store.mapping.HashAlgorithmName;
 import org.atteo.classindex.IndexAnnotated;
+import org.cloudgraph.store.mapping.HashAlgorithmName;
 
 /**
  * Runtime discoverable mapping to a physical data store table.

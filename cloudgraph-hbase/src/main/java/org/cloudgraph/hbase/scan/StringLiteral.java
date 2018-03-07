@@ -63,8 +63,7 @@ public class StringLiteral extends ScanLiteral implements PartialRowKeyLiteral, 
    */
   @Override
   public byte[] getEqualsStartBytes() {
-    byte[] startBytes = this.literal.getBytes(this.charset);
-    return this.fieldConfig.getCodec().encode(startBytes);
+    return this.fieldConfig.getCodec().encode(this.literal);
   }
 
   /**
@@ -80,8 +79,7 @@ public class StringLiteral extends ScanLiteral implements PartialRowKeyLiteral, 
    */
   @Override
   public byte[] getEqualsStopBytes() {
-    byte[] stopBytes = this.literal.getBytes(this.charset);
-    return this.fieldConfig.getCodec().encodeNext(stopBytes);
+    return this.fieldConfig.getCodec().encodeNext(this.literal);
     // if (fieldConfig.isHash()) {
     // stopBytes = this.hashing.toStringBytes(stopValueStr,
     // this.HASH_INCREMENT);
@@ -112,8 +110,7 @@ public class StringLiteral extends ScanLiteral implements PartialRowKeyLiteral, 
    */
   @Override
   public byte[] getGreaterThanStartBytes() {
-    byte[] startBytes = this.literal.getBytes(this.charset);
-    return this.fieldConfig.getCodec().encodeNext(startBytes);
+    return this.fieldConfig.getCodec().encodeNext(this.literal);
 
     // byte[] startBytes = null;
     // String startValueStr = this.literal;
@@ -201,10 +198,9 @@ public class StringLiteral extends ScanLiteral implements PartialRowKeyLiteral, 
    */
   @Override
   public byte[] getLessThanStopBytes() {
-    byte[] stopBytes = this.literal.getBytes(this.charset);
     // Note: in HBase the stop row is exclusive, so just use
     // the literal value, no need to decrement it
-    return this.fieldConfig.getCodec().encode(stopBytes);
+    return this.fieldConfig.getCodec().encode(this.literal);
     //
     //
     // byte[] stopBytes = null;
@@ -249,10 +245,9 @@ public class StringLiteral extends ScanLiteral implements PartialRowKeyLiteral, 
   @Override
   public byte[] getLessThanEqualStopBytes() {
 
-    byte[] stopBytes = this.literal.getBytes(this.charset);
     // Note: in HBase the stop row is exclusive, so increment
     // stop value to get this row for this field/literal
-    return this.fieldConfig.getCodec().encodeNext(stopBytes);
+    return this.fieldConfig.getCodec().encodeNext(this.literal);
 
     // byte[] stopBytes = null;
     // String stopValueStr = this.literal;
@@ -277,17 +272,15 @@ public class StringLiteral extends ScanLiteral implements PartialRowKeyLiteral, 
 
   @Override
   public byte[] getFuzzyKeyBytes() {
-    byte[] keyBytes = this.literal.getBytes(this.charset);
-
-    switch (this.fieldConfig.getCodecType()) {
-    case HASH:
-      throw new ScanException("cannot create scan literal "
-          + "for hash encoded key field - field with path '" + this.fieldConfig.getPropertyPath()
-          + "' within table " + this.table.getName() + " for graph root type, "
-          + this.rootType.toString());
-    default:
+    if (this.fieldConfig.getCodec().isLexicographic() && !this.fieldConfig.getCodec().isTransforming()) {
+      byte[] keyBytes = this.literal.getBytes(this.charset);
       return this.fieldConfig.getCodec().encode(keyBytes);
-    }
+    } else
+      throw new ScanException("cannot create fuzzy scan literal " + "for "
+          + this.fieldConfig.getCodecType() + " encoded key field with path '"
+          + this.fieldConfig.getPropertyPath() + "' within table " + this.table.getName()
+          + " for graph root type, " + this.rootType.toString());
+
     //
     //
     // String keyValueStr = this.literal;

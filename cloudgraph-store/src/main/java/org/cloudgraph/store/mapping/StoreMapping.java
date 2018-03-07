@@ -37,16 +37,9 @@ import org.apache.commons.configuration.SystemConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atteo.classindex.ClassIndex;
-import org.cloudgraph.store.mapping.CloudGraphStoreMapping;
-import org.cloudgraph.store.mapping.ConfigurationProperty;
-import org.cloudgraph.store.mapping.DataGraph;
-import org.cloudgraph.store.mapping.Property;
-import org.cloudgraph.store.mapping.Table;
 import org.plasma.common.bind.DefaultValidationEventHandler;
 import org.plasma.common.env.EnvProperties;
-import org.plasma.runtime.annotation.PlasmaServiceProvider;
 import org.plasma.sdo.PlasmaType;
-import org.plasma.sdo.annotation.DataProperty;
 import org.plasma.sdo.core.CoreConstants;
 import org.plasma.sdo.helper.PlasmaTypeHelper;
 import org.xml.sax.SAXException;
@@ -226,7 +219,7 @@ public class StoreMapping implements Config {
           rowKeyField.setUserDefinedField(userDefinedField);
           userDefinedField.setPath(field.getName());
 
-          userDefinedField.setWriter(rowKeyFieldAnnot.fieldWriter());
+          userDefinedField.setCodecType(rowKeyFieldAnnot.codecType());
         }
       }
 

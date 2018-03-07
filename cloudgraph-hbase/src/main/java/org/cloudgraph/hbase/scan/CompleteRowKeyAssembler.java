@@ -25,7 +25,6 @@ import javax.xml.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.cloudgraph.common.hash.Hash;
-import org.cloudgraph.hbase.key.Hashing;
 import org.cloudgraph.hbase.key.KeySupport;
 import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.cloudgraph.store.mapping.KeyFieldMapping;
@@ -179,10 +178,11 @@ public class CompleteRowKeyAssembler implements RowKeyScanAssembler, CompleteRow
       if (startRowFieldCount > 0) {
         this.startKey.put(graph.getRowKeyFieldDelimiterBytes());
       }
-
-      byte[] startValue = this.keySupport.getPredefinedFieldValueBytes(this.rootType, // hashing,
-          preDefinedField);
-      byte[] encodedValue = preDefinedField.getCodec().encode(startValue);
+      Object value = preDefinedField.getKey(this.rootType);
+      // byte[] startValue =
+      // this.keySupport.getEncodedPredefinedField(this.rootType, // hashing,
+      // preDefinedField);
+      byte[] encodedValue = preDefinedField.getCodec().encode(value);
       // byte[] paddedStartValue = null;
       // if (preDefinedField.isHash()) {
       // paddedStartValue = this.padding.pad(startValue,
@@ -203,16 +203,16 @@ public class CompleteRowKeyAssembler implements RowKeyScanAssembler, CompleteRow
       if (fieldConfig instanceof PreDefinedKeyFieldMapping) {
         PreDefinedKeyFieldMapping predefinedConfig = (PreDefinedKeyFieldMapping) fieldConfig;
 
-        byte[] tokenValue = null;
+        Object tokenValue = null;
         switch (predefinedConfig.getName()) {
         case UUID:
           if (this.rootUUID != null) {
-            tokenValue = this.rootUUID.getBytes(this.charset);
+            tokenValue = this.rootUUID;
             break;
           } else
             continue;
         default:
-          tokenValue = predefinedConfig.getKeyBytes(this.rootType);
+          tokenValue = predefinedConfig.getKey(this.rootType);
           break;
         }
         byte[] encodedValue = fieldConfig.getCodec().encode(tokenValue);

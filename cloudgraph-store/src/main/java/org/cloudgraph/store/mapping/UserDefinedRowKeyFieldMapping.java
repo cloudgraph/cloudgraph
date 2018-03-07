@@ -17,10 +17,10 @@ package org.cloudgraph.store.mapping;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.cloudgraph.store.mapping.UserDefinedField;
 import org.plasma.sdo.DataFlavor;
 import org.plasma.sdo.DataType;
 import org.plasma.sdo.PlasmaProperty;
+import org.plasma.sdo.PlasmaType;
 import org.plasma.sdo.ValueConstraint;
 import org.plasma.sdo.helper.DataConverter;
 
@@ -293,9 +293,10 @@ public class UserDefinedRowKeyFieldMapping extends KeyFieldMapping {
    *          the data graph
    * @return the token value
    */
-  public byte[] getKeyBytes(commonj.sdo.DataGraph dataGraph) {
-    return this.getKeyBytes(dataGraph.getRootObject());
-  }
+  // @Override
+  // public byte[] getKeyBytes(commonj.sdo.DataGraph dataGraph) {
+  // return this.getKeyBytes(dataGraph.getRootObject());
+  // }
 
   /**
    * Returns a user defined key value from the given data object.
@@ -306,11 +307,14 @@ public class UserDefinedRowKeyFieldMapping extends KeyFieldMapping {
    * @throws UnresolvedPathExpressionException
    *           if the configured XPath expression resolves to a null value
    */
-  public byte[] getKeyBytes(DataObject dataObject) {
-    return getKey(dataObject).getBytes(this.charset);
-  }
+  // @Override
+  // public byte[] getKeyBytes(DataObject dataObject) {
+  // Object key = getKey(dataObject);
+  // return this.getCodec().encode(key);
+  // }
 
-  public String getKey(commonj.sdo.DataGraph dataGraph) {
+  @Override
+  public Object getKey(commonj.sdo.DataGraph dataGraph) {
     return this.getKey(dataGraph.getRootObject());
   }
 
@@ -323,10 +327,9 @@ public class UserDefinedRowKeyFieldMapping extends KeyFieldMapping {
    * @throws UnresolvedPathExpressionException
    *           if the configured XPath expression resolves to a null value
    */
-  public String getKey(DataObject dataObject) {
-    // FIXME: do we want to invoke a converter here?
-    // FIXME: do we want to transform this value somehow?
-    String result = dataObject.getString(this.getPathExpression());
+  @Override
+  public Object getKey(DataObject dataObject) {
+    Object result = dataObject.get(this.getPathExpression());
     if (result == null)
       throw new UnresolvedPathExpressionException("the configured XPath expression '"
           + this.getPathExpression() + "'" + " for graph root type '"
@@ -336,6 +339,11 @@ public class UserDefinedRowKeyFieldMapping extends KeyFieldMapping {
           + "and return mandatory properties for data graph root types");
 
     return result;
+  }
+
+  @Override
+  public Object getKey(PlasmaType type) {
+    throw new IllegalStateException("cannot derive key field value from type, " + type);
   }
 
   /**
@@ -349,8 +357,20 @@ public class UserDefinedRowKeyFieldMapping extends KeyFieldMapping {
   }
 
   @Override
+  public DataType getDataType() {
+    return DataType.valueOf(this.endpointProperty.getType().getName());
+  }
+
+  @Override
   public DataFlavor getDataFlavor() {
     return ((PlasmaProperty) this.endpointProperty).getDataFlavor();
+  }
+
+  @Override
+  public String toString() {
+    return "UserDefinedRowKeyFieldMapping [userDefinedField=" + userDefinedField
+        + ", propertyPath=" + propertyPath + ", endpointProperty=" + endpointProperty
+        + ", maxLength=" + maxLength + "]";
   }
 
 }

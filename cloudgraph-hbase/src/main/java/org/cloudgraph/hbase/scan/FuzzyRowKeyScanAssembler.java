@@ -30,7 +30,6 @@ import org.apache.hadoop.hbase.filter.FuzzyRowFilter;
 import org.apache.hadoop.hbase.util.Hash;
 import org.apache.hadoop.hbase.util.Pair;
 import org.cloudgraph.hbase.filter.HBaseFilterAssembler;
-import org.cloudgraph.hbase.key.Hashing;
 import org.cloudgraph.hbase.key.KeySupport;
 import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.cloudgraph.store.mapping.KeyFieldMapping;
@@ -180,10 +179,12 @@ public class FuzzyRowKeyScanAssembler implements RowKeyScanAssembler, FuzzyRowKe
         this.keyBytes.put(graph.getRowKeyFieldDelimiterBytes());
         this.infoBytes.put(delimMask);
       }
-      byte[] tokenValue = this.keySupport.getPredefinedFieldValueBytes(this.rootType, // hashing,
-          preDefinedField);
+      Object keyValue = preDefinedField.getKey(this.rootType);
+      // byte[] tokenValue =
+      // this.keySupport.getEncodedPredefinedField(this.rootType, // hashing,
+      // preDefinedField);
 
-      byte[] paddedTokenValue = preDefinedField.getCodec().encode(tokenValue);
+      byte[] encodedKeyValue = preDefinedField.getCodec().encode(keyValue);
       // if (preDefinedField.isHash()) {
       // paddedTokenValue = this.padding.pad(tokenValue,
       // preDefinedField.getMaxLength(),
@@ -194,8 +195,8 @@ public class FuzzyRowKeyScanAssembler implements RowKeyScanAssembler, FuzzyRowKe
       // preDefinedField.getDataFlavor());
       // }
 
-      this.keyBytes.put(paddedTokenValue);
-      byte[] tokenMask = new byte[tokenValue.length];
+      this.keyBytes.put(encodedKeyValue);
+      byte[] tokenMask = new byte[encodedKeyValue.length];
       for (int j = 0; j < tokenMask.length; j++)
         tokenMask[j] = fixedMaskByte;
       this.infoBytes.put(tokenMask);
@@ -213,9 +214,7 @@ public class FuzzyRowKeyScanAssembler implements RowKeyScanAssembler, FuzzyRowKe
 
       if (fieldConfig instanceof PreDefinedKeyFieldMapping) {
         PreDefinedKeyFieldMapping predefinedConfig = (PreDefinedKeyFieldMapping) fieldConfig;
-        byte[] tokenValue = getPredefinedToken(predefinedConfig);
-
-        byte[] encodedTokenValue = fieldConfig.getCodec().encode(tokenValue);
+        byte[] encodedTokenValue = getEncodedPredefinedToken(predefinedConfig);
         // if (predefinedConfig.isHash()) {
         // paddedTokenValue = this.padding.pad(tokenValue,
         // predefinedConfig.getMaxLength(),
@@ -276,7 +275,7 @@ public class FuzzyRowKeyScanAssembler implements RowKeyScanAssembler, FuzzyRowKe
     }
   }
 
-  private byte[] getPredefinedToken(PreDefinedKeyFieldMapping predefinedConfig) {
+  private byte[] getEncodedPredefinedToken(PreDefinedKeyFieldMapping predefinedConfig) {
     byte[] tokenValue = null;
     switch (predefinedConfig.getName()) {
     case UUID:
@@ -295,7 +294,8 @@ public class FuzzyRowKeyScanAssembler implements RowKeyScanAssembler, FuzzyRowKe
       }
       break;
     default:
-      tokenValue = predefinedConfig.getKeyBytes(this.rootType);
+      Object keyValue = predefinedConfig.getKey(this.rootType);
+      tokenValue = predefinedConfig.getCodec().encode(keyValue);
       break;
     }
     //

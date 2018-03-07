@@ -20,7 +20,6 @@ import java.nio.charset.Charset;
 import javax.xml.namespace.QName;
 
 import org.apache.hadoop.hbase.util.Hash;
-import org.cloudgraph.hbase.key.Hashing;
 import org.cloudgraph.hbase.key.KeySupport;
 //import org.cloudgraph.store.mapping.Padding;
 import org.cloudgraph.store.mapping.StoreMapping;
@@ -57,7 +56,6 @@ public abstract class ScanLiteral {
   protected TableMapping table;
   protected KeySupport keySupport = new KeySupport();
   protected PlasmaProperty property;
-  protected Hashing hashing;
 
   // protected Padding padding;
 

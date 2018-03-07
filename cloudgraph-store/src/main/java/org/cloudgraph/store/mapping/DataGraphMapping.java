@@ -21,14 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.cloudgraph.store.mapping.ColumnKeyField;
-import org.cloudgraph.store.mapping.ColumnKeyModel;
-import org.cloudgraph.store.mapping.DataGraph;
-import org.cloudgraph.store.mapping.PreDefinedFieldName;
-import org.cloudgraph.store.mapping.PredefinedField;
-import org.cloudgraph.store.mapping.Property;
-import org.cloudgraph.store.mapping.RowKeyField;
-import org.cloudgraph.store.mapping.UserDefinedField;
 import org.plasma.runtime.ConfigurationException;
 import org.plasma.runtime.PlasmaRuntime;
 import org.plasma.sdo.core.CoreConstants;

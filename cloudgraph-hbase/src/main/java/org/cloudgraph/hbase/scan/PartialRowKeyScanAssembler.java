@@ -25,7 +25,6 @@ import javax.xml.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.util.Hash;
-import org.cloudgraph.hbase.key.Hashing;
 import org.cloudgraph.hbase.key.KeySupport;
 import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.cloudgraph.store.mapping.KeyFieldMapping;
@@ -282,19 +281,23 @@ public class PartialRowKeyScanAssembler implements RowKeyScanAssembler, PartialR
   }
 
   private byte[] getStartBytes(PreDefinedKeyFieldMapping preDefinedField) {
-    byte[] startValue = null;
+    byte[] encodedStartValue = null;
+    String startValue = null;
     switch (preDefinedField.getName()) {
     case UUID:
       if (this.rootUUID != null) {
-        startValue = this.rootUUID.getBytes(this.charset);
+        startValue = this.rootUUID;
+        encodedStartValue = preDefinedField.getCodec().encode(startValue);
       }
       break;
     default:
-      startValue = this.keySupport.getPredefinedFieldValueBytes(this.rootType, // hashing,
-          preDefinedField);
+      Object value = preDefinedField.getKey(this.rootType);
+      encodedStartValue = preDefinedField.getCodec().encode(value);
+      // paddedStartValue =
+      // this.keySupport.getEncodedPredefinedField(this.rootType, // hashing,
+      // preDefinedField);
       break;
     }
-    byte[] paddedStartValue = preDefinedField.getCodec().encode(startValue);
     // byte[] paddedStartValue = null;
     // if (preDefinedField.isHash()) {
     // paddedStartValue = this.padding.pad(startValue,
@@ -305,25 +308,24 @@ public class PartialRowKeyScanAssembler implements RowKeyScanAssembler, PartialR
     // preDefinedField.getMaxLength(),
     // preDefinedField.getDataFlavor());
     // }
-    return paddedStartValue;
+    return encodedStartValue;
   }
 
   private byte[] getStopBytes(PreDefinedKeyFieldMapping preDefinedField, boolean lastField) {
-    byte[] stopValue = new byte[0];
-    byte[] paddedStopValue = null;
+    byte[] encodedStopValue = null;
     switch (preDefinedField.getName()) {
     case UUID:
       if (this.rootUUID != null) {
-        stopValue = this.rootUUID.getBytes(this.charset);
+        // FIXME: no stop value for a UUID?
+        encodedStopValue = this.rootUUID.getBytes(charset);
       }
       break;
     default:
-      stopValue = this.keySupport.getPredefinedFieldValueBytes(this.rootType, // hashing,
-          preDefinedField);
+      Object value = preDefinedField.getKey(this.rootType);
       if (!lastField)
-        paddedStopValue = preDefinedField.getCodec().encode(stopValue);
+        encodedStopValue = preDefinedField.getCodec().encode(value);
       else
-        paddedStopValue = preDefinedField.getCodec().encodeNext(stopValue);
+        encodedStopValue = preDefinedField.getCodec().encodeNext(value);
       // stopValue =
       // this.keySupport.getPredefinedFieldValueStopBytes(this.rootType,
       // hashing,
@@ -339,7 +341,7 @@ public class PartialRowKeyScanAssembler implements RowKeyScanAssembler, PartialR
     // preDefinedField.getMaxLength(),
     // preDefinedField.getDataFlavor());
     // }
-    return paddedStopValue;
+    return encodedStopValue;
   }
 
   /**

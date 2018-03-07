@@ -15,8 +15,6 @@
  */
 package org.cloudgraph.store.mapping;
 
-import org.cloudgraph.store.mapping.FetchType;
-import org.cloudgraph.store.mapping.ParallelFetchDisposition;
 import org.plasma.query.model.Query;
 
 /**

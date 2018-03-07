@@ -25,7 +25,7 @@ public class MurmurHash implements Hash {
 
   @Override
   public int hash(byte[] bytes) {
-    return hash(bytes, bytes.length, -1);
+    return hash(bytes, 0, bytes.length, -1);
   }
 
   @Override
@@ -35,7 +35,7 @@ public class MurmurHash implements Hash {
 
   @Override
   public int hash(byte[] data, int offset, int length) {
-    return hash(data, 0, length, -1);
+    return hash(data, offset, length, -1);
   }
 
   public int hash(byte[] data, int offset, int length, int seed) {

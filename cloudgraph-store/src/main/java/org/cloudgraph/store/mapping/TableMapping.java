@@ -20,9 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.cloudgraph.store.mapping.ConfigurationProperty;
-import org.cloudgraph.store.mapping.Property;
-import org.cloudgraph.store.mapping.Table;
 import org.plasma.sdo.core.CoreConstants;
 
 /**
