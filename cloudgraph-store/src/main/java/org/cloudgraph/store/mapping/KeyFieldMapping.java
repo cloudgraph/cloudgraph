@@ -15,20 +15,24 @@
  */
 package org.cloudgraph.store.mapping;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
+import java.util.UUID;
 
-import org.cloudgraph.store.mapping.codec.HashingKeyFieldCodec;
+import org.cloudgraph.store.mapping.codec.HashKeyFieldCodec;
 import org.cloudgraph.store.mapping.codec.KeyFieldCodec;
-import org.cloudgraph.store.mapping.codec.LexicographicHashingKeyFieldCodec;
-import org.cloudgraph.store.mapping.codec.MinBytesKeyFieldCodec;
+import org.cloudgraph.store.mapping.codec.LexicoHashKeyFieldCodec;
+import org.cloudgraph.store.mapping.codec.LexicoSimpleKeyFieldCodec;
 import org.cloudgraph.store.mapping.codec.NativeKeyFieldCodec;
-import org.cloudgraph.store.mapping.codec.PaddingKeyFieldCodec;
+import org.cloudgraph.store.mapping.codec.LexicoPadKeyFieldCodec;
 import org.plasma.sdo.DataFlavor;
 import org.plasma.sdo.DataType;
 import org.plasma.sdo.PlasmaType;
 import org.plasma.sdo.core.CoreConstants;
 
 import commonj.sdo.DataObject;
+import commonj.sdo.Type;
 
 /**
  * The configuration for a row or column key.
@@ -43,7 +47,7 @@ public abstract class KeyFieldMapping {
   public static Charset CHARSET = Charset.forName(CoreConstants.UTF8_ENCODING);
   protected DataGraphMapping dataGraph;
   private KeyField field;
-  protected KeyFieldCodec keyFieldWriter;
+  protected KeyFieldCodec keyFieldCodec;
 
   @SuppressWarnings("unused")
   private KeyFieldMapping() {
@@ -94,24 +98,6 @@ public abstract class KeyFieldMapping {
   public abstract Object getKey(PlasmaType type);
 
   /**
-   * Returns a key value as bytes from the given data graph
-   * 
-   * @param dataGraph
-   *          the data graph
-   * @return the key value
-   */
-  // public abstract byte[] getKeyBytes(commonj.sdo.DataGraph dataGraph);
-
-  /**
-   * Returns a key value as bytes from the given data object
-   * 
-   * @param dataObject
-   *          the root data object
-   * @return the key value
-   */
-  // public abstract byte[] getKeyBytes(DataObject dataObject);
-
-  /**
    * Returns the maximum length allowed for this key field.
    * 
    * @return the maximum length allowed for this key field.
@@ -132,44 +118,59 @@ public abstract class KeyFieldMapping {
    * @return the specified key field codec for the field.
    */
   public KeyFieldCodec getCodec() {
-    if (this.keyFieldWriter == null) {
+    if (this.keyFieldCodec == null) {
       switch (this.field.getCodecType()) {
-      case PAD:
-        this.keyFieldWriter = new PaddingKeyFieldCodec(this);
+      case LEXICOPAD:
+        this.keyFieldCodec = new LexicoPadKeyFieldCodec(this);
         break;
       case HASH:
         if (this.dataGraph.getTable().hasHashAlgorithm()) {
           if (this.dataGraph.getTable().getTable().getHashAlgorithm() != null) {
             HashAlgorithm algo = this.dataGraph.getTable().getTable().getHashAlgorithm();
-            this.keyFieldWriter = new HashingKeyFieldCodec(this, algo.getName());
+            this.keyFieldCodec = new HashKeyFieldCodec(this, algo.getName());
           }
         }
-        if (this.keyFieldWriter == null)
-          this.keyFieldWriter = new HashingKeyFieldCodec(this, HashAlgorithmName.JENKINS);
+        if (this.keyFieldCodec == null)
+          this.keyFieldCodec = new HashKeyFieldCodec(this, HashAlgorithmName.JENKINS);
         break;
       case LEXICOHASH:
         if (this.dataGraph.getTable().hasHashAlgorithm()) {
           if (this.dataGraph.getTable().getTable().getHashAlgorithm() != null) {
             HashAlgorithm algo = this.dataGraph.getTable().getTable().getHashAlgorithm();
-            this.keyFieldWriter = new LexicographicHashingKeyFieldCodec(this, algo.getName());
+            this.keyFieldCodec = new LexicoHashKeyFieldCodec(this, algo.getName());
           }
         }
-        if (this.keyFieldWriter == null)
-          this.keyFieldWriter = new LexicographicHashingKeyFieldCodec(this,
-              HashAlgorithmName.JENKINS);
+        if (this.keyFieldCodec == null)
+          this.keyFieldCodec = new LexicoHashKeyFieldCodec(this, HashAlgorithmName.JENKINS);
         break;
       case NATIVE:
-        this.keyFieldWriter = new NativeKeyFieldCodec(this);
+        this.keyFieldCodec = new NativeKeyFieldCodec(this);
         break;
-      case MINBYTE:
-        this.keyFieldWriter = new MinBytesKeyFieldCodec(this);
+      case LEXICOSIMPLE:
+        this.keyFieldCodec = new LexicoSimpleKeyFieldCodec(this);
+        break;
+      case CUSTOM:
+        if (this.field.getCustomCodecClass() == null)
+          throw new StoreMappingException(
+              "custom codec class is required for custom codec mappings - please add a qualified class name for the custom codec");
+        try {
+          Class<?> codecClass = Class.forName(this.field.getCustomCodecClass());
+          Class<?>[] types = { KeyFieldMapping.class };
+          Constructor<?> constructor = codecClass.getConstructor(types);
+          Object[] args = { this };
+          this.keyFieldCodec = (KeyFieldCodec) constructor.newInstance(args);
+        } catch (ClassNotFoundException | NoSuchMethodException | SecurityException
+            | InstantiationException | IllegalAccessException | IllegalArgumentException
+            | InvocationTargetException e) {
+          throw new StoreMappingException(e);
+        }
         break;
       default:
-        this.keyFieldWriter = new PaddingKeyFieldCodec(this);
+        this.keyFieldCodec = new LexicoPadKeyFieldCodec(this);
         break;
       }
     }
-    return this.keyFieldWriter;
+    return this.keyFieldCodec;
   }
 
 }

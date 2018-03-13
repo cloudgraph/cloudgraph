@@ -15,11 +15,9 @@
  */
 package org.cloudgraph.store.mapping.codec;
 
-import org.cloudgraph.common.Bytes;
 import org.cloudgraph.common.hash.Hash;
 import org.cloudgraph.common.hash.JenkinsHash;
 import org.cloudgraph.common.hash.MurmurHash;
-import org.cloudgraph.store.key.KeyFieldOverflowException;
 import org.cloudgraph.store.mapping.HashAlgorithmName;
 import org.cloudgraph.store.mapping.KeyFieldMapping;
 import org.plasma.sdo.DataFlavor;
@@ -29,7 +27,7 @@ import org.plasma.sdo.helper.DataConverter;
 import commonj.sdo.Type;
 
 /**
- * A non-lexicographic {@link KeyFieldCodec} which emits hash value bytes for
+ * A lexicographic {@link KeyFieldCodec} which emits hash value string bytes for
  * the {@link DataType} specific byte representation for the given value.
  * 
  * <p>
@@ -45,18 +43,15 @@ import commonj.sdo.Type;
  * @author Scott Cinnamond
  * @since 1.1.0
  */
-public class HashingKeyFieldCodec implements KeyFieldCodec {
-  protected KeyFieldMapping keyField;
+public class LexicoHashKeyFieldCodec extends DefaultKeyFieldCodec implements KeyFieldCodec {
   protected HashAlgorithmName hashName;
   protected Hash hash;
-
-  @SuppressWarnings("unused")
-  private HashingKeyFieldCodec() {
-  }
+  /** the max integer digits 2B (10 digits) plus the negitive sign */
+  public static final int MAX_LENGTH = 11;
 
   @Override
   public boolean isLexicographic() {
-    return false;
+    return true;
   }
 
   @Override
@@ -64,9 +59,8 @@ public class HashingKeyFieldCodec implements KeyFieldCodec {
     return true;
   }
 
-  public HashingKeyFieldCodec(KeyFieldMapping keyField, HashAlgorithmName hash) {
-    super();
-    this.keyField = keyField;
+  public LexicoHashKeyFieldCodec(KeyFieldMapping keyField, HashAlgorithmName hash) {
+    super(keyField);
     this.hashName = hash;
     switch (this.hashName) {
     case JENKINS:
@@ -85,14 +79,31 @@ public class HashingKeyFieldCodec implements KeyFieldCodec {
   }
 
   @Override
-  public byte[] encode(Object value) throws KeyFieldOverflowException {
-    byte[] bytesValue = DataConverter.INSTANCE.toBytes(this.keyField.getDataType(), value);
-    byte[] hashedBytesValue = Bytes.toBytes(Integer.valueOf(hash.hash(bytesValue)));
-    int delta = this.keyField.getMaxLength() - hashedBytesValue.length;
-    if (delta < 0)
-      throw new KeyFieldOverflowException("value '" + value + "' exceeds capacity for key field: "
-          + this.keyField);
+  public byte[] encode(Object value) {
+    byte[] bytesValue = null;
+    switch (this.keyField.getDataFlavor()) {
+    case other:
+    case temporal:
+      String stringValue = DataConverter.INSTANCE.toString(this.keyField.getDataType(), value);
+      bytesValue = DataConverter.INSTANCE.toBytes(DataType.String, stringValue);
+      break;
+    default:
+      bytesValue = DataConverter.INSTANCE.toBytes(this.keyField.getDataType(), value);
+      break;
+    }
+    int hashValue = Integer.valueOf(hash.hash(bytesValue));
+    String hashedStringValue = DataConverter.INSTANCE.toString(DataType.Int, hashValue);
+
+    byte[] hashedBytesValue = hashedStringValue.getBytes(KeyFieldMapping.CHARSET);
     return hashedBytesValue;
+  }
+
+  @Override
+  public boolean checkEncodeOverflow(byte[] keyValue) {
+    int delta = this.keyField.getMaxLength() - keyValue.length;
+    if (delta < 0)
+      return true;
+    return false;
   }
 
   @Override
@@ -101,22 +112,23 @@ public class HashingKeyFieldCodec implements KeyFieldCodec {
   }
 
   @Override
-  public byte[] encodeNext(Object value) throws KeyFieldOverflowException {
-    throw new CodecException("operation not supported for non-lexicographic codec");
+  public byte[] encodeNext(Object value) {
+    byte[] bytesValue = null;
+    switch (this.keyField.getDataFlavor()) {
+    case other:
+    case temporal:
+      String stringValue = DataConverter.INSTANCE.toString(this.keyField.getDataType(), value);
+      bytesValue = DataConverter.INSTANCE.toBytes(DataType.String, stringValue);
+      break;
+    default:
+      bytesValue = DataConverter.INSTANCE.toBytes(this.keyField.getDataType(), value);
+      break;
+    }
+    int hashValue = Integer.valueOf(hash.hash(bytesValue));
+    hashValue++;
+    String hashedStringValue = DataConverter.INSTANCE.toString(DataType.Int, hashValue);
+    byte[] hashedBytesValue = hashedStringValue.getBytes(KeyFieldMapping.CHARSET);
+    return hashedBytesValue;
   }
 
-  // @Override
-  // public byte[] writeEqualsStartBytes(String key) {
-  // byte[] bytes = key.getBytes(charset);
-  // return Bytes.toBytes(Integer.valueOf(hash.hash(bytes)));
-  // }
-  //
-  // @Override
-  // public byte[] writeEqualsStopBytes(String key) {
-  // byte[] bytes = key.getBytes(charset);
-  // int hashedValue = Integer.valueOf(hash.hash(bytes));
-  // hashedValue++;
-  // return Bytes.toBytes(hashedValue);
-  // }
-  //
 }

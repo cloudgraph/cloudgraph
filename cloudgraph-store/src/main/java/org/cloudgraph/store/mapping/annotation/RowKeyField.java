@@ -10,5 +10,5 @@ import org.cloudgraph.store.mapping.KeyFieldCodecType;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RowKeyField {
-  public KeyFieldCodecType codecType() default KeyFieldCodecType.PAD;
+  public KeyFieldCodecType codecType() default KeyFieldCodecType.LEXICOPAD;
 }

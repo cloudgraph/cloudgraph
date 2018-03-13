@@ -17,6 +17,7 @@ package org.cloudgraph.hbase.graph;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -261,7 +262,7 @@ class ParallelSliceSubgraphTask extends DefaultSubgraphTask implements SubgraphT
         continue; // not found in predicate
 
       // see if this row is locked during fetch, and wait for it
-      Object rowLock = fetchLocks.get(childValues.getRowKey());
+      Object rowLock = fetchLocks.get(Arrays.hashCode(childValues.getRowKey()));
       if (rowLock != null) {
         synchronized (rowLock) {
           try {
@@ -295,13 +296,12 @@ class ParallelSliceSubgraphTask extends DefaultSubgraphTask implements SubgraphT
       // The second thread may be arriving at this node from another
       // property/edge and
       // therefore need to link from another edge above.
-      fetchLocks.put(childValues.getRowKey(), new Object());
+      fetchLocks.put(Arrays.hashCode(childValues.getRowKey()), new Object());
 
       if (log.isDebugEnabled())
         log.debug("fetch external row: " + prop.toString() + " (" + childValues.getRowKey() + ")");
 
-      childResult = fetchGraph(Bytes.toBytes(childValues.getRowKey()), childTableReader,
-          collection.getBaseType());
+      childResult = fetchGraph(childValues.getRowKey(), childTableReader, collection.getBaseType());
 
       if (childResult.containsColumn(rootTableReader.getTableConfig()
           .getDataColumnFamilyNameBytes(), GraphMetaKey.TOMBSTONE.codeAsBytes())) {

@@ -133,12 +133,12 @@ public class CompositeRowKeyReader {
     return contextType;
   }
 
-  public void read(String rowKey) {
+  public void read(byte[] rowKey) {
     this.valueMap.clear();
-    Iterator<String> iter = fastSplit(rowKey, this.rowKeyFieldDelimChar).iterator();
+    Iterator<byte[]> iter = fastSplit(rowKey, this.rowKeyFieldDelimChar).iterator();
     int i = 0;
     while (iter.hasNext()) {
-      String token = iter.next().trim();
+      byte[] token = iter.next();
       KeyFieldMapping keyField = this.graph.getRowKeyFields().get(i);
       if (PreDefinedKeyFieldMapping.class.isAssignableFrom(keyField.getClass())) {
         if (log.isDebugEnabled())
@@ -154,17 +154,9 @@ public class CompositeRowKeyReader {
             + endpointProp + " - continuing");
         continue;
       }
+      Object value = keyField.getCodec().decode(token);
       Endpoint endpoint = this.endpointMap.get(userDefinedKeyField);
-      Object value = null;
-      DataType sdoType = DataType.valueOf(endpointProp.getType().getName());
-      switch (sdoType) {
-      case String: // no conversion
-        value = token;
-        break;
-      default:
-        value = DataConverter.INSTANCE.fromString(endpointProp, token);
-        break;
-      }
+
       KeyValue kv = new KeyValue(endpointProp, value);
       kv.setPropertyPath(userDefinedKeyField.getPropertyPath());
       if (this.valueMap.containsKey(endpoint))
@@ -196,6 +188,29 @@ public class CompositeRowKeyReader {
     }
     if (i > index)
       list.add(str.substring(index, i));
+    return list;
+  }
+
+  private List<byte[]> fastSplit(byte[] chars, char delim) {
+    LinkedList<byte[]> list = new LinkedList<>();
+    int i, index = 0;
+    for (i = 0; i < chars.length; i++) {
+      if (chars[i] == delim) {
+        byte[] token = new byte[i - index];
+        System.arraycopy(chars, index, token, 0, token.length);
+        list.add(token);
+        index = i + 1;
+      }
+    }
+    if (i > index) {
+      if (index > 0) {
+        byte[] token = new byte[i - index];
+        System.arraycopy(chars, index, token, 0, token.length);
+        list.add(token);
+      } else {
+        list.add(chars);
+      }
+    }
     return list;
   }
 

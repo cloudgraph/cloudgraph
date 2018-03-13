@@ -15,7 +15,6 @@
  */
 package org.cloudgraph.store.mapping.codec;
 
-import org.cloudgraph.store.key.KeyFieldOverflowException;
 import org.cloudgraph.store.mapping.KeyFieldMapping;
 import org.plasma.sdo.DataFlavor;
 import org.plasma.sdo.helper.DataConverter;
@@ -23,28 +22,20 @@ import org.plasma.sdo.helper.DataConverter;
 import commonj.sdo.Type;
 
 /**
- * A lexicographic {@link KeyFieldCodec} which simply terminates the encoded
- * data with the lexicographic minimum value.
- * 
- * <p>
- * </p>
- * This codec saves on space by terminating with the minimum added bytes
- * possible.
+ * A lexicographic {@link KeyFieldCodec} which simply encodes data as a
+ * lexicographic string value.
  * 
  * 
- * @see LexicographicCodec
  * @see Type
  * @see DataFlavor
  * 
  * @author Scott Cinnamond
  * @since 1.1.0
  */
-public class MinBytesKeyFieldCodec implements KeyFieldCodec {
-  private KeyFieldMapping keyField;
+public class LexicoSimpleKeyFieldCodec extends DefaultKeyFieldCodec implements KeyFieldCodec {
 
-  public MinBytesKeyFieldCodec(KeyFieldMapping keyField) {
-    super();
-    this.keyField = keyField;
+  public LexicoSimpleKeyFieldCodec(KeyFieldMapping keyField) {
+    super(keyField);
   }
 
   @Override
@@ -58,39 +49,33 @@ public class MinBytesKeyFieldCodec implements KeyFieldCodec {
   }
 
   @Override
-  public byte[] encode(Object value) throws KeyFieldOverflowException {
+  public byte[] encode(Object value) {
+    String stringValue = DataConverter.INSTANCE.toString(keyField.getDataType(), value);
+    byte[] result = stringValue.getBytes(keyField.CHARSET);
+    return result;
+  }
+
+  @Override
+  public boolean checkEncodeOverflow(byte[] keyValue) {
+    int delta = this.keyField.getMaxLength() - keyValue.length;
+    if (delta < 0)
+      return true;
+    return false;
+  }
+
+  @Override
+  public byte[] encodeNext(Object value) {
     String stringValue = DataConverter.INSTANCE.toString(keyField.getDataType(), value);
     byte[] bytesValue = stringValue.getBytes(keyField.CHARSET);
-    int delta = this.keyField.getMaxLength() - bytesValue.length;
-    if (delta < 0)
-      throw new KeyFieldOverflowException("value '" + stringValue
-          + "' exceeds capacity for key field: " + this.keyField);
     byte[] result = new byte[bytesValue.length + 1];
-    System.arraycopy(value, 0, result, 0, bytesValue.length);
+    System.arraycopy(bytesValue, 0, result, 0, bytesValue.length);
     result[bytesValue.length] = Byte.MIN_VALUE;
     return result;
   }
 
   @Override
-  public byte[] encodeNext(Object value) throws KeyFieldOverflowException {
-    String stringValue = DataConverter.INSTANCE.toString(keyField.getDataType(), value);
-    byte[] bytesValue = stringValue.getBytes(keyField.CHARSET);
-    int delta = this.keyField.getMaxLength() - bytesValue.length;
-    if (delta < 0)
-      throw new KeyFieldOverflowException("value '" + stringValue
-          + "' exceeds capacity for key field: " + this.keyField);
-    byte[] result = new byte[bytesValue.length + 1];
-    System.arraycopy(bytesValue, 0, result, 0, bytesValue.length);
-    // one after lexicographic min byte
-    result[bytesValue.length] = Byte.MIN_VALUE + 1;
-    return result;
-  }
-
-  @Override
   public Object decode(byte[] value) {
-    byte[] bytesResult = new byte[value.length - 1];
-    System.arraycopy(value, 0, bytesResult, 0, value.length - 1);
-    String stringResult = new String(bytesResult, keyField.CHARSET);
+    String stringResult = new String(value, keyField.CHARSET);
     Object result = DataConverter.INSTANCE.fromString(keyField.getDataType(), stringResult);
     return result;
   }

@@ -17,6 +17,7 @@ package org.cloudgraph.hbase.io;
 
 import java.util.List;
 
+import org.cloudgraph.hbase.io.DefaultEdgeOperation.KeyBytes;
 import org.plasma.sdo.PlasmaType;
 
 public interface EdgeOperation {
@@ -71,7 +72,7 @@ public interface EdgeOperation {
    * 
    * @return the row keys for entities of the collection.
    */
-  public abstract List<String> getRowKeys();
+  public abstract List<KeyBytes> getRowKeys();
 
   /**
    * Returns true if the collection is external, that is if the type for the

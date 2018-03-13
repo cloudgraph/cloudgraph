@@ -16,7 +16,6 @@
 package org.cloudgraph.store.mapping.codec;
 
 import org.cloudgraph.common.Padding;
-import org.cloudgraph.store.key.KeyFieldOverflowException;
 import org.cloudgraph.store.mapping.KeyFieldMapping;
 import org.plasma.sdo.DataFlavor;
 import org.plasma.sdo.helper.DataConverter;
@@ -43,17 +42,11 @@ import commonj.sdo.Type;
  * @author Scott Cinnamond
  * @since 1.1.0
  */
-public class PaddingKeyFieldCodec implements KeyFieldCodec {
-  private KeyFieldMapping keyField;
+public class LexicoPadKeyFieldCodec extends DefaultKeyFieldCodec implements KeyFieldCodec {
   private Padding padding;
 
-  @SuppressWarnings("unused")
-  private PaddingKeyFieldCodec() {
-  }
-
-  public PaddingKeyFieldCodec(KeyFieldMapping keyField) {
-    super();
-    this.keyField = keyField;
+  public LexicoPadKeyFieldCodec(KeyFieldMapping keyField) {
+    super(keyField);
     this.padding = new Padding(this.keyField.CHARSET);
   }
 
@@ -76,15 +69,18 @@ public class PaddingKeyFieldCodec implements KeyFieldCodec {
   }
 
   @Override
-  public byte[] encode(Object value) throws KeyFieldOverflowException {
+  public byte[] encode(Object value) {
     String stringValue = DataConverter.INSTANCE.toString(this.keyField.getDataType(), value);
     byte[] bytesValue = stringValue.getBytes(this.keyField.CHARSET);
-    int delta = this.getMaxLength() - bytesValue.length;
-    if (delta < 0)
-      throw new KeyFieldOverflowException("value '" + stringValue
-          + "' exceeds capacity for key field: " + this.keyField);
-
     return this.padding.pad(bytesValue, this.getMaxLength(), this.getDataFlavor());
+  }
+
+  @Override
+  public boolean checkEncodeOverflow(byte[] keyValue) {
+    int delta = this.keyField.getMaxLength() - keyValue.length;
+    if (delta < 0)
+      return true;
+    return false;
   }
 
   @Override
@@ -101,13 +97,9 @@ public class PaddingKeyFieldCodec implements KeyFieldCodec {
   }
 
   @Override
-  public byte[] encodeNext(Object value) throws KeyFieldOverflowException {
+  public byte[] encodeNext(Object value) {
     String stringValue = DataConverter.INSTANCE.toString(this.keyField.getDataType(), value);
     byte[] bytesValue = stringValue.getBytes(this.keyField.CHARSET);
-    int delta = this.getMaxLength() - bytesValue.length;
-    if (delta < 0)
-      throw new KeyFieldOverflowException("value '" + stringValue
-          + "' exceeds capacity for key field: " + this.keyField);
     byte[] paddedValue = this.padding.pad(bytesValue, this.getMaxLength(), this.getDataFlavor());
     byte[] result = new byte[paddedValue.length + 1];
     System.arraycopy(paddedValue, 0, result, 0, paddedValue.length);

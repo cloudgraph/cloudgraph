@@ -122,6 +122,10 @@ public class CompositeRowKeyFactory extends ByteBufferKeyFactory implements Grap
 
       Object keyValue = preDefinedField.getKey(type);
       byte[] encodedKeyValue = preDefinedField.getCodec().encode(keyValue);
+      if (preDefinedField.getCodec().checkEncodeOverflow(encodedKeyValue))
+        throw new KeyFieldOverflowException("value '" + keyValue
+            + "' exceeds capacity for key field: " + preDefinedField);
+
       // byte[] tokenValue = this.keySupport.getEncodedPredefinedField(type, //
       // this.hashing,
       // preDefinedField);
@@ -147,6 +151,9 @@ public class CompositeRowKeyFactory extends ByteBufferKeyFactory implements Grap
 
       Object keyValue = fieldConfig.getKey(rootDataObject);
       byte[] encodedKeyValue = fieldConfig.getCodec().encode(keyValue);
+      if (fieldConfig.getCodec().checkEncodeOverflow(encodedKeyValue))
+        throw new KeyFieldOverflowException("value '" + keyValue
+            + "' exceeds capacity for key field: " + fieldConfig);
       this.buf.put(encodedKeyValue);
 
       i++;
@@ -199,6 +206,9 @@ public class CompositeRowKeyFactory extends ByteBufferKeyFactory implements Grap
         encodedKeyValue = fieldConfig.getCodec().encode(fieldValue);
         break;
       }
+      if (fieldConfig.getCodec().checkEncodeOverflow(encodedKeyValue))
+        throw new KeyFieldOverflowException("value '" + fieldValue
+            + "' exceeds capacity for key field: " + fieldConfig);
 
       this.buf.put(encodedKeyValue);
       i++;

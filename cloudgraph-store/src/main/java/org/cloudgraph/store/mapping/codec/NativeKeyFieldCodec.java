@@ -17,7 +17,6 @@ package org.cloudgraph.store.mapping.codec;
 
 import java.math.BigInteger;
 
-import org.cloudgraph.store.key.KeyFieldOverflowException;
 import org.cloudgraph.store.mapping.KeyFieldMapping;
 import org.plasma.sdo.DataFlavor;
 import org.plasma.sdo.DataType;
@@ -30,7 +29,11 @@ import commonj.sdo.Type;
 
 /**
  * A non-lexicographic {@link KeyFieldCodec} which emits the {@link DataType}
- * specific native byte representation for the given value.
+ * specific native byte representation for the given value. This codec cannot be
+ * used for composite row keys, as the native encoding of say integral types may
+ * easily result in, for example one byte out of a 4-byte int being the same
+ * byte/char as the declared delimiter field. Support for certain binary
+ * compatible delimiter characters like '\0' should be explored.
  * 
  * <p>
  * </p>
@@ -38,19 +41,17 @@ import commonj.sdo.Type;
  * possible for the native {@link DataType}.
  * 
  * 
- * @see LexicographicCodec
  * @see Type
  * @see DataFlavor
  * 
  * @author Scott Cinnamond
  * @since 1.1.0
  */
-public class NativeKeyFieldCodec implements KeyFieldCodec {
+public class NativeKeyFieldCodec extends DefaultKeyFieldCodec implements KeyFieldCodec {
   private static final short INCREMENT_INTEGRAL = 1;
-  private KeyFieldMapping keyField;
 
   public NativeKeyFieldCodec(KeyFieldMapping keyField) {
-    super();
+    super(keyField);
     this.keyField = keyField;
   }
 
@@ -65,17 +66,21 @@ public class NativeKeyFieldCodec implements KeyFieldCodec {
   }
 
   @Override
-  public byte[] encode(Object value) throws KeyFieldOverflowException {
+  public byte[] encode(Object value) {
     byte[] bytesValue = DataConverter.INSTANCE.toBytes(this.keyField.getDataType(), value);
-    int delta = this.keyField.getMaxLength() - bytesValue.length;
-    if (delta < 0)
-      throw new KeyFieldOverflowException("value '" + value + "' exceeds capacity for key field: "
-          + this.keyField);
     return bytesValue;
   }
 
   @Override
-  public byte[] encodeNext(Object value) throws KeyFieldOverflowException {
+  public boolean checkEncodeOverflow(byte[] keyValue) {
+    int delta = this.keyField.getMaxLength() - keyValue.length;
+    if (delta < 0)
+      return true;
+    return false;
+  }
+
+  @Override
+  public byte[] encodeNext(Object value) {
     throw new CodecException("operation not supported for non-lexicographic codec");
   }
 

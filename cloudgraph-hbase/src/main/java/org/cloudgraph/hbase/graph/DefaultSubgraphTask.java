@@ -67,7 +67,7 @@ abstract class DefaultSubgraphTask extends DistributedAssembler implements Subgr
    * thread registers a lock for the row, then removes it when the fetch and any
    * subsequent shared processing is complete.
    */
-  protected static Map<String, Object> fetchLocks = new ConcurrentHashMap<String, Object>();
+  protected static Map<Integer, Object> fetchLocks = new ConcurrentHashMap<Integer, Object>();
   protected final CountDownLatch shutdownLatch = new CountDownLatch(1);
   protected ThreadPoolExecutor executorService;
   protected ThreadPoolMappingProps config;

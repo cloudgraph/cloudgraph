@@ -179,20 +179,7 @@ public class CompleteRowKeyAssembler implements RowKeyScanAssembler, CompleteRow
         this.startKey.put(graph.getRowKeyFieldDelimiterBytes());
       }
       Object value = preDefinedField.getKey(this.rootType);
-      // byte[] startValue =
-      // this.keySupport.getEncodedPredefinedField(this.rootType, // hashing,
-      // preDefinedField);
       byte[] encodedValue = preDefinedField.getCodec().encode(value);
-      // byte[] paddedStartValue = null;
-      // if (preDefinedField.isHash()) {
-      // paddedStartValue = this.padding.pad(startValue,
-      // preDefinedField.getMaxLength(),
-      // DataFlavor.integral);
-      // } else {
-      // paddedStartValue = this.padding.pad(startValue,
-      // preDefinedField.getMaxLength(),
-      // preDefinedField.getDataFlavor());
-      // }
 
       this.startKey.put(encodedValue);
     }
@@ -216,18 +203,6 @@ public class CompleteRowKeyAssembler implements RowKeyScanAssembler, CompleteRow
           break;
         }
         byte[] encodedValue = fieldConfig.getCodec().encode(tokenValue);
-        // FIXME: if predefined field is last, need stop bytes
-        // byte[] paddedTokenValue = null;
-        // if (fieldConfig.isHash()) {
-        // tokenValue = hashing.toStringBytes(tokenValue);
-        // paddedTokenValue = this.padding.pad(tokenValue,
-        // predefinedConfig.getMaxLength(),
-        // DataFlavor.integral);
-        // } else {
-        // paddedTokenValue = this.padding.pad(tokenValue,
-        // predefinedConfig.getMaxLength(),
-        // predefinedConfig.getDataFlavor());
-        // }
 
         if (startRowFieldCount > 0)
           this.startKey.put(graph.getRowKeyFieldDelimiterBytes());

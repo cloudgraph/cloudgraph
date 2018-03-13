@@ -47,6 +47,16 @@ public interface KeyFieldCodec {
   public boolean isTransforming();
 
   /**
+   * Returns true if the given encoded value will overflow the underlying key
+   * field.
+   * 
+   * @param keyValue
+   * @return true if the given encoded value will overflow the underlying key
+   *         field.
+   */
+  public boolean checkEncodeOverflow(byte[] keyValue);
+
+  /**
    * Returns the encoded bytes representation for the given object or literal
    * value.
    * 
@@ -56,7 +66,7 @@ public interface KeyFieldCodec {
    * @throws KeyFieldOverflowException
    *           if the encoded data exceeds the capacity of the target field
    */
-  public byte[] encode(Object value) throws KeyFieldOverflowException;
+  public byte[] encode(Object value);
 
   /**
    * Returns the object representation for the given encoded bytes value.
@@ -78,5 +88,5 @@ public interface KeyFieldCodec {
    * @throws KeyFieldOverflowException
    *           if the encoded data exceeds the capacity of the target field
    */
-  public byte[] encodeNext(Object value) throws KeyFieldOverflowException;
+  public byte[] encodeNext(Object value);
 }

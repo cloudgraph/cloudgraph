@@ -220,7 +220,8 @@ public class TemporalLiteral extends ScanLiteral implements PartialRowKeyLiteral
 
   @Override
   public byte[] getFuzzyKeyBytes() {
-    if (this.fieldConfig.getCodec().isLexicographic() && !this.fieldConfig.getCodec().isTransforming())
+    if (this.fieldConfig.getCodec().isLexicographic()
+        && !this.fieldConfig.getCodec().isTransforming())
       return getEqualsStartBytes();
     else
       throw new ScanException("cannot create fuzzy scan literal " + "for "

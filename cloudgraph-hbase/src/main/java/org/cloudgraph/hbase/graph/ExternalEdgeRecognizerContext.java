@@ -55,7 +55,7 @@ public class ExternalEdgeRecognizerContext implements EvaluationContext {
     this.rowKeyReader = new CompositeRowKeyReader(contextType);
   }
 
-  public void read(String rowKey) {
+  public void read(byte[] rowKey) {
     this.rowKeyReader.read(rowKey);
     this.rowEvaluatedCompletely = true;
   }

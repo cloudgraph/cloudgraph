@@ -111,7 +111,7 @@ public interface DistributedReader extends DistributedOperation {
 
   public void mapRowReader(long dataObjectSequence, PlasmaType type, RowReader rowReader);
 
-  public void mapRowReader(String rowKey, RowReader rowReader);
+  public void mapRowReader(byte[] rowKey, RowReader rowReader);
 
   /**
    * Returns a list of types associated with the given table operation.

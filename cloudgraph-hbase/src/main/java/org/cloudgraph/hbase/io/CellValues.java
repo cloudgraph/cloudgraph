@@ -42,9 +42,7 @@ import org.apache.hadoop.hbase.util.Bytes;
  */
 public class CellValues {
 
-  private String rowKey;
-  // Note: byte[] uses object identity for equals and hashCode
-  // so can't be an effective map key
+  private byte[] rowKey;
   private Map<String, Map<String, byte[]>> familyMap;
   /**
    * Whether the complete graph selection for context type is found within the
@@ -57,12 +55,12 @@ public class CellValues {
   }
 
   public CellValues(Result row) {
-    this.rowKey = Bytes.toString(row.getRow());
+    this.rowKey = row.getRow();
     this.familyMap = new HashMap<>();
     addCells(row);
   }
 
-  public CellValues(String rowKey) {
+  public CellValues(byte[] rowKey) {
     this.rowKey = rowKey;
     this.familyMap = new HashMap<>();
   }
@@ -124,12 +122,12 @@ public class CellValues {
     this.familyMap.clear();
   }
 
-  public String getRowKey() {
+  public byte[] getRowKey() {
     return rowKey;
   }
 
   public byte[] getRowKeyAsBytes() {
-    return Bytes.toBytes(rowKey);
+    return rowKey;
   }
 
   public void addColumn(KeyValue keyValue) {

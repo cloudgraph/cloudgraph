@@ -16,6 +16,7 @@
 package org.cloudgraph.hbase.io;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -244,8 +245,8 @@ public class DistributedGraphReader implements DistributedReader {
   }
 
   @Override
-  public void mapRowReader(String rowKey, RowReader rowReader) {
-    int key = rowKey.hashCode();
+  public void mapRowReader(byte[] rowKey, RowReader rowReader) {
+    int key = Arrays.hashCode(rowKey);
     RowReader existing = this.rowReaderMap.get(key);
     if (existing != null) {
       // throw new IllegalArgumentException

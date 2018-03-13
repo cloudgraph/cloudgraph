@@ -215,15 +215,6 @@ public class FuzzyRowKeyScanAssembler implements RowKeyScanAssembler, FuzzyRowKe
       if (fieldConfig instanceof PreDefinedKeyFieldMapping) {
         PreDefinedKeyFieldMapping predefinedConfig = (PreDefinedKeyFieldMapping) fieldConfig;
         byte[] encodedTokenValue = getEncodedPredefinedToken(predefinedConfig);
-        // if (predefinedConfig.isHash()) {
-        // paddedTokenValue = this.padding.pad(tokenValue,
-        // predefinedConfig.getMaxLength(),
-        // DataFlavor.integral);
-        // } else {
-        // paddedTokenValue = this.padding.pad(tokenValue,
-        // predefinedConfig.getMaxLength(),
-        // predefinedConfig.getDataFlavor());
-        // }
         this.keyBytes.put(encodedTokenValue);
         byte[] tokenMask = getPredefinedTokenMask(predefinedConfig, encodedTokenValue.length);
         this.infoBytes.put(tokenMask);

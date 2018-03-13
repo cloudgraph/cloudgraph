@@ -526,14 +526,10 @@ public class GraphEdgeWriter extends DefaultEdgeOperation implements EdgeWriter 
     rowWriter.deleteRowData(family, this.countQual);
   }
 
-  private void addRowKey(String rowKey) throws IOException {
-    if (this.rowKeys == null)
-      this.rowKeys = new ArrayList<String>();
-    this.rowKeys.add(rowKey);
-  }
-
   private void addRowKey(byte[] rowKey) throws IOException {
-    addRowKey(new String(rowKey, this.charset));
+    if (this.rowKeys == null)
+      this.rowKeys = new ArrayList<KeyBytes>();
+    this.rowKeys.add(new KeyBytes(rowKey));
   }
 
   private Map<String, PlasmaDataObject> toMap(PlasmaNode dataNode, List<PlasmaEdge> edges) {

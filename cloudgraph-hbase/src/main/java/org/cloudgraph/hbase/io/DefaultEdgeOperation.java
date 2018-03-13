@@ -20,6 +20,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -39,6 +40,8 @@ import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
 import org.plasma.sdo.helper.PlasmaTypeHelper;
 
+import com.google.protobuf.ByteString;
+
 public abstract class DefaultEdgeOperation implements EdgeOperation {
   private static Log log = LogFactory.getLog(DefaultEdgeOperation.class);
 
@@ -57,7 +60,7 @@ public abstract class DefaultEdgeOperation implements EdgeOperation {
   protected String collectionPath;
   protected List<Long> sequences;
   // protected String table;
-  protected List<String> rowKeys;
+  protected List<KeyBytes> rowKeys;
 
   protected byte[] family;
   protected byte[] columnKeyFeildDelim;
@@ -191,7 +194,7 @@ public abstract class DefaultEdgeOperation implements EdgeOperation {
    * @see org.cloudgraph.hbase.io.KeyMeta#getRowKeys()
    */
   @Override
-  public List<String> getRowKeys() {
+  public List<KeyBytes> getRowKeys() {
     return rowKeys;
   }
 
@@ -237,9 +240,9 @@ public abstract class DefaultEdgeOperation implements EdgeOperation {
 
   protected byte[] encodeRowKeys() {
     RowKeys.Builder rowKeysBuilder = RowKeys.newBuilder();
-    for (String key : rowKeys) {
+    for (KeyBytes keyBytes : rowKeys) {
       RowKey.Builder rowKeyBuilder = RowKey.newBuilder();
-      rowKeyBuilder.setKey(key);
+      rowKeyBuilder.setKey(ByteString.copyFrom(keyBytes.getKey()));
       rowKeysBuilder.addRowKey(rowKeyBuilder);
     }
     RowKeys keys = rowKeysBuilder.build();
@@ -268,7 +271,7 @@ public abstract class DefaultEdgeOperation implements EdgeOperation {
       RowKeys keys = result.build();
       this.rowKeys = new ArrayList<>(keys.getRowKeyCount());
       for (RowKey rowKey : keys.getRowKeyList())
-        this.rowKeys.add(rowKey.getKey());
+        this.rowKeys.add(new KeyBytes(rowKey.getKey().toByteArray()));
     } catch (IOException e) {
       throw new StateException(e);
     } finally {
@@ -436,5 +439,40 @@ public abstract class DefaultEdgeOperation implements EdgeOperation {
     StringBuilder buf = new StringBuilder();
     buf.append(this.sourceProp);
     return buf.toString();
+  }
+
+  public class KeyBytes {
+    private byte[] key;
+    private int hashCode;
+
+    public KeyBytes(byte[] key) {
+      super();
+      this.key = key;
+      this.hashCode = Arrays.hashCode(this.key);
+    }
+
+    @Override
+    public int hashCode() {
+      return this.hashCode;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (this == obj)
+        return true;
+      if (obj == null)
+        return false;
+      if (getClass() != obj.getClass())
+        return false;
+      KeyBytes other = (KeyBytes) obj;
+      if (hashCode != other.hashCode)
+        return false;
+      return true;
+    }
+
+    public byte[] getKey() {
+      return key;
+    }
+
   }
 }

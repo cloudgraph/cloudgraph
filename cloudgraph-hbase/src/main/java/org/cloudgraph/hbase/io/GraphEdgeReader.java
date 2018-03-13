@@ -161,9 +161,9 @@ public class GraphEdgeReader extends DefaultEdgeOperation implements EdgeReader 
       subType = this.getSubType();
     CompositeRowKeyReader rowKeyReader = new CompositeRowKeyReader(subType);
     CellConverter cellConverter = new CellConverter(subType, this.tableConfig);
-    for (String rowKey : this.getRowKeys()) {
-      rowKeyReader.read(rowKey);
-      result.add(cellConverter.convert(rowKey, rowKeyReader.getValues()));
+    for (KeyBytes rowKeyBYtes : this.getRowKeys()) {
+      rowKeyReader.read(rowKeyBYtes.getKey());
+      result.add(cellConverter.convert(rowKeyBYtes.getKey(), rowKeyReader.getValues()));
     }
 
     return result;

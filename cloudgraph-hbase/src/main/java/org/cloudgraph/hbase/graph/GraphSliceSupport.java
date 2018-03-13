@@ -47,6 +47,7 @@ import org.cloudgraph.hbase.filter.PredicateFilterAssembler;
 import org.cloudgraph.hbase.filter.PredicateUtil;
 import org.cloudgraph.hbase.filter.StatefullBinaryPrefixColumnFilterAssembler;
 import org.cloudgraph.hbase.io.CellValues;
+import org.cloudgraph.hbase.io.DefaultEdgeOperation.KeyBytes;
 import org.cloudgraph.hbase.io.DistributedGraphReader;
 import org.cloudgraph.hbase.io.DistributedReader;
 import org.cloudgraph.hbase.io.EdgeReader;
@@ -136,7 +137,7 @@ class GraphSliceSupport {
 
     if (log.isDebugEnabled())
       log(where);
-    List<String> graphEvalRowKeys = new ArrayList<>();
+    List<byte[]> graphEvalRowKeys = new ArrayList<>();
     ExternalEdgeRecognizerSyntaxTreeAssembler edgeSyntaxAssembler = new ExternalEdgeRecognizerSyntaxTreeAssembler(
         where, rowReader.getDataGraph(), contextType, rowReader.getRootType());
     Expr edgeRecognizerRootExpr = edgeSyntaxAssembler.getResult();
@@ -150,13 +151,14 @@ class GraphSliceSupport {
         contextType);
     boolean complete = rowKeyModelCompleteSelection(contextType, level,
         edgeRecogniserContext.getEndpoints());
-    for (String rowKey : edgeReader.getRowKeys()) {
-      edgeRecogniserContext.read(rowKey);
+    for (KeyBytes rowKeyBytes : edgeReader.getRowKeys()) {
+      edgeRecogniserContext.read(rowKeyBytes.getKey());
       if (edgeRecognizerRootExpr.evaluate(edgeRecogniserContext)) {
         if (!edgeRecogniserContext.isRowEvaluatedCompletely()) {
-          graphEvalRowKeys.add(rowKey);
+          graphEvalRowKeys.add(rowKeyBytes.getKey());
         } else {
-          CellValues cellValues = cellConverter.convert(rowKey, edgeRecogniserContext.getValues());
+          CellValues cellValues = cellConverter.convert(rowKeyBytes.getKey(),
+              edgeRecogniserContext.getValues());
           cellValues.setCompleteSelection(complete);
           results.add(cellValues);
         }
@@ -196,11 +198,11 @@ class GraphSliceSupport {
     Filter columnFilter = columnFilterAssembler.getFilter();
 
     List<Get> gets = new ArrayList<Get>();
-    for (String rowKey : graphEvalRowKeys) {
+    for (byte[] rowKey : graphEvalRowKeys) {
       // byte[] childRowKey =
       // rowReader.getGraphState().getRowKey(edge.getUuid()); // use local
       // edge UUID
-      Get get = new Get(Bytes.toBytes(rowKey));
+      Get get = new Get(rowKey);
       get.setFilter(columnFilter);
       gets.add(get);
     }
@@ -242,8 +244,7 @@ class GraphSliceSupport {
           log.debug(serializeGraph(assembledGraph));
       }
 
-      String rowKey = new String(resultRow.getRow(), charset);
-      CellValues values = new CellValues(rowKey);
+      CellValues values = new CellValues(resultRow.getRow());
       values.setCompleteSelection(false);
       results.add(values);
       rowIndex++;

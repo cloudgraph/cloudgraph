@@ -236,9 +236,14 @@ which greatly improves query performance.
         <xsd:annotation>
             <xsd:documentation>The settings for one field within a composite row or column key.</xsd:documentation>
         </xsd:annotation>
-        <xsd:attribute name="codecType" type="cloudgraph:KeyFieldCodecType" use="optional" default="pad">
+        <xsd:attribute name="codecType" type="cloudgraph:KeyFieldCodecType" use="optional" default="lexicopad">
             <xsd:annotation>
-                <xsd:documentation>Provides hint for which key field formatter to use for a particular composite key field</xsd:documentation>
+                <xsd:documentation>Provides hint for which key field encoder to use for a particular composite key field</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="customCodecClass" type="xsd:string" use="optional"  >
+            <xsd:annotation>
+                <xsd:documentation>the qualified user supplied codec class name</xsd:documentation>
             </xsd:annotation>
         </xsd:attribute>
     </xsd:complexType>
@@ -254,7 +259,7 @@ which greatly improves query performance.
             <xsd:documentation>Specifies which built in key field codec to use for a particular composite key field</xsd:documentation>
         </xsd:annotation>
         <xsd:restriction base="xsd:string">
-            <xsd:enumeration value="pad">
+            <xsd:enumeration value="lexicopad">
               <xsd:annotation>
                 <xsd:documentation>Indicates a padding codec where keys are padded to support lexicographic
                 ordering for the particular data type. In general String fields are rear padded 
@@ -297,13 +302,19 @@ which greatly improves query performance.
                 </xsd:documentation>
             </xsd:annotation>
             </xsd:enumeration>
-             <xsd:enumeration value="minbyte">
+            <xsd:enumeration value="lexicosimple">
               <xsd:annotation>
-                <xsd:documentation>Indicates key fields are terminated with the minimum value for a
-                    byte facilitating lexicographic ordering and wildcard searches.
+                <xsd:documentation>Indicates key fields of all datatypes are encoded as lexicographic strings.
                 </xsd:documentation>
               </xsd:annotation>
             </xsd:enumeration>
+            <xsd:enumeration value="custom">
+              <xsd:annotation>
+                <xsd:documentation>Indicates key fields are encoded with a user supplied codec.
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:enumeration>
+            
           </xsd:restriction>
     </xsd:simpleType>
           

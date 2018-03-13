@@ -318,7 +318,7 @@
                       <goal>test</goal>
                     </goals>
                     <configuration>
-                        <skip>true</skip>
+                        <skip>false</skip>
                         <additionalClasspathElements>
                             <additionalClasspathElement>${basedir}/src/main/resources</additionalClasspathElement>
                             <additionalClasspathElement>${basedir}/src/test/resources</additionalClasspathElement>
@@ -344,7 +344,7 @@
                       <goal>test</goal>
                     </goals>
                     <configuration>
-                        <skip>true</skip>
+                        <skip>false</skip>
                         <additionalClasspathElements>
                             <additionalClasspathElement>${basedir}/src/main/resources</additionalClasspathElement>
                             <additionalClasspathElement>${basedir}/src/test/resources</additionalClasspathElement>
@@ -366,7 +366,7 @@
                       <goal>test</goal>
                     </goals>
                     <configuration>
-                        <skip>true</skip>
+                        <skip>false</skip>
                         <additionalClasspathElements>
                             <additionalClasspathElement>${basedir}/src/main/resources</additionalClasspathElement>
                             <additionalClasspathElement>${basedir}/src/test/resources</additionalClasspathElement>
@@ -389,7 +389,7 @@
                       <goal>test</goal>
                     </goals>
                     <configuration>
-	                    <skip>true</skip>
+	                    <skip>false</skip>
 	                    <additionalClasspathElements>
 	                        <additionalClasspathElement>${basedir}/src/main/resources</additionalClasspathElement>
 	                        <additionalClasspathElement>${basedir}/src/test/resources</additionalClasspathElement>
@@ -438,7 +438,7 @@
                       <goal>test</goal>
                     </goals>
                     <configuration>
-                        <skip>true</skip>
+                        <skip>false</skip>
                         <additionalClasspathElements>
                             <additionalClasspathElement>${basedir}/src/main/resources</additionalClasspathElement>
                             <additionalClasspathElement>${basedir}/src/test/resources</additionalClasspathElement>
@@ -446,32 +446,6 @@
                         <forkMode>once</forkMode>
                         <systemPropertyVariables>
                             <cloudgraph.configuration>test-padding-codec-store.xml</cloudgraph.configuration>
-                            <plasma.configuration>plasma-config.xml</plasma.configuration>
-                            <log4j.configuration>log4j.properties</log4j.configuration>
-                        </systemPropertyVariables>
-                        <includes>               
-                            <include>**/StringRowKeyGetTest*</include>  
-                             <include>**/StringPartialRowKeyScanTest*</include>     
-                             <include>**/DatePartialRowKeyScanTest*</include>    
-                             <include>**/DateTimePartialRowKeyScanTest*</include>     
-                             <include>**/LongPartialRowKeyScanTest*</include>    
-                        </includes> 
-                    </configuration>
-                  </execution>
-                  <execution>
-                    <id>native-codec-tests</id>
-                    <goals>
-                      <goal>test</goal>
-                    </goals>
-                    <configuration>
-                        <skip>true</skip>
-                        <additionalClasspathElements>
-                            <additionalClasspathElement>${basedir}/src/main/resources</additionalClasspathElement>
-                            <additionalClasspathElement>${basedir}/src/test/resources</additionalClasspathElement>
-                        </additionalClasspathElements>                  
-                        <forkMode>once</forkMode>
-                        <systemPropertyVariables>
-                            <cloudgraph.configuration>test-native-codec-store.xml</cloudgraph.configuration>
                             <plasma.configuration>plasma-config.xml</plasma.configuration>
                             <log4j.configuration>log4j.properties</log4j.configuration>
                         </systemPropertyVariables>
@@ -503,10 +477,6 @@
                         </systemPropertyVariables>
                         <includes>               
                             <include>**/StringRowKeyGetTest*</include>  
-                             <include>**/StringPartialRowKeyScanTest*</include>     
-                             <include>**/DatePartialRowKeyScanTest*</include>    
-                             <include>**/DateTimePartialRowKeyScanTest*</include>     
-                             <include>**/LongPartialRowKeyScanTest*</include>    
                         </includes> 
                     </configuration>
                   </execution>

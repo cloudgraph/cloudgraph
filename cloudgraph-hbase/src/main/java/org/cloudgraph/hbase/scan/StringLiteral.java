@@ -272,7 +272,8 @@ public class StringLiteral extends ScanLiteral implements PartialRowKeyLiteral, 
 
   @Override
   public byte[] getFuzzyKeyBytes() {
-    if (this.fieldConfig.getCodec().isLexicographic() && !this.fieldConfig.getCodec().isTransforming()) {
+    if (this.fieldConfig.getCodec().isLexicographic()
+        && !this.fieldConfig.getCodec().isTransforming()) {
       byte[] keyBytes = this.literal.getBytes(this.charset);
       return this.fieldConfig.getCodec().encode(keyBytes);
     } else

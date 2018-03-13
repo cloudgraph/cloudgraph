@@ -8,6 +8,6 @@ message RowKeys {
 }
 
 message RowKey {
-  required string key = 1;
+  required bytes key = 1;
 }
 

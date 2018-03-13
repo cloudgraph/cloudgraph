@@ -208,13 +208,14 @@ public class IntegralLiteral extends ScanLiteral implements PartialRowKeyLiteral
 
   @Override
   public byte[] getFuzzyKeyBytes() {
-    if (this.fieldConfig.getCodec().isLexicographic() && !this.fieldConfig.getCodec().isTransforming()) {
+    if (this.fieldConfig.getCodec().isLexicographic()
+        && !this.fieldConfig.getCodec().isTransforming()) {
       Object value = this.dataConverter.convert(property.getType(), this.literal);
       String valueStr = this.dataConverter.toString(property.getType(), value);
       byte[] keyBytes = valueStr.getBytes(this.charset);
       return this.fieldConfig.getCodec().encode(keyBytes);
     } else
-      throw new ScanException("cannot fuzzy create scan literal " + "for "
+      throw new ScanException("cannot create fuzzy scan literal " + "for "
           + this.fieldConfig.getCodecType() + " encoded key field with path '"
           + this.fieldConfig.getPropertyPath() + "' within table " + this.table.getName()
           + " for graph root type, " + this.rootType.toString());

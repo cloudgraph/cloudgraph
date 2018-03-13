@@ -293,21 +293,8 @@ public class PartialRowKeyScanAssembler implements RowKeyScanAssembler, PartialR
     default:
       Object value = preDefinedField.getKey(this.rootType);
       encodedStartValue = preDefinedField.getCodec().encode(value);
-      // paddedStartValue =
-      // this.keySupport.getEncodedPredefinedField(this.rootType, // hashing,
-      // preDefinedField);
       break;
     }
-    // byte[] paddedStartValue = null;
-    // if (preDefinedField.isHash()) {
-    // paddedStartValue = this.padding.pad(startValue,
-    // preDefinedField.getMaxLength(),
-    // DataFlavor.integral);
-    // } else {
-    // paddedStartValue = this.padding.pad(startValue,
-    // preDefinedField.getMaxLength(),
-    // preDefinedField.getDataFlavor());
-    // }
     return encodedStartValue;
   }
 
@@ -326,21 +313,8 @@ public class PartialRowKeyScanAssembler implements RowKeyScanAssembler, PartialR
         encodedStopValue = preDefinedField.getCodec().encode(value);
       else
         encodedStopValue = preDefinedField.getCodec().encodeNext(value);
-      // stopValue =
-      // this.keySupport.getPredefinedFieldValueStopBytes(this.rootType,
-      // hashing,
-      // preDefinedField);
       break;
     }
-    // if (preDefinedField.isHash()) {
-    // paddedStopValue = this.padding.pad(stopValue,
-    // preDefinedField.getMaxLength(),
-    // DataFlavor.integral);
-    // } else {
-    // paddedStopValue = this.padding.pad(stopValue,
-    // preDefinedField.getMaxLength(),
-    // preDefinedField.getDataFlavor());
-    // }
     return encodedStopValue;
   }
 

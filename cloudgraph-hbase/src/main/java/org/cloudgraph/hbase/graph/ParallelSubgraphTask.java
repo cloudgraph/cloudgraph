@@ -17,6 +17,7 @@ package org.cloudgraph.hbase.graph;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -262,7 +263,7 @@ class ParallelSubgraphTask extends DefaultSubgraphTask implements SubgraphTask {
     for (CellValues childValues : collection.getRowValues()) {
 
       // see if this row is locked during fetch, and wait for it
-      Object rowLock = fetchLocks.get(childValues.getRowKey());
+      Object rowLock = fetchLocks.get(Arrays.hashCode(childValues.getRowKey()));
       if (rowLock != null) {
         synchronized (rowLock) {
           try {
@@ -296,7 +297,7 @@ class ParallelSubgraphTask extends DefaultSubgraphTask implements SubgraphTask {
       // The second thread may be arriving at this node from another
       // property/edge and
       // therefore need to link from another edge above.
-      fetchLocks.put(childValues.getRowKey(), new Object());
+      fetchLocks.put(Arrays.hashCode(childValues.getRowKey()), new Object());
 
       this.assembleExternalEdge(childValues, collection, childTableReader, target, targetSequence,
           prop, level);
