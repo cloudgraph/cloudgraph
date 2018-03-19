@@ -194,13 +194,13 @@ public class StoreMapping implements Config {
       columnModel.setSequenceDelimiter("@");
       dataGraph.setColumnKeyModel(columnModel);
       ColumnKeyField pkgColKeyField = new ColumnKeyField();
-      pkgColKeyField.setName(PreDefinedFieldName.PKG);
+      pkgColKeyField.setName(MetaFieldName.PKG);
       columnModel.getColumnKeyFields().add(pkgColKeyField);
       ColumnKeyField typeColKeyField = new ColumnKeyField();
-      typeColKeyField.setName(PreDefinedFieldName.TYPE);
+      typeColKeyField.setName(MetaFieldName.TYPE);
       columnModel.getColumnKeyFields().add(typeColKeyField);
       ColumnKeyField propColKeyField = new ColumnKeyField();
-      propColKeyField.setName(PreDefinedFieldName.PROPERTY);
+      propColKeyField.setName(MetaFieldName.PROPERTY);
       columnModel.getColumnKeyFields().add(propColKeyField);
 
       RowKeyModel rowKeyModel = new RowKeyModel();
@@ -215,8 +215,8 @@ public class StoreMapping implements Config {
         if (rowKeyFieldAnnot != null) {
           RowKeyField rowKeyField = new RowKeyField();
           rowKeyModel.getRowKeyFields().add(rowKeyField);
-          UserDefinedField userDefinedField = new UserDefinedField();
-          rowKeyField.setUserDefinedField(userDefinedField);
+          DataField userDefinedField = new DataField();
+          rowKeyField.setDataField(userDefinedField);
           userDefinedField.setPath(field.getName());
 
           userDefinedField.setCodecType(rowKeyFieldAnnot.codecType());

@@ -31,8 +31,8 @@ import org.cloudgraph.hbase.io.RowWriter;
 import org.cloudgraph.hbase.service.HBaseDataConverter;
 import org.cloudgraph.hbase.service.ServiceContext;
 import org.cloudgraph.store.mapping.DataGraphMapping;
+import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.cloudgraph.store.mapping.StoreMapping;
-import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.plasma.sdo.PlasmaDataObject;
 import org.plasma.sdo.PlasmaEdge;
 import org.plasma.sdo.PlasmaNode;
@@ -467,7 +467,7 @@ abstract class DefaultMutation {
         throw new IllegalAccessException("attempt to modify read-only property, " + type.getURI()
             + "#" + type.getName() + "." + property.getName());
 
-      UserDefinedRowKeyFieldMapping userDefinedField = dataGraphConfig
+      DataRowKeyFieldMapping userDefinedField = dataGraphConfig
           .findUserDefinedRowKeyField(property);
       if (userDefinedField != null) {
         throw new IllegalAccessException("attempt to modify row-key property, " + type.getURI()

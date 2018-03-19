@@ -17,10 +17,8 @@ package org.cloudgraph.hbase.scan;
 
 import java.util.Arrays;
 
-import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
-import org.plasma.query.model.RelationalOperator;
+import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.plasma.query.model.RelationalOperatorName;
-import org.plasma.sdo.DataFlavor;
 import org.plasma.sdo.PlasmaType;
 
 /**
@@ -46,7 +44,7 @@ public class StringLiteral extends ScanLiteral implements PartialRowKeyLiteral, 
   public static final byte INCREMENT = Byte.MIN_VALUE;
 
   public StringLiteral(String literal, PlasmaType rootType,
-      RelationalOperatorName relationalOperator, UserDefinedRowKeyFieldMapping fieldConfig) {
+      RelationalOperatorName relationalOperator, DataRowKeyFieldMapping fieldConfig) {
     super(literal, rootType, relationalOperator, fieldConfig);
   }
 
@@ -80,21 +78,6 @@ public class StringLiteral extends ScanLiteral implements PartialRowKeyLiteral, 
   @Override
   public byte[] getEqualsStopBytes() {
     return this.fieldConfig.getCodec().encodeNext(this.literal);
-    // if (fieldConfig.isHash()) {
-    // stopBytes = this.hashing.toStringBytes(stopValueStr,
-    // this.HASH_INCREMENT);
-    // stopBytes = this.padding.pad(stopBytes, this.fieldConfig.getMaxLength(),
-    // DataFlavor.integral);
-    // } else {
-    // byte[] literalBytes = stopValueStr.getBytes(this.charset);
-    // literalBytes = this.padding.pad(literalBytes,
-    // this.fieldConfig.getMaxLength(),
-    // this.fieldConfig.getDataFlavor());
-    // stopBytes = new byte[literalBytes.length + 1];
-    // System.arraycopy(literalBytes, 0, stopBytes, 0, literalBytes.length);
-    // stopBytes[stopBytes.length - 1] = INCREMENT;
-    // }
-    // return stopBytes;
   }
 
   /**
@@ -111,26 +94,6 @@ public class StringLiteral extends ScanLiteral implements PartialRowKeyLiteral, 
   @Override
   public byte[] getGreaterThanStartBytes() {
     return this.fieldConfig.getCodec().encodeNext(this.literal);
-
-    // byte[] startBytes = null;
-    // String startValueStr = this.literal;
-    // if (fieldConfig.isHash()) {
-    // startBytes = this.hashing.toStringBytes(startValueStr,
-    // this.HASH_INCREMENT);
-    // startBytes = this.padding.pad(startBytes,
-    // this.fieldConfig.getMaxLength(),
-    // DataFlavor.integral);
-    // } else {
-    // byte[] literalStartBytes = startValueStr.getBytes(this.charset);
-    // startBytes = new byte[literalStartBytes.length + 1];
-    // System.arraycopy(literalStartBytes, 0, startBytes, 0,
-    // literalStartBytes.length);
-    // startBytes[startBytes.length - 1] = INCREMENT;
-    // startBytes = this.padding.pad(startBytes,
-    // this.fieldConfig.getMaxLength(),
-    // this.fieldConfig.getDataFlavor());
-    // }
-    // return startBytes;
   }
 
   /**
@@ -201,22 +164,6 @@ public class StringLiteral extends ScanLiteral implements PartialRowKeyLiteral, 
     // Note: in HBase the stop row is exclusive, so just use
     // the literal value, no need to decrement it
     return this.fieldConfig.getCodec().encode(this.literal);
-    //
-    //
-    // byte[] stopBytes = null;
-    // String stopValueStr = this.literal;
-    // // Note: in HBase the stop row is exclusive, so just use
-    // // the literal value, no need to decrement it
-    // if (fieldConfig.isHash()) {
-    // stopBytes = this.hashing.toStringBytes(stopValueStr);
-    // stopBytes = this.padding.pad(stopBytes, this.fieldConfig.getMaxLength(),
-    // DataFlavor.integral);
-    // } else {
-    // stopBytes = stopValueStr.getBytes(this.charset);
-    // stopBytes = this.padding.pad(stopBytes, this.fieldConfig.getMaxLength(),
-    // this.fieldConfig.getDataFlavor());
-    // }
-    // return stopBytes;
   }
 
   /**
@@ -248,57 +195,18 @@ public class StringLiteral extends ScanLiteral implements PartialRowKeyLiteral, 
     // Note: in HBase the stop row is exclusive, so increment
     // stop value to get this row for this field/literal
     return this.fieldConfig.getCodec().encodeNext(this.literal);
-
-    // byte[] stopBytes = null;
-    // String stopValueStr = this.literal;
-    // // Note: in HBase the stop row is exclusive, so increment
-    // // stop value to get this row for this field/literal
-    // if (fieldConfig.isHash()) {
-    // stopBytes = this.hashing.toStringBytes(stopValueStr,
-    // this.HASH_INCREMENT);
-    // stopBytes = this.padding.pad(stopBytes, this.fieldConfig.getMaxLength(),
-    // DataFlavor.integral);
-    // } else {
-    // byte[] literalStopBytes = stopValueStr.getBytes(this.charset);
-    // stopBytes = new byte[literalStopBytes.length + 1];
-    // System.arraycopy(literalStopBytes, 0, stopBytes, 0,
-    // literalStopBytes.length);
-    // stopBytes[stopBytes.length - 1] = INCREMENT;
-    // stopBytes = this.padding.pad(stopBytes, this.fieldConfig.getMaxLength(),
-    // this.fieldConfig.getDataFlavor());
-    // }
-    // return stopBytes;
   }
 
   @Override
   public byte[] getFuzzyKeyBytes() {
     if (this.fieldConfig.getCodec().isLexicographic()
         && !this.fieldConfig.getCodec().isTransforming()) {
-      byte[] keyBytes = this.literal.getBytes(this.charset);
-      return this.fieldConfig.getCodec().encode(keyBytes);
+      return this.fieldConfig.getCodec().encode(this.literal);
     } else
       throw new ScanException("cannot create fuzzy scan literal " + "for "
           + this.fieldConfig.getCodecType() + " encoded key field with path '"
           + this.fieldConfig.getPropertyPath() + "' within table " + this.table.getName()
           + " for graph root type, " + this.rootType.toString());
-
-    //
-    //
-    // String keyValueStr = this.literal;
-    //
-    // if (fieldConfig.isHash()) {
-    // keyBytes = hashing.toStringBytes(keyValueStr);
-    // keyBytes = this.padding.pad(keyBytes, this.fieldConfig.getMaxLength(),
-    // DataFlavor.integral);
-    // } else {
-    // // no need for data-type conversion as
-    // // literal is data-type/data-flavor specific
-    // keyBytes = keyValueStr.getBytes(this.charset);
-    // keyBytes = this.padding.pad(keyBytes, this.fieldConfig.getMaxLength(),
-    // this.fieldConfig.getDataFlavor());
-    // }
-    //
-    // return keyBytes;
   }
 
   @Override

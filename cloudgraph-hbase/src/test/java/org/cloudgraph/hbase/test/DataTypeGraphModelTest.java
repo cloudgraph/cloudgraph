@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -79,7 +80,11 @@ public abstract class DataTypeGraphModelTest extends HBaseTestCase {
   protected Node fillNode(Node node, long rootId, long id, Date now, String namePrefix, long level,
       long sequence) {
     String name = namePrefix + "_" + level + "_" + sequence;
+    return this.fillNodeSimple(node, rootId, id, now, name, level, sequence);
+  }
 
+  protected Node fillNodeSimple(Node node, long rootId, long id, Date now, String name, long level,
+      long sequence) {
     long temp = id - (long) 1357000000000L;
     // log.info("id: " + id);
     // log.info("reduced id: " + temp);
@@ -87,6 +92,7 @@ public abstract class DataTypeGraphModelTest extends HBaseTestCase {
     double doubleId = (double) temp * (double) 0.001;
     float floatId = Double.valueOf(doubleId).floatValue();
 
+    node.setId(UUID.randomUUID().toString());
     node.setRootId(rootId);
     node.setLevelNum(level);
     node.setSequenceNum(sequence);
@@ -146,6 +152,7 @@ public abstract class DataTypeGraphModelTest extends HBaseTestCase {
     node.setStringsField(list);
     node.setUriField(name);
     return node;
+
   }
 
   protected Node fetchGraphFull(long id) {

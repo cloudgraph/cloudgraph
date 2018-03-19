@@ -17,13 +17,10 @@ package org.cloudgraph.hbase.service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.cloudgraph.hbase.graph.HBaseGraphAssembler;
 import org.cloudgraph.hbase.io.TableReader;
 import org.cloudgraph.query.expr.Expr;
 import org.cloudgraph.recognizer.GraphRecognizerContext;

@@ -124,7 +124,7 @@ public class Padding {
         idx++;
       }
     }
-    byte[] result = new byte[idx + 1];
+    byte[] result = new byte[idx];
     System.arraycopy(stripped, 0, result, 0, result.length);
     return result;
   }

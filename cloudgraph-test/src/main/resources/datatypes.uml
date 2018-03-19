@@ -215,6 +215,9 @@
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="be2f4cd9-b357-43ab-a9d7-ecd26ffd7aaf"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="1454401b-6065-4f15-b5b7-296a9ec9b895" value="1"/>
       </ownedAttribute>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="_8Db1cCiSEeirAetiHFkJpA" name="id">
+        <type xmi:type="uml:DataType" href="pathmap://PLASMA_LIBRARIES/PlasmaSDODataTypes_v1_1.uml#plasma-sdo-profile-datatypes-String"/>
+      </ownedAttribute>
     </packagedElement>
     <packagedElement xmi:type="uml:Class" xmi:id="5f085eae-afe1-4fbf-aef6-7da0ace1dbbd" name="IntNode">
       <generalization xmi:type="uml:Generalization" xmi:id="c53c1a65-39fa-42af-96a1-ec2c54775ef5" general="91ceab15-96f3-4697-b01a-9c481f165dc5"/>
@@ -279,7 +282,7 @@
   <PlasmaSDOProfile:SDOAlias xmi:id="_IWUfoNoAEeeZWtyNPsNl6g" base_NamedElement="10298096-e4a7-4dbc-b13a-e6af521f9fdc" physicalName="YMF"/>
   <PlasmaSDOProfile:SDOAlias xmi:id="_IWVGsNoAEeeZWtyNPsNl6g" base_NamedElement="87acdabf-64c2-426c-9750-c19be7685831" physicalName="YMD"/>
   <PlasmaSDOProfile:SDOAlias xmi:id="_IWVtwNoAEeeZWtyNPsNl6g" base_NamedElement="30b377b0-5d48-4969-901c-323be81bd0c8" physicalName="BTF"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="_IWVtwdoAEeeZWtyNPsNl6g" base_NamedElement="26686989-1651-4acc-904b-03d2663744a9" physicalName="ID"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_IWVtwdoAEeeZWtyNPsNl6g" base_NamedElement="26686989-1651-4acc-904b-03d2663744a9" physicalName="RID"/>
   <PlasmaSDOProfile:SDOAlias xmi:id="_IWXi8NoAEeeZWtyNPsNl6g" base_NamedElement="5f085eae-afe1-4fbf-aef6-7da0ace1dbbd" physicalName="INTND"/>
   <PlasmaSDOProfile:SDOAlias xmi:id="_IWYKANoAEeeZWtyNPsNl6g" base_NamedElement="e8446841-cb9c-4e25-b5ac-3b2408fee04e" physicalName="STRND"/>
   <PlasmaSDOProfile:SDOAlias xmi:id="_IWYxENoAEeeZWtyNPsNl6g" base_NamedElement="8f07a441-7327-4bf7-aff4-cd60402bf83a" physicalName="DATATYPES"/>
@@ -287,4 +290,6 @@
   <PlasmaSDOProfile:SDOAlias xmi:id="_IWamQNoAEeeZWtyNPsNl6g" base_NamedElement="edaadd8c-eba5-42ff-9a4e-de2154f0587e" physicalName="DBLND"/>
   <PlasmaSDOProfile:SDOValueConstraint xmi:id="_IWb0YNoAEeeZWtyNPsNl6g" base_Property="0e0e9340-fce0-49a3-a909-b71e1d554074" totalDigits="22" fractionDigits="11"/>
   <PlasmaSDOProfile:SDOKey xmi:id="_IWcbcNoAEeeZWtyNPsNl6g" base_Property="a6a71782-47df-414d-ab7a-3a652a2d5b40" type="primary"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="__le_4CiSEeirAetiHFkJpA" base_NamedElement="_8Db1cCiSEeirAetiHFkJpA" physicalName="ID"/>
+  <PlasmaSDOProfile:SDOValueConstraint xmi:id="__lx60CiSEeirAetiHFkJpA" base_Property="_8Db1cCiSEeirAetiHFkJpA" maxLength="36"/>
 </xmi:XMI>

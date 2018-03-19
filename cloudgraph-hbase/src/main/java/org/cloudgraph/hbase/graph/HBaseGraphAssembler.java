@@ -15,7 +15,6 @@
  */
 package org.cloudgraph.hbase.graph;
 
-import org.apache.hadoop.hbase.client.Result;
 import org.cloudgraph.hbase.io.CellValues;
 import org.plasma.sdo.access.DataGraphAssembler;
 

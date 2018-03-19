@@ -20,7 +20,6 @@ import java.util.Collection;
 import org.cloudgraph.hbase.key.CompositeRowKeyReader;
 import org.cloudgraph.query.expr.EvaluationContext;
 import org.cloudgraph.recognizer.Endpoint;
-import org.cloudgraph.state.RowState;
 import org.cloudgraph.store.key.KeyValue;
 import org.plasma.sdo.PlasmaType;
 

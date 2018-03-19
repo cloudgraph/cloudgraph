@@ -18,10 +18,8 @@ package org.cloudgraph.hbase.scan;
 import java.math.BigDecimal;
 import java.util.Arrays;
 
-import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
-import org.plasma.query.model.RelationalOperator;
+import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.plasma.query.model.RelationalOperatorName;
-import org.plasma.sdo.DataFlavor;
 import org.plasma.sdo.DataType;
 import org.plasma.sdo.PlasmaType;
 
@@ -51,7 +49,7 @@ public class RealLiteral extends ScanLiteral implements PartialRowKeyLiteral, Fu
   public static final BigDecimal INCREMENT_DECIMAL = BigDecimal.valueOf(Double.MIN_VALUE);
 
   public RealLiteral(String literal, PlasmaType rootType,
-      RelationalOperatorName relationalOperator, UserDefinedRowKeyFieldMapping fieldConfig) {
+      RelationalOperatorName relationalOperator, DataRowKeyFieldMapping fieldConfig) {
     super(literal, rootType, relationalOperator, fieldConfig);
   }
 

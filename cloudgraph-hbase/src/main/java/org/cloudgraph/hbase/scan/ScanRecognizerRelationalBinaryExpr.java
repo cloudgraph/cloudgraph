@@ -22,7 +22,7 @@ import org.cloudgraph.query.expr.DefaultRelationalBinaryExpr;
 import org.cloudgraph.query.expr.EvaluationContext;
 import org.cloudgraph.query.expr.RelationalBinaryExpr;
 import org.cloudgraph.store.mapping.DataGraphMapping;
-import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
+import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.plasma.query.model.Literal;
 import org.plasma.query.model.Property;
 import org.plasma.query.model.RelationalOperator;
@@ -81,7 +81,7 @@ public class ScanRecognizerRelationalBinaryExpr extends DefaultRelationalBinaryE
   private ScanLiteral createLiteral(DataGraphMapping graph) {
     // Match the current property to a user defined
     // row key token, if found we can process
-    UserDefinedRowKeyFieldMapping fieldConfig = graph.getUserDefinedRowKeyField(this.propertyPath);
+    DataRowKeyFieldMapping fieldConfig = graph.getUserDefinedRowKeyField(this.propertyPath);
     if (fieldConfig != null) {
       PlasmaProperty property = (PlasmaProperty) fieldConfig.getEndpointProperty();
       ScanLiteralFactory factory = new ScanLiteralFactory();

@@ -18,21 +18,19 @@ package org.cloudgraph.store.mapping;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
-import java.util.UUID;
 
 import org.cloudgraph.store.mapping.codec.HashKeyFieldCodec;
 import org.cloudgraph.store.mapping.codec.KeyFieldCodec;
 import org.cloudgraph.store.mapping.codec.LexicoHashKeyFieldCodec;
+import org.cloudgraph.store.mapping.codec.LexicoPadKeyFieldCodec;
 import org.cloudgraph.store.mapping.codec.LexicoSimpleKeyFieldCodec;
 import org.cloudgraph.store.mapping.codec.NativeKeyFieldCodec;
-import org.cloudgraph.store.mapping.codec.LexicoPadKeyFieldCodec;
 import org.plasma.sdo.DataFlavor;
 import org.plasma.sdo.DataType;
 import org.plasma.sdo.PlasmaType;
 import org.plasma.sdo.core.CoreConstants;
 
 import commonj.sdo.DataObject;
-import commonj.sdo.Type;
 
 /**
  * The configuration for a row or column key.

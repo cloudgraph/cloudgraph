@@ -16,6 +16,7 @@
 package test;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import junit.framework.Test;
 
@@ -64,6 +65,7 @@ public class GraphXmlTest extends CommonTest {
     Type rootType = PlasmaTypeHelper.INSTANCE.getType(Actor.class);
     Actor root = (Actor) dataGraph.createRootObject(rootType);
     root.setName("actor 1");
+    root.setId(UUID.randomUUID().toString());
     Blog blog = root.createBlog();
     blog.setName("my blog");
 
@@ -79,8 +81,10 @@ public class GraphXmlTest extends CommonTest {
     Type rootType = PlasmaTypeHelper.INSTANCE.getType(Actor.class);
     Actor root = (Actor) dataGraph.createRootObject(rootType);
     root.setName("actor 1");
+    root.setId(UUID.randomUUID().toString());
     Blog blog = root.createBlog();
     blog.setName("my blog");
+    blog.setId(UUID.randomUUID().toString());
 
     mapDriver.withInput(new LongWritable(1), new GraphWritable(dataGraph));
     mapDriver.runTest();

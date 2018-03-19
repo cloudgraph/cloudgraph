@@ -19,9 +19,7 @@ import java.util.Collection;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.hbase.util.Bytes;
 import org.cloudgraph.hbase.io.CellValues;
-import org.cloudgraph.hbase.io.DefaultEdgeOperation;
 import org.cloudgraph.hbase.io.GraphRowWriter;
 import org.cloudgraph.hbase.key.CompositeColumnKeyFactory;
 import org.cloudgraph.hbase.service.HBaseDataConverter;

@@ -17,29 +17,11 @@ package org.cloudgraph.hbase.key;
 
 import java.util.List;
 
-import javax.xml.namespace.QName;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.hbase.util.Bytes;
-import org.cloudgraph.common.CloudGraphConstants;
-import org.cloudgraph.common.hash.Hash;
-import org.cloudgraph.common.hash.JenkinsHash;
-import org.cloudgraph.common.hash.MurmurHash;
-import org.cloudgraph.hbase.scan.StringLiteral;
-import org.cloudgraph.hbase.service.CloudGraphContext;
 import org.cloudgraph.store.key.KeyValue;
-import org.cloudgraph.store.mapping.PreDefinedKeyFieldMapping;
-import org.cloudgraph.store.mapping.PredefinedField;
-import org.cloudgraph.store.mapping.StoreMappingException;
-import org.cloudgraph.store.mapping.TableMapping;
-import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
-import org.plasma.sdo.PlasmaDataObject;
+import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.plasma.sdo.PlasmaProperty;
-import org.plasma.sdo.PlasmaType;
-
-import commonj.sdo.DataGraph;
-import commonj.sdo.DataObject;
 
 /**
  * Delegate class supporting composite key generation.
@@ -50,7 +32,7 @@ import commonj.sdo.DataObject;
 public class KeySupport {
   private static final Log log = LogFactory.getLog(CompositeRowKeyFactory.class);
 
-  public KeyValue findKeyValue(UserDefinedRowKeyFieldMapping fieldConfig, List<KeyValue> pairs) {
+  public KeyValue findKeyValue(DataRowKeyFieldMapping fieldConfig, List<KeyValue> pairs) {
 
     PlasmaProperty fieldProperty = fieldConfig.getEndpointProperty();
 

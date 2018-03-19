@@ -16,6 +16,7 @@
 package org.cloudgraph.hbase.graph;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import junit.framework.Test;
 
@@ -200,6 +201,7 @@ public class SocialGraphWideRowTest extends SocialGraphModelTest {
 
     Topic child1 = topic.createChild();
     child1.setName("Chris Christie");
+    child1.setId(UUID.randomUUID().toString());
     child1.setDescription("The new Jersey Governor as relates to Hurricane Sandy");
 
     this.service.commit(fetchedActor.getDataGraph(), "test1");
@@ -230,6 +232,7 @@ public class SocialGraphWideRowTest extends SocialGraphModelTest {
 
     Topic child1 = topic.createChild();
     child1.setName("Chris Christie");
+    child1.setId(UUID.randomUUID().toString());
     child1.setDescription("The new Jersey Governor as relates to Hurricane Sandy");
 
     Topic grandChild1 = child1.createChild();
@@ -291,6 +294,7 @@ public class SocialGraphWideRowTest extends SocialGraphModelTest {
     for (int i = 0; i < added; i++) {
       Photo photo = fetchedActor.createPhoto();
       photo.setName("added photo " + i);
+      photo.setId(UUID.randomUUID().toString());
       photo.setDescription("a description for added photo " + i);
       photo.setContent(photo.getDescription().getBytes());
     }

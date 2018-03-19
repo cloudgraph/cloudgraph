@@ -28,28 +28,27 @@ import commonj.sdo.DataObject;
 import commonj.sdo.Type;
 
 /**
- * Encapsulates logic related to access of a configured user-defined row key
- * field.
+ * Encapsulates logic related to access of a configured row key data field.
  * 
  * @author Scott Cinnamond
  * @since 0.5.1
  */
-public class UserDefinedRowKeyFieldMapping extends KeyFieldMapping {
-  private static Log log = LogFactory.getLog(UserDefinedRowKeyFieldMapping.class);
+public class DataRowKeyFieldMapping extends KeyFieldMapping {
+  private static Log log = LogFactory.getLog(DataRowKeyFieldMapping.class);
 
-  private UserDefinedField userDefinedField;
+  private DataField dataField;
   /** The simple property path with any XPath traversal elements removed */
   private String propertyPath;
   private PlasmaProperty endpointProperty;
   private int maxLength;
 
-  public UserDefinedRowKeyFieldMapping(DataGraphMapping dataGraph,
-      UserDefinedField userDefinedField, int sequenceNum, int totalFields) {
-    super(dataGraph, userDefinedField, sequenceNum, totalFields);
-    this.userDefinedField = userDefinedField;
+  public DataRowKeyFieldMapping(DataGraphMapping dataGraph, DataField dataField, int sequenceNum,
+      int totalFields) {
+    super(dataGraph, dataField, sequenceNum, totalFields);
+    this.dataField = dataField;
 
     try {
-      construct(this.userDefinedField.getPath());
+      construct(this.dataField.getPath());
     } catch (IllegalArgumentException e) {
       throw new StoreMappingException(e);
     } finally {
@@ -258,7 +257,7 @@ public class UserDefinedRowKeyFieldMapping extends KeyFieldMapping {
   }
 
   public boolean equals(Object obj) {
-    UserDefinedRowKeyFieldMapping other = (UserDefinedRowKeyFieldMapping) obj;
+    DataRowKeyFieldMapping other = (DataRowKeyFieldMapping) obj;
     return (this.sequenceNum == other.sequenceNum);
   }
 
@@ -270,12 +269,12 @@ public class UserDefinedRowKeyFieldMapping extends KeyFieldMapping {
     return dataGraph;
   }
 
-  public UserDefinedField getUserToken() {
-    return userDefinedField;
+  public DataField getUserToken() {
+    return dataField;
   }
 
   public String getPathExpression() {
-    return this.userDefinedField.getPath();
+    return this.dataField.getPath();
   }
 
   public String getPropertyPath() {
@@ -285,33 +284,6 @@ public class UserDefinedRowKeyFieldMapping extends KeyFieldMapping {
   public PlasmaProperty getEndpointProperty() {
     return endpointProperty;
   }
-
-  /**
-   * Returns a token value from the given Data Graph
-   * 
-   * @param dataGraph
-   *          the data graph
-   * @return the token value
-   */
-  // @Override
-  // public byte[] getKeyBytes(commonj.sdo.DataGraph dataGraph) {
-  // return this.getKeyBytes(dataGraph.getRootObject());
-  // }
-
-  /**
-   * Returns a user defined key value from the given data object.
-   * 
-   * @param dataObject
-   *          the root data object
-   * @return the token value
-   * @throws UnresolvedPathExpressionException
-   *           if the configured XPath expression resolves to a null value
-   */
-  // @Override
-  // public byte[] getKeyBytes(DataObject dataObject) {
-  // Object key = getKey(dataObject);
-  // return this.getCodec().encode(key);
-  // }
 
   @Override
   public Object getKey(commonj.sdo.DataGraph dataGraph) {
@@ -368,7 +340,7 @@ public class UserDefinedRowKeyFieldMapping extends KeyFieldMapping {
 
   @Override
   public String toString() {
-    return "UserDefinedRowKeyFieldMapping [userDefinedField=" + userDefinedField
+    return DataRowKeyFieldMapping.class.getSimpleName() + " [dataField=" + dataField
         + ", propertyPath=" + propertyPath + ", endpointProperty=" + endpointProperty
         + ", maxLength=" + maxLength + "]";
   }

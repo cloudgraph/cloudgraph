@@ -24,17 +24,15 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.cloudgraph.common.hash.Hash;
 import org.cloudgraph.hbase.key.KeySupport;
 import org.cloudgraph.store.mapping.DataGraphMapping;
+import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.cloudgraph.store.mapping.KeyFieldMapping;
 //import org.cloudgraph.store.mapping.Padding;
-import org.cloudgraph.store.mapping.PreDefinedKeyFieldMapping;
+import org.cloudgraph.store.mapping.MetaKeyFieldMapping;
 import org.cloudgraph.store.mapping.StoreMapping;
 import org.cloudgraph.store.mapping.TableMapping;
-import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.plasma.query.model.Where;
-import org.plasma.sdo.DataFlavor;
 import org.plasma.sdo.PlasmaType;
 
 /**
@@ -43,9 +41,9 @@ import org.plasma.sdo.PlasmaType;
  * 
  * @see org.cloudgraph.store.mapping.DataGraphMapping
  * @see org.cloudgraph.store.mapping.TableMapping
- * @see org.cloudgraph.store.mapping.UserDefinedField
- * @see org.cloudgraph.store.mapping.PredefinedField
- * @see org.cloudgraph.store.mapping.PreDefinedFieldName
+ * @see org.cloudgraph.store.mapping.DataField
+ * @see org.cloudgraph.store.mapping.MetaField
+ * @see org.cloudgraph.store.mapping.MetaFieldName
  * @author Scott Cinnamond
  * @since 0.5.5
  */
@@ -104,8 +102,8 @@ public class CompleteRowKeyAssembler implements RowKeyScanAssembler, CompleteRow
    * Assemble row key scan information based only on any pre-defined row-key
    * fields such as the data graph root type or URI.
    * 
-   * @see org.cloudgraph.store.mapping.PredefinedField
-   * @see org.cloudgraph.store.mapping.PreDefinedFieldName
+   * @see org.cloudgraph.store.mapping.MetaField
+   * @see org.cloudgraph.store.mapping.MetaFieldName
    */
   @Override
   public void assemble() {
@@ -119,8 +117,8 @@ public class CompleteRowKeyAssembler implements RowKeyScanAssembler, CompleteRow
    * 
    * @param literalList
    *          the scan literals
-   * @see org.cloudgraph.store.mapping.PredefinedField
-   * @see org.cloudgraph.store.mapping.PreDefinedFieldName
+   * @see org.cloudgraph.store.mapping.MetaField
+   * @see org.cloudgraph.store.mapping.MetaFieldName
    */
   @Override
   public void assemble(ScanLiterals literals) {
@@ -158,23 +156,21 @@ public class CompleteRowKeyAssembler implements RowKeyScanAssembler, CompleteRow
   }
 
   private void assemblePredefinedFields() {
-    List<PreDefinedKeyFieldMapping> resultFields = new ArrayList<PreDefinedKeyFieldMapping>();
+    List<MetaKeyFieldMapping> resultFields = new ArrayList<MetaKeyFieldMapping>();
 
-    for (PreDefinedKeyFieldMapping field : this.graph.getPreDefinedRowKeyFields()) {
+    for (MetaKeyFieldMapping field : this.graph.getPreDefinedRowKeyFields()) {
       switch (field.getName()) {
       case URI:
       case TYPE:
         resultFields.add(field);
         break;
-      case UUID:
-        break; // not applicable
       default:
       }
     }
 
     int fieldCount = resultFields.size();
     for (int i = 0; i < fieldCount; i++) {
-      PreDefinedKeyFieldMapping preDefinedField = resultFields.get(i);
+      MetaKeyFieldMapping preDefinedField = resultFields.get(i);
       if (startRowFieldCount > 0) {
         this.startKey.put(graph.getRowKeyFieldDelimiterBytes());
       }
@@ -187,17 +183,11 @@ public class CompleteRowKeyAssembler implements RowKeyScanAssembler, CompleteRow
 
   private void assembleLiterals() {
     for (KeyFieldMapping fieldConfig : this.graph.getRowKeyFields()) {
-      if (fieldConfig instanceof PreDefinedKeyFieldMapping) {
-        PreDefinedKeyFieldMapping predefinedConfig = (PreDefinedKeyFieldMapping) fieldConfig;
+      if (fieldConfig instanceof MetaKeyFieldMapping) {
+        MetaKeyFieldMapping predefinedConfig = (MetaKeyFieldMapping) fieldConfig;
 
         Object tokenValue = null;
         switch (predefinedConfig.getName()) {
-        case UUID:
-          if (this.rootUUID != null) {
-            tokenValue = this.rootUUID;
-            break;
-          } else
-            continue;
         default:
           tokenValue = predefinedConfig.getKey(this.rootType);
           break;
@@ -208,8 +198,8 @@ public class CompleteRowKeyAssembler implements RowKeyScanAssembler, CompleteRow
           this.startKey.put(graph.getRowKeyFieldDelimiterBytes());
         this.startKey.put(encodedValue);
         this.startRowFieldCount++;
-      } else if (fieldConfig instanceof UserDefinedRowKeyFieldMapping) {
-        UserDefinedRowKeyFieldMapping userFieldConfig = (UserDefinedRowKeyFieldMapping) fieldConfig;
+      } else if (fieldConfig instanceof DataRowKeyFieldMapping) {
+        DataRowKeyFieldMapping userFieldConfig = (DataRowKeyFieldMapping) fieldConfig;
         List<ScanLiteral> scanLiterals = this.scanLiterals.getLiterals(userFieldConfig);
         if (scanLiterals == null)
           continue;

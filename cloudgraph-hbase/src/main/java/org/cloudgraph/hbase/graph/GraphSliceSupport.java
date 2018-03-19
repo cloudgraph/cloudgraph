@@ -67,7 +67,6 @@ import org.plasma.common.bind.DefaultValidationEventHandler;
 import org.plasma.query.bind.PlasmaQueryDataBinding;
 import org.plasma.query.collector.Selection;
 import org.plasma.query.collector.SelectionCollector;
-import org.plasma.query.model.Query;
 import org.plasma.query.model.Where;
 import org.plasma.sdo.Key;
 import org.plasma.sdo.PlasmaDataGraph;

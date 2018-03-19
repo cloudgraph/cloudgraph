@@ -25,7 +25,7 @@ import org.cloudgraph.query.expr.RelationalBinaryExpr;
 import org.cloudgraph.query.expr.PredicateBinaryExpr;
 import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.cloudgraph.store.mapping.StoreMapping;
-import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
+import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.plasma.sdo.PlasmaType;
 
 /**
@@ -37,9 +37,9 @@ import org.plasma.sdo.PlasmaType;
  * Visits the expression tree and for each expression determines whether the
  * property and its path are represented within the row key model for the
  * current {@link DataGraphMapping graph} by a user defined
- * {@link UserDefinedRowKeyFieldMapping field}. If not, then the property and
- * its {@link Expr expression} are outside the row key and can't be represented
- * by a scan. Therefore a recognizer is required.
+ * {@link DataRowKeyFieldMapping field}. If not, then the property and its
+ * {@link Expr expression} are outside the row key and can't be represented by a
+ * scan. Therefore a recognizer is required.
  * </p>
  * 
  * @author Scott Cinnamond
@@ -48,7 +48,7 @@ import org.plasma.sdo.PlasmaType;
  * @see org.cloudgraph.query.expr.RelationalBinaryExpr
  * @see org.cloudgraph.query.expr.ExprVisitor
  * @see org.cloudgraph.store.mapping.DataGraphMapping
- * @see org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping
+ * @see org.cloudgraph.store.mapping.DataRowKeyFieldMapping
  * @see org.cloudgraph.query.expr.LogicalBinaryExpr
  * @see org.cloudgraph.query.expr.RelationalBinaryExpr
  * @see org.cloudgraph.query.expr.PredicateBinaryExpr
@@ -75,16 +75,14 @@ public class GraphRecognizerDetector implements ExprVisitor {
   public void visit(Expr target, Expr source, int level) {
     if (target instanceof RelationalBinaryExpr) {
       RelationalBinaryExpr expr = (RelationalBinaryExpr) target;
-      UserDefinedRowKeyFieldMapping fieldConfig = graph.getUserDefinedRowKeyField(expr
-          .getPropertyPath());
+      DataRowKeyFieldMapping fieldConfig = graph.getUserDefinedRowKeyField(expr.getPropertyPath());
       if (fieldConfig == null) {
         this.queryRequiresGraphRecognizer = true;
         return;
       }
     } else if (target instanceof PredicateBinaryExpr) {
       PredicateBinaryExpr expr = (PredicateBinaryExpr) target;
-      UserDefinedRowKeyFieldMapping fieldConfig = graph.getUserDefinedRowKeyField(expr
-          .getPropertyPath());
+      DataRowKeyFieldMapping fieldConfig = graph.getUserDefinedRowKeyField(expr.getPropertyPath());
       if (fieldConfig == null) {
         this.queryRequiresGraphRecognizer = true;
         return;

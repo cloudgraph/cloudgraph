@@ -27,11 +27,11 @@ import org.apache.commons.logging.LogFactory;
 import org.cloudgraph.query.expr.Expr;
 import org.cloudgraph.query.expr.ExprVisitor;
 import org.cloudgraph.query.expr.LogicalBinaryExpr;
-import org.cloudgraph.query.expr.RelationalBinaryExpr;
 import org.cloudgraph.query.expr.PredicateBinaryExpr;
+import org.cloudgraph.query.expr.RelationalBinaryExpr;
 import org.cloudgraph.store.mapping.DataGraphMapping;
+import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.cloudgraph.store.mapping.StoreMapping;
-import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.plasma.query.model.LogicalOperatorName;
 import org.plasma.query.model.RelationalOperatorName;
 import org.plasma.sdo.PlasmaProperty;
@@ -70,7 +70,7 @@ import org.plasma.sdo.PlasmaType;
 public class ScanCollector implements ExprVisitor {
 
   private static Log log = LogFactory.getLog(ScanCollector.class);
-  private List<Map<UserDefinedRowKeyFieldMapping, List<ScanLiteral>>> literals = new ArrayList<Map<UserDefinedRowKeyFieldMapping, List<ScanLiteral>>>();
+  private List<Map<DataRowKeyFieldMapping, List<ScanLiteral>>> literals = new ArrayList<Map<DataRowKeyFieldMapping, List<ScanLiteral>>>();
 
   private PlasmaType rootType;
   private DataGraphMapping graph;
@@ -91,7 +91,7 @@ public class ScanCollector implements ExprVisitor {
       this.partialKeyScans = new ArrayList<PartialRowKey>(this.literals.size());
       this.fuzzyKeyScans = new ArrayList<FuzzyRowKey>(this.literals.size());
       this.completeKeys = new ArrayList<CompleteRowKey>(this.literals.size());
-      for (Map<UserDefinedRowKeyFieldMapping, List<ScanLiteral>> existing : this.literals) {
+      for (Map<DataRowKeyFieldMapping, List<ScanLiteral>> existing : this.literals) {
         ScanLiterals scanLiterals = new ScanLiterals();
         for (List<ScanLiteral> literalList : existing.values()) {
           for (ScanLiteral literal : literalList)
@@ -150,8 +150,7 @@ public class ScanCollector implements ExprVisitor {
   }
 
   private void collect(RelationalBinaryExpr target, Expr source) {
-    UserDefinedRowKeyFieldMapping fieldConfig = graph.getUserDefinedRowKeyField(target
-        .getPropertyPath());
+    DataRowKeyFieldMapping fieldConfig = graph.getUserDefinedRowKeyField(target.getPropertyPath());
     if (fieldConfig == null) {
       log.warn("no user defined row-key field for query path '" + target.getPropertyPath()
           + "' - deferring to graph recogniser post processor");
@@ -168,8 +167,7 @@ public class ScanCollector implements ExprVisitor {
   }
 
   private void collect(PredicateBinaryExpr target, Expr source) {
-    UserDefinedRowKeyFieldMapping fieldConfig = graph.getUserDefinedRowKeyField(target
-        .getPropertyPath());
+    DataRowKeyFieldMapping fieldConfig = graph.getUserDefinedRowKeyField(target.getPropertyPath());
     if (fieldConfig == null) {
       log.warn("no user defined row-key field for query path '" + target.getPropertyPath()
           + "' - deferring to graph recogniser post processor");
@@ -196,8 +194,7 @@ public class ScanCollector implements ExprVisitor {
 
   }
 
-  private void collect(ScanLiteral scanLiteral, UserDefinedRowKeyFieldMapping fieldConfig,
-      Expr source) {
+  private void collect(ScanLiteral scanLiteral, DataRowKeyFieldMapping fieldConfig, Expr source) {
     if (source != null) {
       if (source instanceof LogicalBinaryExpr) {
         LogicalBinaryExpr lbe = (LogicalBinaryExpr) source;
@@ -210,10 +207,10 @@ public class ScanCollector implements ExprVisitor {
     }
   }
 
-  private void collect(UserDefinedRowKeyFieldMapping fieldConfig,
+  private void collect(DataRowKeyFieldMapping fieldConfig,
       LogicalOperatorName logicalOperatorContext, ScanLiteral scanLiteral) {
     if (this.literals.size() == 0) {
-      Map<UserDefinedRowKeyFieldMapping, List<ScanLiteral>> map = new HashMap<UserDefinedRowKeyFieldMapping, List<ScanLiteral>>();
+      Map<DataRowKeyFieldMapping, List<ScanLiteral>> map = new HashMap<DataRowKeyFieldMapping, List<ScanLiteral>>();
       List<ScanLiteral> list = new ArrayList<ScanLiteral>(2);
       list.add(scanLiteral);
       map.put(fieldConfig, list);
@@ -221,7 +218,7 @@ public class ScanCollector implements ExprVisitor {
     } else if (this.literals.size() > 0) {
       boolean foundField = false;
 
-      for (Map<UserDefinedRowKeyFieldMapping, List<ScanLiteral>> existingMap : literals) {
+      for (Map<DataRowKeyFieldMapping, List<ScanLiteral>> existingMap : literals) {
         if (logicalOperatorContext == null
             || logicalOperatorContext.ordinal() == LogicalOperatorName.AND.ordinal()) {
           List<ScanLiteral> list = existingMap.get(fieldConfig);
@@ -290,8 +287,8 @@ public class ScanCollector implements ExprVisitor {
 
       if (foundField) {
         // duplicate any map with new literal
-        Map<UserDefinedRowKeyFieldMapping, List<ScanLiteral>> next = newMap(literals.get(0),
-            fieldConfig, scanLiteral);
+        Map<DataRowKeyFieldMapping, List<ScanLiteral>> next = newMap(literals.get(0), fieldConfig,
+            scanLiteral);
         literals.add(next);
       }
     }
@@ -309,11 +306,11 @@ public class ScanCollector implements ExprVisitor {
    *          the literal
    * @return the new map
    */
-  private Map<UserDefinedRowKeyFieldMapping, List<ScanLiteral>> newMap(
-      Map<UserDefinedRowKeyFieldMapping, List<ScanLiteral>> existing,
-      UserDefinedRowKeyFieldMapping fieldConfig, ScanLiteral scanLiteral) {
-    Map<UserDefinedRowKeyFieldMapping, List<ScanLiteral>> next = new HashMap<UserDefinedRowKeyFieldMapping, List<ScanLiteral>>();
-    for (UserDefinedRowKeyFieldMapping config : existing.keySet()) {
+  private Map<DataRowKeyFieldMapping, List<ScanLiteral>> newMap(
+      Map<DataRowKeyFieldMapping, List<ScanLiteral>> existing, DataRowKeyFieldMapping fieldConfig,
+      ScanLiteral scanLiteral) {
+    Map<DataRowKeyFieldMapping, List<ScanLiteral>> next = new HashMap<DataRowKeyFieldMapping, List<ScanLiteral>>();
+    for (DataRowKeyFieldMapping config : existing.keySet()) {
       if (!config.equals(fieldConfig)) {
         next.put(config, existing.get(config));
       } else {

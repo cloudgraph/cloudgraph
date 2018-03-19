@@ -20,7 +20,6 @@ import java.nio.charset.Charset;
 
 import javax.xml.namespace.QName;
 
-import org.cloudgraph.common.hash.Hash;
 import org.cloudgraph.state.RowState;
 import org.cloudgraph.store.mapping.Config;
 import org.cloudgraph.store.mapping.DataGraphMapping;

@@ -23,10 +23,9 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.cloudgraph.store.mapping.DataGraphMapping;
-import org.cloudgraph.store.mapping.PreDefinedKeyFieldMapping;
-import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
+import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
+import org.cloudgraph.store.mapping.MetaKeyFieldMapping;
 import org.plasma.query.Wildcard;
-import org.plasma.query.model.RelationalOperator;
 import org.plasma.query.model.RelationalOperatorName;
 
 /**
@@ -58,7 +57,7 @@ public class ScanLiterals {
     return literalList;
   }
 
-  public List<ScanLiteral> getLiterals(UserDefinedRowKeyFieldMapping fieldConfig) {
+  public List<ScanLiteral> getLiterals(DataRowKeyFieldMapping fieldConfig) {
     return literalMap.get(fieldConfig.getSequenceNum());
   }
 
@@ -94,7 +93,7 @@ public class ScanLiterals {
       }
     }
 
-    UserDefinedRowKeyFieldMapping fieldConfig = scanLiteral.getFieldConfig();
+    DataRowKeyFieldMapping fieldConfig = scanLiteral.getFieldConfig();
     List<ScanLiteral> list = this.literalMap.get(fieldConfig.getSequenceNum());
     if (list == null) {
       list = new ArrayList<ScanLiteral>(4);
@@ -186,20 +185,10 @@ public class ScanLiterals {
         if (scanLiteralCount[i] == 0)
           hasContiguousFieldValues = false;
 
-      for (PreDefinedKeyFieldMapping field : graph.getPreDefinedRowKeyFields()) {
+      for (MetaKeyFieldMapping field : graph.getPreDefinedRowKeyFields()) {
         switch (field.getName()) {
         case URI:
         case TYPE:
-          break;
-        case UUID:
-          // Because the UUID predefined field exists in the row
-          // key definition
-          // and the UUID cannot be used in a query, as it is an
-          // internal value for
-          // a data object and has no accessor/mutator per se,
-          // this makes
-          // a complete/get operation impossible
-          hasContiguousFieldValues = false;
           break;
         default:
         }
@@ -216,7 +205,7 @@ public class ScanLiterals {
     int[] scanLiteralCount = new int[size];
 
     for (int i = 0; i < size; i++) {
-      UserDefinedRowKeyFieldMapping fieldConfig = graph.getUserDefinedRowKeyFields().get(i);
+      DataRowKeyFieldMapping fieldConfig = graph.getUserDefinedRowKeyFields().get(i);
       List<ScanLiteral> list = this.getLiterals(fieldConfig);
       if (list != null)
         scanLiteralCount[i] = list.size();

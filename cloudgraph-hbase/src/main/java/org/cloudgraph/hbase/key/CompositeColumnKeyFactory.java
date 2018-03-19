@@ -21,11 +21,8 @@ import org.cloudgraph.state.RowState;
 import org.cloudgraph.store.key.EdgeMetaKey;
 import org.cloudgraph.store.key.EntityMetaKey;
 import org.cloudgraph.store.key.GraphColumnKeyFactory;
-import org.cloudgraph.store.mapping.ColumnKeyFieldMapping;
-import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.cloudgraph.store.mapping.KeyFieldMapping;
-import org.cloudgraph.store.mapping.PreDefinedFieldName;
-import org.cloudgraph.store.mapping.PreDefinedKeyFieldMapping;
+import org.cloudgraph.store.mapping.MetaKeyFieldMapping;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
 
@@ -128,7 +125,7 @@ public class CompositeColumnKeyFactory extends ByteBufferKeyFactory implements
     for (KeyFieldMapping fieldConfig : this.getGraph().getColumnKeyFields()) {
       if (i > 0)
         this.buf.put(this.getGraph().getColumnKeyFieldDelimiterBytes());
-      PreDefinedKeyFieldMapping predefinedFieldConfig = (PreDefinedKeyFieldMapping) fieldConfig;
+      MetaKeyFieldMapping predefinedFieldConfig = (MetaKeyFieldMapping) fieldConfig;
       byte[] keyValue = predefinedFieldConfig.getKeyBytes(type, metaField);
       this.buf.put(keyValue);
       i++;
@@ -140,7 +137,7 @@ public class CompositeColumnKeyFactory extends ByteBufferKeyFactory implements
     for (KeyFieldMapping fieldConfig : this.getGraph().getColumnKeyFields()) {
       if (i > 0)
         this.buf.put(this.getGraph().getColumnKeyFieldDelimiterBytes());
-      PreDefinedKeyFieldMapping predefinedFieldConfig = (PreDefinedKeyFieldMapping) fieldConfig;
+      MetaKeyFieldMapping predefinedFieldConfig = (MetaKeyFieldMapping) fieldConfig;
       byte[] keyValue = predefinedFieldConfig.getKeyBytes(type, metaField);
       this.buf.put(keyValue);
       i++;
@@ -152,7 +149,7 @@ public class CompositeColumnKeyFactory extends ByteBufferKeyFactory implements
     for (KeyFieldMapping fieldConfig : this.getGraph().getColumnKeyFields()) {
       if (i > 0)
         this.buf.put(this.getGraph().getColumnKeyFieldDelimiterBytes());
-      PreDefinedKeyFieldMapping predefinedFieldConfig = (PreDefinedKeyFieldMapping) fieldConfig;
+      MetaKeyFieldMapping predefinedFieldConfig = (MetaKeyFieldMapping) fieldConfig;
       byte[] keyValue = predefinedFieldConfig.getKeyBytes(type, property);
       this.buf.put(keyValue);
       i++;

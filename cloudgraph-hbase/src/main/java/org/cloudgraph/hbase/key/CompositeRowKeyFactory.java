@@ -25,12 +25,10 @@ import org.cloudgraph.state.RowState;
 import org.cloudgraph.store.key.GraphRowKeyFactory;
 import org.cloudgraph.store.key.KeyFieldOverflowException;
 import org.cloudgraph.store.key.KeyValue;
+import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.cloudgraph.store.mapping.KeyFieldMapping;
 //import org.cloudgraph.store.mapping.Padding;
-import org.cloudgraph.store.mapping.PreDefinedKeyFieldMapping;
-import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
-import org.plasma.sdo.DataFlavor;
-import org.plasma.sdo.PlasmaProperty;
+import org.cloudgraph.store.mapping.MetaKeyFieldMapping;
 import org.plasma.sdo.PlasmaType;
 
 import commonj.sdo.DataGraph;
@@ -114,9 +112,9 @@ public class CompositeRowKeyFactory extends ByteBufferKeyFactory implements Grap
   }
 
   private void create(PlasmaType type) {
-    List<PreDefinedKeyFieldMapping> preDefinedFields = this.getGraph().getPreDefinedRowKeyFields();
+    List<MetaKeyFieldMapping> preDefinedFields = this.getGraph().getPreDefinedRowKeyFields();
     for (int i = 0; i < preDefinedFields.size(); i++) {
-      PreDefinedKeyFieldMapping preDefinedField = preDefinedFields.get(i);
+      MetaKeyFieldMapping preDefinedField = preDefinedFields.get(i);
       if (i > 0)
         this.buf.put(this.getGraph().getRowKeyFieldDelimiterBytes());
 
@@ -182,11 +180,11 @@ public class CompositeRowKeyFactory extends ByteBufferKeyFactory implements Grap
       if (i > 0)
         this.buf.put(this.getGraph().getRowKeyFieldDelimiterBytes());
 
-      if (fieldConfig instanceof PreDefinedKeyFieldMapping) {
-        PreDefinedKeyFieldMapping predefinedConfig = (PreDefinedKeyFieldMapping) fieldConfig;
+      if (fieldConfig instanceof MetaKeyFieldMapping) {
+        MetaKeyFieldMapping predefinedConfig = (MetaKeyFieldMapping) fieldConfig;
         fieldValue = predefinedConfig.getKey(this.getRootType());
       } else {
-        UserDefinedRowKeyFieldMapping userFieldConfig = (UserDefinedRowKeyFieldMapping) fieldConfig;
+        DataRowKeyFieldMapping userFieldConfig = (DataRowKeyFieldMapping) fieldConfig;
         KeyValue keyValue = this.keySupport.findKeyValue(userFieldConfig, values);
 
         if (keyValue != null) {

@@ -57,7 +57,7 @@ public class StringRowKeyGetTest extends StringScanTest {
     long id2 = id + WAIT_TIME;
     Date now2 = new Date(id2);
     Node root2 = this.createGraph(rootId, id2, now2, "BBB");
-    service.commit(root2.getDataGraph(), USERNAME);
+    service.commit(new DataGraph[] { root2.getDataGraph() }, USERNAME);
 
     long id3 = id2 + WAIT_TIME;
     Date now3 = new Date(id3);

@@ -38,12 +38,13 @@ import commonj.sdo.Type;
 public class DataGraphMapping {
   private DataGraph graph;
   private TableMapping table;
-  private Map<PreDefinedFieldName, PreDefinedKeyFieldMapping> preDefinedRowKeyFieldMap = new HashMap<PreDefinedFieldName, PreDefinedKeyFieldMapping>();
-  private List<PreDefinedKeyFieldMapping> preDefinedRowKeyFieldList = new ArrayList<PreDefinedKeyFieldMapping>();
-  private Map<PreDefinedFieldName, ColumnKeyFieldMapping> preDefinedColumnKeyFieldMap = new HashMap<PreDefinedFieldName, ColumnKeyFieldMapping>();
-  private List<UserDefinedRowKeyFieldMapping> userDefinedRowKeyFieldList = new ArrayList<UserDefinedRowKeyFieldMapping>();
-  private Map<String, UserDefinedRowKeyFieldMapping> pathToUserDefinedRowKeyMap = new HashMap<String, UserDefinedRowKeyFieldMapping>();
-  private Map<commonj.sdo.Property, UserDefinedRowKeyFieldMapping> propertyToUserDefinedRowKeyMap = new HashMap<commonj.sdo.Property, UserDefinedRowKeyFieldMapping>();
+  private Map<MetaFieldName, MetaKeyFieldMapping> metaRowKeyFieldMap = new HashMap<MetaFieldName, MetaKeyFieldMapping>();
+  private List<MetaKeyFieldMapping> metaRowKeyFieldList = new ArrayList<MetaKeyFieldMapping>();
+  private Map<MetaFieldName, ColumnKeyFieldMapping> metaColumnKeyFieldMap = new HashMap<MetaFieldName, ColumnKeyFieldMapping>();
+  private List<DataRowKeyFieldMapping> dataRowKeyFieldList = new ArrayList<DataRowKeyFieldMapping>();
+  private Map<String, DataRowKeyFieldMapping> pathToDataRowKeyMap = new HashMap<String, DataRowKeyFieldMapping>();
+  private Map<commonj.sdo.Property, DataRowKeyFieldMapping> propertyToDataRowKeyMap = new HashMap<commonj.sdo.Property, DataRowKeyFieldMapping>();
+  private List<ConstantRowKeyFieldMapping> constantRowKeyFieldList = new ArrayList<ConstantRowKeyFieldMapping>();
   private List<KeyFieldMapping> rowKeyFieldList = new ArrayList<KeyFieldMapping>();
   private List<KeyFieldMapping> columnKeyFieldList = new ArrayList<KeyFieldMapping>();
   private Map<String, Property> propertyNameToPropertyMap = new HashMap<String, Property>();
@@ -83,27 +84,32 @@ public class DataGraphMapping {
     int totalRowKeyFields = this.graph.getRowKeyModel().getRowKeyFields().size();
     int seqNum = 1;
     for (RowKeyField rowKeyField : this.graph.getRowKeyModel().getRowKeyFields()) {
-      if (rowKeyField.getPredefinedField() != null) {
-        PredefinedField predefinedField = rowKeyField.getPredefinedField();
-        PreDefinedKeyFieldMapping predefinedFieldConfig = new PreDefinedKeyFieldMapping(this,
-            predefinedField, seqNum, totalRowKeyFields);
-        preDefinedRowKeyFieldMap.put(predefinedField.getName(), predefinedFieldConfig);
-        preDefinedRowKeyFieldList.add(predefinedFieldConfig);
+      if (rowKeyField.getMetaField() != null) {
+        MetaField predefinedField = rowKeyField.getMetaField();
+        MetaKeyFieldMapping predefinedFieldConfig = new MetaKeyFieldMapping(this, predefinedField,
+            seqNum, totalRowKeyFields);
+        metaRowKeyFieldMap.put(predefinedField.getName(), predefinedFieldConfig);
+        metaRowKeyFieldList.add(predefinedFieldConfig);
         this.rowKeyFieldList.add(predefinedFieldConfig);
-      } else if (rowKeyField.getUserDefinedField() != null) {
-        UserDefinedField userField = rowKeyField.getUserDefinedField();
-        UserDefinedRowKeyFieldMapping userFieldConfig = new UserDefinedRowKeyFieldMapping(this,
-            userField, seqNum, totalRowKeyFields);
-        userDefinedRowKeyFieldList.add(userFieldConfig);
-        if (this.pathToUserDefinedRowKeyMap.get(userFieldConfig.getPropertyPath()) != null)
+      } else if (rowKeyField.getDataField() != null) {
+        DataField userField = rowKeyField.getDataField();
+        DataRowKeyFieldMapping userFieldConfig = new DataRowKeyFieldMapping(this, userField,
+            seqNum, totalRowKeyFields);
+        dataRowKeyFieldList.add(userFieldConfig);
+        if (this.pathToDataRowKeyMap.get(userFieldConfig.getPropertyPath()) != null)
           throw new StoreMappingException("a user defined token path '"
               + userFieldConfig.getPathExpression() + "' already exists with property path '"
               + userFieldConfig.getPropertyPath() + "' for data graph of type, "
               + this.graph.getUri() + "#" + this.graph.getType());
-        this.pathToUserDefinedRowKeyMap.put(userFieldConfig.getPropertyPath(), userFieldConfig);
-        this.propertyToUserDefinedRowKeyMap.put(userFieldConfig.getEndpointProperty(),
-            userFieldConfig);
+        this.pathToDataRowKeyMap.put(userFieldConfig.getPropertyPath(), userFieldConfig);
+        this.propertyToDataRowKeyMap.put(userFieldConfig.getEndpointProperty(), userFieldConfig);
         this.rowKeyFieldList.add(userFieldConfig);
+      } else if (rowKeyField.getConstantField() != null) {
+        ConstantField constantField = rowKeyField.getConstantField();
+        ConstantRowKeyFieldMapping constantFieldConfig = new ConstantRowKeyFieldMapping(this,
+            constantField, seqNum, totalRowKeyFields);
+        constantRowKeyFieldList.add(constantFieldConfig);
+        this.rowKeyFieldList.add(constantFieldConfig);
       } else
         throw new StoreMappingException("unexpected row key model field instance, "
             + rowKeyField.getClass().getName());
@@ -142,7 +148,7 @@ public class DataGraphMapping {
     for (ColumnKeyField ctoken : columnKeyModel.getColumnKeyFields()) {
       ColumnKeyFieldMapping columnFieldConfig = new ColumnKeyFieldMapping(this, ctoken, seqNum,
           totalColumnKeyFields);
-      preDefinedColumnKeyFieldMap.put(ctoken.getName(), columnFieldConfig);
+      metaColumnKeyFieldMap.put(ctoken.getName(), columnFieldConfig);
       this.columnKeyFieldList.add(columnFieldConfig);
       seqNum++;
     }
@@ -168,12 +174,12 @@ public class DataGraphMapping {
     return this.propertyNameToPropertyMap.get(name);
   }
 
-  public List<PreDefinedKeyFieldMapping> getPreDefinedRowKeyFields() {
-    return this.preDefinedRowKeyFieldList;
+  public List<MetaKeyFieldMapping> getPreDefinedRowKeyFields() {
+    return this.metaRowKeyFieldList;
   }
 
-  public PreDefinedKeyFieldMapping getPreDefinedRowKeyField(PreDefinedFieldName name) {
-    return this.preDefinedRowKeyFieldMap.get(name);
+  public MetaKeyFieldMapping getPreDefinedRowKeyField(MetaFieldName name) {
+    return this.metaRowKeyFieldMap.get(name);
   }
 
   public String getRowKeyFieldDelimiter() {
@@ -189,15 +195,15 @@ public class DataGraphMapping {
   }
 
   public boolean hasUserDefinedRowKeyFields() {
-    return this.userDefinedRowKeyFieldList.size() > 0;
+    return this.dataRowKeyFieldList.size() > 0;
   }
 
-  public List<UserDefinedRowKeyFieldMapping> getUserDefinedRowKeyFields() {
-    return userDefinedRowKeyFieldList;
+  public List<DataRowKeyFieldMapping> getUserDefinedRowKeyFields() {
+    return dataRowKeyFieldList;
   }
 
-  public UserDefinedRowKeyFieldMapping getUserDefinedRowKeyField(String path) {
-    return this.pathToUserDefinedRowKeyMap.get(path);
+  public DataRowKeyFieldMapping getUserDefinedRowKeyField(String path) {
+    return this.pathToDataRowKeyMap.get(path);
   }
 
   public List<KeyFieldMapping> getRowKeyFields() {
@@ -218,12 +224,12 @@ public class DataGraphMapping {
    * @return the row key field config for the given path endpoint property, or
    *         null if not exists.
    */
-  public UserDefinedRowKeyFieldMapping findUserDefinedRowKeyField(commonj.sdo.Property property) {
-    return this.propertyToUserDefinedRowKeyMap.get(property);
+  public DataRowKeyFieldMapping findUserDefinedRowKeyField(commonj.sdo.Property property) {
+    return this.propertyToDataRowKeyMap.get(property);
   }
 
-  public ColumnKeyFieldMapping getColumnKeyField(PreDefinedFieldName name) {
-    return preDefinedColumnKeyFieldMap.get(name);
+  public ColumnKeyFieldMapping getColumnKeyField(MetaFieldName name) {
+    return metaColumnKeyFieldMap.get(name);
   }
 
   public String getColumnKeyFieldDelimiter() {

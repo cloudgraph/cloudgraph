@@ -14,16 +14,16 @@
         <DataGraph uri="http://cloudgraph.org/test/datatypes" type="DateTimeNode">
             <RowKeyModel>
                 <RowKeyField>
-                    <PredefinedField name="uri" codecType="lexicopad"/>
+                    <MetaField name="uri" codecType="lexicopad"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <PredefinedField name="type" codecType="lexicopad"/>
+                    <MetaField name="type" codecType="lexicopad"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <UserDefinedField path="rootId" codecType="lexicopad"/>
+                    <DataField path="rootId" codecType="lexicopad"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <UserDefinedField path="dateTimeField" codecType="lexicopad"/>
+                    <DataField path="dateTimeField" codecType="lexicopad"/>
                 </RowKeyField>
             </RowKeyModel>
             
@@ -37,16 +37,16 @@
         <DataGraph uri="http://cloudgraph.org/test/datatypes" type="DateNode">
             <RowKeyModel>
                 <RowKeyField>
-                    <PredefinedField name="uri" codecType="lexicopad"/>
+                    <MetaField name="uri" codecType="lexicopad"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <PredefinedField name="type" codecType="lexicopad"/>
+                    <MetaField name="type" codecType="lexicopad"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <UserDefinedField path="rootId" codecType="lexicopad"/>
+                    <DataField path="rootId" codecType="lexicopad"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <UserDefinedField path="dateField" codecType="lexicopad"/>
+                    <DataField path="dateField" codecType="lexicopad"/>
                 </RowKeyField>
             </RowKeyModel>
             
@@ -64,16 +64,16 @@
          <DataGraph uri="http://cloudgraph.org/test/datatypes" type="IntNode">
             <RowKeyModel>
                 <RowKeyField>
-                    <PredefinedField name="uri" codecType="lexicopad"/>
+                    <MetaField name="uri" codecType="lexicopad"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <PredefinedField name="type" codecType="lexicopad"/>
+                    <MetaField name="type" codecType="lexicopad"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <UserDefinedField path="rootId" codecType="lexicopad"/>
+                    <DataField path="rootId" codecType="lexicopad"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <UserDefinedField path="intField" codecType="lexicopad"/>
+                    <DataField path="intField" codecType="lexicopad"/>
                 </RowKeyField>
             </RowKeyModel>
             
@@ -87,16 +87,16 @@
         <DataGraph uri="http://cloudgraph.org/test/datatypes" type="LongNode">
             <RowKeyModel>
                 <RowKeyField>
-                    <PredefinedField name="uri" codecType="lexicopad"/>
+                    <MetaField name="uri" codecType="lexicopad"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <PredefinedField name="type" codecType="lexicopad"/>
+                    <MetaField name="type" codecType="lexicopad"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <UserDefinedField path="rootId" codecType="lexicopad"/>
+                    <DataField path="rootId" codecType="lexicopad"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <UserDefinedField path="longField" codecType="lexicopad"/>
+                    <DataField path="longField" codecType="lexicopad"/>
                 </RowKeyField>
             </RowKeyModel>
             
@@ -115,17 +115,17 @@
             <RowKeyModel>
                 <!--  
                 <RowKeyField>
-                    <PredefinedField name="uri" />
+                    <MetaField name="uri" />
                 </RowKeyField>
                 <RowKeyField>
-                    <PredefinedField name="type" />
+                    <MetaField name="type" />
                 </RowKeyField>
                 -->
                 <RowKeyField>
-                    <UserDefinedField path="rootId" codecType="lexicopad"/>
+                    <DataField path="rootId" codecType="lexicopad"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <UserDefinedField path="floatField" codecType="lexicopad"/>
+                    <DataField path="floatField" codecType="lexicopad"/>
                 </RowKeyField>
                 
             </RowKeyModel>
@@ -143,16 +143,16 @@
         <DataGraph uri="http://cloudgraph.org/test/datatypes" type="StringNode">
             <RowKeyModel>
                 <RowKeyField>
-                    <PredefinedField name="uri" codecType="lexicopad"/>
+                    <MetaField name="uri" codecType="lexicopad"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <PredefinedField name="type" codecType="lexicopad"/>
+                    <MetaField name="type" codecType="lexicopad"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <UserDefinedField path="rootId" codecType="lexicopad"/>
+                    <DataField path="rootId" codecType="lexicopad"/>
                 </RowKeyField>
                 <RowKeyField>    
-                    <UserDefinedField path="stringField" codecType="lexicopad"/>
+                    <DataField path="stringField" codecType="lexicopad"/>
                 </RowKeyField>
             </RowKeyModel>
             

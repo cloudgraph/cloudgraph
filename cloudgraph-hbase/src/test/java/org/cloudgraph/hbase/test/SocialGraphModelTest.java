@@ -16,6 +16,7 @@
 package org.cloudgraph.hbase.test;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -68,6 +69,7 @@ public abstract class SocialGraphModelTest extends HBaseTestCase {
     String name = usernamePrefix + String.valueOf(System.nanoTime()).substring(10) + "test.com";
     info.actor = createRootActor(name);
     info.actor.setName(name);
+    info.actor.setId(UUID.randomUUID().toString());
     info.actor.setDescription("I'm a guy who likes storms...");
 
     String followerName = "fol" + String.valueOf(System.nanoTime()).substring(10) + "test.com";
@@ -76,22 +78,27 @@ public abstract class SocialGraphModelTest extends HBaseTestCase {
 
     info.follower = (Actor) info.friendship.createSource(Actor.class);
     info.follower.setName(followerName);
+    info.follower.setId(UUID.randomUUID().toString());
     info.follower.setDescription("I'm a follower of the other guy...");
 
     info.weatherBlog = info.actor.createBlog();
     info.weatherBlog.setName("Hurricane Sandy");
+    info.weatherBlog.setId(UUID.randomUUID().toString());
     info.weatherBlog.setDescription("The recent east coast hurricane...");
 
     info.weather = info.weatherBlog.createTopic();
     info.weather.setName("Weather");
+    info.weather.setId(UUID.randomUUID().toString());
     info.weather.setDescription("a topic related to weather");
 
     info.atlanticWeather = info.weather.createChild();
     info.atlanticWeather.setName("Atlantic Weather");
+    info.atlanticWeather.setId(UUID.randomUUID().toString());
     info.atlanticWeather.setDescription("a topic related to weather specific to the Atlantic");
 
     info.atlanticStorms = info.atlanticWeather.createChild();
     info.atlanticStorms.setName("Atlantic Storms");
+    info.atlanticStorms.setId(UUID.randomUUID().toString());
     info.atlanticStorms
         .setDescription("a topic related to stormy weather specific to the Atlantic");
 
@@ -99,21 +106,25 @@ public abstract class SocialGraphModelTest extends HBaseTestCase {
 
     info.electionBlog = info.actor.createBlog();
     info.electionBlog.setName("2012 Presidential Election");
+    info.electionBlog.setId(UUID.randomUUID().toString());
     info.electionBlog.setDescription("Thoughts on the 2012 election...");
 
     info.politics = info.electionBlog.createTopic();
     info.politics.setName("Politics");
+    info.politics.setId(UUID.randomUUID().toString());
     info.politics.setDescription("a topic related to politics");
 
     info.weatherBlog.addTopic(info.politics);
 
     info.photo = info.actor.createPhoto();
     info.photo.setName("sandy1");
+    info.photo.setId(UUID.randomUUID().toString());
     info.photo.setDescription("a photo of hurricane Sandy");
     info.photo.setContent(info.photo.getDescription().getBytes());
 
     info.photo2 = info.actor.createPhoto();
     info.photo2.setName("sandy2");
+    info.photo2.setId(UUID.randomUUID().toString());
     info.photo2.setDescription("another photo of hurricane Sandy");
     info.photo2.setContent(info.photo2.getDescription().getBytes());
 
@@ -126,22 +137,27 @@ public abstract class SocialGraphModelTest extends HBaseTestCase {
     String name = USERNAME_BASE + String.valueOf(System.nanoTime()).substring(10) + "_test.com";
     info.actor = createRootActor(name);
     info.actor.setName(name);
+    info.actor.setId(UUID.randomUUID().toString());
     info.actor.setDescription("I'm a guy who likes storms...");
 
     info.weatherBlog = info.actor.createBlog();
     info.weatherBlog.setName("Hurricane Sandy");
+    info.weatherBlog.setId(UUID.randomUUID().toString());
     info.weatherBlog.setDescription("The recent east coast hurricane...");
 
     info.weather = info.weatherBlog.createTopic();
     info.weather.setName("Weather");
+    info.weather.setId(UUID.randomUUID().toString());
     info.weather.setDescription("a topic related to weather");
 
     info.atlanticWeather = info.weather.createChild();
     info.atlanticWeather.setName("Atlantic Weather");
+    info.atlanticWeather.setId(UUID.randomUUID().toString());
     info.atlanticWeather.setDescription("a topic related to weather specific to the Atlantic");
 
     info.atlanticStorms = info.atlanticWeather.createChild();
     info.atlanticStorms.setName("Atlantic Storms");
+    info.atlanticStorms.setId(UUID.randomUUID().toString());
     info.atlanticStorms
         .setDescription("a topic related to stormy weather specific to the Atlantic");
 
@@ -149,10 +165,12 @@ public abstract class SocialGraphModelTest extends HBaseTestCase {
 
     info.electionBlog = info.actor.createBlog();
     info.electionBlog.setName("2012 Presidential Election");
+    info.electionBlog.setId(UUID.randomUUID().toString());
     info.electionBlog.setDescription("Thoughts on the 2012 election...");
 
     info.politics = info.electionBlog.createTopic();
     info.politics.setName("Politics");
+    info.politics.setId(UUID.randomUUID().toString());
     info.politics.setDescription("a topic related to politics");
 
     // Sandy changed the election so...
@@ -161,11 +179,13 @@ public abstract class SocialGraphModelTest extends HBaseTestCase {
 
     info.photo = info.actor.createPhoto();
     info.photo.setName("sandy1");
+    info.photo.setId(UUID.randomUUID().toString());
     info.photo.setDescription("a photo of hurricane Sandy");
     info.photo.setContent(info.photo.getDescription().getBytes());
 
     info.photo2 = info.actor.createPhoto();
     info.photo2.setName("sandy2");
+    info.photo2.setId(UUID.randomUUID().toString());
     info.photo2.setDescription("another photo of hurricane Sandy");
     info.photo2.setContent(info.photo.getDescription().getBytes());
 
@@ -179,6 +199,7 @@ public abstract class SocialGraphModelTest extends HBaseTestCase {
     Type rootType = PlasmaTypeHelper.INSTANCE.getType(Actor.class);
     Actor root = (Actor) dataGraph.createRootObject(rootType);
     root.setName(name);
+    root.setId(UUID.randomUUID().toString());
 
     return root;
   }
@@ -190,6 +211,7 @@ public abstract class SocialGraphModelTest extends HBaseTestCase {
     Type rootType = PlasmaTypeHelper.INSTANCE.getType(Topic.class);
     Topic root = (Topic) dataGraph.createRootObject(rootType);
     root.setName(name);
+    root.setId(UUID.randomUUID().toString());
 
     return root;
   }

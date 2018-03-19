@@ -24,9 +24,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.cloudgraph.common.CloudGraphConstants;
 import org.cloudgraph.common.concurrent.SubgraphTask;
 import org.cloudgraph.hbase.io.CellValues;
 import org.cloudgraph.hbase.io.DistributedReader;
@@ -34,12 +32,10 @@ import org.cloudgraph.hbase.io.EdgeReader;
 import org.cloudgraph.hbase.io.OperationException;
 import org.cloudgraph.hbase.io.RowReader;
 import org.cloudgraph.hbase.io.TableReader;
-import org.cloudgraph.store.key.EntityMetaKey;
 import org.cloudgraph.store.key.GraphColumnKeyFactory;
 import org.cloudgraph.store.key.GraphMetaKey;
 import org.cloudgraph.store.mapping.TableMapping;
 import org.cloudgraph.store.mapping.ThreadPoolMappingProps;
-import org.cloudgraph.store.service.GraphServiceException;
 //import org.cloudgraph.state.GraphState.Edge;
 import org.plasma.query.collector.Selection;
 import org.plasma.sdo.PlasmaDataObject;
@@ -302,14 +298,14 @@ class ParallelSubgraphTask extends DefaultSubgraphTask implements SubgraphTask {
       this.assembleExternalEdge(childValues, collection, childTableReader, target, targetSequence,
           prop, level);
 
-      rowLock = fetchLocks.remove(childValues.getRowKey());
+      rowLock = fetchLocks.remove(Arrays.hashCode(childValues.getRowKey()));
       if (rowLock != null) {
         synchronized (rowLock) {
           rowLock.notifyAll();
         }
       } else {
-        log.error("expected locked row key '" + childValues.getRowKey() + "' for edgeReader, "
-            + collection);
+        log.error("expected locked row key '" + Bytes.toString(childValues.getRowKey())
+            + "' for edgeReader, " + collection);
       }
     }
   }

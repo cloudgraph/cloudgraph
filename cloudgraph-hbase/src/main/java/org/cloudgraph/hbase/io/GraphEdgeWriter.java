@@ -284,13 +284,13 @@ public class GraphEdgeWriter extends DefaultEdgeOperation implements EdgeWriter 
         throw new RequiredPropertyException("instance property '" + CloudGraphConstants.ROW_KEY
             + "' is required to remove an existing data object, " + oldValue);
       }
-      String oldRowKeyStr = Bytes.toString(oldRowKey);
+
       if (log.isDebugEnabled())
-        log.debug("removing old value " + oldValue + " (key: '" + oldRowKeyStr + "') from "
-            + this.dataObject);
-      if (!this.rowKeys.remove(oldRowKeyStr))
+        log.debug("removing old value " + oldValue + " (key: '" + Bytes.toString(oldRowKey)
+            + "') from " + this.dataObject);
+      if (!this.rowKeys.remove(new KeyBytes(oldRowKey)))
         throw new IllegalStateException("could not remove row key for old value, " + oldValue
-            + " (key: '" + oldRowKeyStr + "')");
+            + " (key: '" + Bytes.toString(oldRowKey) + "')");
       if (this.rowKeys.size() == 0)
         this.collectionDefaultSubType = null; // so can reset w/new type
       // potentially

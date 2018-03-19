@@ -210,7 +210,7 @@ public class DistributedGraphReader implements DistributedReader {
    *           if the given data object is not associated with any row reader.
    */
   public RowReader getRowReader(DataObject dataObject) {
-    RowReader result = rowReaderMap.get(dataObject);
+    RowReader result = rowReaderMap.get(dataObject.hashCode());
     if (result == null)
       throw new IllegalArgumentException("the given data object of type " + dataObject.getType()
           + " is not associated with any row reader");

@@ -16,6 +16,7 @@
 package org.cloudgraph.hbase.graph;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import junit.framework.Test;
 
@@ -123,6 +124,7 @@ public class SocialGraphDistributedTest extends SocialGraphModelTest {
 
     Blog blog = info.follower.createBlog();
     blog.setName("Fiscal Cliff");
+    blog.setId(UUID.randomUUID().toString());
     blog.setDescription("A blog about the fiscal \"cliff\" scenario post election");
     blog.addTopic(info.politics);
     log.debug("comitting blog update");
@@ -230,28 +232,35 @@ public class SocialGraphDistributedTest extends SocialGraphModelTest {
     Topic physics = createRootTopic("Physics");
     Topic plasmaPhysics = physics.createChild();
     plasmaPhysics.setName("Plasma Physics");
+    plasmaPhysics.setId(UUID.randomUUID().toString());
 
     Topic ionization = plasmaPhysics.createChild();
     ionization.setName("Plasma Ionization");
+    ionization.setId(UUID.randomUUID().toString());
 
     Topic magnetization = plasmaPhysics.createChild();
     magnetization.setName("Plasma Magnetization");
+    magnetization.setId(UUID.randomUUID().toString());
 
     Topic darkEnergy = physics.createChild();
     darkEnergy.setName("Dark Energy");
+    darkEnergy.setId(UUID.randomUUID().toString());
 
     Topic darkMatter = physics.createChild();
     darkMatter.setName("Dark Matter");
+    darkMatter.setId(UUID.randomUUID().toString());
 
     this.service.commit(physics.getDataGraph(), "test1");
 
     String name = USERNAME_BASE + String.valueOf(System.currentTimeMillis()) + "_example.com";
     Actor actor = createRootActor(name);
     actor.setName(name);
+    actor.setId(UUID.randomUUID().toString());
     actor.setDescription("Guy who likes plasma physics...");
 
     Blog physicsBlog = actor.createBlog();
     physicsBlog.setName("Thoughts on Plasma Magnetization");
+    physicsBlog.setId(UUID.randomUUID().toString());
     physicsBlog.setDescription("Magnetization parameters and temperature...");
 
     // separate it from its graph so we can
@@ -282,12 +291,16 @@ public class SocialGraphDistributedTest extends SocialGraphModelTest {
 
     Topic igneousRocks = rocks.createChild();
     igneousRocks.setName("Igneous Rocks");
+    igneousRocks.setId(UUID.randomUUID().toString());
+    igneousRocks.setId(UUID.randomUUID().toString());
 
     Topic metamorphicRocks = rocks.createChild();
     metamorphicRocks.setName("Metamorphic Rocks");
+    metamorphicRocks.setId(UUID.randomUUID().toString());
 
     Topic sedementaryRocks = rocks.createChild();
     sedementaryRocks.setName("Sedementary Rocks");
+    sedementaryRocks.setId(UUID.randomUUID().toString());
 
     // commit some topics we can use
     this.service.commit(rocks.getDataGraph(), "test1");
@@ -295,10 +308,12 @@ public class SocialGraphDistributedTest extends SocialGraphModelTest {
     String name = USERNAME_BASE + String.valueOf(System.currentTimeMillis()) + "@example.com";
     Actor actor = createRootActor(name);
     actor.setName(name);
+    actor.setId(UUID.randomUUID().toString());
     actor.setDescription("Guy who likes rocks...");
 
     Blog igneousRocksBlog = actor.createBlog();
     igneousRocksBlog.setName("Thoughts on Igneous Rocks");
+    igneousRocksBlog.setId(UUID.randomUUID().toString());
     igneousRocksBlog.setDescription("Igneous rocks are cool because...");
 
     // separate it from its graph so we can
@@ -316,6 +331,7 @@ public class SocialGraphDistributedTest extends SocialGraphModelTest {
     //
     Blog metamorphicRocksBlog = simpleActor.createBlog();
     metamorphicRocksBlog.setName("Thoughts on Metamorphic Rocks");
+    metamorphicRocksBlog.setId(UUID.randomUUID().toString());
     metamorphicRocksBlog.setDescription("Metamorphic rocks are cool because...");
     // metamorphicRocks.detach();
     // metamorphicRocksBlog.addTopic(metamorphicRocks);
@@ -329,6 +345,7 @@ public class SocialGraphDistributedTest extends SocialGraphModelTest {
 
     Blog sedementaryRocksBlog = simpleActor.createBlog();
     sedementaryRocksBlog.setName("Thoughts on Sedementary Rocks");
+    sedementaryRocksBlog.setId(UUID.randomUUID().toString());
     sedementaryRocksBlog.setDescription("Sedementary rocks are cool because...");
     // sedementaryRocks.detach();
     // sedementaryRocksBlog.addTopic(sedementaryRocks);
@@ -381,6 +398,7 @@ public class SocialGraphDistributedTest extends SocialGraphModelTest {
     for (int i = 0; i < added; i++) {
       Photo photo = fetchedActor.createPhoto();
       photo.setName("added photo " + i);
+      photo.setId(UUID.randomUUID().toString());
       photo.setDescription("a description for added photo " + i);
       photo.setContent(photo.getDescription().getBytes());
     }

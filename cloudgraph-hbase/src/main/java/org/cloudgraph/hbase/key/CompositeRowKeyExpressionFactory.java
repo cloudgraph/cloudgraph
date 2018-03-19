@@ -23,9 +23,9 @@ import org.cloudgraph.state.RowState;
 import org.cloudgraph.store.key.GraphKeyException;
 import org.cloudgraph.store.key.GraphRowKeyExpressionFactory;
 import org.cloudgraph.store.key.KeyValue;
+import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.cloudgraph.store.mapping.KeyFieldMapping;
-import org.cloudgraph.store.mapping.PreDefinedKeyFieldMapping;
-import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
+import org.cloudgraph.store.mapping.MetaKeyFieldMapping;
 import org.plasma.sdo.DataFlavor;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
@@ -77,11 +77,11 @@ public class CompositeRowKeyExpressionFactory extends ByteBufferKeyFactory imple
     for (KeyFieldMapping fieldConfig : this.getGraph().getRowKeyFields()) {
       if (i > 0)
         this.buf.put(this.getGraph().getRowKeyFieldDelimiterBytes());
-      if (fieldConfig instanceof PreDefinedKeyFieldMapping) {
-        PreDefinedKeyFieldMapping predefinedConfig = (PreDefinedKeyFieldMapping) fieldConfig;
+      if (fieldConfig instanceof MetaKeyFieldMapping) {
+        MetaKeyFieldMapping predefinedConfig = (MetaKeyFieldMapping) fieldConfig;
         keyValue = new String(predefinedConfig.getKeyBytes(this.getRootType()), this.charset);
-      } else if (fieldConfig instanceof UserDefinedRowKeyFieldMapping) {
-        UserDefinedRowKeyFieldMapping userFieldConfig = (UserDefinedRowKeyFieldMapping) fieldConfig;
+      } else if (fieldConfig instanceof DataRowKeyFieldMapping) {
+        DataRowKeyFieldMapping userFieldConfig = (DataRowKeyFieldMapping) fieldConfig;
         KeyValue found = findTokenValue(userFieldConfig.getPropertyPath(), values);
         // user has a configuration for this path
         if (found != null) {
@@ -151,11 +151,11 @@ public class CompositeRowKeyExpressionFactory extends ByteBufferKeyFactory imple
     for (KeyFieldMapping fieldConfig : this.getGraph().getRowKeyFields()) {
       if (i > 0)
         this.buf.put(this.getGraph().getRowKeyFieldDelimiterBytes());
-      if (fieldConfig instanceof PreDefinedKeyFieldMapping) {
-        PreDefinedKeyFieldMapping predefinedConfig = (PreDefinedKeyFieldMapping) fieldConfig;
+      if (fieldConfig instanceof MetaKeyFieldMapping) {
+        MetaKeyFieldMapping predefinedConfig = (MetaKeyFieldMapping) fieldConfig;
         keyValue = predefinedConfig.getKeyBytes(this.getRootType());
-      } else if (fieldConfig instanceof UserDefinedRowKeyFieldMapping) {
-        UserDefinedRowKeyFieldMapping userFieldConfig = (UserDefinedRowKeyFieldMapping) fieldConfig;
+      } else if (fieldConfig instanceof DataRowKeyFieldMapping) {
+        DataRowKeyFieldMapping userFieldConfig = (DataRowKeyFieldMapping) fieldConfig;
         KeyValue found = findTokenValue(userFieldConfig.getPropertyPath(), values);
         // user has a configuration for this path
         if (found != null) {

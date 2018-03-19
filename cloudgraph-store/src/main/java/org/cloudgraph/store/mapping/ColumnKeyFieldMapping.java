@@ -21,7 +21,7 @@ package org.cloudgraph.store.mapping;
  * @author Scott Cinnamond
  * @since 0.5.1
  */
-public class ColumnKeyFieldMapping extends PreDefinedKeyFieldMapping {
+public class ColumnKeyFieldMapping extends MetaKeyFieldMapping {
 
   private ColumnKeyField columnKeyField;
 

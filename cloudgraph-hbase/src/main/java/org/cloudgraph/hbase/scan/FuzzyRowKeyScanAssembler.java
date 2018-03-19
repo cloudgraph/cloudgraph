@@ -16,7 +16,6 @@
 package org.cloudgraph.hbase.scan;
 
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,20 +26,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.filter.Filter;
 import org.apache.hadoop.hbase.filter.FuzzyRowFilter;
-import org.apache.hadoop.hbase.util.Hash;
 import org.apache.hadoop.hbase.util.Pair;
 import org.cloudgraph.hbase.filter.HBaseFilterAssembler;
-import org.cloudgraph.hbase.key.KeySupport;
 import org.cloudgraph.store.mapping.DataGraphMapping;
+import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.cloudgraph.store.mapping.KeyFieldMapping;
-//import org.cloudgraph.store.mapping.Padding;
-import org.cloudgraph.store.mapping.PreDefinedKeyFieldMapping;
+import org.cloudgraph.store.mapping.MetaKeyFieldMapping;
 import org.cloudgraph.store.mapping.StoreMapping;
 import org.cloudgraph.store.mapping.TableMapping;
-import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.plasma.query.Wildcard;
 import org.plasma.query.model.Where;
-import org.plasma.sdo.DataFlavor;
 import org.plasma.sdo.PlasmaType;
 
 /**
@@ -50,9 +45,9 @@ import org.plasma.sdo.PlasmaType;
  * 
  * @see org.cloudgraph.store.mapping.DataGraphMapping
  * @see org.cloudgraph.store.mapping.TableMapping
- * @see org.cloudgraph.store.mapping.UserDefinedField
- * @see org.cloudgraph.store.mapping.PredefinedField
- * @see org.cloudgraph.store.mapping.PreDefinedFieldName
+ * @see org.cloudgraph.store.mapping.DataField
+ * @see org.cloudgraph.store.mapping.MetaField
+ * @see org.cloudgraph.store.mapping.MetaFieldName
  * @author Scott Cinnamond
  * @since 0.5.3
  */
@@ -65,17 +60,12 @@ public class FuzzyRowKeyScanAssembler implements RowKeyScanAssembler, FuzzyRowKe
   protected PlasmaType rootType;
   protected DataGraphMapping graph;
   protected TableMapping table;
-  protected KeySupport keySupport = new KeySupport();
-  protected Charset charset;
   protected ScanLiterals scanLiterals;
   protected int fieldCount;
   protected String rootUUID;
   protected byte fixedMaskByte = 0;
   protected byte variableMaskByte = 1;
   protected byte[] delimMask;
-
-  // protected Hashing hashing;
-  // protected Padding padding;
 
   @SuppressWarnings("unused")
   private FuzzyRowKeyScanAssembler() {
@@ -92,14 +82,9 @@ public class FuzzyRowKeyScanAssembler implements RowKeyScanAssembler, FuzzyRowKe
     QName rootTypeQname = this.rootType.getQualifiedName();
     this.graph = StoreMapping.getInstance().getDataGraph(rootTypeQname);
     this.table = StoreMapping.getInstance().getTable(rootTypeQname);
-    this.charset = StoreMapping.getInstance().getCharset();
     this.delimMask = new byte[graph.getRowKeyFieldDelimiterBytes().length];
     for (int i = 0; i < delimMask.length; i++)
       delimMask[i] = fixedMaskByte;
-    // Hash hash = this.keySupport.getHashAlgorithm(this.table);
-    // this.hashing = new Hashing(hash, this.charset);
-    // this.padding = new Padding(this.charset);
-
   }
 
   /**
@@ -120,12 +105,12 @@ public class FuzzyRowKeyScanAssembler implements RowKeyScanAssembler, FuzzyRowKe
    * Assemble row key scan information based only on any pre-defined row-key
    * fields such as the data graph root type or URI.
    * 
-   * @see org.cloudgraph.store.mapping.PredefinedField
-   * @see org.cloudgraph.store.mapping.PreDefinedFieldName
+   * @see org.cloudgraph.store.mapping.MetaField
+   * @see org.cloudgraph.store.mapping.MetaFieldName
    */
   @Override
   public void assemble() {
-    assemblePredefinedFields();
+    assembleMetaFields();
   }
 
   /**
@@ -134,8 +119,8 @@ public class FuzzyRowKeyScanAssembler implements RowKeyScanAssembler, FuzzyRowKe
    * 
    * @param literalList
    *          the scan literals
-   * @see org.cloudgraph.store.mapping.PredefinedField
-   * @see org.cloudgraph.store.mapping.PreDefinedFieldName
+   * @see org.cloudgraph.store.mapping.MetaField
+   * @see org.cloudgraph.store.mapping.MetaFieldName
    */
   @Override
   public void assemble(ScanLiterals literals) {
@@ -170,30 +155,18 @@ public class FuzzyRowKeyScanAssembler implements RowKeyScanAssembler, FuzzyRowKe
     assembleLiterals();
   }
 
-  private void assemblePredefinedFields() {
-    List<PreDefinedKeyFieldMapping> preDefinedFields = this.graph.getPreDefinedRowKeyFields();
-    int fieldCount = preDefinedFields.size();
+  private void assembleMetaFields() {
+    List<MetaKeyFieldMapping> metaFields = this.graph.getPreDefinedRowKeyFields();
+    int fieldCount = metaFields.size();
     for (int i = 0; i < fieldCount; i++) {
-      PreDefinedKeyFieldMapping preDefinedField = preDefinedFields.get(i);
+      MetaKeyFieldMapping metaField = metaFields.get(i);
       if (fieldCount > 0) {
         this.keyBytes.put(graph.getRowKeyFieldDelimiterBytes());
         this.infoBytes.put(delimMask);
       }
-      Object keyValue = preDefinedField.getKey(this.rootType);
-      // byte[] tokenValue =
-      // this.keySupport.getEncodedPredefinedField(this.rootType, // hashing,
-      // preDefinedField);
+      Object keyValue = metaField.getKey(this.rootType);
 
-      byte[] encodedKeyValue = preDefinedField.getCodec().encode(keyValue);
-      // if (preDefinedField.isHash()) {
-      // paddedTokenValue = this.padding.pad(tokenValue,
-      // preDefinedField.getMaxLength(),
-      // DataFlavor.integral);
-      // } else {
-      // paddedTokenValue = this.padding.pad(tokenValue,
-      // preDefinedField.getMaxLength(),
-      // preDefinedField.getDataFlavor());
-      // }
+      byte[] encodedKeyValue = metaField.getCodec().encode(keyValue);
 
       this.keyBytes.put(encodedKeyValue);
       byte[] tokenMask = new byte[encodedKeyValue.length];
@@ -206,38 +179,36 @@ public class FuzzyRowKeyScanAssembler implements RowKeyScanAssembler, FuzzyRowKe
   }
 
   private void assembleLiterals() {
-    for (KeyFieldMapping fieldConfig : this.graph.getRowKeyFields()) {
+    for (KeyFieldMapping fieldMapping : this.graph.getRowKeyFields()) {
       if (fieldCount > 0) {
         this.keyBytes.put(graph.getRowKeyFieldDelimiterBytes());
         this.infoBytes.put(delimMask);
       }
 
-      if (fieldConfig instanceof PreDefinedKeyFieldMapping) {
-        PreDefinedKeyFieldMapping predefinedConfig = (PreDefinedKeyFieldMapping) fieldConfig;
-        byte[] encodedTokenValue = getEncodedPredefinedToken(predefinedConfig);
-        this.keyBytes.put(encodedTokenValue);
-        byte[] tokenMask = getPredefinedTokenMask(predefinedConfig, encodedTokenValue.length);
+      if (!(fieldMapping instanceof DataRowKeyFieldMapping)) {
+        byte[] encodedValue = getEncodedKeyField(fieldMapping);
+        this.keyBytes.put(encodedValue);
+        byte[] tokenMask = getKeyFieldMask(fieldMapping, encodedValue.length);
         this.infoBytes.put(tokenMask);
-
         this.fieldCount++;
-      } else if (fieldConfig instanceof UserDefinedRowKeyFieldMapping) {
-        UserDefinedRowKeyFieldMapping userFieldConfig = (UserDefinedRowKeyFieldMapping) fieldConfig;
+      } else {
+        DataRowKeyFieldMapping dataFieldConfig = (DataRowKeyFieldMapping) fieldMapping;
 
-        List<ScanLiteral> scanLiterals = this.scanLiterals.getLiterals(userFieldConfig);
+        List<ScanLiteral> scanLiterals = this.scanLiterals.getLiterals(dataFieldConfig);
         // if no literal present, create a fuzzy wildcard
         // as per the field length
         if (scanLiterals == null || scanLiterals.size() == 0) {
-          byte[] wildcard = new byte[userFieldConfig.getMaxLength()];
+          byte[] wildcard = new byte[dataFieldConfig.getMaxLength()];
           Arrays.fill(wildcard, (byte) Character.valueOf('*').charValue());
           this.keyBytes.put(wildcard); // no need for padding, we are
           // at max len
-          byte[] fieldMask = new byte[userFieldConfig.getMaxLength()];
+          byte[] fieldMask = new byte[dataFieldConfig.getMaxLength()];
           for (int i = 0; i < fieldMask.length; i++)
             fieldMask[i] = this.variableMaskByte;
           this.infoBytes.put(fieldMask);
         } else {
           if (scanLiterals.size() > 1)
-            log.warn("expected single literal for user defined field - ignoring");
+            log.warn("expected single literal for data field - ignoring");
           FuzzyRowKeyLiteral fuzzyLiteral = (FuzzyRowKeyLiteral) scanLiterals.get(0);
           if (WildcardStringLiteral.class.isAssignableFrom(fuzzyLiteral.getClass())) {
             WildcardStringLiteral wc = (WildcardStringLiteral) fuzzyLiteral;
@@ -256,7 +227,7 @@ public class FuzzyRowKeyScanAssembler implements RowKeyScanAssembler, FuzzyRowKe
               }
             }
           }
-          // note; already padded
+           
           this.keyBytes.put(fuzzyLiteral.getFuzzyKeyBytes());
           this.infoBytes.put(fuzzyLiteral.getFuzzyInfoBytes());
         }
@@ -266,51 +237,15 @@ public class FuzzyRowKeyScanAssembler implements RowKeyScanAssembler, FuzzyRowKe
     }
   }
 
-  private byte[] getEncodedPredefinedToken(PreDefinedKeyFieldMapping predefinedConfig) {
-    byte[] tokenValue = null;
-    switch (predefinedConfig.getName()) {
-    case UUID:
-      if (this.rootUUID != null) {
-        tokenValue = this.rootUUID.getBytes(this.charset);
-      } else {
-        // no UUID available in this context, so return zero len
-        // array
-        // which will get padded with default wildcard bytes and
-        // associated
-        // with a variable info-mask bytes array
-        byte wc = (byte) Wildcard.WILDCARD_CHAR.charAt(0);
-        tokenValue = new byte[predefinedConfig.getMaxLength()];
-        for (int i = 0; i < tokenValue.length; i++)
-          tokenValue[i] = wc;
-      }
-      break;
-    default:
-      Object keyValue = predefinedConfig.getKey(this.rootType);
-      tokenValue = predefinedConfig.getCodec().encode(keyValue);
-      break;
-    }
-    //
-    // if (predefinedConfig.isHash()) {
-    // tokenValue = hashing.toStringBytes(tokenValue);
-    // }
+  private byte[] getEncodedKeyField(KeyFieldMapping metaField) {
+    Object keyValue = metaField.getKey(this.rootType);
+    byte[] tokenValue = metaField.getCodec().encode(keyValue);
     return tokenValue;
   }
 
-  private byte[] getPredefinedTokenMask(PreDefinedKeyFieldMapping predefinedConfig,
-      int paddedTokenValueLength) {
+  private byte[] getKeyFieldMask(KeyFieldMapping metaField, int paddedTokenValueLength) {
     byte[] tokenMask = new byte[paddedTokenValueLength];
-    switch (predefinedConfig.getName()) {
-    case UUID:
-      if (this.rootUUID != null) {
-        Arrays.fill(tokenMask, fixedMaskByte);
-      } else {
-        Arrays.fill(tokenMask, variableMaskByte);
-      }
-      break;
-    default:
-      Arrays.fill(tokenMask, fixedMaskByte);
-      break;
-    }
+    Arrays.fill(tokenMask, fixedMaskByte);
     return tokenMask;
   }
 

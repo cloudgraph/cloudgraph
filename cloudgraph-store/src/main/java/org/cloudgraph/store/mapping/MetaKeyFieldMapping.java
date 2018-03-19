@@ -21,7 +21,6 @@ import org.cloudgraph.store.key.EdgeMetaKey;
 import org.cloudgraph.store.key.EntityMetaKey;
 import org.plasma.sdo.DataFlavor;
 import org.plasma.sdo.DataType;
-import org.plasma.sdo.PlasmaDataObject;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
 
@@ -35,22 +34,22 @@ import commonj.sdo.DataObject;
  * @author Scott Cinnamond
  * @since 0.5.1
  */
-public class PreDefinedKeyFieldMapping extends KeyFieldMapping {
+public class MetaKeyFieldMapping extends KeyFieldMapping {
 
-  private static final Log log = LogFactory.getLog(PreDefinedKeyFieldMapping.class);
-  private PredefinedField preDefinedField;
+  private static final Log log = LogFactory.getLog(MetaKeyFieldMapping.class);
+  private MetaField preDefinedField;
 
-  public PreDefinedKeyFieldMapping(DataGraphMapping dataGraph, PredefinedField field, int seqNum,
+  public MetaKeyFieldMapping(DataGraphMapping dataGraph, MetaField field, int seqNum,
       int totalFields) {
     super(dataGraph, field, seqNum, totalFields);
     this.preDefinedField = field;
   }
 
-  public PredefinedField getField() {
+  public MetaField getField() {
     return preDefinedField;
   }
 
-  public PreDefinedFieldName getName() {
+  public MetaFieldName getName() {
     return preDefinedField.getName();
   }
 
@@ -91,9 +90,6 @@ public class PreDefinedKeyFieldMapping extends KeyFieldMapping {
               + ", defined - using URI");
         result = rootType.getURI();
       }
-      break;
-    case UUID:
-      result = ((PlasmaDataObject) dataObject).getUUIDAsString();
       break;
     default:
       throw new StoreMappingException("invalid row key field name, " + this.getName().name()
@@ -154,9 +150,6 @@ public class PreDefinedKeyFieldMapping extends KeyFieldMapping {
               + ", defined - using URI bytes");
         result = rootType.getURIBytes();
       }
-      break;
-    case UUID:
-      result = ((PlasmaDataObject) dataObject).getUUIDAsString().getBytes(CHARSET);
       break;
     default:
       throw new StoreMappingException("invalid row key field name, " + this.getName().name()
@@ -375,8 +368,6 @@ public class PreDefinedKeyFieldMapping extends KeyFieldMapping {
       return 12;
     case TYPE:
       return 32;
-    case UUID:
-      return 36;
     default:
       return 12;
     }
@@ -389,8 +380,6 @@ public class PreDefinedKeyFieldMapping extends KeyFieldMapping {
       return DataType.String;
     case TYPE:
       return DataType.String;
-    case UUID:
-      return DataType.String;
     default:
       return DataType.String;
     }
@@ -402,8 +391,6 @@ public class PreDefinedKeyFieldMapping extends KeyFieldMapping {
     case URI:
       return DataFlavor.string;
     case TYPE:
-      return DataFlavor.string;
-    case UUID:
       return DataFlavor.string;
     default:
       return DataFlavor.string;

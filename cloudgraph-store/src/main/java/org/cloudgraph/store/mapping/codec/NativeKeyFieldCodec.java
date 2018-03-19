@@ -24,7 +24,6 @@ import org.plasma.sdo.helper.DataConverter;
 
 import com.google.common.primitives.UnsignedInteger;
 import com.google.common.primitives.UnsignedLong;
-
 import commonj.sdo.Type;
 
 /**

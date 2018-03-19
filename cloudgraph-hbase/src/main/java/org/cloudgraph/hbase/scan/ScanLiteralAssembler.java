@@ -20,9 +20,9 @@ import javax.xml.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.cloudgraph.store.mapping.DataGraphMapping;
+import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.cloudgraph.store.mapping.StoreMapping;
 import org.cloudgraph.store.mapping.TableMapping;
-import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.query.model.AbstractPathElement;
 import org.plasma.query.model.GroupOperator;
@@ -31,11 +31,11 @@ import org.plasma.query.model.LogicalOperator;
 import org.plasma.query.model.NullLiteral;
 import org.plasma.query.model.Path;
 import org.plasma.query.model.PathElement;
+import org.plasma.query.model.PredicateOperator;
 import org.plasma.query.model.Property;
 import org.plasma.query.model.RelationalOperator;
 import org.plasma.query.model.RelationalOperatorName;
 import org.plasma.query.model.Where;
-import org.plasma.query.model.PredicateOperator;
 import org.plasma.query.model.WildcardPathElement;
 import org.plasma.query.visitor.DefaultQueryVisitor;
 import org.plasma.sdo.PlasmaProperty;
@@ -163,7 +163,7 @@ public class ScanLiteralAssembler extends DefaultQueryVisitor {
 
     // Match the current property to a user defined
     // row key token, if found we can process
-    UserDefinedRowKeyFieldMapping fieldConfig = this.graph
+    DataRowKeyFieldMapping fieldConfig = this.graph
         .getUserDefinedRowKeyField(this.contextPropertyPath);
     if (fieldConfig != null) {
       PlasmaProperty property = (PlasmaProperty) fieldConfig.getEndpointProperty();

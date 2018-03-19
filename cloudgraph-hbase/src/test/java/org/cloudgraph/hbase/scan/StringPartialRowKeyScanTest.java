@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2017 TerraMeta Software, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,12 +18,13 @@ package org.cloudgraph.hbase.scan;
 import java.io.IOException;
 import java.util.Date;
 
-import junit.framework.Test;
+//import junit.framework.Test;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.cloudgraph.test.datatypes.Node;
 import org.cloudgraph.test.datatypes.query.QStringNode;
+import org.junit.Test;
 import org.plasma.common.test.PlasmaTestSetup;
 
 import commonj.sdo.DataGraph;
@@ -38,12 +39,42 @@ import commonj.sdo.DataGraph;
 public class StringPartialRowKeyScanTest extends StringScanTest {
   private static Log log = LogFactory.getLog(StringPartialRowKeyScanTest.class);
 
-  public static Test suite() {
-    return PlasmaTestSetup.newTestSetup(StringPartialRowKeyScanTest.class);
-  }
+  // public static Test suite() {
+  // return PlasmaTestSetup.newTestSetup(StringPartialRowKeyScanTest.class);
+  // }
 
   public void setUp() throws Exception {
     super.setUp();
+  }
+
+  @Test
+  public void testEqualSimple() throws IOException {
+    long rootId = System.currentTimeMillis();
+
+    long id1 = rootId + WAIT_TIME;
+    Date now1 = new Date(id1);
+    Node root1 = this.createSimpleGraph(rootId, id1, now1, "AAA");
+    service.commit(root1.getDataGraph(), USERNAME);
+
+    long id2 = id1 + WAIT_TIME;
+    Date now2 = new Date(id2);
+    Node root2 = this.createSimpleGraph(rootId, id2, now2, "BBB");
+    Node root2a = this.createSimpleGraph(rootId, id2, now2, "BBB.1");
+    Node root2b = this.createSimpleGraph(rootId, id2, now2, "BBB.2");
+    service.commit(
+        new DataGraph[] { root2.getDataGraph(), root2a.getDataGraph(), root2b.getDataGraph() },
+        USERNAME);
+
+    long id3 = id2 + WAIT_TIME;
+    Date now3 = new Date(id3);
+    Node root3 = this.createSimpleGraph(rootId, id3, now3, "CCC");
+    service.commit(root3.getDataGraph(), USERNAME);
+
+    // fetch
+    Node fetched = this.fetchSingleGraph(root2.getRootId(), "BBB");
+    String xml = serializeGraph(fetched.getDataGraph());
+    log.debug("GRAPH: " + xml);
+    assertTrue(fetched.getRootId() == rootId);
   }
 
   public void testEqual() throws IOException {

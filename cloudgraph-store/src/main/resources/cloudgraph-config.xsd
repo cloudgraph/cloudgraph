@@ -220,8 +220,9 @@ which greatly improves query performance.
             <xsd:documentation>The settings for a row key field within a composite row-key.</xsd:documentation>
         </xsd:annotation>
         <xsd:choice>
-            <xsd:element name="PredefinedField" type="cloudgraph:PredefinedField"/>
-            <xsd:element name="UserDefinedField" type="cloudgraph:UserDefinedField"/>
+            <xsd:element name="MetaField" type="cloudgraph:MetaField"/>
+            <xsd:element name="DataField" type="cloudgraph:DataField"/>
+            <xsd:element name="ConstantField" type="cloudgraph:ConstantField"/>
         </xsd:choice> 
     </xsd:complexType>
 
@@ -318,13 +319,13 @@ which greatly improves query performance.
           </xsd:restriction>
     </xsd:simpleType>
           
-    <xsd:complexType name="PredefinedField">
+    <xsd:complexType name="MetaField">
         <xsd:annotation>
             <xsd:documentation>The settings for one pre-defined field within a composite row-key.</xsd:documentation>
         </xsd:annotation>
         <xsd:complexContent>
             <xsd:extension base="cloudgraph:KeyField">
-		        <xsd:attribute name="name" type="cloudgraph:PreDefinedFieldName" use="required">
+		        <xsd:attribute name="name" type="cloudgraph:MetaFieldName" use="required">
 		            <xsd:annotation>
 		                <xsd:documentation></xsd:documentation>
 		            </xsd:annotation>
@@ -333,20 +334,20 @@ which greatly improves query performance.
         </xsd:complexContent>
     </xsd:complexType>
 
-    <xsd:element name="PredefinedField" type="cloudgraph:PredefinedField">
+    <xsd:element name="MetaField" type="cloudgraph:MetaField">
         <xsd:annotation>
             <xsd:documentation></xsd:documentation>
         </xsd:annotation>
     </xsd:element>
     
-    <xsd:complexType name="UserDefinedField">
+    <xsd:complexType name="DataField">
         <xsd:annotation>
             <xsd:documentation>
-The settings for one user-defined field within a
-composite row-key. Each user defined field maps
+The settings for one data field within a
+composite row-key. Each data field maps
 a property within the data graph to a position
 within the composite row key, adding another "dimension" to the
-key. In HBase for example, this user defined composite row-key approach 
+key. In HBase for example, this composite row-key approach 
 enables the HBase partial row-key scan functionality
 which greatly improves query performance. 
             </xsd:documentation>
@@ -368,12 +369,37 @@ predicates.
         </xsd:complexContent>
     </xsd:complexType>
 
-    <xsd:element name="UserDefinedField" type="cloudgraph:UserDefinedField">
+    <xsd:element name="DataField" type="cloudgraph:DataField">
         <xsd:annotation>
             <xsd:documentation></xsd:documentation>
         </xsd:annotation>
     </xsd:element>
 
+    <xsd:complexType name="ConstantField">
+        <xsd:annotation>
+            <xsd:documentation>
+The settings for one constant field within a
+composite row-key. 
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="cloudgraph:KeyField">
+		        <xsd:attribute name="value" type="xsd:string" use="required">
+		            <xsd:annotation>
+		                <xsd:documentation>
+The value of the constant as a string.
+		                </xsd:documentation>
+		            </xsd:annotation>
+		        </xsd:attribute>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="ConstantField" type="cloudgraph:ConstantField">
+        <xsd:annotation>
+            <xsd:documentation></xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
     <xsd:complexType name="ColumnKeyModel">
         <xsd:annotation>
             <xsd:documentation>
@@ -418,7 +444,7 @@ column field may be specified.
             <xsd:documentation>The settings for one pre-defined field within a composite column-key.</xsd:documentation>
         </xsd:annotation>
         <xsd:complexContent>
-            <xsd:extension base="cloudgraph:PredefinedField">
+            <xsd:extension base="cloudgraph:MetaField">
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
@@ -475,7 +501,7 @@ column field may be specified.
         </xsd:restriction>
     </xsd:simpleType>
       
-    <xsd:simpleType name="PreDefinedFieldName">
+    <xsd:simpleType name="MetaFieldName">
         <xsd:annotation>
             <xsd:documentation>Composite pre-defined row key field names</xsd:documentation>
         </xsd:annotation>
@@ -488,9 +514,6 @@ column field may be specified.
             </xsd:enumeration>
             <xsd:enumeration value="type">
                 <xsd:annotation><xsd:documentation>The SDO Type name pre-defined field name</xsd:documentation></xsd:annotation>
-            </xsd:enumeration>
-            <xsd:enumeration value="uuid">
-                <xsd:annotation><xsd:documentation>The universal unique ID pre-defined field name</xsd:documentation></xsd:annotation>
             </xsd:enumeration>
             <xsd:enumeration value="property">
                 <xsd:annotation><xsd:documentation>The SDO Property name</xsd:documentation></xsd:annotation>

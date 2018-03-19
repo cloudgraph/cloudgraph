@@ -15,7 +15,6 @@
  */
 package org.cloudgraph.hbase.key;
 
-import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -25,24 +24,17 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.hbase.util.Hash;
-import org.cloudgraph.hbase.service.HBaseDataConverter;
 import org.cloudgraph.recognizer.Endpoint;
-import org.cloudgraph.state.RowState;
 import org.cloudgraph.store.key.KeyValue;
-import org.cloudgraph.store.mapping.KeyFieldCodecType;
 import org.cloudgraph.store.mapping.DataGraphMapping;
+import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
+import org.cloudgraph.store.mapping.KeyFieldCodecType;
 import org.cloudgraph.store.mapping.KeyFieldMapping;
-import org.cloudgraph.store.mapping.PreDefinedKeyFieldMapping;
+import org.cloudgraph.store.mapping.MetaKeyFieldMapping;
 import org.cloudgraph.store.mapping.StoreMapping;
 import org.cloudgraph.store.mapping.TableMapping;
-import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
-import org.plasma.sdo.DataType;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
-import org.plasma.sdo.helper.DataConverter;
-
-import commonj.sdo.Property;
 
 /**
  * Reads and parses row keys into {@link KeyValue} elements where the values can
@@ -67,7 +59,7 @@ public class CompositeRowKeyReader {
   private DataGraphMapping graph;
   private PlasmaType contextType;
   private char rowKeyFieldDelimChar;
-  private Map<UserDefinedRowKeyFieldMapping, Endpoint> endpointMap;
+  private Map<DataRowKeyFieldMapping, Endpoint> endpointMap;
   private Map<Endpoint, KeyValue> valueMap;
 
   @SuppressWarnings("unused")
@@ -94,13 +86,13 @@ public class CompositeRowKeyReader {
 
   private void construct() {
     for (KeyFieldMapping keyField : this.graph.getRowKeyFields()) {
-      if (PreDefinedKeyFieldMapping.class.isAssignableFrom(keyField.getClass())) {
+      if (MetaKeyFieldMapping.class.isAssignableFrom(keyField.getClass())) {
         if (log.isDebugEnabled())
           log.debug("ignoring predefined field config, "
-              + ((PreDefinedKeyFieldMapping) keyField).getName());
+              + ((MetaKeyFieldMapping) keyField).getName());
         continue;
       }
-      UserDefinedRowKeyFieldMapping userDefinedKeyField = (UserDefinedRowKeyFieldMapping) keyField;
+      DataRowKeyFieldMapping userDefinedKeyField = (DataRowKeyFieldMapping) keyField;
       PlasmaProperty endpointProp = userDefinedKeyField.getEndpointProperty();
       if (keyField.getCodecType().ordinal() == KeyFieldCodecType.HASH.ordinal()) {
         log.warn("cannot unmarshal hashed row key field for table, " + this.table.getName()
@@ -140,13 +132,13 @@ public class CompositeRowKeyReader {
     while (iter.hasNext()) {
       byte[] token = iter.next();
       KeyFieldMapping keyField = this.graph.getRowKeyFields().get(i);
-      if (PreDefinedKeyFieldMapping.class.isAssignableFrom(keyField.getClass())) {
+      if (MetaKeyFieldMapping.class.isAssignableFrom(keyField.getClass())) {
         if (log.isDebugEnabled())
           log.debug("ignoring predefined field config(" + i + "), "
-              + ((PreDefinedKeyFieldMapping) keyField).getName());
+              + ((MetaKeyFieldMapping) keyField).getName());
         continue;
       }
-      UserDefinedRowKeyFieldMapping userDefinedKeyField = (UserDefinedRowKeyFieldMapping) keyField;
+      DataRowKeyFieldMapping userDefinedKeyField = (DataRowKeyFieldMapping) keyField;
       PlasmaProperty endpointProp = userDefinedKeyField.getEndpointProperty();
       if (keyField.getCodecType().ordinal() == KeyFieldCodecType.HASH.ordinal()) {
         log.warn("cannot unmarshal hashed row key field(" + i + ") for table, "

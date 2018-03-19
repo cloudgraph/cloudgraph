@@ -16,10 +16,11 @@
 package org.cloudgraph.hbase.scan;
 
 import org.cloudgraph.common.Padding;
-import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
+import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.query.Wildcard;
 import org.plasma.query.model.PredicateOperator;
+import org.plasma.sdo.DataFlavor;
 import org.plasma.sdo.PlasmaType;
 
 /**
@@ -42,7 +43,7 @@ public class WildcardStringLiteral extends StringLiteral implements WildcardPart
   protected Padding padding;
 
   public WildcardStringLiteral(String literal, PlasmaType rootType,
-      PredicateOperator wildcardOperator, UserDefinedRowKeyFieldMapping fieldConfig) {
+      PredicateOperator wildcardOperator, DataRowKeyFieldMapping fieldConfig) {
     super(literal, rootType, null, fieldConfig);
     this.wildcardOperator = wildcardOperator;
     this.padding = new Padding(this.charset);
@@ -106,19 +107,24 @@ public class WildcardStringLiteral extends StringLiteral implements WildcardPart
           + "' within table " + this.table.getName() + " for graph root type, "
           + this.rootType.toString());
     default:
-      if (keyValueStr.endsWith(Wildcard.WILDCARD_CHAR)) {
-        keyValueStr = this.padding.back(keyValueStr, this.fieldConfig.getMaxLength(),
-            Wildcard.WILDCARD_CHAR.charAt(0));
-      } else if (keyValueStr.startsWith(Wildcard.WILDCARD_CHAR)) {
-        keyValueStr = this.padding.front(keyValueStr, this.fieldConfig.getMaxLength(),
-            Wildcard.WILDCARD_CHAR.charAt(0));
-      } else { // key fields are fixed length - intervening wildcard
-        // cannot work
-        throw new ScanException("cannot create fuzzy scan literal "
-            + "with interviening wildcards ('" + keyValueStr
-            + "') for fixed length row key field with path '" + this.fieldConfig.getPropertyPath()
-            + "' within table " + this.table.getName() + " for graph root type, "
-            + this.rootType.toString());
+      if (keyValueStr.contains(Wildcard.WILDCARD_CHAR)) {
+        if (keyValueStr.endsWith(Wildcard.WILDCARD_CHAR)) {
+          keyValueStr = this.padding.back(keyValueStr, this.fieldConfig.getMaxLength(),
+              Wildcard.WILDCARD_CHAR.charAt(0));
+        } else if (keyValueStr.startsWith(Wildcard.WILDCARD_CHAR)) {
+          keyValueStr = this.padding.front(keyValueStr, this.fieldConfig.getMaxLength(),
+              Wildcard.WILDCARD_CHAR.charAt(0));
+        } else { // key fields are fixed length - intervening wildcard
+          // cannot work
+          throw new ScanException("cannot create fuzzy scan literal "
+              + "with interviening wildcards ('" + keyValueStr
+              + "') for fixed length row key field with path '"
+              + this.fieldConfig.getPropertyPath() + "' within table " + this.table.getName()
+              + " for graph root type, " + this.rootType.toString());
+        }
+      } else {
+        keyValueStr = this.padding.pad(keyValueStr, this.fieldConfig.getMaxLength(),
+            DataFlavor.string);
       }
       keyBytes = keyValueStr.getBytes(this.charset);
       break;

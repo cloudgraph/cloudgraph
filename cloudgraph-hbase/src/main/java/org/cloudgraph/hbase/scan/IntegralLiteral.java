@@ -15,20 +15,11 @@
  */
 package org.cloudgraph.hbase.scan;
 
-import java.math.BigInteger;
 import java.util.Arrays;
 
-import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
-import org.plasma.query.model.RelationalOperator;
+import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.plasma.query.model.RelationalOperatorName;
-import org.plasma.sdo.DataFlavor;
-import org.plasma.sdo.DataType;
 import org.plasma.sdo.PlasmaType;
-
-import com.google.common.primitives.UnsignedInteger;
-import com.google.common.primitives.UnsignedLong;
-
-import commonj.sdo.Type;
 
 /**
  * An integral data "flavor" specific literal class used to abstract the
@@ -51,7 +42,7 @@ public class IntegralLiteral extends ScanLiteral implements PartialRowKeyLiteral
   public static final int INCREMENT = 1;
 
   public IntegralLiteral(String literal, PlasmaType rootType,
-      RelationalOperatorName relationalOperator, UserDefinedRowKeyFieldMapping fieldConfig) {
+      RelationalOperatorName relationalOperator, DataRowKeyFieldMapping fieldConfig) {
     super(literal, rootType, relationalOperator, fieldConfig);
   }
 
@@ -211,9 +202,7 @@ public class IntegralLiteral extends ScanLiteral implements PartialRowKeyLiteral
     if (this.fieldConfig.getCodec().isLexicographic()
         && !this.fieldConfig.getCodec().isTransforming()) {
       Object value = this.dataConverter.convert(property.getType(), this.literal);
-      String valueStr = this.dataConverter.toString(property.getType(), value);
-      byte[] keyBytes = valueStr.getBytes(this.charset);
-      return this.fieldConfig.getCodec().encode(keyBytes);
+      return this.fieldConfig.getCodec().encode(value);
     } else
       throw new ScanException("cannot create fuzzy scan literal " + "for "
           + this.fieldConfig.getCodecType() + " encoded key field with path '"

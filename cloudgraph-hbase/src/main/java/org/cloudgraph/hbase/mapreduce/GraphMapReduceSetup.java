@@ -82,8 +82,8 @@ import org.cloudgraph.state.StateMarshalingContext;
 import org.cloudgraph.state.StateNonValidatingDataBinding;
 import org.cloudgraph.store.mapping.Config;
 import org.cloudgraph.store.mapping.DataGraphMapping;
+import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.cloudgraph.store.mapping.StoreMapping;
-import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.common.bind.DefaultValidationEventHandler;
 import org.plasma.query.From;
@@ -95,7 +95,6 @@ import org.plasma.sdo.PlasmaType;
 import org.xml.sax.SAXException;
 
 import com.google.protobuf.InvalidProtocolBufferException;
-
 import commonj.sdo.Type;
 
 /**
@@ -856,10 +855,10 @@ public class GraphMapReduceSetup extends JobSetup {
     Config config = StoreMapping.getInstance();
     DataGraphMapping graph = config.findDataGraph(type.getQualifiedName());
     if (graph != null) {
-      UserDefinedRowKeyFieldMapping[] fields = new UserDefinedRowKeyFieldMapping[graph
+      DataRowKeyFieldMapping[] fields = new DataRowKeyFieldMapping[graph
           .getUserDefinedRowKeyFields().size()];
       graph.getUserDefinedRowKeyFields().toArray(fields);
-      for (UserDefinedRowKeyFieldMapping field : fields) {
+      for (DataRowKeyFieldMapping field : fields) {
         List<Type> types = collector.addProperty(graph.getRootType(), field.getPropertyPath());
         for (Type nextType : types)
           collectRowKeyProperties(collector, (PlasmaType) nextType);

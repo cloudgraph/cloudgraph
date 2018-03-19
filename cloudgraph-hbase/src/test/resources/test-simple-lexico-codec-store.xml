@@ -8,22 +8,25 @@
     <Property name="org.plasma.sdo.access.provider.hbase.ConnectionPoolMinSize">1</Property>    
     <Property name="org.plasma.sdo.access.provider.hbase.ConnectionPoolMaxSize">80</Property>    
 
-    <Table name="TEST_COMPLETE_KEY_TEMPORAL" dataColumnFamilyName="f1">
+    <Table name="TEST_LEXICOSIMP_CODEC_TEMPORAL" dataColumnFamilyName="f1">
         <HashAlgorithm name="murmur"/>
          
         <DataGraph uri="http://cloudgraph.org/test/datatypes" type="DateTimeNode">
             <RowKeyModel>
                 <RowKeyField>
-                    <MetaField name="uri" />
+                    <MetaField name="uri" codecType="lexicosimple"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <MetaField name="type" />
+                    <MetaField name="type" codecType="lexicosimple"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <DataField path="rootId"/>
+                    <DataField path="rootId" codecType="lexicosimple"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <DataField path="dateTimeField"/>
+                    <DataField path="dateTimeField" codecType="lexicosimple"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <DataField path="id" codecType="lexicosimple"/>
                 </RowKeyField>
             </RowKeyModel>
             
@@ -37,16 +40,19 @@
         <DataGraph uri="http://cloudgraph.org/test/datatypes" type="DateNode">
             <RowKeyModel>
                 <RowKeyField>
-                    <MetaField name="uri" />
+                    <MetaField name="uri" codecType="lexicosimple"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <MetaField name="type" />
+                    <MetaField name="type" codecType="lexicosimple"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <DataField path="rootId"/>
+                    <DataField path="rootId" codecType="lexicosimple"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <DataField path="dateField"/>
+                    <DataField path="dateField" codecType="lexicosimple"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <DataField path="id" codecType="lexicosimple"/>
                 </RowKeyField>
             </RowKeyModel>
             
@@ -58,22 +64,25 @@
         </DataGraph>
     </Table>  
 
-    <Table name="TEST_COMPLETE_KEY_INTEGRAL" dataColumnFamilyName="f1">
+    <Table name="TEST_LEXICOSIMP_CODEC_INTEGRAL" dataColumnFamilyName="f1">
         <HashAlgorithm name="murmur"/>
         
          <DataGraph uri="http://cloudgraph.org/test/datatypes" type="IntNode">
             <RowKeyModel>
                 <RowKeyField>
-                    <MetaField name="uri" />
+                    <MetaField name="uri" codecType="lexicosimple"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <MetaField name="type" />
+                    <MetaField name="type" codecType="lexicosimple"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <DataField path="rootId"/>
+                    <DataField path="rootId" codecType="lexicosimple"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <DataField path="intField"/>
+                    <DataField path="intField" codecType="lexicosimple"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <DataField path="id" codecType="lexicosimple"/>
                 </RowKeyField>
             </RowKeyModel>
             
@@ -87,16 +96,19 @@
         <DataGraph uri="http://cloudgraph.org/test/datatypes" type="LongNode">
             <RowKeyModel>
                 <RowKeyField>
-                    <MetaField name="uri" />
+                    <MetaField name="uri" codecType="lexicosimple"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <MetaField name="type" />
+                    <MetaField name="type" codecType="lexicosimple"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <DataField path="rootId"/>
+                    <DataField path="rootId" codecType="lexicosimple"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <DataField path="longField"/>
+                    <DataField path="longField" codecType="lexicosimple"/>
+                </RowKeyField>
+                 <RowKeyField>
+                    <DataField path="id" codecType="lexicosimple"/>
                 </RowKeyField>
             </RowKeyModel>
             
@@ -108,7 +120,7 @@
         </DataGraph>
     </Table>  
 
-    <Table name="TEST_COMPLETE_KEY_REAL" dataColumnFamilyName="f1">
+    <Table name="TEST_LEXICOSIMP_CODEC_REAL" dataColumnFamilyName="f1">
         <HashAlgorithm name="murmur"/>
         
         <DataGraph uri="http://cloudgraph.org/test/datatypes" type="FloatNode">
@@ -122,10 +134,13 @@
                 </RowKeyField>
                 -->
                 <RowKeyField>
-                    <DataField path="rootId"/>
+                    <DataField path="rootId" codecType="lexicosimple"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <DataField path="floatField"/>
+                    <DataField path="floatField" codecType="lexicosimple"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <DataField path="id" codecType="lexicosimple"/>
                 </RowKeyField>
                 
             </RowKeyModel>
@@ -138,21 +153,24 @@
         </DataGraph>
     </Table>  
 
-    <Table name="TEST_COMPLETE_KEY_STRING" dataColumnFamilyName="f1">
+    <Table name="TEST_LEXICOSIMP_CODEC_STRING" dataColumnFamilyName="f1">
         <HashAlgorithm name="murmur"/>
         <DataGraph uri="http://cloudgraph.org/test/datatypes" type="StringNode">
             <RowKeyModel>
                 <RowKeyField>
-                    <MetaField name="uri" />
+                    <MetaField name="uri" codecType="lexicosimple"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <MetaField name="type" />
+                    <MetaField name="type" codecType="lexicosimple"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <DataField path="rootId"/>
+                    <DataField path="rootId" codecType="lexicosimple"/>
                 </RowKeyField>
                 <RowKeyField>    
-                    <DataField path="stringField"/>
+                    <DataField path="stringField" codecType="lexicosimple"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <DataField path="id" codecType="lexicosimple"/>
                 </RowKeyField>
             </RowKeyModel>
             

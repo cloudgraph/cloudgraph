@@ -19,12 +19,11 @@ import java.nio.charset.Charset;
 
 import javax.xml.namespace.QName;
 
-import org.apache.hadoop.hbase.util.Hash;
 import org.cloudgraph.hbase.key.KeySupport;
+import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 //import org.cloudgraph.store.mapping.Padding;
 import org.cloudgraph.store.mapping.StoreMapping;
 import org.cloudgraph.store.mapping.TableMapping;
-import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.query.model.RelationalOperatorName;
 import org.plasma.sdo.PlasmaProperty;
@@ -49,7 +48,7 @@ public abstract class ScanLiteral {
   protected String literal;
   @Deprecated
   protected RelationalOperatorName relationalOperator;
-  protected UserDefinedRowKeyFieldMapping fieldConfig;
+  protected DataRowKeyFieldMapping fieldConfig;
   protected DataConverter dataConverter = DataConverter.INSTANCE;
   protected PlasmaType rootType;
   protected Charset charset;
@@ -64,7 +63,7 @@ public abstract class ScanLiteral {
   }
 
   public ScanLiteral(String literal, PlasmaType rootType,
-      RelationalOperatorName relationalOperator, UserDefinedRowKeyFieldMapping fieldConfig) {
+      RelationalOperatorName relationalOperator, DataRowKeyFieldMapping fieldConfig) {
     super();
     this.rootType = rootType;
     this.relationalOperator = relationalOperator;
@@ -103,7 +102,7 @@ public abstract class ScanLiteral {
    * 
    * @return the composite row-key field configuration.
    */
-  public final UserDefinedRowKeyFieldMapping getFieldConfig() {
+  public final DataRowKeyFieldMapping getFieldConfig() {
     return fieldConfig;
   }
 

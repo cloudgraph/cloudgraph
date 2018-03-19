@@ -25,7 +25,6 @@ import org.cloudgraph.recognizer.GraphRecognizerSupport;
 import org.plasma.query.model.Literal;
 import org.plasma.query.model.Property;
 import org.plasma.query.model.RelationalOperator;
-import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
 
 /**

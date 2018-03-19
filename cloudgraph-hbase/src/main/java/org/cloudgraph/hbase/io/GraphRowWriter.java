@@ -45,7 +45,6 @@ import org.cloudgraph.store.service.DuplicateRowException;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.cloudgraph.store.service.MissingRowException;
 import org.cloudgraph.store.service.ToumbstoneRowException;
-import org.plasma.sdo.DataType;
 import org.plasma.sdo.PlasmaDataObject;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;

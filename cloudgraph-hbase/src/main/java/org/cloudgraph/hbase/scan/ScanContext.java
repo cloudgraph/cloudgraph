@@ -22,15 +22,15 @@ import javax.xml.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.cloudgraph.store.mapping.DataGraphMapping;
+import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.cloudgraph.store.mapping.StoreMapping;
-import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.query.QueryException;
 import org.plasma.query.model.GroupOperator;
 import org.plasma.query.model.LogicalOperator;
+import org.plasma.query.model.PredicateOperator;
 import org.plasma.query.model.RelationalOperator;
 import org.plasma.query.model.Where;
-import org.plasma.query.model.PredicateOperator;
 import org.plasma.query.visitor.DefaultQueryVisitor;
 import org.plasma.sdo.PlasmaType;
 
@@ -107,7 +107,7 @@ public class ScanContext extends DefaultQueryVisitor {
     int[] scanLiteralCount = new int[size];
 
     for (int i = 0; i < size; i++) {
-      UserDefinedRowKeyFieldMapping fieldConfig = this.graph.getUserDefinedRowKeyFields().get(i);
+      DataRowKeyFieldMapping fieldConfig = this.graph.getUserDefinedRowKeyFields().get(i);
       List<ScanLiteral> list = this.partialKeyScanLiterals.getLiterals(fieldConfig);
       if (list != null)
         scanLiteralCount[i] = list.size();

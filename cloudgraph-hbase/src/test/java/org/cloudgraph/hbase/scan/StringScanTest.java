@@ -72,4 +72,14 @@ public abstract class StringScanTest extends DataTypeGraphModelTest {
     fillGraph(root, id, now, prefix);
     return root;
   }
+
+  protected StringNode createSimpleGraph(long rootId, long id, Date now, String name) {
+    DataGraph dataGraph = PlasmaDataFactory.INSTANCE.createDataGraph();
+    dataGraph.getChangeSummary().beginLogging(); // log changes from this
+    // point
+    Type rootType = PlasmaTypeHelper.INSTANCE.getType(StringNode.class);
+    StringNode root = (StringNode) dataGraph.createRootObject(rootType);
+    fillNodeSimple(root, rootId, id, now, name, 0, 0);
+    return root;
+  }
 }

@@ -55,12 +55,12 @@ import org.cloudgraph.recognizer.GraphRecognizerSyntaxTreeAssembler;
 import org.cloudgraph.store.mapping.Config;
 import org.cloudgraph.store.mapping.DataGraph;
 import org.cloudgraph.store.mapping.DataGraphMapping;
+import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.cloudgraph.store.mapping.FetchType;
 import org.cloudgraph.store.mapping.ParallelFetchDisposition;
 import org.cloudgraph.store.mapping.StoreMapping;
 import org.cloudgraph.store.mapping.StoreMappingProp;
 import org.cloudgraph.store.mapping.ThreadPoolMappingProps;
-import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.common.bind.DefaultValidationEventHandler;
 import org.plasma.query.OrderBy;
@@ -571,10 +571,10 @@ public class GraphQuery implements QueryDispatcher {
     Config config = StoreMapping.getInstance();
     DataGraphMapping graph = config.findDataGraph(type.getQualifiedName());
     if (graph != null) {
-      UserDefinedRowKeyFieldMapping[] fields = new UserDefinedRowKeyFieldMapping[graph
+      DataRowKeyFieldMapping[] fields = new DataRowKeyFieldMapping[graph
           .getUserDefinedRowKeyFields().size()];
       graph.getUserDefinedRowKeyFields().toArray(fields);
-      for (UserDefinedRowKeyFieldMapping field : fields) {
+      for (DataRowKeyFieldMapping field : fields) {
         List<Type> types = collector.addProperty(graph.getRootType(), field.getPropertyPath());
         for (Type nextType : types)
           collectRowKeyProperties(collector, (PlasmaType) nextType);

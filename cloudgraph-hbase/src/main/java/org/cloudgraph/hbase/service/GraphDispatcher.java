@@ -16,33 +16,18 @@
 package org.cloudgraph.hbase.service;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.NavigableMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.hbase.Cell;
-import org.apache.hadoop.hbase.CellUtil;
-import org.apache.hadoop.hbase.client.Mutation;
-import org.apache.hadoop.hbase.client.Result;
-import org.apache.hadoop.hbase.client.Row;
-import org.apache.hadoop.hbase.util.Bytes;
-import org.cloudgraph.common.Pair;
 import org.cloudgraph.hbase.io.TableWriter;
 import org.cloudgraph.hbase.mutation.GraphMutationCollector;
 import org.cloudgraph.hbase.mutation.GraphMutationWriter;
 import org.cloudgraph.hbase.mutation.Mutations;
 import org.cloudgraph.store.service.DuplicateRowException;
 import org.cloudgraph.store.service.GraphServiceException;
-import org.plasma.sdo.PlasmaDataObject;
-import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.access.DataAccessException;
 import org.plasma.sdo.access.DataGraphDispatcher;
-import org.plasma.sdo.access.provider.common.PropertyPair;
 import org.plasma.sdo.core.SnapshotMap;
 
 import commonj.sdo.DataGraph;

@@ -18,16 +18,13 @@ package org.cloudgraph.hbase.graph;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.cloudgraph.common.concurrent.SubgraphTask;
 import org.cloudgraph.hbase.io.CellValues;
@@ -258,7 +255,7 @@ class ParallelSliceSubgraphTask extends DefaultSubgraphTask implements SubgraphT
     for (CellValues childValues : resultRows) {
       CellValues childResult = null;
 
-      if (resultRows != null && !resultRows.contains(childValues.getRowKey()))
+      if (resultRows != null && !resultRows.contains(Arrays.hashCode(childValues.getRowKey())))
         continue; // not found in predicate
 
       // see if this row is locked during fetch, and wait for it
@@ -348,7 +345,7 @@ class ParallelSliceSubgraphTask extends DefaultSubgraphTask implements SubgraphT
       traversals.add(new Traversal(child, -1, collection, target, prop, childRowReader, true,
           level + 1));
 
-      rowLock = fetchLocks.remove(childValues.getRowKey());
+      rowLock = fetchLocks.remove(Arrays.hashCode(childValues.getRowKey()));
       synchronized (rowLock) {
         rowLock.notifyAll();
       }

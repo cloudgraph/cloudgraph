@@ -13,16 +13,16 @@
         <DataGraph uri="http://cloudgraph.org/test/datatypes" type="DateTimeNode">
             <RowKeyModel>
                 <RowKeyField>
-                    <PredefinedField name="uri" />
+                    <MetaField name="uri" />
                 </RowKeyField>
                 <RowKeyField>
-                    <PredefinedField name="type" />
+                    <MetaField name="type" />
                 </RowKeyField>
                 <RowKeyField>
-                    <UserDefinedField path="rootId"/>
+                    <DataField path="rootId"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <UserDefinedField path="dateTimeField"/>
+                    <DataField path="dateTimeField"/>
                 </RowKeyField>
             </RowKeyModel>
             
@@ -36,16 +36,16 @@
         <DataGraph uri="http://cloudgraph.org/test/datatypes" type="DateNode">
             <RowKeyModel>
                 <RowKeyField>
-                    <PredefinedField name="uri" />
+                    <MetaField name="uri" />
                 </RowKeyField>
                 <RowKeyField>
-                    <PredefinedField name="type" />
+                    <MetaField name="type" />
                 </RowKeyField>
                 <RowKeyField>
-                    <UserDefinedField path="rootId"/>
+                    <DataField path="rootId"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <UserDefinedField path="dateField" />
+                    <DataField path="dateField" />
                 </RowKeyField>
             </RowKeyModel>
             
@@ -63,16 +63,16 @@
          <DataGraph uri="http://cloudgraph.org/test/datatypes" type="IntNode">
             <RowKeyModel>
                 <RowKeyField>
-                    <PredefinedField name="uri" />
+                    <MetaField name="uri" />
                 </RowKeyField>
                 <RowKeyField>
-                    <PredefinedField name="type" />
+                    <MetaField name="type" />
                 </RowKeyField>
                 <RowKeyField>
-                    <UserDefinedField path="rootId"/>
+                    <DataField path="rootId"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <UserDefinedField path="intField"/>
+                    <DataField path="intField"/>
                 </RowKeyField>
             </RowKeyModel>
             
@@ -86,16 +86,16 @@
         <DataGraph uri="http://cloudgraph.org/test/datatypes" type="LongNode">
             <RowKeyModel>
                 <RowKeyField>
-                    <PredefinedField name="uri" />
+                    <MetaField name="uri" />
                 </RowKeyField>
                 <RowKeyField>
-                    <PredefinedField name="type" />
+                    <MetaField name="type" />
                 </RowKeyField>
                 <RowKeyField>
-                    <UserDefinedField path="rootId"/>
+                    <DataField path="rootId"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <UserDefinedField path="longField"/>
+                    <DataField path="longField"/>
                 </RowKeyField>
             </RowKeyModel>
             
@@ -114,17 +114,17 @@
             <RowKeyModel>
                 <!--  
                 <RowKeyField>
-                    <PredefinedField name="uri" />
+                    <MetaField name="uri" />
                 </RowKeyField>
                 <RowKeyField>
-                    <PredefinedField name="type" />
+                    <MetaField name="type" />
                 </RowKeyField>
                 -->
                 <RowKeyField>
-                    <UserDefinedField path="rootId"/>
+                    <DataField path="rootId"/>
                 </RowKeyField>
                 <RowKeyField>
-                    <UserDefinedField path="floatField"/>
+                    <DataField path="floatField"/>
                 </RowKeyField>
                 
             </RowKeyModel>
@@ -142,16 +142,16 @@
         <DataGraph uri="http://cloudgraph.org/test/datatypes" type="StringNode">
             <RowKeyModel>
                 <RowKeyField>
-                    <PredefinedField name="uri" />
+                    <MetaField name="uri" />
                 </RowKeyField>
                 <RowKeyField>
-                    <PredefinedField name="type" />
+                    <MetaField name="type" />
                 </RowKeyField>
                 <RowKeyField>
-                    <UserDefinedField path="rootId"/>
+                    <DataField path="rootId"/>
                 </RowKeyField>
                 <RowKeyField>    
-                    <UserDefinedField path="stringField"/>
+                    <DataField path="stringField"/>
                 </RowKeyField>
             </RowKeyModel>
             

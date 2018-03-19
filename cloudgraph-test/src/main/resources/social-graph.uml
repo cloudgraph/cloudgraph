@@ -92,6 +92,12 @@
           <lowerValue xmi:type="uml:LiteralInteger" xmi:id="c8ed086f-19ec-448d-aa79-13e586115c75" value="1"/>
           <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="4e7df0e3-e500-48e9-821c-3a7d66f200fb" value="1"/>
         </ownedAttribute>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="_xukv4CiREeirAetiHFkJpA" name="id">
+          <ownedComment xmi:type="uml:Comment" xmi:id="_xukv4SiREeirAetiHFkJpA">
+            <body>the id</body>
+          </ownedComment>
+          <type xmi:type="uml:DataType" href="pathmap://PLASMA_LIBRARIES/PlasmaSDODataTypes_v1_2.uml#plasma-sdo-profile-datatypes-String"/>
+        </ownedAttribute>
       </packagedElement>
       <packagedElement xmi:type="uml:Class" xmi:id="559d9b05-de30-4e18-a930-811b53292dcb" name="Mutual">
         <generalization xmi:type="uml:Generalization" xmi:id="14432162-2675-4bf6-85c8-34c5e707ab8e" general="964f2464-ae77-43bb-babd-7581e7eeef3d"/>
@@ -215,4 +221,7 @@
   <PlasmaSDOProfile:SDOAlias xmi:id="_LTIPAdoAEeeZWtyNPsNl6g" base_NamedElement="2ed87a59-d755-4625-9129-3a420c81a3b4" physicalName="PHT"/>
   <PlasmaSDOProfile:SDOIncrement xmi:id="_LTI2ENoAEeeZWtyNPsNl6g" base_Property="_BzCjUNhUEeektI89mmneVg"/>
   <PlasmaSDOProfile:SDOAlias xmi:id="_LTJdINoAEeeZWtyNPsNl6g" base_NamedElement="_BzCjUNhUEeektI89mmneVg" physicalName="L"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_1bsh4CiREeirAetiHFkJpA" base_NamedElement="_xukv4CiREeirAetiHFkJpA" physicalName="ID"/>
+  <PlasmaSDOProfile:SDOValueConstraint xmi:id="_1ccIwCiREeirAetiHFkJpA" base_Property="_xukv4CiREeirAetiHFkJpA" maxLength="36"/>
+  <PlasmaSDOProfile:SDOKey xmi:id="_EiyfACihEeirAetiHFkJpA" base_Property="_xukv4CiREeirAetiHFkJpA" type="primary"/>
 </xmi:XMI>

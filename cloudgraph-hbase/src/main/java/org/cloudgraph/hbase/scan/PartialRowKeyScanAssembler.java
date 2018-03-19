@@ -24,17 +24,15 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.hbase.util.Hash;
 import org.cloudgraph.hbase.key.KeySupport;
 import org.cloudgraph.store.mapping.DataGraphMapping;
+import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.cloudgraph.store.mapping.KeyFieldMapping;
 //import org.cloudgraph.store.mapping.Padding;
-import org.cloudgraph.store.mapping.PreDefinedKeyFieldMapping;
+import org.cloudgraph.store.mapping.MetaKeyFieldMapping;
 import org.cloudgraph.store.mapping.StoreMapping;
 import org.cloudgraph.store.mapping.TableMapping;
-import org.cloudgraph.store.mapping.UserDefinedRowKeyFieldMapping;
 import org.plasma.query.model.Where;
-import org.plasma.sdo.DataFlavor;
 import org.plasma.sdo.PlasmaType;
 
 /**
@@ -44,9 +42,9 @@ import org.plasma.sdo.PlasmaType;
  * 
  * @see org.cloudgraph.store.mapping.DataGraphMapping
  * @see org.cloudgraph.store.mapping.TableMapping
- * @see org.cloudgraph.store.mapping.UserDefinedField
- * @see org.cloudgraph.store.mapping.PredefinedField
- * @see org.cloudgraph.store.mapping.PreDefinedFieldName
+ * @see org.cloudgraph.store.mapping.DataField
+ * @see org.cloudgraph.store.mapping.MetaField
+ * @see org.cloudgraph.store.mapping.MetaFieldName
  * @author Scott Cinnamond
  * @since 0.5
  */
@@ -65,9 +63,6 @@ public class PartialRowKeyScanAssembler implements RowKeyScanAssembler, PartialR
   protected int stopRowFieldCount;
   protected String rootUUID;
 
-  // protected Hashing hashing;
-  // protected Padding padding;
-
   @SuppressWarnings("unused")
   private PartialRowKeyScanAssembler() {
   }
@@ -83,10 +78,7 @@ public class PartialRowKeyScanAssembler implements RowKeyScanAssembler, PartialR
     QName rootTypeQname = this.rootType.getQualifiedName();
     this.graph = StoreMapping.getInstance().getDataGraph(rootTypeQname);
     this.table = StoreMapping.getInstance().getTable(rootTypeQname);
-    // Hash hash = this.keySupport.getHashAlgorithm(this.table);
     this.charset = StoreMapping.getInstance().getCharset();
-    // this.hashing = new Hashing(hash, this.charset);
-    // this.padding = new Padding(this.charset);
   }
 
   /**
@@ -104,27 +96,27 @@ public class PartialRowKeyScanAssembler implements RowKeyScanAssembler, PartialR
   }
 
   /**
-   * Assemble row key scan information based only on any pre-defined row-key
-   * fields such as the data graph root type or URI.
+   * Assemble row key scan information based only on any meta row-key fields
+   * such as the data graph root type or URI.
    * 
-   * @see org.cloudgraph.store.mapping.PredefinedField
-   * @see org.cloudgraph.store.mapping.PreDefinedFieldName
+   * @see org.cloudgraph.store.mapping.MetaField
+   * @see org.cloudgraph.store.mapping.MetaFieldName
    */
   @Override
   public void assemble() {
     this.startKey = ByteBuffer.allocate(bufsize);
     this.stopKey = ByteBuffer.allocate(bufsize);
-    assemblePredefinedFields();
+    assembleMetaFields();
   }
 
   /**
    * Assemble row key scan information based on the given scan literals as well
-   * as pre-defined row-key fields such as the data graph root type or URI.
+   * as meta row-key fields such as the data graph root type or URI.
    * 
    * @param literalList
    *          the scan literals
-   * @see org.cloudgraph.store.mapping.PredefinedField
-   * @see org.cloudgraph.store.mapping.PreDefinedFieldName
+   * @see org.cloudgraph.store.mapping.MetaField
+   * @see org.cloudgraph.store.mapping.MetaFieldName
    */
   @Override
   public void assemble(ScanLiterals literals) {
@@ -163,24 +155,22 @@ public class PartialRowKeyScanAssembler implements RowKeyScanAssembler, PartialR
     assembleLiterals();
   }
 
-  private void assemblePredefinedFields() {
-    List<PreDefinedKeyFieldMapping> resultFields = new ArrayList<PreDefinedKeyFieldMapping>();
+  private void assembleMetaFields() {
+    List<MetaKeyFieldMapping> resultFields = new ArrayList<MetaKeyFieldMapping>();
 
-    for (PreDefinedKeyFieldMapping field : this.graph.getPreDefinedRowKeyFields()) {
+    for (MetaKeyFieldMapping field : this.graph.getPreDefinedRowKeyFields()) {
       switch (field.getName()) {
       case URI:
       case TYPE:
         resultFields.add(field);
         break;
-      case UUID:
-        break; // not applicable
       default:
       }
     }
 
     int fieldCount = resultFields.size();
     for (int i = 0; i < fieldCount; i++) {
-      PreDefinedKeyFieldMapping preDefinedField = resultFields.get(i);
+      MetaKeyFieldMapping metaField = resultFields.get(i);
       if (startRowFieldCount > 0) {
         this.startKey.put(graph.getRowKeyFieldDelimiterBytes());
       }
@@ -188,67 +178,57 @@ public class PartialRowKeyScanAssembler implements RowKeyScanAssembler, PartialR
         this.stopKey.put(graph.getRowKeyFieldDelimiterBytes());
       }
 
-      byte[] paddedStartValue = getStartBytes(preDefinedField);
+      byte[] paddedStartValue = getStartBytes(metaField);
 
       this.startKey.put(paddedStartValue);
       startRowFieldCount++;
 
-      byte[] paddedStopValue = getStopBytes(preDefinedField, i >= (fieldCount - 1));
+      byte[] paddedStopValue = getStopBytes(metaField, i >= (fieldCount - 1));
       this.stopKey.put(paddedStopValue);
       stopRowFieldCount++;
     }
   }
 
   private void assembleLiterals() {
-    // first collect the set of field configs which have literals or
-    // predefined field config value(s), such that we can determine the
+    // first collect the set of field mappings which have literals or
+    // meta field mapping value(s), such that we can determine the
     // last field value.
     List<KeyFieldMapping> resultFields = new ArrayList<KeyFieldMapping>();
-    for (KeyFieldMapping fieldConfig : this.graph.getRowKeyFields()) {
-      if (fieldConfig instanceof PreDefinedKeyFieldMapping) {
-        PreDefinedKeyFieldMapping predefinedConfig = (PreDefinedKeyFieldMapping) fieldConfig;
-        switch (predefinedConfig.getName()) {
-        case UUID:
-          if (this.rootUUID != null)
-            resultFields.add(fieldConfig);
-          break;
-        default:
-          resultFields.add(fieldConfig);
-          break;
-        }
+    for (KeyFieldMapping fieldMapping : this.graph.getRowKeyFields()) {
+      if (!(fieldMapping instanceof DataRowKeyFieldMapping)) {
+        resultFields.add(fieldMapping);
       } else {
-        UserDefinedRowKeyFieldMapping userFieldConfig = (UserDefinedRowKeyFieldMapping) fieldConfig;
-        List<ScanLiteral> scanLiterals = this.scanLiterals.getLiterals(userFieldConfig);
+        DataRowKeyFieldMapping dataFieldMapping = (DataRowKeyFieldMapping) fieldMapping;
+        List<ScanLiteral> scanLiterals = this.scanLiterals.getLiterals(dataFieldMapping);
         if (scanLiterals != null)
-          resultFields.add(fieldConfig);
+          resultFields.add(fieldMapping);
       }
     }
 
     int fieldCount = resultFields.size();
     for (int i = 0; i < fieldCount; i++) {
-      KeyFieldMapping fieldConfig = resultFields.get(i);
-      if (fieldConfig instanceof PreDefinedKeyFieldMapping) {
-        PreDefinedKeyFieldMapping predefinedConfig = (PreDefinedKeyFieldMapping) fieldConfig;
+      KeyFieldMapping dataField = resultFields.get(i);
+      if (dataField instanceof MetaKeyFieldMapping) {
+        MetaKeyFieldMapping predefinedConfig = (MetaKeyFieldMapping) dataField;
 
-        byte[] paddedStartValue = getStartBytes(predefinedConfig);
-        byte[] paddedStopValue = getStopBytes(predefinedConfig, i >= (fieldCount - 1));
+        byte[] startBytes = getStartBytes(predefinedConfig);
+        byte[] stopBytes = getStopBytes(predefinedConfig, i >= (fieldCount - 1));
 
         if (startRowFieldCount > 0)
           this.startKey.put(graph.getRowKeyFieldDelimiterBytes());
         if (stopRowFieldCount > 0)
           this.stopKey.put(graph.getRowKeyFieldDelimiterBytes());
 
-        this.startKey.put(paddedStartValue);
-        this.stopKey.put(paddedStopValue);
+        this.startKey.put(startBytes);
+        this.stopKey.put(stopBytes);
         this.startRowFieldCount++;
         this.stopRowFieldCount++;
-      } else if (fieldConfig instanceof UserDefinedRowKeyFieldMapping) {
-        UserDefinedRowKeyFieldMapping userFieldConfig = (UserDefinedRowKeyFieldMapping) fieldConfig;
-        List<ScanLiteral> scanLiterals = this.scanLiterals.getLiterals(userFieldConfig);
+      } else if (dataField instanceof DataRowKeyFieldMapping) {
+        DataRowKeyFieldMapping dataFieldMapping = (DataRowKeyFieldMapping) dataField;
+        List<ScanLiteral> scanLiterals = this.scanLiterals.getLiterals(dataFieldMapping);
         // We may have multiple literals but all may not have start/stop
-        // bytes, e.g.
-        // a String literal with a less-than-equal '<=' operator will
-        // not have a start bytes.
+        // bytes, e.g. a String literal with a less-than-equal '<=' operator
+        // will not have a start bytes.
         for (ScanLiteral scanLiteral : scanLiterals) {
           byte[] startBytes = scanLiteral.getStartBytes();
           if (startBytes.length > 0) {
@@ -276,20 +256,28 @@ public class PartialRowKeyScanAssembler implements RowKeyScanAssembler, PartialR
             this.stopRowFieldCount++;
           }
         }
+
+      }
+    }
+    // If we have more data fields defined for the key but no
+    // more literals. Ordinarily do nothing
+    // but with some codecs, we need to terminate the key
+    // with the delimiter to ensure e.g. a lexicographic "equals"
+    if (resultFields.size() < this.graph.getRowKeyFields().size()) {
+      KeyFieldMapping lastField = resultFields.get(resultFields.size() - 1);
+      switch (lastField.getCodecType()) {
+      case LEXICOSIMPLE:
+        this.startKey.put(graph.getRowKeyFieldDelimiterBytes());
+        break;
+      default:
+        break;
       }
     }
   }
 
-  private byte[] getStartBytes(PreDefinedKeyFieldMapping preDefinedField) {
+  private byte[] getStartBytes(MetaKeyFieldMapping preDefinedField) {
     byte[] encodedStartValue = null;
-    String startValue = null;
     switch (preDefinedField.getName()) {
-    case UUID:
-      if (this.rootUUID != null) {
-        startValue = this.rootUUID;
-        encodedStartValue = preDefinedField.getCodec().encode(startValue);
-      }
-      break;
     default:
       Object value = preDefinedField.getKey(this.rootType);
       encodedStartValue = preDefinedField.getCodec().encode(value);
@@ -298,15 +286,9 @@ public class PartialRowKeyScanAssembler implements RowKeyScanAssembler, PartialR
     return encodedStartValue;
   }
 
-  private byte[] getStopBytes(PreDefinedKeyFieldMapping preDefinedField, boolean lastField) {
+  private byte[] getStopBytes(MetaKeyFieldMapping preDefinedField, boolean lastField) {
     byte[] encodedStopValue = null;
     switch (preDefinedField.getName()) {
-    case UUID:
-      if (this.rootUUID != null) {
-        // FIXME: no stop value for a UUID?
-        encodedStopValue = this.rootUUID.getBytes(charset);
-      }
-      break;
     default:
       Object value = preDefinedField.getKey(this.rootType);
       if (!lastField)
