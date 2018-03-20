@@ -41,7 +41,8 @@
 			<plugin>
 				<groupId>org.terrameta</groupId>
 				<artifactId>plasma-maven-plugin</artifactId>
-				<version>${plasma.version}</version>
+<!-- 				<version>${plasma.version}</version> -->
+				<version>2.0.2</version>
 				<executions>
 					<execution>
 						<id>sdo-create</id>
