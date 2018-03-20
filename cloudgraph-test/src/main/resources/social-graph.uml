@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:PlasmaSDOProfile="http:///schemas/PlasmaSDOProfile/_8qY5cNn-Eee-zcHsSRM7_A/0" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xsi:schemaLocation="http:///schemas/PlasmaSDOProfile/_8qY5cNn-Eee-zcHsSRM7_A/0 pathmap://PLASMA_PROFILES/PlasmaSDO.profile_v1_2.uml#_8qdx8Nn-Eee-zcHsSRM7_A">
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:PlasmaSDOProfile="http:///schemas/PlasmaSDOProfile/_S-dOMBWkEei92ZhmTudv_w/1" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xsi:schemaLocation="http:///schemas/PlasmaSDOProfile/_S-dOMBWkEei92ZhmTudv_w/1 pathmap://PLASMA_PROFILES/PlasmaSDO.profile_v1_3.uml#_S-hfoBWkEei92ZhmTudv_w">
   <uml:Model xmi:id="5b39f3cc-d1f5-48a4-9edf-7a8fc56f8d18" name="derived model">
     <ownedComment xmi:type="uml:Comment" xmi:id="97a2c37c-3535-4345-a012-6a18d4a5e63e" annotatedElement="5b39f3cc-d1f5-48a4-9edf-7a8fc56f8d18">
       <body>derived model</body>
@@ -73,22 +73,22 @@
           <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="514ccfde-7f3d-4c15-b3f5-a75d93a56704" value="*"/>
         </ownedAttribute>
         <ownedAttribute xmi:type="uml:Property" xmi:id="d5f878de-1d81-4866-94c0-a3830ee2cdcc" name="name" visibility="public">
-          <type xmi:type="uml:DataType" href="pathmap://PLASMA_LIBRARIES/PlasmaSDODataTypes_v1_1.uml#plasma-sdo-profile-datatypes-String"/>
+          <type xmi:type="uml:DataType" href="pathmap://PLASMA_LIBRARIES/PlasmaSDODataTypes_v1_3.uml#plasma-sdo-profile-datatypes-String"/>
           <lowerValue xmi:type="uml:LiteralInteger" xmi:id="4fd440a5-42fb-4772-95bf-bf5168356c6f" value="1"/>
           <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="b16f7fa8-bcdc-4527-92f9-145ecf45cf95" value="1"/>
         </ownedAttribute>
         <ownedAttribute xmi:type="uml:Property" xmi:id="3c904d90-a778-45fe-a910-ecbb5ee2db02" name="description" visibility="public">
-          <type xmi:type="uml:DataType" href="pathmap://PLASMA_LIBRARIES/PlasmaSDODataTypes_v1_1.uml#plasma-sdo-profile-datatypes-String"/>
+          <type xmi:type="uml:DataType" href="pathmap://PLASMA_LIBRARIES/PlasmaSDODataTypes_v1_3.uml#plasma-sdo-profile-datatypes-String"/>
           <lowerValue xmi:type="uml:LiteralInteger" xmi:id="9757c808-7095-4ae0-aeab-a92a15852272" value="1"/>
           <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="746a2743-c03e-4b3c-9e65-2d600ce4b4e9" value="1"/>
         </ownedAttribute>
         <ownedAttribute xmi:type="uml:Property" xmi:id="ac8c8fce-dad5-4033-9d53-1c9bf211b7e7" name="createdDate" visibility="public">
-          <type xmi:type="uml:DataType" href="pathmap://PLASMA_LIBRARIES/PlasmaSDODataTypes_v1_1.uml#plasma-sdo-profile-datatypes-Date"/>
+          <type xmi:type="uml:DataType" href="pathmap://PLASMA_LIBRARIES/PlasmaSDODataTypes_v1_3.uml#plasma-sdo-profile-datatypes-Date"/>
           <lowerValue xmi:type="uml:LiteralInteger" xmi:id="e0d6e23a-6718-4892-af7a-eb8742d59cd3" value="1"/>
           <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="88cfd308-37fa-4544-8b83-28e52568b994" value="1"/>
         </ownedAttribute>
         <ownedAttribute xmi:type="uml:Property" xmi:id="9e81d497-065a-4594-98c2-e398e166ed0e" name="modifiedDate" visibility="public">
-          <type xmi:type="uml:DataType" href="pathmap://PLASMA_LIBRARIES/PlasmaSDODataTypes_v1_1.uml#plasma-sdo-profile-datatypes-Date"/>
+          <type xmi:type="uml:DataType" href="pathmap://PLASMA_LIBRARIES/PlasmaSDODataTypes_v1_3.uml#plasma-sdo-profile-datatypes-Date"/>
           <lowerValue xmi:type="uml:LiteralInteger" xmi:id="c8ed086f-19ec-448d-aa79-13e586115c75" value="1"/>
           <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="4e7df0e3-e500-48e9-821c-3a7d66f200fb" value="1"/>
         </ownedAttribute>
@@ -135,7 +135,7 @@
       <packagedElement xmi:type="uml:Class" xmi:id="d1afa756-6605-46a0-9040-71fac8fef52c" name="Photo">
         <generalization xmi:type="uml:Generalization" xmi:id="325e86e0-cfc9-4791-ba32-796a8fda8522" general="f097b61b-1112-4fdc-a038-e6f9e57d684a"/>
         <ownedAttribute xmi:type="uml:Property" xmi:id="d15ec4b3-319a-4abe-8554-fb9047699007" name="content" visibility="public">
-          <type xmi:type="uml:DataType" href="pathmap://PLASMA_LIBRARIES/PlasmaSDODataTypes_v1_1.uml#plasma-sdo-profile-datatypes-Bytes"/>
+          <type xmi:type="uml:DataType" href="pathmap://PLASMA_LIBRARIES/PlasmaSDODataTypes_v1_3.uml#plasma-sdo-profile-datatypes-Bytes"/>
           <lowerValue xmi:type="uml:LiteralInteger" xmi:id="7c3d5cd4-4f00-42c6-a2d5-f78f40b27f71" value="1"/>
           <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="39e9d02e-6521-45db-857e-0d7d5eb79fd1" value="1"/>
         </ownedAttribute>
@@ -176,10 +176,10 @@
     </packagedElement>
     <packagedElement xmi:type="uml:Association" xmi:id="a00a2e24-2e63-4e16-b477-3177094b6ffa" memberEnd="2ed87a59-d755-4625-9129-3a420c81a3b4 610b2f68-4605-4065-b168-fda957caa1af"/>
     <profileApplication xmi:type="uml:ProfileApplication" xmi:id="__RIADbhxEeempbWo52e7Lg">
-      <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="__Ra68LhxEeempbWo52e7Lg" source="http://www.eclipse.org/uml2/2.0.0/UML">
-        <references xmi:type="ecore:EPackage" href="pathmap://PLASMA_PROFILES/PlasmaSDO.profile_v1_2.uml#_8qdx8Nn-Eee-zcHsSRM7_A"/>
+      <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_AQET4dlIEeepqvc1YGOOyg" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="pathmap://PLASMA_PROFILES/PlasmaSDO.profile_v1_3.uml#_S-hfoBWkEei92ZhmTudv_w"/>
       </eAnnotations>
-      <appliedProfile xmi:type="uml:Profile" href="pathmap://PLASMA_PROFILES/PlasmaSDO.profile_v1_2.uml#_NlmngCJUEeSXvPZh3aumVA"/>
+      <appliedProfile xmi:type="uml:Profile" href="pathmap://PLASMA_PROFILES/PlasmaSDO.profile_v1_3.uml#_NlmngCJUEeSXvPZh3aumVA"/>
     </profileApplication>
   </uml:Model>
   <PlasmaSDOProfile:SDONamespace xmi:id="_LS3wUNoAEeeZWtyNPsNl6g" base_Package="689057e0-c830-4326-9482-79b72e7eea9b" uri="http://cloudgraph.org/test/socialgraph/story"/>

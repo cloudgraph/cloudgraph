@@ -227,7 +227,7 @@ public class FuzzyRowKeyScanAssembler implements RowKeyScanAssembler, FuzzyRowKe
               }
             }
           }
-           
+
           this.keyBytes.put(fuzzyLiteral.getFuzzyKeyBytes());
           this.infoBytes.put(fuzzyLiteral.getFuzzyInfoBytes());
         }

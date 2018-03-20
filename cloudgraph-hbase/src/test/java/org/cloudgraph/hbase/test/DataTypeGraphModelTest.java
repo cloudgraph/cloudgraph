@@ -30,6 +30,9 @@ import org.cloudgraph.test.datatypes.query.QNode;
 import org.plasma.query.Expression;
 import org.plasma.sdo.helper.DataConverter;
 
+import com.google.common.primitives.UnsignedInteger;
+import com.google.common.primitives.UnsignedLong;
+
 import commonj.sdo.DataGraph;
 import commonj.sdo.Property;
 
@@ -140,9 +143,11 @@ public abstract class DataTypeGraphModelTest extends HBaseTestCase {
     node.setFloatField(floatId);
 
     node.setIntField(Integer.MAX_VALUE);
+    node.setUnsignedIntField(UnsignedInteger.valueOf(Integer.MAX_VALUE));
     node.setIntegerField(BigInteger.valueOf(id));
 
     node.setLongField(id);
+    node.setUnsignedLongField(UnsignedLong.valueOf(id));
 
     node.setObjectField(name);
     node.setShortField(Short.MAX_VALUE);

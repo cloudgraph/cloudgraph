@@ -1,0 +1,25 @@
+Release Notes
+
+CloudGraph 1.1.0 Release Notes
+
+CloudGraph 1.1.0 is a production release of CloudGraph.
+
+The full list of changes can be found in our issue management system github, and is reproduced below.
+See https://github.com/cloudgraph/cloudgraph/issues. 
+
+For issues created during beta testing see:
+See https://github.com/cloudgraph/cloudgraph/issues. 
+
+
+Major Changes
+[Issue #17] -  Add Key Field Codec Functionality
+
+Bugs
+
+Improvements
+ 
+New Features
+
+Tasks
+
+Wish

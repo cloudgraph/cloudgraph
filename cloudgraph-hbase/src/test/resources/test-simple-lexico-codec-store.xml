@@ -93,6 +93,32 @@
             </ColumnKeyModel>
         </DataGraph>
  
+         <DataGraph uri="http://cloudgraph.org/test/datatypes" type="UnsignedIntNode">
+            <RowKeyModel>
+                <RowKeyField>
+                    <MetaField name="uri" codecType="lexicosimple"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <MetaField name="type" codecType="lexicosimple"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <DataField path="rootId" codecType="lexicosimple"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <DataField path="unsignedIntField" codecType="lexicosimple"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <DataField path="id" codecType="lexicosimple"/>
+                </RowKeyField>
+            </RowKeyModel>
+            
+            <ColumnKeyModel>
+                <ColumnKeyField name="uri" />
+                <ColumnKeyField name="type"/>
+                <ColumnKeyField name="property"/>
+            </ColumnKeyModel>
+        </DataGraph>
+ 
         <DataGraph uri="http://cloudgraph.org/test/datatypes" type="LongNode">
             <RowKeyModel>
                 <RowKeyField>
@@ -106,6 +132,32 @@
                 </RowKeyField>
                 <RowKeyField>
                     <DataField path="longField" codecType="lexicosimple"/>
+                </RowKeyField>
+                 <RowKeyField>
+                    <DataField path="id" codecType="lexicosimple"/>
+                </RowKeyField>
+            </RowKeyModel>
+            
+            <ColumnKeyModel>
+                <ColumnKeyField name="uri" />
+                <ColumnKeyField name="type"/>
+                <ColumnKeyField name="property"/>
+            </ColumnKeyModel>
+        </DataGraph>
+        
+        <DataGraph uri="http://cloudgraph.org/test/datatypes" type="UnsignedLongNode">
+            <RowKeyModel>
+                <RowKeyField>
+                    <MetaField name="uri" codecType="lexicosimple"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <MetaField name="type" codecType="lexicosimple"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <DataField path="rootId" codecType="lexicosimple"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <DataField path="unsignedLongField" codecType="lexicosimple"/>
                 </RowKeyField>
                  <RowKeyField>
                     <DataField path="id" codecType="lexicosimple"/>
