@@ -16,9 +16,10 @@
 package org.cloudgraph.store.mapping.codec;
 
 import org.cloudgraph.common.Bytes;
-import org.cloudgraph.common.hash.Hash;
-import org.cloudgraph.common.hash.JenkinsHash;
-import org.cloudgraph.common.hash.MurmurHash;
+import org.cloudgraph.common.hash.Hash32;
+import org.cloudgraph.common.hash.Jenkins32;
+import org.cloudgraph.common.hash.Murmur128;
+import org.cloudgraph.common.hash.Murmur32;
 import org.cloudgraph.store.mapping.HashAlgorithmName;
 import org.cloudgraph.store.mapping.KeyFieldMapping;
 import org.plasma.sdo.DataFlavor;
@@ -37,16 +38,15 @@ import commonj.sdo.Type;
  * possible for the hashed bytes for the native {@link DataType}.
  * 
  * 
- * @see LexicographicCodec
  * @see Type
  * @see DataFlavor
  * 
+ * @see HashAlgorithmName
  * @author Scott Cinnamond
  * @since 1.1.0
  */
 public class HashKeyFieldCodec extends DefaultKeyFieldCodec implements KeyFieldCodec {
   protected HashAlgorithmName hashName;
-  protected Hash hash;
 
   @Override
   public boolean isLexicographic() {
@@ -61,27 +61,27 @@ public class HashKeyFieldCodec extends DefaultKeyFieldCodec implements KeyFieldC
   public HashKeyFieldCodec(KeyFieldMapping keyField, HashAlgorithmName hash) {
     super(keyField);
     this.hashName = hash;
-    switch (this.hashName) {
-    case JENKINS:
-      this.hash = JenkinsHash.instance();
-      break;
-    case MURMUR:
-      this.hash = MurmurHash.instance();
-      break;
-    default:
-      throw new IllegalArgumentException("unknown hash, " + this.hashName);
-    }
-  }
-
-  public Hash getHash() {
-    return hash;
   }
 
   @Override
   public byte[] encode(Object value) {
     byte[] bytesValue = DataConverter.INSTANCE.toBytes(this.keyField.getDataType(), value);
-    byte[] hashedBytesValue = Bytes.toBytes(Integer.valueOf(hash.hash(bytesValue)));
-    return hashedBytesValue;
+    byte[] result = null;
+    switch (this.hashName) {
+    case JENKINS_32:
+      result = Bytes.toBytes(Jenkins32.instance().hash(bytesValue));
+      break;
+    case MURMUR_32:
+      result = Bytes.toBytes(Murmur32.instance().hash(bytesValue));
+      break;
+    case MURMUR_128:
+      result = Bytes.toBytes(Murmur128.instance().hash(bytesValue));
+      break;
+    default:
+      throw new IllegalArgumentException("unknown hash, " + this.hashName);
+    }
+
+    return result;
   }
 
   @Override
@@ -102,18 +102,4 @@ public class HashKeyFieldCodec extends DefaultKeyFieldCodec implements KeyFieldC
     throw new CodecException("operation not supported for non-lexicographic codec");
   }
 
-  // @Override
-  // public byte[] writeEqualsStartBytes(String key) {
-  // byte[] bytes = key.getBytes(charset);
-  // return Bytes.toBytes(Integer.valueOf(hash.hash(bytes)));
-  // }
-  //
-  // @Override
-  // public byte[] writeEqualsStopBytes(String key) {
-  // byte[] bytes = key.getBytes(charset);
-  // int hashedValue = Integer.valueOf(hash.hash(bytes));
-  // hashedValue++;
-  // return Bytes.toBytes(hashedValue);
-  // }
-  //
 }

@@ -129,7 +129,7 @@ public abstract class KeyFieldMapping {
           }
         }
         if (this.keyFieldCodec == null)
-          this.keyFieldCodec = new HashKeyFieldCodec(this, HashAlgorithmName.JENKINS);
+          this.keyFieldCodec = new HashKeyFieldCodec(this, HashAlgorithmName.JENKINS_32);
         break;
       case LEXICOHASH:
         if (this.dataGraph.getTable().hasHashAlgorithm()) {
@@ -139,7 +139,7 @@ public abstract class KeyFieldMapping {
           }
         }
         if (this.keyFieldCodec == null)
-          this.keyFieldCodec = new LexicoHashKeyFieldCodec(this, HashAlgorithmName.JENKINS);
+          this.keyFieldCodec = new LexicoHashKeyFieldCodec(this, HashAlgorithmName.JENKINS_32);
         break;
       case NATIVE:
         this.keyFieldCodec = new NativeKeyFieldCodec(this);

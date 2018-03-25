@@ -38,4 +38,14 @@ public class Bytes {
     b[0] = (byte) val;
     return b;
   }
+
+  public static byte[] toBytes(long val) {
+    byte[] b = new byte[8];
+    for (int i = 7; i > 0; i--) {
+      b[i] = (byte) val;
+      val >>>= 8;
+    }
+    b[0] = (byte) val;
+    return b;
+  }
 }

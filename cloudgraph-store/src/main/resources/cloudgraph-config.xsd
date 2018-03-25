@@ -496,8 +496,9 @@ column field may be specified.
         </xsd:annotation>
         <xsd:restriction base="xsd:string">
             <xsd:enumeration value="none" />
-            <xsd:enumeration value="murmur" />
-            <xsd:enumeration value="jenkins" />
+            <xsd:enumeration value="murmur32" />
+            <xsd:enumeration value="murmur128" />
+            <xsd:enumeration value="jenkins32" />
         </xsd:restriction>
     </xsd:simpleType>
       

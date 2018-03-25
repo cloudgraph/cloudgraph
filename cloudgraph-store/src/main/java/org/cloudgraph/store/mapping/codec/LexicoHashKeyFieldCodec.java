@@ -15,9 +15,11 @@
  */
 package org.cloudgraph.store.mapping.codec;
 
-import org.cloudgraph.common.hash.Hash;
-import org.cloudgraph.common.hash.JenkinsHash;
-import org.cloudgraph.common.hash.MurmurHash;
+import org.cloudgraph.common.Bytes;
+import org.cloudgraph.common.hash.Hash32;
+import org.cloudgraph.common.hash.Jenkins32;
+import org.cloudgraph.common.hash.Murmur128;
+import org.cloudgraph.common.hash.Murmur32;
 import org.cloudgraph.store.mapping.HashAlgorithmName;
 import org.cloudgraph.store.mapping.KeyFieldMapping;
 import org.plasma.sdo.DataFlavor;
@@ -36,16 +38,15 @@ import commonj.sdo.Type;
  * possible for the hashed bytes for the native {@link DataType}.
  * 
  * 
- * @see LexicographicCodec
  * @see Type
  * @see DataFlavor
+ * @see HashAlgorithmName
  * 
  * @author Scott Cinnamond
  * @since 1.1.0
  */
 public class LexicoHashKeyFieldCodec extends DefaultKeyFieldCodec implements KeyFieldCodec {
   protected HashAlgorithmName hashName;
-  protected Hash hash;
   /** the max integer digits 2B (10 digits) plus the negitive sign */
   public static final int MAX_LENGTH = 11;
 
@@ -62,20 +63,6 @@ public class LexicoHashKeyFieldCodec extends DefaultKeyFieldCodec implements Key
   public LexicoHashKeyFieldCodec(KeyFieldMapping keyField, HashAlgorithmName hash) {
     super(keyField);
     this.hashName = hash;
-    switch (this.hashName) {
-    case JENKINS:
-      this.hash = JenkinsHash.instance();
-      break;
-    case MURMUR:
-      this.hash = MurmurHash.instance();
-      break;
-    default:
-      throw new IllegalArgumentException("unknown hash, " + this.hashName);
-    }
-  }
-
-  public Hash getHash() {
-    return hash;
   }
 
   @Override
@@ -91,11 +78,26 @@ public class LexicoHashKeyFieldCodec extends DefaultKeyFieldCodec implements Key
       bytesValue = DataConverter.INSTANCE.toBytes(this.keyField.getDataType(), value);
       break;
     }
-    int hashValue = Integer.valueOf(hash.hash(bytesValue));
-    String hashedStringValue = DataConverter.INSTANCE.toString(DataType.Int, hashValue);
+    String hashValueStr = null;
+    switch (this.hashName) {
+    case JENKINS_32:
+      int hashValue = Jenkins32.instance().hash(bytesValue);
+      hashValueStr = DataConverter.INSTANCE.toString(DataType.Int, hashValue);
+      break;
+    case MURMUR_32:
+      hashValue = Murmur32.instance().hash(bytesValue);
+      hashValueStr = DataConverter.INSTANCE.toString(DataType.Int, hashValue);
+      break;
+    case MURMUR_128:
+      long hashValueLong = Murmur128.instance().hash(bytesValue);
+      hashValueStr = DataConverter.INSTANCE.toString(DataType.Long, hashValueLong);
+      break;
+    default:
+      throw new IllegalArgumentException("unknown hash, " + this.hashName);
+    }
 
-    byte[] hashedBytesValue = hashedStringValue.getBytes(KeyFieldMapping.CHARSET);
-    return hashedBytesValue;
+    byte[] result = hashValueStr.getBytes(KeyFieldMapping.CHARSET);
+    return result;
   }
 
   @Override
@@ -124,11 +126,29 @@ public class LexicoHashKeyFieldCodec extends DefaultKeyFieldCodec implements Key
       bytesValue = DataConverter.INSTANCE.toBytes(this.keyField.getDataType(), value);
       break;
     }
-    int hashValue = Integer.valueOf(hash.hash(bytesValue));
-    hashValue++;
-    String hashedStringValue = DataConverter.INSTANCE.toString(DataType.Int, hashValue);
-    byte[] hashedBytesValue = hashedStringValue.getBytes(KeyFieldMapping.CHARSET);
-    return hashedBytesValue;
+
+    String hashValueStr = null;
+    switch (this.hashName) {
+    case JENKINS_32:
+      int hashValue = Jenkins32.instance().hash(bytesValue);
+      hashValue++;
+      hashValueStr = DataConverter.INSTANCE.toString(DataType.Int, hashValue);
+      break;
+    case MURMUR_32:
+      hashValue = Murmur32.instance().hash(bytesValue);
+      hashValue++;
+      hashValueStr = DataConverter.INSTANCE.toString(DataType.Int, hashValue);
+      break;
+    case MURMUR_128:
+      long hashValueLong = Murmur128.instance().hash(bytesValue);
+      hashValueLong++;
+      hashValueStr = DataConverter.INSTANCE.toString(DataType.Long, hashValueLong);
+      break;
+    default:
+      throw new IllegalArgumentException("unknown hash, " + this.hashName);
+    }
+    byte[] result = hashValueStr.getBytes(KeyFieldMapping.CHARSET);
+    return result;
   }
 
 }
