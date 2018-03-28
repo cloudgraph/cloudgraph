@@ -77,7 +77,8 @@ class ParallelSliceSubgraphTask extends DefaultSubgraphTask implements SubgraphT
       ThreadPoolMappingProps config) {
     super(subroot, subrootSequence, selection, snapshotDate, distributedReader, collection, source,
         sourceProperty, rowReader, level, sequence, executorService, config);
-    this.sliceSupport = new GraphSliceSupport(selection, snapshotDate);
+    this.sliceSupport = new GraphSliceSupport(selection, snapshotDate,
+        distributedReader.getConnection());
   }
 
   @Override

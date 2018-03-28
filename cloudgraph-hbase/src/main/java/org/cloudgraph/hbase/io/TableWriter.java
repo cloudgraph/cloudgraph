@@ -69,8 +69,4 @@ public interface TableWriter extends TableOperation {
    */
   public List<RowWriter> getAllRowWriters();
 
-  /**
-   * Closes tables and connections.
-   */
-  public void close() throws IOException;
 }

@@ -39,6 +39,7 @@ import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.filter.Filter;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.cloudgraph.hbase.connect.Connection;
 import org.cloudgraph.hbase.filter.BinaryPrefixColumnFilterAssembler;
 import org.cloudgraph.hbase.filter.ColumnPredicateFilterAssembler;
 import org.cloudgraph.hbase.filter.GraphFetchColumnFilterAssembler;
@@ -50,6 +51,7 @@ import org.cloudgraph.hbase.io.CellValues;
 import org.cloudgraph.hbase.io.DefaultEdgeOperation.KeyBytes;
 import org.cloudgraph.hbase.io.DistributedGraphReader;
 import org.cloudgraph.hbase.io.DistributedReader;
+import org.cloudgraph.hbase.io.DistributedSliceReader;
 import org.cloudgraph.hbase.io.EdgeReader;
 import org.cloudgraph.hbase.io.RowReader;
 import org.cloudgraph.hbase.io.TableOperation;
@@ -93,14 +95,16 @@ class GraphSliceSupport {
   private Selection selection;
   private Timestamp snapshotDate;
   private Charset charset;
+  private Connection connection;
 
   @SuppressWarnings("unused")
   private GraphSliceSupport() {
   }
 
-  public GraphSliceSupport(Selection selection, Timestamp snapshotDate) {
+  public GraphSliceSupport(Selection selection, Timestamp snapshotDate, Connection connection) {
     this.selection = selection;
     this.snapshotDate = snapshotDate;
+    this.connection = connection;
     this.charset = Charset.forName(CoreConstants.UTF8_ENCODING);
   }
 
@@ -175,8 +179,11 @@ class GraphSliceSupport {
     // already
     // linked to the parent graph. Cannot link to sub-graph as well.
     DistributedReader existingReader = (DistributedReader) tableReader.getDistributedOperation();
-    DistributedGraphReader sliceGraphReader = new DistributedGraphReader(contextType,
-        predicateSelection.getTypes(), existingReader.getMarshallingContext());
+    DistributedGraphReader sliceGraphReader = new DistributedSliceReader(contextType,
+        predicateSelection.getTypes(), existingReader);
+    // Note: don't need to close this distributed reader because the slice graph
+    // must
+    // always have a parent graph, which will close the resources
 
     HBaseGraphAssembler graphAssembler = new GraphAssembler(contextType, predicateSelection,
         sliceGraphReader, snapshotDate);

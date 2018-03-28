@@ -39,7 +39,7 @@ import commonj.sdo.Type;
  * @author Scott Cinnamond
  * @since 0.5.1
  */
-public interface DistributedReader extends DistributedOperation {
+public interface DistributedReader extends DistributedGraphOperation {
 
   /**
    * Returns the table reader for the given configured table name.

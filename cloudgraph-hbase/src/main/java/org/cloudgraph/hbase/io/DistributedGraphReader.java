@@ -15,6 +15,7 @@
  */
 package org.cloudgraph.hbase.io;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -25,6 +26,8 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.cloudgraph.hbase.connect.Connection;
+import org.cloudgraph.hbase.connect.HBaseConnectionManager;
 import org.cloudgraph.state.GraphRow;
 import org.cloudgraph.state.StateMarshalingContext;
 import org.cloudgraph.store.mapping.StoreMapping;
@@ -70,16 +73,24 @@ public class DistributedGraphReader implements DistributedReader {
 
   private StateMarshalingContext marshallingContext;
 
+  private Connection connection;
+
   @SuppressWarnings("unused")
   private DistributedGraphReader() {
   }
 
   public DistributedGraphReader(Type rootType, List<Type> types,
       StateMarshalingContext marshallingContext) {
+    this(rootType, types, marshallingContext, HBaseConnectionManager.instance().getConnection());
+  }
+
+  protected DistributedGraphReader(Type rootType, List<Type> types,
+      StateMarshalingContext marshallingContext, Connection connection) {
     this.marshallingContext = marshallingContext;
     PlasmaType root = (PlasmaType) rootType;
 
     TableMapping rootTable = StoreMapping.getInstance().getTable(root.getQualifiedName());
+    this.connection = connection;
 
     TableReader tableReader = new GraphTableReader(rootTable, this);
     this.tableReaderMap.put(tableReader.getTableConfig().getName(), tableReader);
@@ -297,6 +308,25 @@ public class DistributedGraphReader implements DistributedReader {
   @Override
   public StateMarshalingContext getMarshallingContext() {
     return this.marshallingContext;
+  }
+
+  @Override
+  public Connection getConnection() {
+    return this.connection;
+  }
+
+  @Override
+  public void close() {
+    try {
+      // don't close table here, let the connection
+      // deal with resources it controls
+      if (this.connection != null)
+        this.connection.close();
+    } catch (IOException e) {
+      log.error(e.getMessage(), e);
+    } finally {
+      this.connection = null;
+    }
   }
 
 }

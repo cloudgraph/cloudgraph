@@ -25,6 +25,8 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.cloudgraph.hbase.connect.Connection;
+import org.cloudgraph.hbase.connect.HBaseConnectionManager;
 import org.cloudgraph.hbase.io.DistributedGraphWriter;
 import org.cloudgraph.hbase.io.DistributedWriter;
 import org.cloudgraph.hbase.io.RowWriter;
@@ -46,7 +48,6 @@ import org.plasma.sdo.repository.Classifier;
 import org.plasma.sdo.repository.PlasmaRepository;
 
 import sorts.InsertionSort;
-
 import commonj.sdo.DataGraph;
 import commonj.sdo.DataObject;
 import commonj.sdo.Property;
@@ -73,6 +74,7 @@ public class GraphMutationCollector extends DefaultMutation implements MutationC
   protected Create create;
   protected Update update;
   protected Delete delete;
+  protected DistributedWriter graphWriter;
 
   public GraphMutationCollector(ServiceContext context, SnapshotMap snapshotMap, String username) {
     super(context, snapshotMap, username);
@@ -88,6 +90,7 @@ public class GraphMutationCollector extends DefaultMutation implements MutationC
    */
   @Override
   public void close() {
+    this.graphWriter.close();
     this.context.close();
   }
 
@@ -121,7 +124,7 @@ public class GraphMutationCollector extends DefaultMutation implements MutationC
 
     TableWriterCollector collector = new TableWriterCollector(dataGraph, created, modified, deleted);
 
-    DistributedWriter graphWriter = new DistributedGraphWriter(dataGraph, collector,
+    this.graphWriter = new DistributedGraphWriter(dataGraph, collector,
         this.context.getMarshallingContext());
 
     this.create(dataGraph, created, graphWriter);

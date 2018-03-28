@@ -60,9 +60,9 @@ public class GraphTableReader extends GraphTable implements TableReader {
   private Table table;
   /** maps data object UUIDs strings and row key strings to row readers */
   private Map<String, RowReader> rowReaderMap = new HashMap<String, RowReader>();
-  private DistributedOperation distributedOperation;
+  private DistributedGraphOperation distributedOperation;
 
-  public GraphTableReader(TableMapping table, DistributedOperation distributedOperation) {
+  public GraphTableReader(TableMapping table, DistributedGraphOperation distributedOperation) {
     super(table);
     this.distributedOperation = distributedOperation;
   }
@@ -232,7 +232,7 @@ public class GraphTableReader extends GraphTable implements TableReader {
    *         context.
    */
   @Override
-  public DistributedOperation getDistributedOperation() {
+  public DistributedGraphOperation getDistributedOperation() {
     return this.distributedOperation;
   }
 
@@ -244,18 +244,8 @@ public class GraphTableReader extends GraphTable implements TableReader {
   }
 
   @Override
-  public void close() throws IOException {
-    try {
-      // don't close table here, let the connection
-      // deal with resources it controls
-      if (this.connection != null)
-        this.connection.close();
-    } catch (IOException e) {
-      log.error(e.getMessage(), e);
-    } finally {
-      this.table = null;
-      this.connection = null;
-    }
+  public void close() {
+    this.table = null;
   }
 
 }

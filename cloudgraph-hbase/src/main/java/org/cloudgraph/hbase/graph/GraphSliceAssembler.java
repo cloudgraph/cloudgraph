@@ -86,7 +86,8 @@ public class GraphSliceAssembler extends DistributedAssembler {
       DistributedReader distributedReader, Timestamp snapshotDate) {
     super(rootType, selection, distributedReader, snapshotDate);
     this.charset = Charset.forName(CoreConstants.UTF8_ENCODING);
-    this.slice = new GraphSliceSupport(this.selection, this.snapshotDate);
+    this.slice = new GraphSliceSupport(this.selection, this.snapshotDate,
+        distributedReader.getConnection());
   }
 
   @Override

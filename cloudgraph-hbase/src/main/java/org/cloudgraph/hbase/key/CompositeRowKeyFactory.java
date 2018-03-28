@@ -1,5 +1,4 @@
-/**
- * Copyright 2017 TerraMeta Software, Inc.
+/** * Copyright 2017 TerraMeta Software, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +20,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.hbase.util.Bytes;
 import org.cloudgraph.state.RowState;
 import org.cloudgraph.store.key.GraphRowKeyFactory;
 import org.cloudgraph.store.key.KeyFieldOverflowException;
@@ -74,25 +74,6 @@ public class CompositeRowKeyFactory extends ByteBufferKeyFactory implements Grap
    *          the data object type
    * @return the row key
    */
-  // public String createRowKey(Type type) {
-  // StringBuilder result = new StringBuilder();
-  // PlasmaType plasmaType = (PlasmaType) type;
-  //
-  // List<PreDefinedKeyFieldMapping> preDefinedFields =
-  // this.getGraph().getPreDefinedRowKeyFields();
-  // for (int i = 0; i < preDefinedFields.size(); i++) {
-  // PreDefinedKeyFieldMapping preDefinedField = preDefinedFields.get(i);
-  // if (i > 0)
-  // result.append(this.getGraph().getRowKeyFieldDelimiter());
-  // String tokenValue =
-  // this.keySupport.getEncodedPredefinedFieldAsString(plasmaType, //
-  // this.hashing,
-  // preDefinedField);
-  // result.append(tokenValue);
-  // }
-  // return result.toString();
-  // }
-
   @Override
   public byte[] createRowKeyBytes(Type type) {
 
@@ -120,8 +101,9 @@ public class CompositeRowKeyFactory extends ByteBufferKeyFactory implements Grap
 
       Object keyValue = preDefinedField.getKey(type);
       byte[] encodedKeyValue = preDefinedField.getCodec().encode(keyValue);
-      if (preDefinedField.getCodec().checkEncodeOverflow(encodedKeyValue))
-        throw new KeyFieldOverflowException("value '" + keyValue
+      if (!preDefinedField.getCodec().isTransforming()
+          && preDefinedField.getCodec().checkEncodeOverflow(encodedKeyValue))
+        throw new KeyFieldOverflowException("value '" + Bytes.toString(encodedKeyValue)
             + "' exceeds capacity for key field: " + preDefinedField);
 
       // byte[] tokenValue = this.keySupport.getEncodedPredefinedField(type, //
@@ -149,8 +131,9 @@ public class CompositeRowKeyFactory extends ByteBufferKeyFactory implements Grap
 
       Object keyValue = fieldConfig.getKey(rootDataObject);
       byte[] encodedKeyValue = fieldConfig.getCodec().encode(keyValue);
-      if (fieldConfig.getCodec().checkEncodeOverflow(encodedKeyValue))
-        throw new KeyFieldOverflowException("value '" + keyValue
+      if (!fieldConfig.getCodec().isTransforming()
+          && fieldConfig.getCodec().checkEncodeOverflow(encodedKeyValue))
+        throw new KeyFieldOverflowException("value '" + Bytes.toString(encodedKeyValue)
             + "' exceeds capacity for key field: " + fieldConfig);
       this.buf.put(encodedKeyValue);
 
@@ -204,8 +187,9 @@ public class CompositeRowKeyFactory extends ByteBufferKeyFactory implements Grap
         encodedKeyValue = fieldConfig.getCodec().encode(fieldValue);
         break;
       }
-      if (fieldConfig.getCodec().checkEncodeOverflow(encodedKeyValue))
-        throw new KeyFieldOverflowException("value '" + fieldValue
+      if (!fieldConfig.getCodec().isTransforming()
+          && fieldConfig.getCodec().checkEncodeOverflow(encodedKeyValue))
+        throw new KeyFieldOverflowException("value '" + Bytes.toString(encodedKeyValue)
             + "' exceeds capacity for key field: " + fieldConfig);
 
       this.buf.put(encodedKeyValue);

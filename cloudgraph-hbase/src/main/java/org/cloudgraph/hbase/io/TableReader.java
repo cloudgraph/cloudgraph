@@ -120,8 +120,4 @@ public interface TableReader extends TableOperation {
    */
   public void clear();
 
-  /**
-   * Closes tables and connections.
-   */
-  public void close() throws IOException;
 }

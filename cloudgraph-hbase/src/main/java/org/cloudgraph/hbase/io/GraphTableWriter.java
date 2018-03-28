@@ -52,7 +52,6 @@ import org.cloudgraph.store.mapping.TableMapping;
  */
 public class GraphTableWriter extends GraphTable implements TableWriter {
   private static Log log = LogFactory.getLog(GraphTableWriter.class);
-  private Connection connection;
   private Table table;
   /** maps data object UUIDs to row writers */
   private Map<String, RowWriter> rowContextMap = new HashMap<String, RowWriter>();
@@ -78,43 +77,31 @@ public class GraphTableWriter extends GraphTable implements TableWriter {
 
   @Override
   public Table getTable() {
-    if (this.connection == null) {
-      try {
-        this.connection = HBaseConnectionManager.instance().getConnection();
-        TableName tableName = TableName.valueOf(tableConfig.getQualifiedName());
-        // Note: calling tableExists() using the admin HBase API is expensive
-        // and is
-        // showing up on CPU profiling results. Just call get table and catch :(
-        // Unfortunately at least on windows client, below get operation does
-        // not throw
-        // anything and continues on.
-        if (!this.connection.tableExists(tableName)) {
-          HBaseConnectionManager.instance().createTable(this.connection, tableName);
-          this.table = this.connection.getTable(tableName);
-        } else {
-          try {
-            this.table = this.connection.getTable(tableName);
-          } catch (TableNotFoundException | NamespaceNotFoundException e) {
-            HBaseConnectionManager.instance().createTable(this.connection, tableName);
-            this.table = this.connection.getTable(tableName);
-          }
+    try {
+      TableName tableName = TableName.valueOf(tableConfig.getQualifiedName());
+      // Note: calling tableExists() using the admin HBase API is expensive
+      // and is
+      // showing up on CPU profiling results. Just call get table and catch :(
+      // Unfortunately at least on windows client, below get operation does
+      // not throw
+      // anything and continues on.
+      if (!distributedGraphWriter.getConnection().tableExists(tableName)) {
+        HBaseConnectionManager.instance().createTable(distributedGraphWriter.getConnection(),
+            tableName);
+        this.table = distributedGraphWriter.getConnection().getTable(tableName);
+      } else {
+        try {
+          this.table = distributedGraphWriter.getConnection().getTable(tableName);
+        } catch (TableNotFoundException | NamespaceNotFoundException e) {
+          HBaseConnectionManager.instance().createTable(distributedGraphWriter.getConnection(),
+              tableName);
+          this.table = distributedGraphWriter.getConnection().getTable(tableName);
         }
-      } catch (IOException e) {
-        throw new OperationException(e);
       }
+    } catch (IOException e) {
+      throw new OperationException(e);
     }
     return this.table;
-  }
-
-  /**
-   * Returns whether there is an active HBase table pooled connection for this
-   * context.
-   * 
-   * @return whether there is an active HBase table pooled connection for this
-   *         context.
-   */
-  public boolean hasConnection() {
-    return this.connection != null;
   }
 
   @Override
@@ -142,34 +129,13 @@ public class GraphTableWriter extends GraphTable implements TableWriter {
    *         context.
    */
   @Override
-  public DistributedOperation getDistributedOperation() {
+  public DistributedGraphOperation getDistributedOperation() {
     return this.distributedGraphWriter;
   }
 
-  // /**
-  // * Sets the distributed context associated with this table
-  // * operation context.
-  // * @param distributedOperation the operation
-  // */
-  // @Override
-  // public void setDistributedOperation(DistributedOperation
-  // distributedOperation) {
-  // this.distributedGraphWriter = distributedOperation;
-  // }
-
   @Override
-  public void close() throws IOException {
-    try {
-      // don't close table here, let the connection
-      // deal with resources it controls
-      if (this.connection != null)
-        this.connection.close();
-    } catch (IOException e) {
-      log.error(e.getMessage(), e);
-    } finally {
-      this.table = null;
-      this.connection = null;
-    }
+  public void close() {
+    this.table = null;
   }
 
 }

@@ -35,7 +35,7 @@ import commonj.sdo.Type;
  * @author Scott Cinnamond
  * @since 0.5.1
  */
-public interface DistributedWriter extends DistributedOperation {
+public interface DistributedWriter extends DistributedGraphOperation {
 
   /**
    * Returns the table writer for the given configured table name.

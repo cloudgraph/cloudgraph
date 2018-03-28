@@ -10,7 +10,7 @@
  
          
     <Table name="TEST_WIDE_ROW" dataColumnFamilyName="f1">
-        <HashAlgorithm name="murmur"/>
+        <HashAlgorithm name="murmur32"/>
         <DataGraph uri="http://cloudgraph.org/test/socialgraph/actor" type="Actor">
             <RowKeyModel>
                 <RowKeyField>

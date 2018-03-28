@@ -37,6 +37,8 @@ import org.apache.hadoop.hbase.filter.Filter;
 import org.apache.hadoop.hbase.filter.FilterList;
 import org.apache.hadoop.hbase.filter.RandomRowFilter;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.cloudgraph.hbase.connect.Connection;
+import org.cloudgraph.hbase.connect.HBaseConnectionManager;
 import org.cloudgraph.hbase.filter.GraphFetchColumnFilterAssembler;
 import org.cloudgraph.hbase.filter.HBaseFilterAssembler;
 import org.cloudgraph.hbase.filter.InitialFetchColumnFilterAssembler;
@@ -204,6 +206,7 @@ public class GraphQuery implements QueryDispatcher {
 
     DistributedGraphReader graphReader = new DistributedGraphReader(type,
         selectionCollector.getTypes(), this.context.getMarshallingContext());
+
     TableReader rootTableReader = graphReader.getRootTableReader();
 
     // Create and add a column filter for the initial
@@ -341,14 +344,11 @@ public class GraphQuery implements QueryDispatcher {
     } catch (Throwable t) {
       throw new GraphServiceException(t);
     } finally {
+      // important - closes the connection
+      graphReader.close();
+
       for (TableReader reader : graphReader.getTableReaders()) {
-        if (reader.hasConnection()) {
-          try {
-            reader.close();
-          } catch (IOException e) {
-            log.error(e.getMessage());
-          }
-        }
+        reader.close();
       }
     }
   }

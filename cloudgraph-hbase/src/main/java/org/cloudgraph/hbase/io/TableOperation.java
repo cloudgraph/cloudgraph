@@ -15,6 +15,8 @@
  */
 package org.cloudgraph.hbase.io;
 
+import java.io.IOException;
+
 import org.apache.hadoop.hbase.client.Table;
 import org.cloudgraph.state.TableState;
 
@@ -35,22 +37,13 @@ public interface TableOperation extends TableState {
   public Table getTable();
 
   /**
-   * Returns whether there is an active HBase table pooled connection for this
-   * context.
-   * 
-   * @return whether there is an active HBase table pooled connection for this
-   *         context.
-   */
-  public boolean hasConnection();
-
-  /**
    * Returns the distributed context associated with this table operation
    * context.
    * 
    * @return the distributed context associated with this table operation
    *         context.
    */
-  public DistributedOperation getDistributedOperation();
+  public DistributedGraphOperation getDistributedOperation();
 
   /**
    * Sets the distributed context associated with this table operation context.
@@ -60,4 +53,8 @@ public interface TableOperation extends TableState {
    */
   // public void setDistributedOperation(DistributedOperation
   // distributedOperation);
+  /**
+   * Frees resources.
+   */
+  public void close();
 }
