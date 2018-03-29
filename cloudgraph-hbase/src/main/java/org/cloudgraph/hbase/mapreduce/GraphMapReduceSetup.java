@@ -77,9 +77,6 @@ import org.cloudgraph.hbase.util.FilterUtil;
 import org.cloudgraph.job.JobSetup;
 import org.cloudgraph.query.expr.Expr;
 import org.cloudgraph.query.expr.ExprPrinter;
-import org.cloudgraph.state.SimpleStateMarshallingContext;
-import org.cloudgraph.state.StateMarshalingContext;
-import org.cloudgraph.state.StateNonValidatingDataBinding;
 import org.cloudgraph.store.mapping.Config;
 import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
@@ -176,17 +173,9 @@ public class GraphMapReduceSetup extends JobSetup {
     for (Type t : selectionCollector.getTypes())
       collectRowKeyProperties(selectionCollector, (PlasmaType) t);
 
-    StateMarshalingContext marshallingContext = null;
-    try {
-      marshallingContext = new SimpleStateMarshallingContext(new StateNonValidatingDataBinding());
-    } catch (JAXBException e) {
-      throw new GraphServiceException(e);
-    } catch (SAXException e) {
-      throw new GraphServiceException(e);
-    }
-
+    // FIXME: just need the root table reader - remove
     DistributedGraphReader graphReader = new DistributedGraphReader(type,
-        selectionCollector.getTypes(), marshallingContext);
+        selectionCollector.getTypes(), null);
 
     HBaseFilterAssembler columnFilterAssembler = new GraphFetchColumnFilterAssembler(
         selectionCollector, type);
@@ -533,17 +522,8 @@ public class GraphMapReduceSetup extends JobSetup {
     for (Type t : selectionCollector.getTypes())
       collectRowKeyProperties(selectionCollector, (PlasmaType) t);
 
-    StateMarshalingContext marshallingContext = null;
-    try {
-      marshallingContext = new SimpleStateMarshallingContext(new StateNonValidatingDataBinding());
-    } catch (JAXBException e) {
-      throw new GraphServiceException(e);
-    } catch (SAXException e) {
-      throw new GraphServiceException(e);
-    }
-
-    DistributedGraphReader graphReader = new DistributedGraphReader(type,
-        selectionCollector.getTypes(), marshallingContext);
+    // DistributedGraphReader graphReader = new DistributedGraphReader(type,
+    // selectionCollector.getTypes(), marshallingContext);
 
     // job.setOutputFormatClass(GraphOutputFormat.class);
     if (reducer != null)

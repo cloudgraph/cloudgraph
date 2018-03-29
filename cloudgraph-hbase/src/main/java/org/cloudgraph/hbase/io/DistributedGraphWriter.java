@@ -25,7 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.cloudgraph.hbase.connect.Connection;
 import org.cloudgraph.hbase.connect.HBaseConnectionManager;
-import org.cloudgraph.state.StateMarshalingContext;
+
 import org.cloudgraph.store.mapping.StoreMapping;
 import org.cloudgraph.store.mapping.TableMapping;
 import org.plasma.sdo.PlasmaType;
@@ -60,7 +60,6 @@ public class DistributedGraphWriter extends WriterSupport implements Distributed
   private Map<String, TableWriter> tableWriterMap = new HashMap<String, TableWriter>();
   /** maps table writers to graph-root types */
   private Map<TableWriter, List<Type>> tableWriterTypeMap = new HashMap<TableWriter, List<Type>>();
-  private StateMarshalingContext marshallingContext;
   private Connection connection;
 
   @SuppressWarnings("unused")
@@ -68,9 +67,9 @@ public class DistributedGraphWriter extends WriterSupport implements Distributed
   }
 
   public DistributedGraphWriter(DataGraph dataGraph, TableWriterCollector collector,
-      StateMarshalingContext marshallingContext) throws IOException {
-    this.marshallingContext = marshallingContext;
-    this.connection = HBaseConnectionManager.instance().getConnection();
+      Connection connection) throws IOException {
+
+    this.connection = connection;
     this.rootWriter = collector.getRootTableWriter();
     for (TableWriter tableWriter : collector.getTableWriters()) {
       if (log.isDebugEnabled())
@@ -269,27 +268,17 @@ public class DistributedGraphWriter extends WriterSupport implements Distributed
   }
 
   @Override
-  public StateMarshalingContext getMarshallingContext() {
-    return this.marshallingContext;
-  }
-
-  @Override
   public Connection getConnection() {
     return this.connection;
   }
 
   @Override
   public void close() {
-    try {
-      // don't close table here, let the connection
-      // deal with resources it controls
-      if (this.connection != null)
-        this.connection.close();
-    } catch (IOException e) {
-      log.error(e.getMessage(), e);
-    } finally {
-      this.connection = null;
+    for (TableWriter writer : this.getTableWriters()) {
+      writer.close();
     }
+    // don't close the connection here, we don't own it
+    this.connection = null;
   }
 
 }

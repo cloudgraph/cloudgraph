@@ -45,23 +45,6 @@ public class StateMarshalingTestCase extends StateTestCase {
   public void setUp() throws Exception {
   }
 
-  public void testBindingUnmarshal() throws JAXBException, SAXException, FileNotFoundException {
-    this.binding = new StateValidatingDataBinding();
-    File file = new File("./src/test/resources/state-example.xml");
-    FileInputStream stream = new FileInputStream(file);
-    StateModel root = (StateModel) this.binding.validate(stream);
-    String xml = this.binding.marshal(root);
-    log.info(xml);
-  }
-
-  public void testBindingMarshal() throws JAXBException, SAXException, FileNotFoundException {
-    StateMarshalingContext context = new SimpleStateMarshallingContext(
-        new StateNonValidatingDataBinding());
-    SequenceGenerator state = new BindingSequenceGenerator(context);
-    String xml = state.marshalAsString(true);
-    log.info("marshal: " + xml);
-  }
-
   public void testProtoMarshal() throws JAXBException, SAXException, FileNotFoundException {
     SequenceGenerator state = new ProtoSequenceGenerator(/*
                                                           * java.util.UUID.

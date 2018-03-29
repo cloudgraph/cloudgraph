@@ -19,6 +19,7 @@ Bugs
 
 Improvements
 [Issue #19] -  Add 64 Bit Hash Key Field Codec
+[Issue #20] -  Remove Old State Marshalling Code  
  
 New Features
 N/A

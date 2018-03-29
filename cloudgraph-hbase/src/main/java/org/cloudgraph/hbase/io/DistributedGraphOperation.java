@@ -18,7 +18,6 @@ package org.cloudgraph.hbase.io;
 import java.io.IOException;
 
 import org.cloudgraph.hbase.connect.Connection;
-import org.cloudgraph.state.StateMarshalingContext;
 
 /**
  * Encapsulates one or more graph table operation components for federation
@@ -46,13 +45,6 @@ public interface DistributedGraphOperation {
    *         (root) type for this operation.
    */
   public boolean hasSingleRootType();
-
-  /**
-   * Returns the marshalling context for this operation.
-   * 
-   * @return the marshalling context for this operation
-   */
-  public StateMarshalingContext getMarshallingContext();
 
   /** returns the shared connection for the operation */
   public Connection getConnection();

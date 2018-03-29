@@ -17,23 +17,12 @@ package org.cloudgraph.hbase.service;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.cloudgraph.state.StateMarshalingContext;
 
 public class SimpleServiceContext implements ServiceContext {
   private static Log log = LogFactory.getLog(SimpleServiceContext.class);
-  private StateMarshalingContext marshallingContext;
 
-  @SuppressWarnings("unused")
-  private SimpleServiceContext() {
-  }
+  public SimpleServiceContext() {
 
-  public SimpleServiceContext(StateMarshalingContext marshallingContext) {
-    this.marshallingContext = marshallingContext;
-  }
-
-  @Override
-  public StateMarshalingContext getMarshallingContext() {
-    return this.marshallingContext;
   }
 
   @Override

@@ -23,29 +23,6 @@
 	    </jxb:schemaBindings>
 	</jxb:bindings>
 	
-	<jxb:bindings schemaLocation="cloudgraph-state.xsd" node="/xsd:schema">
-	    <jxb:schemaBindings>
-	        <jxb:package name="org.cloudgraph.state">
-	            <jxb:javadoc><![CDATA[
-<body>
-Contains classes used to manages a minimal set of "state" 
-information persisted with each 
-data graph in order to reduce overall storage space. 
-<p>
-In general, mappings within the state structure are 
-designed and included for the purpose of consolidation of 
-potentially repetitive data which would otherwise be included
-within cells as column data or as part of composite column
-qualifiers.  
-</p>
-<p>
-Contains JAXB annotated classes for 
-the purpose of XML marshalling and un-marshalling.
-</p>
-</body>]]></jxb:javadoc>
-            </jxb:package>
-	    </jxb:schemaBindings>
-    </jxb:bindings>
 	
 	
 </jxb:bindings>

@@ -37,6 +37,8 @@ import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.util.StringUtils;
 import org.cloudgraph.common.CloudGraphConstants;
+import org.cloudgraph.hbase.connect.Connection;
+import org.cloudgraph.hbase.connect.HBaseConnectionManager;
 import org.cloudgraph.hbase.graph.GraphAssembler;
 import org.cloudgraph.hbase.graph.GraphSliceAssembler;
 import org.cloudgraph.hbase.graph.HBaseGraphAssembler;
@@ -50,9 +52,6 @@ import org.cloudgraph.query.expr.Expr;
 import org.cloudgraph.query.expr.ExprPrinter;
 import org.cloudgraph.recognizer.GraphRecognizerContext;
 import org.cloudgraph.recognizer.GraphRecognizerSyntaxTreeAssembler;
-import org.cloudgraph.state.SimpleStateMarshallingContext;
-import org.cloudgraph.state.StateMarshalingContext;
-import org.cloudgraph.state.StateNonValidatingDataBinding;
 import org.cloudgraph.store.key.GraphMetaKey;
 import org.cloudgraph.store.mapping.CloudGraphStoreMapping;
 import org.cloudgraph.store.mapping.Config;
@@ -137,6 +136,7 @@ public class GraphRecordRecognizer {
   private HBaseGraphAssembler graphAssembler;
   private GraphRecognizerContext recognizerContext;
   private TableReader rootTableReader;
+  private Connection connection;
 
   private long numRecognizedGraphs = 0;
 
@@ -256,17 +256,9 @@ public class GraphRecordRecognizer {
       for (Type t : selectionCollector.getTypes())
         collectRowKeyProperties(selectionCollector, (PlasmaType) t);
 
-      StateMarshalingContext marshallingContext = null;
-      try {
-        marshallingContext = new SimpleStateMarshallingContext(new StateNonValidatingDataBinding());
-      } catch (JAXBException e) {
-        throw new GraphServiceException(e);
-      } catch (SAXException e) {
-        throw new GraphServiceException(e);
-      }
-
+      this.connection = HBaseConnectionManager.instance().getConnection();
       DistributedGraphReader graphReader = new DistributedGraphReader(type,
-          selectionCollector.getTypes(), marshallingContext);
+          selectionCollector.getTypes(), this.connection);
       this.rootTableReader = graphReader.getRootTableReader();
 
       this.graphAssembler = createGraphAssembler(type, graphReader, selectionCollector,
@@ -300,6 +292,11 @@ public class GraphRecordRecognizer {
    * Closes the split.
    */
   public void close() {
+    try {
+      this.connection.close();
+    } catch (IOException e) {
+      log.error(e.getMessage(), e);
+    }
     this.scanner.close();
   }
 

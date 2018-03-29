@@ -56,7 +56,7 @@ import commonj.sdo.DataObject;
  */
 public class GraphTableReader extends GraphTable implements TableReader {
   private static Log log = LogFactory.getLog(GraphTableReader.class);
-   
+
   private Table table;
   /** maps data object UUIDs strings and row key strings to row readers */
   private Map<String, RowReader> rowReaderMap = new HashMap<String, RowReader>();
@@ -79,28 +79,29 @@ public class GraphTableReader extends GraphTable implements TableReader {
 
   @Override
   public Table getTable() {
-      try {
-        TableName tableName = TableName.valueOf(tableConfig.getQualifiedName());
-        // Note: calling tableExists() using the admin HBase API is expensive
-        // and is
-        // showing up on CPU profiling results. Just call get table and catch :(
-        if (!this.distributedOperation.getConnection().tableExists(tableName)) {
-          HBaseConnectionManager.instance().createTable(this.distributedOperation.getConnection(), tableName);
+    try {
+      TableName tableName = TableName.valueOf(tableConfig.getQualifiedName());
+      // Note: calling tableExists() using the admin HBase API is expensive
+      // and is
+      // showing up on CPU profiling results. Just call get table and catch :(
+      if (!this.distributedOperation.getConnection().tableExists(tableName)) {
+        HBaseConnectionManager.instance().createTable(this.distributedOperation.getConnection(),
+            tableName);
+        this.table = this.distributedOperation.getConnection().getTable(tableName);
+      } else {
+        try {
           this.table = this.distributedOperation.getConnection().getTable(tableName);
-        } else {
-          try {
-            this.table = this.distributedOperation.getConnection().getTable(tableName);
-          } catch (TableNotFoundException | NamespaceNotFoundException e) {
-            HBaseConnectionManager.instance().createTable(this.distributedOperation.getConnection(), tableName);
-            this.table = this.distributedOperation.getConnection().getTable(tableName);
-          }
+        } catch (TableNotFoundException | NamespaceNotFoundException e) {
+          HBaseConnectionManager.instance().createTable(this.distributedOperation.getConnection(),
+              tableName);
+          this.table = this.distributedOperation.getConnection().getTable(tableName);
         }
-      } catch (IOException e) {
-        throw new OperationException(e);
       }
+    } catch (IOException e) {
+      throw new OperationException(e);
+    }
     return this.table;
   }
- 
 
   /**
    * Returns the row reader context for the given data object or null if null

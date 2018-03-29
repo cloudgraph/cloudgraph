@@ -27,7 +27,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.mapreduce.JobContext;
 import org.cloudgraph.mapreduce.GraphService;
-import org.cloudgraph.state.PooledStateManager;
 import org.plasma.common.bind.DefaultValidationEventHandler;
 import org.plasma.query.bind.PlasmaQueryDataBinding;
 import org.plasma.query.model.From;
@@ -76,7 +75,7 @@ public class HBaseGraphService implements PlasmaDataAccessService, GraphService 
   private ServiceContext context;
 
   public HBaseGraphService() {
-    this.context = new LazyServiceContext(PooledStateManager.getInstance());
+    this.context = new SimpleServiceContext();
   }
 
   public void initialize() {

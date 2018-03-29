@@ -26,16 +26,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.client.Row;
 import org.apache.hadoop.mapreduce.JobContext;
+import org.cloudgraph.hbase.connect.Connection;
+import org.cloudgraph.hbase.connect.HBaseConnectionManager;
 import org.cloudgraph.hbase.io.TableWriter;
 import org.cloudgraph.hbase.mutation.GraphMutationCollector;
 import org.cloudgraph.hbase.mutation.GraphMutationWriter;
 import org.cloudgraph.hbase.mutation.MutationCollector;
 import org.cloudgraph.hbase.mutation.Mutations;
 import org.cloudgraph.hbase.service.GraphQuery;
-import org.cloudgraph.hbase.service.LazyServiceContext;
 import org.cloudgraph.hbase.service.ServiceContext;
+import org.cloudgraph.hbase.service.SimpleServiceContext;
 import org.cloudgraph.mapreduce.GraphService;
-import org.cloudgraph.state.PooledStateManager;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.query.Query;
 import org.plasma.sdo.PlasmaNode;
@@ -49,7 +50,7 @@ public class GraphServiceDelegate implements GraphService {
   private ServiceContext context;
 
   public GraphServiceDelegate() {
-    this.context = new LazyServiceContext(PooledStateManager.getInstance());
+    this.context = new SimpleServiceContext();
   }
 
   @Override
@@ -75,6 +76,7 @@ public class GraphServiceDelegate implements GraphService {
       jobName = jobContext.getJobName();
     SnapshotMap snapshotMap = new SnapshotMap(new Timestamp((new Date()).getTime()));
     MutationCollector collector = null;
+    Connection connection = HBaseConnectionManager.instance().getConnection();
     try {
       collector = new GraphMutationCollector(this.context, snapshotMap, jobName);
 
@@ -86,7 +88,7 @@ public class GraphServiceDelegate implements GraphService {
       // List<Row>>();
       Map<TableWriter, Map<String, Mutations>> mutations = new HashMap<>();
       try {
-        mutations = collector.collectChanges(graph);
+        mutations = collector.collectChanges(graph, connection);
       } catch (IllegalAccessException e) {
         throw new GraphServiceException(e);
       }
@@ -107,6 +109,11 @@ public class GraphServiceDelegate implements GraphService {
       graph.getChangeSummary().endLogging();
       graph.getChangeSummary().beginLogging();
     } finally {
+      try {
+        connection.close();
+      } catch (IOException e) {
+        log.error(e.getMessage(), e);
+      }
       if (collector != null)
         collector.close();
     }
@@ -122,10 +129,11 @@ public class GraphServiceDelegate implements GraphService {
     // List<Row>>();
     Map<TableWriter, Map<String, Mutations>> mutations = new HashMap<>();
     MutationCollector collector = null;
+    Connection connection = HBaseConnectionManager.instance().getConnection();
     try {
       collector = new GraphMutationCollector(this.context, snapshotMap, jobName);
       try {
-        mutations = collector.collectChanges(graphs);
+        mutations = collector.collectChanges(graphs, connection);
       } catch (IllegalAccessException e) {
         throw new GraphServiceException(e);
       }
@@ -148,6 +156,11 @@ public class GraphServiceDelegate implements GraphService {
         graph.getChangeSummary().beginLogging();
       }
     } finally {
+      try {
+        connection.close();
+      } catch (IOException e) {
+        log.error(e.getMessage(), e);
+      }
       if (collector != null)
         collector.close();
     }

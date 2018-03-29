@@ -51,7 +51,6 @@ import org.cloudgraph.hbase.io.CellValues;
 import org.cloudgraph.hbase.io.DefaultEdgeOperation.KeyBytes;
 import org.cloudgraph.hbase.io.DistributedGraphReader;
 import org.cloudgraph.hbase.io.DistributedReader;
-import org.cloudgraph.hbase.io.DistributedSliceReader;
 import org.cloudgraph.hbase.io.EdgeReader;
 import org.cloudgraph.hbase.io.RowReader;
 import org.cloudgraph.hbase.io.TableOperation;
@@ -179,8 +178,8 @@ class GraphSliceSupport {
     // already
     // linked to the parent graph. Cannot link to sub-graph as well.
     DistributedReader existingReader = (DistributedReader) tableReader.getDistributedOperation();
-    DistributedGraphReader sliceGraphReader = new DistributedSliceReader(contextType,
-        predicateSelection.getTypes(), existingReader);
+    DistributedGraphReader sliceGraphReader = new DistributedGraphReader(contextType,
+        predicateSelection.getTypes(), existingReader.getConnection());
     // Note: don't need to close this distributed reader because the slice graph
     // must
     // always have a parent graph, which will close the resources

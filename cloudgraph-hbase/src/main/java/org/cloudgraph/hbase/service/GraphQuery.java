@@ -204,23 +204,12 @@ public class GraphQuery implements QueryDispatcher {
     if (log.isDebugEnabled())
       log.debug(selectionCollector.dumpInheritedProperties());
 
-    DistributedGraphReader graphReader = new DistributedGraphReader(type,
-        selectionCollector.getTypes(), this.context.getMarshallingContext());
-
-    TableReader rootTableReader = graphReader.getRootTableReader();
-
     // Create and add a column filter for the initial
     // column set based on existence of path predicates
     // in the Select.
     HBaseFilterAssembler columnFilterAssembler = createRootColumnFilterAssembler(type,
         selectionCollector);
     Filter columnFilter = columnFilterAssembler.getFilter();
-
-    // Create a graph assembler based on existence
-    // of selection path predicates, need for federation, etc...
-
-    GraphAssemblerFactory assemblerFactory = new GraphAssemblerFactory(query, type, graphReader,
-        selectionCollector, snapshotDate);
 
     List<PartialRowKey> partialScans = new ArrayList<PartialRowKey>();
     List<FuzzyRowKey> fuzzyScans = new ArrayList<FuzzyRowKey>();
@@ -251,49 +240,32 @@ public class GraphQuery implements QueryDispatcher {
       scanAssembler.assemble();
       byte[] startKey = scanAssembler.getStartKey();
       if (startKey != null && startKey.length > 0) {
-        log.warn("no root predicate present - using default graph partial "
-            + "key scan - could result in very large results set");
+        if (query.getStartRange() <= 0 && query.getEndRange() <= 0)
+          log.warn("no root predicate present - using default graph partial "
+              + "key scan - could result in very large results set");
         partialScans.add(scanAssembler);
       }
     }
 
-    boolean hasOrdering = false;
     Comparator<PlasmaDataGraph> orderingComparator = null;
     OrderBy orderBy = query.findOrderByClause();
     if (orderBy != null) {
       DataGraphComparatorAssembler orderingCompAssem = new DataGraphComparatorAssembler(
           (org.plasma.query.model.OrderBy) orderBy, type);
       orderingComparator = orderingCompAssem.getComparator();
-      hasOrdering = true;
     }
 
-    ResultsAssembler resultsCollector = null;
-    FetchType fetchType = StoreMappingProp.getQueryFetchType(query);
-    switch (fetchType) {
-    case PARALLEL:
-      ParallelFetchDisposition fetchDisposition = StoreMappingProp
-          .getQueryParallelFetchDisposition(query);
-      switch (fetchDisposition) {
-      case TALL: // where a thread is spawned for one or more graph
-                 // roots
-        resultsCollector = new ParallelSlidingResultsAssembler(graphRecognizerRootExpr,
-            orderingComparator, rootTableReader, assemblerFactory, query.getStartRange(),
-            query.getEndRange(), new ThreadPoolMappingProps(query));
-        break;
-      default:
-      }
-      break;
-    default:
-      break;
-    }
-
-    if (resultsCollector == null)
-      resultsCollector = new SlidingResultsAssembler(graphRecognizerRootExpr, orderingComparator,
-          rootTableReader, assemblerFactory.createAssembler(), query.getStartRange(),
-          query.getEndRange());
-
-    // execute scans
+    // execute
+    Connection connection = HBaseConnectionManager.instance().getConnection();
+    DistributedGraphReader graphReader = null;
     try {
+      graphReader = new DistributedGraphReader(type, selectionCollector.getTypes(), connection);
+      GraphAssemblerFactory assemblerFactory = new GraphAssemblerFactory(query, type, graphReader,
+          selectionCollector, snapshotDate);
+      TableReader rootTableReader = graphReader.getRootTableReader();
+      ResultsAssembler resultsCollector = this.createResultsAssembler(query,
+          graphRecognizerRootExpr, orderingComparator, rootTableReader, assemblerFactory);
+
       long before = System.currentTimeMillis();
       if (partialScans.size() > 0 || fuzzyScans.size() > 0 || completeKeys.size() > 0) {
         if (completeKeys.size() > 0) {
@@ -344,13 +316,44 @@ public class GraphQuery implements QueryDispatcher {
     } catch (Throwable t) {
       throw new GraphServiceException(t);
     } finally {
-      // important - closes the connection
-      graphReader.close();
-
-      for (TableReader reader : graphReader.getTableReaders()) {
-        reader.close();
+      try {
+        connection.close(); // return to pool
+      } catch (IOException e) {
+        log.error(e.getMessage(), e);
       }
+      graphReader.close();
     }
+  }
+
+  private ResultsAssembler createResultsAssembler(Query query, Expr graphRecognizerRootExpr,
+      Comparator<PlasmaDataGraph> orderingComparator, TableReader rootTableReader,
+      GraphAssemblerFactory assemblerFactory) {
+
+    ResultsAssembler resultsCollector = null;
+    FetchType fetchType = StoreMappingProp.getQueryFetchType(query);
+    switch (fetchType) {
+    case PARALLEL:
+      ParallelFetchDisposition fetchDisposition = StoreMappingProp
+          .getQueryParallelFetchDisposition(query);
+      switch (fetchDisposition) {
+      case TALL: // where a thread is spawned for one or more graph
+                 // roots
+        resultsCollector = new ParallelSlidingResultsAssembler(graphRecognizerRootExpr,
+            orderingComparator, rootTableReader, assemblerFactory, query.getStartRange(),
+            query.getEndRange(), new ThreadPoolMappingProps(query));
+        break;
+      default:
+      }
+      break;
+    default:
+      break;
+    }
+
+    if (resultsCollector == null)
+      resultsCollector = new SlidingResultsAssembler(graphRecognizerRootExpr, orderingComparator,
+          rootTableReader, assemblerFactory.createAssembler(), query.getStartRange(),
+          query.getEndRange());
+    return resultsCollector;
   }
 
   private boolean canAbortScan(boolean hasOrdering, Integer startRange, Integer endRange,

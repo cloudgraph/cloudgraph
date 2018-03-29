@@ -20,6 +20,8 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.cloudgraph.hbase.connect.Connection;
+import org.cloudgraph.hbase.connect.HBaseConnectionManager;
 import org.cloudgraph.hbase.io.TableWriter;
 import org.cloudgraph.hbase.mutation.GraphMutationCollector;
 import org.cloudgraph.hbase.mutation.GraphMutationWriter;
@@ -92,12 +94,12 @@ public class GraphDispatcher extends GraphMutationCollector implements DataGraph
     else if (log.isDebugEnabled()) {
       log.debug("current user is '" + username + "'");
     }
-
+    Connection connection = HBaseConnectionManager.instance().getConnection();
     try {
       // FIXME: if an exception happens here we don't have table writers to
       // close
       // as required by the 1.0.0 HBase client API. Will cause resource bleed
-      Map<TableWriter, Map<String, Mutations>> mutations = collectChanges(dataGraph);
+      Map<TableWriter, Map<String, Mutations>> mutations = collectChanges(dataGraph, connection);
       if (log.isDebugEnabled())
         log.debug("collected " + mutations.keySet().size() + " table changes");
       TableWriter[] tableWriters = new TableWriter[mutations.keySet().size()];
@@ -112,6 +114,12 @@ public class GraphDispatcher extends GraphMutationCollector implements DataGraph
       return snapshotMap;
     } catch (IOException | IllegalAccessException e) {
       throw new DataAccessException(e);
+    } finally {
+      try {
+        connection.close();
+      } catch (IOException e) {
+        log.error(e.getMessage(), e);
+      }
     }
   }
 
@@ -137,6 +145,7 @@ public class GraphDispatcher extends GraphMutationCollector implements DataGraph
       log.debug("current user is '" + username + "'");
     }
 
+    Connection connection = HBaseConnectionManager.instance().getConnection();
     try {
       // Note: multiple data graphs may share one or more data objects and here
       // we force
@@ -149,7 +158,7 @@ public class GraphDispatcher extends GraphMutationCollector implements DataGraph
           log.debug("collecting changes graph " + i + " of " + dataGraphs.length + "");
         TableWriter[] tableWriters = null;
         try {
-          Map<TableWriter, Map<String, Mutations>> mutations = collectChanges(dataGraph);
+          Map<TableWriter, Map<String, Mutations>> mutations = collectChanges(dataGraph, connection);
           if (log.isDebugEnabled())
             log.debug("graph " + i + " of " + dataGraphs.length + " - collected "
                 + mutations.keySet().size() + " table changes");
@@ -168,6 +177,12 @@ public class GraphDispatcher extends GraphMutationCollector implements DataGraph
       return snapshotMap;
     } catch (IOException | IllegalAccessException | GraphServiceException e) {
       throw new DataAccessException(e);
+    } finally {
+      try {
+        connection.close();
+      } catch (IOException e) {
+        log.error(e.getMessage(), e);
+      }
     }
   }
 

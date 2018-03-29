@@ -18,6 +18,7 @@ package org.cloudgraph.hbase.mutation;
 import java.io.IOException;
 import java.util.Map;
 
+import org.cloudgraph.hbase.connect.Connection;
 import org.cloudgraph.hbase.io.TableWriter;
 
 import commonj.sdo.DataGraph;
@@ -41,11 +42,11 @@ import commonj.sdo.DataGraph;
  */
 public interface MutationCollector {
 
-  public Map<TableWriter, Map<String, Mutations>> collectChanges(DataGraph dataGraph)
-      throws IOException, IllegalAccessException;
+  public Map<TableWriter, Map<String, Mutations>> collectChanges(DataGraph dataGraph,
+      Connection connection) throws IOException, IllegalAccessException;
 
-  public Map<TableWriter, Map<String, Mutations>> collectChanges(DataGraph[] dataGraphs)
-      throws IOException, IllegalAccessException;
+  public Map<TableWriter, Map<String, Mutations>> collectChanges(DataGraph[] dataGraphs,
+      Connection connection) throws IOException, IllegalAccessException;
 
   public void close();
 

@@ -101,8 +101,8 @@ public class GraphMutationCollector extends DefaultMutation implements MutationC
    * .sdo.DataGraph)
    */
   @Override
-  public Map<TableWriter, Map<String, Mutations>> collectChanges(DataGraph dataGraph)
-      throws IOException, IllegalAccessException {
+  public Map<TableWriter, Map<String, Mutations>> collectChanges(DataGraph dataGraph,
+      Connection connection) throws IOException, IllegalAccessException {
     Map<TableWriter, Map<String, Mutations>> mutations = new HashMap<TableWriter, Map<String, Mutations>>();
 
     PlasmaChangeSummary changeSummary = (PlasmaChangeSummary) dataGraph.getChangeSummary();
@@ -124,8 +124,7 @@ public class GraphMutationCollector extends DefaultMutation implements MutationC
 
     TableWriterCollector collector = new TableWriterCollector(dataGraph, created, modified, deleted);
 
-    this.graphWriter = new DistributedGraphWriter(dataGraph, collector,
-        this.context.getMarshallingContext());
+    this.graphWriter = new DistributedGraphWriter(dataGraph, collector, connection);
 
     this.create(dataGraph, created, graphWriter);
     this.modify(dataGraph, modified, graphWriter);
@@ -153,8 +152,8 @@ public class GraphMutationCollector extends DefaultMutation implements MutationC
    * .sdo.DataGraph[])
    */
   @Override
-  public Map<TableWriter, Map<String, Mutations>> collectChanges(DataGraph[] dataGraphs)
-      throws IOException, IllegalAccessException {
+  public Map<TableWriter, Map<String, Mutations>> collectChanges(DataGraph[] dataGraphs,
+      Connection connection) throws IOException, IllegalAccessException {
     Map<TableWriter, Map<String, Mutations>> mutations = new HashMap<TableWriter, Map<String, Mutations>>();
 
     boolean hasChanges = false;
@@ -191,8 +190,7 @@ public class GraphMutationCollector extends DefaultMutation implements MutationC
       TableWriterCollector collector = new TableWriterCollector(dataGraph, created, modified,
           deleted);
 
-      DistributedWriter graphWriter = new DistributedGraphWriter(dataGraph, collector,
-          this.context.getMarshallingContext());
+      DistributedWriter graphWriter = new DistributedGraphWriter(dataGraph, collector, connection);
       graphWriters.add(graphWriter);
 
       this.create(dataGraph, created, graphWriter);
