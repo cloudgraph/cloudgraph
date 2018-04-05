@@ -9,7 +9,7 @@
     <description>CloudGraph(tm) is a suite of Service Data Object (SDO) 2.1 services designed for relational and big-table style "cloud" databases, such as HBase and others.</description>
 	<properties>
 		<cloudgraph.version>1.1.2</cloudgraph.version>
-		<plasma.version>2.0.3</plasma.version>
+		<plasma.version>2.0.4</plasma.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
     <url>http://cloudgraph.org</url>
@@ -67,7 +67,7 @@
 
 	</dependencies>
 	<build>
-	    <finalName>cloudgraph</finalName>
+        <finalName>cloudgraph</finalName>
 	    <plugins>
 	        
 	      <plugin>

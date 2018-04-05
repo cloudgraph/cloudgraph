@@ -240,9 +240,11 @@ public class GraphQuery implements QueryDispatcher {
       scanAssembler.assemble();
       byte[] startKey = scanAssembler.getStartKey();
       if (startKey != null && startKey.length > 0) {
-        if (query.getStartRange() <= 0 && query.getEndRange() <= 0)
-          log.warn("no root predicate present - using default graph partial "
+        if ((query.getStartRange() == null || query.getStartRange() <= 0)
+            && (query.getEndRange() != null || query.getEndRange() <= 0)) {
+          log.warn("no root predicate or range limit present - using default graph partial "
               + "key scan - could result in very large results set");
+        }
         partialScans.add(scanAssembler);
       }
     }

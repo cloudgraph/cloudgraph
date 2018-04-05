@@ -13,7 +13,7 @@
     <description>CloudGraph(tm) is a suite of Service Data Object (SDO) 2.1 services designed for relational and big-table style "cloud" databases, such as HBase and others.</description>
 	<properties>
 		<cloudgraph.version>1.1.2</cloudgraph.version>
-		<plasma.version>2.0.3</plasma.version>
+		<plasma.version>2.0.4</plasma.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <slf4j.version>1.6.1</slf4j.version>
  	</properties>
@@ -44,17 +44,17 @@
 		<dependency>
 			<groupId>org.terrameta</groupId>
 			<artifactId>plasma-common</artifactId>
-			<version>2.0.3</version>
+			<version>${plasma.version}</version>
 		</dependency>
         <dependency>
             <groupId>org.terrameta</groupId>
             <artifactId>plasma-core</artifactId>
-            <version>2.0.3</version>
+            <version>${plasma.version}</version>
         </dependency>
         <dependency>
             <groupId>org.terrameta</groupId>
             <artifactId>plasma-jdbc</artifactId>
-            <version>2.0.3</version>
+            <version>${plasma.version}</version>
         </dependency>
 		
 	    <dependency>                                 
@@ -77,7 +77,7 @@
         -->
 	</dependencies>
 	<build>
-		<finalName>cloudgraph-rdb</finalName>
+        <finalName>${project.artifactId}-${project.version}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

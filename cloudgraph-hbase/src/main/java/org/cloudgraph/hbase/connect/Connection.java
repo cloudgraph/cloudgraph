@@ -52,19 +52,28 @@ public class Connection {
   private static Log log = LogFactory.getLog(Connection.class);
   private org.apache.hadoop.hbase.client.Connection con;
   private ObjectPool<Connection> pool;
+  private Configuration config;
   private LoadingCache<TableName, Table> tableCache;
 
-  public Connection(org.apache.hadoop.hbase.client.Connection conection, ObjectPool<Connection> pool) {
+  public Connection(org.apache.hadoop.hbase.client.Connection conection,
+      ObjectPool<Connection> pool, Configuration config) {
     super();
     this.con = conection;
     this.pool = pool;
-    this.tableCache = CacheBuilder.newBuilder().maximumSize(10)
+    this.config = config;
+    // FIXME: configure table cache
+    this.tableCache = CacheBuilder.newBuilder().maximumSize(20)
         .expireAfterAccess(30, TimeUnit.SECONDS).build(new CacheLoader<TableName, Table>() {
           @Override
           public Table load(TableName tableName) throws Exception {
+            if (log.isDebugEnabled())
+              log.debug("loading table " + this + " " + tableName);
             return con.getTable(tableName);
           }
         });
+    if (log.isDebugEnabled())
+      log.debug("created " + this + " pool active/idle " + pool.getNumActive() + "/"
+          + pool.getNumIdle());
   }
 
   public void close() throws IOException {
@@ -80,6 +89,9 @@ public class Connection {
   public void destroy() throws IOException {
     for (Table table : this.tableCache.asMap().values())
       table.close();
+    if (log.isDebugEnabled())
+      log.debug("destroyed " + this + " pool active/idle " + pool.getNumActive() + "/"
+          + pool.getNumIdle());
   }
 
   public boolean isClosed() {

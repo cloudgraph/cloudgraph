@@ -17,12 +17,16 @@ package org.cloudgraph.hbase.service;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.plasma.sdo.DataType;
 import org.plasma.sdo.helper.DataConverter;
+
+import com.google.common.primitives.UnsignedInteger;
 
 import commonj.sdo.Property;
 
@@ -116,10 +120,8 @@ public class HBaseDataConverter {
 
     // Data types stored by directly converting from primitive types to
     // bytes in HBase.
-    // TODO: for these data types determine if there is a way to
-    // "delimit" multiple values yet
-    // not take the extra and expensive step of first converting to
-    // delimited String.
+    // FIXME: what to do with variable size types e.g. Decimal, BigInteger,
+    // Bytes
     case Decimal:
       if (!targetProperty.isMany())
         result = Bytes.toBigDecimal(value);
@@ -143,14 +145,30 @@ public class HBaseDataConverter {
                 + " length byte array for target data type 'byte'");
           result = value[0];
         }
-      } else
-        result = DataConverter.INSTANCE.fromString(targetProperty, Bytes.toString(value));
+      } else {
+        int count = value.length;
+        Byte[] array = new Byte[count];
+        for (int offset = 0, idx = 0; offset < value.length; offset += 1, idx++) {
+          byte[] buf = new byte[1];
+          buf[0] = value[offset];
+          array[idx] = new Byte(buf[0]);
+        }
+        result = array;
+      }
       break;
     case Boolean:
-      if (!targetProperty.isMany())
+      if (!targetProperty.isMany()) {
         result = Bytes.toBoolean(value);
-      else
-        result = DataConverter.INSTANCE.fromString(targetProperty, Bytes.toString(value));
+      } else {
+        int count = value.length / Bytes.SIZEOF_BOOLEAN;
+        Boolean[] array = new Boolean[count];
+        for (int offset = 0, idx = 0; offset < value.length; offset += Bytes.SIZEOF_BOOLEAN, idx++) {
+          byte[] buf = new byte[Bytes.SIZEOF_BOOLEAN];
+          System.arraycopy(value, offset, buf, 0, Bytes.SIZEOF_BOOLEAN);
+          array[idx] = new Boolean(Bytes.toBoolean(buf));
+        }
+        result = array;
+      }
       break;
     case Character:
       if (!targetProperty.isMany())
@@ -159,22 +177,41 @@ public class HBaseDataConverter {
         result = DataConverter.INSTANCE.fromString(targetProperty, Bytes.toString(value));
       break;
     case Double:
-      if (!targetProperty.isMany())
+      if (!targetProperty.isMany()) {
         result = Bytes.toDouble(value);
-      else
-        result = DataConverter.INSTANCE.fromString(targetProperty, Bytes.toString(value));
+      } else {
+        int count = value.length / Bytes.SIZEOF_DOUBLE;
+        Double[] array = new Double[count];
+        for (int offset = 0, idx = 0; offset < value.length; offset += Bytes.SIZEOF_DOUBLE, idx++) {
+          array[idx] = new Double(Bytes.toDouble(value, offset));
+        }
+        result = array;
+      }
       break;
     case Float:
-      if (!targetProperty.isMany())
+      if (!targetProperty.isMany()) {
         result = Bytes.toFloat(value);
-      else
-        result = DataConverter.INSTANCE.fromString(targetProperty, Bytes.toString(value));
+      } else {
+        int count = value.length / Bytes.SIZEOF_FLOAT;
+        Float[] array = new Float[count];
+
+        for (int offset = 0, idx = 0; offset < value.length; offset += Bytes.SIZEOF_FLOAT, idx++) {
+          array[idx] = new Float(Bytes.toFloat(value, offset));
+        }
+        result = array;
+      }
       break;
     case Int:
-      if (!targetProperty.isMany())
+      if (!targetProperty.isMany()) {
         result = Bytes.toInt(value);
-      else
-        result = DataConverter.INSTANCE.fromString(targetProperty, Bytes.toString(value));
+      } else {
+        int count = value.length / Bytes.SIZEOF_INT;
+        List<Integer> list = new ArrayList<Integer>(count);
+        for (int offset = 0, idx = 0; offset < value.length; offset += Bytes.SIZEOF_INT, idx++) {
+          list.add(new Integer(Bytes.toInt(value, offset, Bytes.SIZEOF_INT)));
+        }
+        result = list;
+      }
       break;
     case Integer:
       if (!targetProperty.isMany())
@@ -183,16 +220,28 @@ public class HBaseDataConverter {
         result = DataConverter.INSTANCE.fromString(targetProperty, Bytes.toString(value));
       break;
     case Long:
-      if (!targetProperty.isMany())
+      if (!targetProperty.isMany()) {
         result = Bytes.toLong(value);
-      else
-        result = DataConverter.INSTANCE.fromString(targetProperty, Bytes.toString(value));
+      } else {
+        int count = value.length / Bytes.SIZEOF_LONG;
+        List<Long> list = new ArrayList<Long>(count);
+        for (int offset = 0, idx = 0; offset < value.length; offset += Bytes.SIZEOF_LONG, idx++) {
+          list.add(new Long(Bytes.toLong(value, offset, Bytes.SIZEOF_LONG)));
+        }
+        result = list;
+      }
       break;
     case Short:
-      if (!targetProperty.isMany())
+      if (!targetProperty.isMany()) {
         result = Bytes.toShort(value);
-      else
-        result = DataConverter.INSTANCE.fromString(targetProperty, Bytes.toString(value));
+      } else {
+        int count = value.length / Bytes.SIZEOF_SHORT;
+        List<Short> list = new ArrayList<Short>(count);
+        for (int offset = 0, idx = 0; offset < value.length; offset += Bytes.SIZEOF_SHORT, idx++) {
+          list.add(new Short(Bytes.toShort(value, offset, Bytes.SIZEOF_SHORT)));
+        }
+        result = list;
+      }
       break;
     case Object:
       // FIXME: custom serialization?
@@ -250,8 +299,9 @@ public class HBaseDataConverter {
       result = Bytes.toBytes(resultStr);
       break;
     // Data types stored by directly converting from primitive types to
-    // bytes in HBase. When
-    // the given property is a 'many' property, the value is first
+    // bytes in HBase.
+    // FIXME: When the given property is a 'many' property and has a variable
+    // length, the value is first
     // converted to String so
     // can be delimited.
     case Decimal:
@@ -278,8 +328,15 @@ public class HBaseDataConverter {
         byte resultByte = DataConverter.INSTANCE.toByte(sourceProperty.getType(), value);
         result = Bytes.toBytes(resultByte);
       } else {
-        String strResult = DataConverter.INSTANCE.toString(sourceProperty, value);
-        result = Bytes.toBytes(strResult);
+        @SuppressWarnings("unchecked")
+        List<Byte> list = (List<Byte>) value;
+        result = new byte[list.size() * Bytes.SIZEOF_BOOLEAN];
+        int pos = 0;
+        for (Byte val : list) {
+          byte[] bytesVal = Bytes.toBytes(val);
+          System.arraycopy(bytesVal, 0, result, pos, Bytes.SIZEOF_BOOLEAN);
+          pos += Bytes.SIZEOF_BOOLEAN;
+        }
       }
       break;
     case Boolean:
@@ -287,8 +344,15 @@ public class HBaseDataConverter {
         boolean resultBool = DataConverter.INSTANCE.toBoolean(sourceProperty.getType(), value);
         result = Bytes.toBytes(resultBool);
       } else {
-        String strResult = DataConverter.INSTANCE.toString(sourceProperty, value);
-        result = Bytes.toBytes(strResult);
+        @SuppressWarnings("unchecked")
+        List<Boolean> list = (List<Boolean>) value;
+        result = new byte[list.size() * Bytes.SIZEOF_BOOLEAN];
+        int pos = 0;
+        for (Boolean val : list) {
+          byte[] bytesVal = Bytes.toBytes(val);
+          System.arraycopy(bytesVal, 0, result, pos, Bytes.SIZEOF_BOOLEAN);
+          pos += Bytes.SIZEOF_BOOLEAN;
+        }
       }
       break;
     case Character:
@@ -305,8 +369,15 @@ public class HBaseDataConverter {
         double resultDouble = DataConverter.INSTANCE.toDouble(sourceProperty.getType(), value);
         result = Bytes.toBytes(resultDouble);
       } else {
-        String strResult = DataConverter.INSTANCE.toString(sourceProperty, value);
-        result = Bytes.toBytes(strResult);
+        @SuppressWarnings("unchecked")
+        List<Double> list = (List<Double>) value;
+        result = new byte[list.size() * Bytes.SIZEOF_LONG];
+        int pos = 0;
+        for (Double val : list) {
+          byte[] bytesVal = Bytes.toBytes(val);
+          System.arraycopy(bytesVal, 0, result, pos, Bytes.SIZEOF_LONG);
+          pos += Bytes.SIZEOF_LONG;
+        }
       }
       break;
     case Float:
@@ -314,8 +385,15 @@ public class HBaseDataConverter {
         float resultFloat = DataConverter.INSTANCE.toFloat(sourceProperty.getType(), value);
         result = Bytes.toBytes(resultFloat);
       } else {
-        String strResult = DataConverter.INSTANCE.toString(sourceProperty, value);
-        result = Bytes.toBytes(strResult);
+        @SuppressWarnings("unchecked")
+        List<Float> list = (List<Float>) value;
+        result = new byte[list.size() * Bytes.SIZEOF_INT];
+        int pos = 0;
+        for (Float val : list) {
+          byte[] bytesVal = Bytes.toBytes(val);
+          System.arraycopy(bytesVal, 0, result, pos, Bytes.SIZEOF_INT);
+          pos += Bytes.SIZEOF_INT;
+        }
       }
       break;
     case Int:
@@ -323,8 +401,14 @@ public class HBaseDataConverter {
         int resultInt = DataConverter.INSTANCE.toInt(sourceProperty.getType(), value);
         result = Bytes.toBytes(resultInt);
       } else {
-        String strResult = DataConverter.INSTANCE.toString(sourceProperty, value);
-        result = Bytes.toBytes(strResult);
+        Integer[] array = (Integer[]) value;
+        result = new byte[array.length * Bytes.SIZEOF_INT];
+        int pos = 0;
+        for (Integer val : array) {
+          byte[] bytesVal = Bytes.toBytes(val);
+          System.arraycopy(bytesVal, 0, result, pos, Bytes.SIZEOF_INT);
+          pos += Bytes.SIZEOF_INT;
+        }
       }
       break;
     case Integer:
@@ -342,8 +426,14 @@ public class HBaseDataConverter {
         long resultLong = DataConverter.INSTANCE.toLong(sourceProperty.getType(), value);
         result = Bytes.toBytes(resultLong);
       } else {
-        String strResult = DataConverter.INSTANCE.toString(sourceProperty, value);
-        result = Bytes.toBytes(strResult);
+        Long[] array = (Long[]) value;
+        result = new byte[array.length * Bytes.SIZEOF_LONG];
+        int pos = 0;
+        for (Long val : array) {
+          byte[] bytesVal = Bytes.toBytes(val);
+          System.arraycopy(bytesVal, 0, result, pos, Bytes.SIZEOF_LONG);
+          pos += Bytes.SIZEOF_LONG;
+        }
       }
       break;
     case Short:
@@ -351,8 +441,14 @@ public class HBaseDataConverter {
         short resultShort = DataConverter.INSTANCE.toShort(sourceProperty.getType(), value);
         result = Bytes.toBytes(resultShort);
       } else {
-        String strResult = DataConverter.INSTANCE.toString(sourceProperty, value);
-        result = Bytes.toBytes(strResult);
+        Short[] array = (Short[]) value;
+        result = new byte[array.length * Bytes.SIZEOF_SHORT];
+        int pos = 0;
+        for (Short val : array) {
+          byte[] bytesVal = Bytes.toBytes(val);
+          System.arraycopy(bytesVal, 0, result, pos, Bytes.SIZEOF_SHORT);
+          pos += Bytes.SIZEOF_SHORT;
+        }
       }
       break;
     case Object:

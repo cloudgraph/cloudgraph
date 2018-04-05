@@ -74,7 +74,6 @@ public class GraphMutationCollector extends DefaultMutation implements MutationC
   protected Create create;
   protected Update update;
   protected Delete delete;
-  protected DistributedWriter graphWriter;
 
   public GraphMutationCollector(ServiceContext context, SnapshotMap snapshotMap, String username) {
     super(context, snapshotMap, username);
@@ -90,7 +89,6 @@ public class GraphMutationCollector extends DefaultMutation implements MutationC
    */
   @Override
   public void close() {
-    this.graphWriter.close();
     this.context.close();
   }
 
@@ -124,7 +122,8 @@ public class GraphMutationCollector extends DefaultMutation implements MutationC
 
     TableWriterCollector collector = new TableWriterCollector(dataGraph, created, modified, deleted);
 
-    this.graphWriter = new DistributedGraphWriter(dataGraph, collector, connection);
+    DistributedGraphWriter graphWriter = new DistributedGraphWriter(dataGraph, collector,
+        connection);
 
     this.create(dataGraph, created, graphWriter);
     this.modify(dataGraph, modified, graphWriter);

@@ -56,7 +56,7 @@ public class PooledConnectionFactory extends BasePooledObjectFactory<Connection>
     org.apache.hadoop.hbase.client.Connection con = ConnectionFactory.createConnection(config);
     if (log.isDebugEnabled())
       log.debug("creating new hbase connection" + con);
-    return new Connection(con, this.pool);
+    return new Connection(con, this.pool, this.config);
   }
 
   @Override

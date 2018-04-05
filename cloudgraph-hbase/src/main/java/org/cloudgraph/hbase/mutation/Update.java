@@ -94,13 +94,6 @@ public class Update extends DefaultMutation implements Collector {
       if (property.isReadOnly())
         throw new IllegalAccessException("attempt to modify read-only property, " + property);
 
-      Object dataValue = dataObject.get(property);
-      if (dataValue != null)
-        if (log.isDebugEnabled())
-          log.debug("updating " + property.toString());
-        else if (log.isDebugEnabled())
-          log.debug("removing " + property.toString());
-
       if (!property.getType().isDataType()) {
         SettingCollector<PlasmaDataObject> settingCollector = new SettingCollector<>();
         HashSet<PlasmaDataObject> oldSettings = settingCollector.collect(property, settingList);
@@ -108,6 +101,14 @@ public class Update extends DefaultMutation implements Collector {
         for (PlasmaDataObject oldSettingObject : oldSettings) {
           if (!oldSettingObject.getDataGraph().getChangeSummary().isCreated(oldSettingObject))
             oldValues.add(oldSettingObject);
+        }
+        Object dataValue = dataObject.get(property);
+        if (dataValue != null) {
+          if (log.isDebugEnabled())
+            log.debug("updating reference " + property.toString());
+        } else {
+          if (log.isDebugEnabled())
+            log.debug("removing reference " + property.toString());
         }
 
         EdgeWriter edgeWriter = rowWriter.getEdgeWriter(dataObject, property, sequence);
@@ -118,11 +119,18 @@ public class Update extends DefaultMutation implements Collector {
         }
         edgeWriter.write();
       } else {
-        // FIXME: research best way to encode multiple
-        // primitives as bytes
-        if (dataValue != null) {
+
+        if (dataObject.isSet(property)) {
           Increment increment = property.getIncrement();
           if (increment == null) {
+            Object dataValue = null;
+            if (!property.isMany()) {
+              dataValue = dataObject.get(property);
+            } else {
+              dataValue = dataObject.getArray(property);
+            }
+            if (log.isDebugEnabled())
+              log.debug("updating data " + property.toString());
             byte[] valueBytes = HBaseDataConverter.INSTANCE.toBytes(property, dataValue);
             rowWriter.writeRowData(dataObject, sequence, property, valueBytes);
           } else {
@@ -130,10 +138,15 @@ public class Update extends DefaultMutation implements Collector {
             if (dataType.ordinal() != DataType.Long.ordinal())
               throw new GraphServiceException("property, " + property + ", must be datatype "
                   + DataType.Long + " for increment operation");
+            Object dataValue = dataObject.get(property);
+            if (log.isDebugEnabled())
+              log.debug("incrementing data " + property.toString());
             long longDataValue = DataConverter.INSTANCE.toLong(property.getType(), dataValue);
             rowWriter.incrementRowData(dataObject, sequence, property, longDataValue);
           }
         } else {
+          if (log.isDebugEnabled())
+            log.debug("removing data " + property.toString());
           rowWriter.deleteRowData(dataObject, sequence, property);
           // this.deleteDataCell(rowWriter, dataObject, sequence,
           // property);
