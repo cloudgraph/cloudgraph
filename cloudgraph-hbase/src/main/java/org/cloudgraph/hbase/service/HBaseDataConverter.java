@@ -132,7 +132,7 @@ public class HBaseDataConverter {
       if (!targetProperty.isMany())
         result = value; // already bytes
       else
-        result = DataConverter.INSTANCE.fromString(targetProperty, Bytes.toString(value));
+        result = value; // already bytes
       break;
     case Byte:
       if (!targetProperty.isMany()) {
@@ -146,14 +146,7 @@ public class HBaseDataConverter {
           result = value[0];
         }
       } else {
-        int count = value.length;
-        Byte[] array = new Byte[count];
-        for (int offset = 0, idx = 0; offset < value.length; offset += 1, idx++) {
-          byte[] buf = new byte[1];
-          buf[0] = value[offset];
-          array[idx] = new Byte(buf[0]);
-        }
-        result = array;
+        result = value;
       }
       break;
     case Boolean:
@@ -161,11 +154,11 @@ public class HBaseDataConverter {
         result = Bytes.toBoolean(value);
       } else {
         int count = value.length / Bytes.SIZEOF_BOOLEAN;
-        Boolean[] array = new Boolean[count];
+        boolean[] array = new boolean[count];
         for (int offset = 0, idx = 0; offset < value.length; offset += Bytes.SIZEOF_BOOLEAN, idx++) {
           byte[] buf = new byte[Bytes.SIZEOF_BOOLEAN];
           System.arraycopy(value, offset, buf, 0, Bytes.SIZEOF_BOOLEAN);
-          array[idx] = new Boolean(Bytes.toBoolean(buf));
+          array[idx] = Bytes.toBoolean(buf);
         }
         result = array;
       }
@@ -181,9 +174,9 @@ public class HBaseDataConverter {
         result = Bytes.toDouble(value);
       } else {
         int count = value.length / Bytes.SIZEOF_DOUBLE;
-        Double[] array = new Double[count];
+        double[] array = new double[count];
         for (int offset = 0, idx = 0; offset < value.length; offset += Bytes.SIZEOF_DOUBLE, idx++) {
-          array[idx] = new Double(Bytes.toDouble(value, offset));
+          array[idx] = Bytes.toDouble(value, offset);
         }
         result = array;
       }
@@ -193,10 +186,9 @@ public class HBaseDataConverter {
         result = Bytes.toFloat(value);
       } else {
         int count = value.length / Bytes.SIZEOF_FLOAT;
-        Float[] array = new Float[count];
-
+        float[] array = new float[count];
         for (int offset = 0, idx = 0; offset < value.length; offset += Bytes.SIZEOF_FLOAT, idx++) {
-          array[idx] = new Float(Bytes.toFloat(value, offset));
+          array[idx] = Bytes.toFloat(value, offset);
         }
         result = array;
       }
@@ -206,11 +198,11 @@ public class HBaseDataConverter {
         result = Bytes.toInt(value);
       } else {
         int count = value.length / Bytes.SIZEOF_INT;
-        List<Integer> list = new ArrayList<Integer>(count);
+        int[] array = new int[count];
         for (int offset = 0, idx = 0; offset < value.length; offset += Bytes.SIZEOF_INT, idx++) {
-          list.add(new Integer(Bytes.toInt(value, offset, Bytes.SIZEOF_INT)));
+          array[idx] = Bytes.toInt(value, offset, Bytes.SIZEOF_INT);
         }
-        result = list;
+        result = array;
       }
       break;
     case Integer:
@@ -224,11 +216,11 @@ public class HBaseDataConverter {
         result = Bytes.toLong(value);
       } else {
         int count = value.length / Bytes.SIZEOF_LONG;
-        List<Long> list = new ArrayList<Long>(count);
+        long[] array = new long[count];
         for (int offset = 0, idx = 0; offset < value.length; offset += Bytes.SIZEOF_LONG, idx++) {
-          list.add(new Long(Bytes.toLong(value, offset, Bytes.SIZEOF_LONG)));
+          array[idx] = Bytes.toLong(value, offset, Bytes.SIZEOF_LONG);
         }
-        result = list;
+        result = array;
       }
       break;
     case Short:
@@ -236,11 +228,11 @@ public class HBaseDataConverter {
         result = Bytes.toShort(value);
       } else {
         int count = value.length / Bytes.SIZEOF_SHORT;
-        List<Short> list = new ArrayList<Short>(count);
+        short[] array = new short[count];
         for (int offset = 0, idx = 0; offset < value.length; offset += Bytes.SIZEOF_SHORT, idx++) {
-          list.add(new Short(Bytes.toShort(value, offset, Bytes.SIZEOF_SHORT)));
+          array[idx] = Bytes.toShort(value, offset, Bytes.SIZEOF_SHORT);
         }
-        result = list;
+        result = array;
       }
       break;
     case Object:
@@ -327,28 +319,19 @@ public class HBaseDataConverter {
       if (!sourceProperty.isMany()) {
         byte resultByte = DataConverter.INSTANCE.toByte(sourceProperty.getType(), value);
         result = Bytes.toBytes(resultByte);
-      } else {
-        @SuppressWarnings("unchecked")
-        List<Byte> list = (List<Byte>) value;
-        result = new byte[list.size() * Bytes.SIZEOF_BOOLEAN];
-        int pos = 0;
-        for (Byte val : list) {
-          byte[] bytesVal = Bytes.toBytes(val);
-          System.arraycopy(bytesVal, 0, result, pos, Bytes.SIZEOF_BOOLEAN);
-          pos += Bytes.SIZEOF_BOOLEAN;
-        }
+      } else {         
+        result = (byte[]) value;
       }
       break;
     case Boolean:
       if (!sourceProperty.isMany()) {
         boolean resultBool = DataConverter.INSTANCE.toBoolean(sourceProperty.getType(), value);
         result = Bytes.toBytes(resultBool);
-      } else {
-        @SuppressWarnings("unchecked")
-        List<Boolean> list = (List<Boolean>) value;
-        result = new byte[list.size() * Bytes.SIZEOF_BOOLEAN];
+      } else {        
+        boolean[] list = (boolean[]) value;
+        result = new byte[list.length * Bytes.SIZEOF_BOOLEAN];
         int pos = 0;
-        for (Boolean val : list) {
+        for (boolean val : list) {
           byte[] bytesVal = Bytes.toBytes(val);
           System.arraycopy(bytesVal, 0, result, pos, Bytes.SIZEOF_BOOLEAN);
           pos += Bytes.SIZEOF_BOOLEAN;
@@ -368,12 +351,11 @@ public class HBaseDataConverter {
       if (!sourceProperty.isMany()) {
         double resultDouble = DataConverter.INSTANCE.toDouble(sourceProperty.getType(), value);
         result = Bytes.toBytes(resultDouble);
-      } else {
-        @SuppressWarnings("unchecked")
-        List<Double> list = (List<Double>) value;
-        result = new byte[list.size() * Bytes.SIZEOF_LONG];
+      } else {         
+        double[] array = (double[]) value;
+        result = new byte[array.length * Bytes.SIZEOF_LONG];
         int pos = 0;
-        for (Double val : list) {
+        for (double val : array) {
           byte[] bytesVal = Bytes.toBytes(val);
           System.arraycopy(bytesVal, 0, result, pos, Bytes.SIZEOF_LONG);
           pos += Bytes.SIZEOF_LONG;
@@ -385,11 +367,10 @@ public class HBaseDataConverter {
         float resultFloat = DataConverter.INSTANCE.toFloat(sourceProperty.getType(), value);
         result = Bytes.toBytes(resultFloat);
       } else {
-        @SuppressWarnings("unchecked")
-        List<Float> list = (List<Float>) value;
-        result = new byte[list.size() * Bytes.SIZEOF_INT];
+        float[] array = (float[]) value;
+        result = new byte[array.length * Bytes.SIZEOF_INT];
         int pos = 0;
-        for (Float val : list) {
+        for (float val : array) {
           byte[] bytesVal = Bytes.toBytes(val);
           System.arraycopy(bytesVal, 0, result, pos, Bytes.SIZEOF_INT);
           pos += Bytes.SIZEOF_INT;
@@ -401,10 +382,10 @@ public class HBaseDataConverter {
         int resultInt = DataConverter.INSTANCE.toInt(sourceProperty.getType(), value);
         result = Bytes.toBytes(resultInt);
       } else {
-        Integer[] array = (Integer[]) value;
+        int[] array = (int[]) value;
         result = new byte[array.length * Bytes.SIZEOF_INT];
         int pos = 0;
-        for (Integer val : array) {
+        for (int val : array) {
           byte[] bytesVal = Bytes.toBytes(val);
           System.arraycopy(bytesVal, 0, result, pos, Bytes.SIZEOF_INT);
           pos += Bytes.SIZEOF_INT;
@@ -426,10 +407,10 @@ public class HBaseDataConverter {
         long resultLong = DataConverter.INSTANCE.toLong(sourceProperty.getType(), value);
         result = Bytes.toBytes(resultLong);
       } else {
-        Long[] array = (Long[]) value;
+        long[] array = (long[]) value;
         result = new byte[array.length * Bytes.SIZEOF_LONG];
         int pos = 0;
-        for (Long val : array) {
+        for (long val : array) {
           byte[] bytesVal = Bytes.toBytes(val);
           System.arraycopy(bytesVal, 0, result, pos, Bytes.SIZEOF_LONG);
           pos += Bytes.SIZEOF_LONG;
@@ -441,10 +422,10 @@ public class HBaseDataConverter {
         short resultShort = DataConverter.INSTANCE.toShort(sourceProperty.getType(), value);
         result = Bytes.toBytes(resultShort);
       } else {
-        Short[] array = (Short[]) value;
+        short[] array = (short[]) value;
         result = new byte[array.length * Bytes.SIZEOF_SHORT];
         int pos = 0;
-        for (Short val : array) {
+        for (short val : array) {
           byte[] bytesVal = Bytes.toBytes(val);
           System.arraycopy(bytesVal, 0, result, pos, Bytes.SIZEOF_SHORT);
           pos += Bytes.SIZEOF_SHORT;
