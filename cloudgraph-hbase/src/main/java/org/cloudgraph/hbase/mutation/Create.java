@@ -92,12 +92,12 @@ public class Create extends DefaultMutation implements Collector {
       if (property.getConcurrent() != null)
         continue; // processed above
 
-      Object dataValue = null;
+      Object dataValue = dataObject.get(property);
+      if (dataValue == null)
+        continue; // nothing to create
+
       byte[] valueBytes = null;
       if (!property.getType().isDataType()) {
-        dataValue = dataObject.get(property);
-        if (dataValue == null)
-          continue; // nothing to create
         List<PlasmaEdge> edges = dataNode.getEdges(property);
 
         List<PlasmaEdge> ownedEdges = this.findOwnedEdges(dataNode, property, edges, graphWriter,
@@ -109,19 +109,9 @@ public class Create extends DefaultMutation implements Collector {
           edgeWriter.write();
         }
       } else {
-        if (!property.isMany()) {
-          dataValue = dataObject.get(property);
-          if (dataValue == null)
-            continue; // nothing to create
-        } else {
-          Object[] dataValues = dataObject.getArray(property);
-          if (dataValues == null || dataValues.length == 0)
-            continue; // nothing to create
-          dataValue = dataValues;
-        }
+        valueBytes = HBaseDataConverter.INSTANCE.toBytes(property, dataValue);
+        rowWriter.writeRowData(dataObject, sequence, property, valueBytes);
       }
-      valueBytes = HBaseDataConverter.INSTANCE.toBytes(property, dataValue);
-      rowWriter.writeRowData(dataObject, sequence, property, valueBytes);
     }
   }
 
