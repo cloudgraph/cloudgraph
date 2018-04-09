@@ -231,8 +231,17 @@ public class HBaseConnectionManager {
 
     poolConfig.setLifo(this.config.getBoolean(CONNECTION_POOL_LIFO,
         GenericObjectPoolConfig.DEFAULT_LIFO));
+
     poolConfig.setMaxWaitMillis(this.config.getLong(CONNECTION_POOL_MAX_WAIT_MILLIS,
         GenericObjectPoolConfig.DEFAULT_MAX_WAIT_MILLIS));
+
+    // eviction
+    poolConfig.setTimeBetweenEvictionRunsMillis(this.config.getLong(
+        CONNECTION_POOL_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
+        GenericObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS));
+    poolConfig.setEvictionPolicyClassName(this.config.get(
+        CONNECTION_POOL_EVICTION_POLICY_CLASS_NAME,
+        GenericObjectPoolConfig.DEFAULT_EVICTION_POLICY_CLASS_NAME));
     poolConfig.setMinEvictableIdleTimeMillis(this.config.getLong(
         CONNECTION_POOL_MIN_EVICTABLE_IDLE_TIME_MILLIS,
         GenericObjectPoolConfig.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS));
@@ -242,6 +251,7 @@ public class HBaseConnectionManager {
     poolConfig.setNumTestsPerEvictionRun(this.config.getInt(
         CONNECTION_POOL_NUM_TESTS_PER_EVICTION_RUN,
         GenericObjectPoolConfig.DEFAULT_NUM_TESTS_PER_EVICTION_RUN));
+
     poolConfig.setTestOnCreate(this.config.getBoolean(CONNECTION_POOL_TEST_ON_CREATE,
         GenericObjectPoolConfig.DEFAULT_TEST_ON_CREATE));
     poolConfig.setTestOnBorrow(this.config.getBoolean(CONNECTION_POOL_TEST_ON_BORROW,
@@ -250,12 +260,6 @@ public class HBaseConnectionManager {
         GenericObjectPoolConfig.DEFAULT_TEST_ON_RETURN));
     poolConfig.setTestWhileIdle(this.config.getBoolean(CONNECTION_POOL_TEST_WHILE_IDLE,
         GenericObjectPoolConfig.DEFAULT_TEST_WHILE_IDLE));
-    poolConfig.setTimeBetweenEvictionRunsMillis(this.config.getLong(
-        CONNECTION_POOL_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
-        GenericObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS));
-    poolConfig.setEvictionPolicyClassName(this.config.get(
-        CONNECTION_POOL_EVICTION_POLICY_CLASS_NAME,
-        GenericObjectPoolConfig.DEFAULT_EVICTION_POLICY_CLASS_NAME));
     poolConfig.setBlockWhenExhausted(this.config.getBoolean(CONNECTION_POOL_BLOCK_WHEN_EXHAUSTED,
         GenericObjectPoolConfig.DEFAULT_BLOCK_WHEN_EXHAUSTED));
     poolConfig.setJmxEnabled(this.config.getBoolean(CONNECTION_POOL_JMX_ENABLED, false));
@@ -268,11 +272,16 @@ public class HBaseConnectionManager {
     this.pool = new GenericObjectPool<Connection>(factory, poolConfig);
     factory.setPool(pool);
 
-    log.info("created connection pool: " + "\nmaxTotal:\t\t" + poolConfig.getMaxTotal()
-        + "\nminIdle:\t\t" + poolConfig.getMinIdle() + "\nmaxIdle:\t\t" + poolConfig.getMaxIdle()
-        + "\nminEvictableIdleTimeMillis:\t\t" + poolConfig.getMinEvictableIdleTimeMillis()
-        + "\nminTimeBetweenEvictionRunsMillis:\t\t" + poolConfig.getTimeBetweenEvictionRunsMillis()
-        + "\nmaxWaitMillis:\t\t" + poolConfig.getMaxWaitMillis());
+    log.info("created connection pool[ " + "\n\tMaxTotal:\t\t" + poolConfig.getMaxTotal()
+        + "\n\tMinIdle:\t\t" + poolConfig.getMinIdle() + "\n\tMaxIdle:\t\t"
+        + poolConfig.getMaxIdle() + "\n\tLifo:\t\t" + poolConfig.getLifo()
+        + "\n\tMaxWaitMillis:\t\t" + poolConfig.getMaxWaitMillis()
+        + "\n\tTimeBetweenEvictionRunsMillis:\t\t" + poolConfig.getTimeBetweenEvictionRunsMillis()
+        + "\n\tEvictionPolicyClassName:\t\t" + poolConfig.getEvictionPolicyClassName()
+        + "\n\tMinEvictableIdleTimeMillis:\t\t" + poolConfig.getMinEvictableIdleTimeMillis()
+        + "\n\tSoftMinEvictableIdleTimeMillis:\t\t"
+        + poolConfig.getSoftMinEvictableIdleTimeMillis() + "\n\tNumTestsPerEvictionRun:\t\t"
+        + poolConfig.getNumTestsPerEvictionRun() + "\n...]");
   }
 
   public static HBaseConnectionManager instance() {
