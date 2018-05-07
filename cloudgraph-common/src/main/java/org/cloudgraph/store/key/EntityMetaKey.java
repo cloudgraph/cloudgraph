@@ -34,14 +34,6 @@ import org.plasma.sdo.core.CoreConstants;
  */
 public enum EntityMetaKey implements MetaKey {
   /**
-   * The timestamp for an entire entity within a graph/row indicating the last
-   * modified date for the entity, the value being a string representation of a
-   * long integer.
-   */
-  TIMESTAMP(
-      "_TS",
-      "timestamp for an entire entity within a graph/row indicating the last modified date for the entity"),
-  /**
    * Represents the uuid of an entity, and is a mandatory field for all queries.
    * The value associated with this field is a uuid which allows all assembled
    * data object to be universally unique across sessions and clients

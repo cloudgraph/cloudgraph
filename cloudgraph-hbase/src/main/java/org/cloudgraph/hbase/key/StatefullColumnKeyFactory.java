@@ -103,13 +103,33 @@ public class StatefullColumnKeyFactory extends CompositeColumnKeyFactory impleme
     return getKey(type, sequenceNum, metaField);
   }
 
+  @Override
+  public byte[] createColumnKeyMetadataPrefix(PlasmaType type, long sequenceNum,
+      PlasmaProperty property) {
+    return getKeyMetadataPrefix(type, sequenceNum, property);
+  }
+
   private byte[] getKey(PlasmaType type, long sequenceNum, PlasmaProperty property) {
     if (sequenceNum <= 0)
       throw new IllegalArgumentException("expected positive sequence number not " + sequenceNum);
-    byte[] seqNumBytes = Bytes.toBytes(String.valueOf(sequenceNum));
+    byte[] seqNumBytes = String.valueOf(sequenceNum).getBytes(this.charset);
     byte[] sectionDelim = this.getGraph().getColumnKeySequenceDelimiterBytes();
     byte[] prefix = super.createColumnKey(type, property);
     byte[] result = concat(prefix, sectionDelim, seqNumBytes);
+    if (log.isDebugEnabled())
+      log.debug("key: " + Bytes.toString(result));
+
+    return result;
+  }
+
+  private byte[] getKeyMetadataPrefix(PlasmaType type, long sequenceNum, PlasmaProperty property) {
+    if (sequenceNum <= 0)
+      throw new IllegalArgumentException("expected positive sequence number not " + sequenceNum);
+    byte[] seqNumBytes = String.valueOf(sequenceNum).getBytes(this.charset);
+    byte[] sectionDelim = this.getGraph().getColumnKeySequenceDelimiterBytes();
+    byte[] prefix = super.createColumnKey(type, property);
+    byte[] metadataDelim = this.getGraph().getColumnKeyReferenceMetadataDelimiterBytes();
+    byte[] result = concat(prefix, sectionDelim, seqNumBytes, metadataDelim);
     if (log.isDebugEnabled())
       log.debug("key: " + Bytes.toString(result));
 
@@ -120,7 +140,7 @@ public class StatefullColumnKeyFactory extends CompositeColumnKeyFactory impleme
       MetaKey metaField) {
     if (sequenceNum <= 0)
       throw new IllegalArgumentException("expected positive sequence number not " + sequenceNum);
-    byte[] seqNumBytes = Bytes.toBytes(String.valueOf(sequenceNum));
+    byte[] seqNumBytes = String.valueOf(sequenceNum).getBytes(this.charset);
     byte[] sectionDelim = this.getGraph().getColumnKeySequenceDelimiterBytes();
     byte[] prefix = super.createColumnKey(type, property);
     byte[] metaDelim = this.getGraph().getColumnKeyReferenceMetadataDelimiterBytes();
@@ -134,7 +154,7 @@ public class StatefullColumnKeyFactory extends CompositeColumnKeyFactory impleme
   private byte[] getKey(PlasmaType type, long sequenceNum, EntityMetaKey metaField) {
     if (sequenceNum <= 0)
       throw new IllegalArgumentException("expected positive sequence number not " + sequenceNum);
-    byte[] seqNumBytes = Bytes.toBytes(String.valueOf(sequenceNum));
+    byte[] seqNumBytes = String.valueOf(sequenceNum).getBytes(this.charset);
     byte[] sectionDelim = this.getGraph().getColumnKeySequenceDelimiterBytes();
 
     byte[] prefix = super.createColumnKey(type, metaField);
@@ -149,7 +169,7 @@ public class StatefullColumnKeyFactory extends CompositeColumnKeyFactory impleme
   private byte[] getKey(PlasmaType type, long sequenceNum, EdgeMetaKey metaField) {
     if (sequenceNum <= 0)
       throw new IllegalArgumentException("expected positive sequence number not " + sequenceNum);
-    byte[] seqNumBytes = Bytes.toBytes(String.valueOf(sequenceNum));
+    byte[] seqNumBytes = String.valueOf(sequenceNum).getBytes(this.charset);
     byte[] sectionDelim = this.getGraph().getColumnKeySequenceDelimiterBytes();
 
     byte[] prefix = super.createColumnKey(type, metaField);

@@ -43,7 +43,7 @@ import org.plasma.query.model.RelationalOperator;
 public class LocalEdgeRecognizerRelationalBinaryExpr extends DefaultRelationalBinaryExpr implements
     RelationalBinaryExpr {
   private static Log log = LogFactory.getLog(LocalEdgeRecognizerRelationalBinaryExpr.class);
-  private String columnQualifierPrefix;
+  private char[] columnQualifierPrefixChars;
 
   /**
    * Constructs an expression based on the given terms and column qualifier
@@ -63,7 +63,7 @@ public class LocalEdgeRecognizerRelationalBinaryExpr extends DefaultRelationalBi
   public LocalEdgeRecognizerRelationalBinaryExpr(Property property, String columnQualifierPrefix,
       Literal literal, RelationalOperator operator) {
     super(property, literal, operator);
-    this.columnQualifierPrefix = columnQualifierPrefix;
+    this.columnQualifierPrefixChars = columnQualifierPrefix.toCharArray();
   }
 
   /**
@@ -81,10 +81,13 @@ public class LocalEdgeRecognizerRelationalBinaryExpr extends DefaultRelationalBi
   @Override
   public boolean evaluate(EvaluationContext context) {
     LocalEdgeRecognizerContext ctx = (LocalEdgeRecognizerContext) context;
-    // FIXME: use Array copy
-    String qualifier = this.columnQualifierPrefix + String.valueOf(ctx.getSequence());
-    KeyValue value = ctx.getKeyMap().get(qualifier);
-
+    char[] seqChars = ctx.getSequence().toString().toCharArray();
+    char[] qualifier = new char[this.columnQualifierPrefixChars.length + seqChars.length];
+    System.arraycopy(this.columnQualifierPrefixChars, 0, qualifier, 0,
+        this.columnQualifierPrefixChars.length);
+    System.arraycopy(seqChars, 0, qualifier, this.columnQualifierPrefixChars.length,
+        seqChars.length);
+    KeyValue value = ctx.getKeyMap().get(new String(qualifier));
     boolean found = value != null;
     if (log.isDebugEnabled())
       log.debug("evaluate: " + found + " '" + qualifier + "' in map " + ctx.getKeyMap().keySet());

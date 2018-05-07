@@ -136,7 +136,7 @@ class ParallelSliceSubgraphTask extends DefaultSubgraphTask implements SubgraphT
         Set<Long> sequences = null;
         if (prop.isMany() && where != null) {
           sequences = this.sliceSupport.fetchSequences((PlasmaType) prop.getType(), where,
-              rowReader);
+              rowReader, edgeReader);
           // preload properties for the NEXT level into the current
           // row so we have something to assemble
           Set<Property> childProperies = this.selection.getInheritedProperties(prop.getType(),

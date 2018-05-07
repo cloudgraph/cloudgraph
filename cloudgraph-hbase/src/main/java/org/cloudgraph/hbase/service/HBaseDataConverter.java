@@ -25,8 +25,12 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.plasma.sdo.DataType;
 import org.plasma.sdo.helper.DataConverter;
+import org.apache.jena.ext.com.google.common.primitives.Longs;
+import org.apache.jena.ext.com.google.common.primitives.UnsignedInteger;
+import org.apache.jena.ext.com.google.common.primitives.UnsignedInts;
+import org.apache.jena.ext.com.google.common.primitives.UnsignedLong;
 
-import com.google.common.primitives.UnsignedInteger;
+import com.google.common.primitives.Ints;
 
 import commonj.sdo.Property;
 
@@ -205,6 +209,20 @@ public class HBaseDataConverter {
         result = list;
       }
       break;
+    case UnsignedInt:
+      if (!targetProperty.isMany()) {
+        result = UnsignedInteger.fromIntBits(Ints.fromByteArray(value));
+      } else {
+        int count = value.length / Bytes.SIZEOF_INT;
+        List<UnsignedInteger> list = new ArrayList<>(count);
+        for (int offset = 0, idx = 0; offset < value.length; offset += Bytes.SIZEOF_INT, idx++) {
+          byte[] bytes = new byte[Bytes.SIZEOF_INT];
+          System.arraycopy(value, offset, bytes, 0, bytes.length);
+          list.add(UnsignedInteger.fromIntBits(Ints.fromByteArray(bytes)));
+        }
+        result = list;
+      }
+      break;
     case Integer:
       if (!targetProperty.isMany())
         result = new BigInteger(value);
@@ -219,6 +237,20 @@ public class HBaseDataConverter {
         List<Long> list = new ArrayList<>(count);
         for (int offset = 0, idx = 0; offset < value.length; offset += Bytes.SIZEOF_LONG, idx++) {
           list.add(new Long(Bytes.toLong(value, offset, Bytes.SIZEOF_LONG)));
+        }
+        result = list;
+      }
+      break;
+    case UnsignedLong:
+      if (!targetProperty.isMany()) {
+        result = UnsignedLong.fromLongBits(Longs.fromByteArray(value));
+      } else {
+        int count = value.length / Bytes.SIZEOF_LONG;
+        List<UnsignedLong> list = new ArrayList<>(count);
+        for (int offset = 0, idx = 0; offset < value.length; offset += Bytes.SIZEOF_LONG, idx++) {
+          byte[] bytes = new byte[Bytes.SIZEOF_LONG];
+          System.arraycopy(value, offset, bytes, 0, bytes.length);
+          list.add(UnsignedLong.fromLongBits(Ints.fromByteArray(bytes)));
         }
         result = list;
       }
@@ -396,6 +428,24 @@ public class HBaseDataConverter {
         }
       }
       break;
+    case UnsignedInt:
+      if (!sourceProperty.isMany()) {
+        UnsignedInteger resultInt = DataConverter.INSTANCE.toUnsignedInt(sourceProperty.getType(),
+            value);
+        result = Ints.toByteArray(resultInt.intValue());
+         
+      } else {
+        @SuppressWarnings("unchecked")
+        List<UnsignedInteger> list = (List<UnsignedInteger>) value;
+        result = new byte[list.size() * Bytes.SIZEOF_INT];
+        int pos = 0;
+        for (UnsignedInteger val : list) {
+          byte[] bytesVal = Ints.toByteArray(val.intValue());
+          System.arraycopy(bytesVal, 0, result, pos, Bytes.SIZEOF_INT);
+          pos += Bytes.SIZEOF_INT;
+        }
+      }
+      break;
     case Integer:
       if (!sourceProperty.isMany()) {
         BigInteger resultInteger = DataConverter.INSTANCE
@@ -417,6 +467,23 @@ public class HBaseDataConverter {
         int pos = 0;
         for (Long val : list) {
           byte[] bytesVal = Bytes.toBytes(val);
+          System.arraycopy(bytesVal, 0, result, pos, Bytes.SIZEOF_LONG);
+          pos += Bytes.SIZEOF_LONG;
+        }
+      }
+      break;
+    case UnsignedLong:
+      if (!sourceProperty.isMany()) {
+        UnsignedLong resultInt = DataConverter.INSTANCE.toUnsignedLong(sourceProperty.getType(),
+            value);
+        result = Longs.toByteArray(resultInt.longValue());
+      } else {
+        @SuppressWarnings("unchecked")
+        List<UnsignedLong> list = (List<UnsignedLong>) value;
+        result = new byte[list.size() * Bytes.SIZEOF_LONG];
+        int pos = 0;
+        for (UnsignedLong val : list) {
+          byte[] bytesVal = Longs.toByteArray(val.longValue());
           System.arraycopy(bytesVal, 0, result, pos, Bytes.SIZEOF_LONG);
           pos += Bytes.SIZEOF_LONG;
         }

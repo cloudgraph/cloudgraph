@@ -194,12 +194,11 @@ public class GraphRow implements RowState {
   }
 
   protected int getHashCode(UUID uuid) {
-    return uuid.toString().hashCode();
+    return uuid.hashCode();
   }
 
   protected int getHashCode(PlasmaDataObject dataObject) {
-    String uuidStr = dataObject.getUUIDAsString();
-    return uuidStr.hashCode();
+    return dataObject.getUUID().hashCode();
   }
 
   protected int getHashCode(PlasmaType type, PlasmaProperty property, Long sequence) {

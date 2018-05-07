@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableSet;
 import java.util.Set;
 
 import javax.xml.bind.JAXBException;
@@ -55,12 +56,14 @@ import org.cloudgraph.hbase.io.EdgeReader;
 import org.cloudgraph.hbase.io.RowReader;
 import org.cloudgraph.hbase.io.TableOperation;
 import org.cloudgraph.hbase.io.TableReader;
+import org.cloudgraph.hbase.key.StatefullColumnKeyFactory;
 import org.cloudgraph.hbase.util.FilterUtil;
 import org.cloudgraph.query.expr.Expr;
 import org.cloudgraph.query.expr.ExprPrinter;
 import org.cloudgraph.recognizer.Endpoint;
 import org.cloudgraph.recognizer.GraphRecognizerContext;
 import org.cloudgraph.recognizer.GraphRecognizerSyntaxTreeAssembler;
+import org.cloudgraph.store.key.EntityMetaKey;
 import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.cloudgraph.store.mapping.StoreMapping;
 import org.cloudgraph.store.service.GraphServiceException;
@@ -346,8 +349,8 @@ class GraphSliceSupport {
    * @throws IOException
    * @see ColumnPredicateFilterAssembler
    */
-  public Set<Long> fetchSequences(PlasmaType contextType, Where where, RowReader rowReader)
-      throws IOException {
+  public Set<Long> fetchSequences(PlasmaType contextType, Where where, RowReader rowReader,
+      EdgeReader edgeReader) throws IOException {
 
     if (log.isDebugEnabled()) {
       log.debug("root type: " + rowReader.getRootType());
@@ -389,11 +392,14 @@ class GraphSliceSupport {
     Expr recogniser = assembler.getResult();
     LocalEdgeRecognizerContext context = new LocalEdgeRecognizerContext();
     for (Long seq : buckets.keySet()) {
-      Map<String, KeyValue> seqMap = buckets.get(seq);
-      context.setSequence(seq);
-      context.setKeyMap(seqMap);
-      if (recogniser.evaluate(context))
-        sequences.add(seq);
+      // possible for returned sequence no NOT be part of edge
+      if (edgeReader.hasSequence(seq)) {
+        Map<String, KeyValue> seqMap = buckets.get(seq);
+        context.setSequence(seq);
+        context.setKeyMap(seqMap);
+        if (recogniser.evaluate(context))
+          sequences.add(seq);
+      }
     }
     if (log.isDebugEnabled())
       log.debug("returning " + sequences.size() + " sequences");
@@ -625,13 +631,40 @@ class GraphSliceSupport {
       PlasmaType contextType, RowReader rowReader, EdgeReader edgeReader) throws IOException {
     Get get = new Get(rowReader.getRowKey());
     PlasmaType rootType = (PlasmaType) rowReader.getRootType();
-
-    StatefullBinaryPrefixColumnFilterAssembler columnFilterAssembler = new StatefullBinaryPrefixColumnFilterAssembler(
-        rootType, edgeReader);
-    columnFilterAssembler.assemble(properties, sequences, contextType);
-    Filter filter = columnFilterAssembler.getFilter();
-    get.setFilter(filter);
+    if (anyReferenceProperties(properties)) {
+      StatefullBinaryPrefixColumnFilterAssembler columnFilterAssembler = new StatefullBinaryPrefixColumnFilterAssembler(
+          rootType, edgeReader);
+      columnFilterAssembler.assemble(properties, sequences, contextType);
+      Filter filter = columnFilterAssembler.getFilter();
+      get.setFilter(filter);
+    } else {
+      StatefullColumnKeyFactory columnKeyFac = new StatefullColumnKeyFactory(rootType);
+      PlasmaType subType = edgeReader.getSubType();
+      if (subType == null)
+        subType = edgeReader.getBaseType();
+      byte[] colFam = columnKeyFac.getGraph().getTable().getDataColumnFamilyNameBytes();
+      byte[] colKey = null;
+      for (Long seq : sequences) {
+        for (EntityMetaKey metaField : EntityMetaKey.values()) {
+          colKey = columnKeyFac.createColumnKey(subType, seq, metaField);
+          get.addColumn(colFam, colKey);
+        }
+        for (Property p : properties) {
+          PlasmaProperty prop = (PlasmaProperty) p;
+          colKey = columnKeyFac.createColumnKey(subType, seq, prop);
+          get.addColumn(colFam, colKey);
+        }
+      }
+    }
     load(get, rowReader);
+  }
+
+  private boolean anyReferenceProperties(Set<Property> properties) {
+    for (Property p : properties) {
+      if (!p.getType().isDataType())
+        return true;
+    }
+    return false;
   }
 
   /**
@@ -647,15 +680,33 @@ class GraphSliceSupport {
   public void load(Get get, RowReader rowReader) throws IOException {
     if (log.isDebugEnabled())
       try {
-        log.debug("get filter: " + FilterUtil.printFilterTree(get.getFilter()));
+        if (get.getFilter() != null) {
+          log.debug("executing get: " + FilterUtil.printFilterTree(get.getFilter()));
+        } else {
+          StringBuilder buf = new StringBuilder();
+          buf.append("coluimns: [");
+          Map<byte[], NavigableSet<byte[]>> fm = get.getFamilyMap();
+          int i = 0;
+          for (Map.Entry<byte[], NavigableSet<byte[]>> entry : fm.entrySet()) {
+            for (byte[] column : entry.getValue()) {
+              if (i > 0)
+                buf.append(" ");
+              buf.append(Bytes.toString(entry.getKey()));
+              buf.append(":");
+              buf.append(Bytes.toString(column));
+            }
+            i++;
+          }
+          buf.append("] count: " + i);
+          log.debug("executing get: " + buf.toString());
+        }
       } catch (IOException e1) {
       }
 
     long before = System.currentTimeMillis();
-    if (log.isDebugEnabled())
-      log.debug("executing get...");
-
     Result result = rowReader.getTableReader().getTable().get(get);
+    long after = System.currentTimeMillis();
+
     if (result == null) // do expect a result since a Get oper, but might
       // have no columns
       throw new GraphServiceException("expected result from table "
@@ -670,7 +721,6 @@ class GraphSliceSupport {
         }
       }
 
-    long after = System.currentTimeMillis();
     if (log.isDebugEnabled())
       log.debug("returned 1 results (" + String.valueOf(after - before) + ")");
   }
@@ -678,12 +728,13 @@ class GraphSliceSupport {
   public void load(Scan scan, RowReader rowReader) {
     if (log.isDebugEnabled())
       try {
-        log.debug("scan filter: " + FilterUtil.printFilterTree(scan.getFilter()));
+        if (scan.getFilter() != null)
+          log.debug("executing scan: " + FilterUtil.printFilterTree(scan.getFilter()));
+        else
+          log.debug("executing scan... ");
       } catch (IOException e1) {
       }
 
-    if (log.isDebugEnabled())
-      log.debug("executing scan...");
     ResultScanner scanner = null;
     try {
       scanner = rowReader.getTableReader().getTable().getScanner(scan);

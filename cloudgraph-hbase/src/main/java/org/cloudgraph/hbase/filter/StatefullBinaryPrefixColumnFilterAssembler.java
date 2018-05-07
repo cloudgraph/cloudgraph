@@ -19,6 +19,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.hbase.filter.BinaryComparator;
 import org.apache.hadoop.hbase.filter.BinaryPrefixComparator;
 import org.apache.hadoop.hbase.filter.CompareFilter;
 import org.apache.hadoop.hbase.filter.FilterList;
@@ -79,21 +80,32 @@ public class StatefullBinaryPrefixColumnFilterAssembler extends FilterListAssemb
       subType = edgeReader.getBaseType();
 
     for (Long seq : sequences) {
-      // adds entity level meta data qualifier prefixes for ALL sequences
-      // in the selection
+      // Adds entity level meta data qualifier prefixes for ALL sequences
+      // in the selection. Entity meta keys are exact qualifier filters, not
+      // prefixes
       for (EntityMetaKey metaField : EntityMetaKey.values()) {
         colKey = this.columnKeyFac.createColumnKey(subType, seq, metaField);
-        qualFilter = new QualifierFilter(CompareFilter.CompareOp.EQUAL, new BinaryPrefixComparator(
-            colKey));
+        qualFilter = new QualifierFilter(CompareFilter.CompareOp.EQUAL,
+            new BinaryComparator(colKey));
         this.rootFilter.addFilter(qualFilter);
       }
 
       for (Property p : properies) {
         PlasmaProperty prop = (PlasmaProperty) p;
-        colKey = this.columnKeyFac.createColumnKey(subType, seq, prop);
-        qualFilter = new QualifierFilter(CompareFilter.CompareOp.EQUAL, new BinaryPrefixComparator(
-            colKey));
-        this.rootFilter.addFilter(qualFilter);
+        if (prop.getType().isDataType()) {
+          colKey = this.columnKeyFac.createColumnKey(subType, seq, prop);
+          qualFilter = new QualifierFilter(CompareFilter.CompareOp.EQUAL, new BinaryComparator(
+              colKey));
+          this.rootFilter.addFilter(qualFilter);
+
+        } else {
+          // reference props have several meta keys so are
+          // only property type requiring a prefix filter.
+          colKey = this.columnKeyFac.createColumnKey(subType, seq, prop);
+          qualFilter = new QualifierFilter(CompareFilter.CompareOp.EQUAL,
+              new BinaryPrefixComparator(colKey));
+          this.rootFilter.addFilter(qualFilter);
+        }
       }
     }
   }

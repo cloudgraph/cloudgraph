@@ -62,6 +62,10 @@ public class FilterUtil {
         buf.append(compFilter.getClass().getSimpleName() + ": ");
         buf.append(compFilter.getOperator().name());
         buf.append(" ");
+        buf.append(compFilter.getComparator().getClass().getSimpleName());
+        buf.append("('");
+        buf.append(new String(compFilter.getComparator().getValue()));
+        buf.append("')");
         buf.append(new String(compFilter.getComparator().getValue()));
       } else if (filter instanceof MultipleColumnPrefixFilter) {
         MultipleColumnPrefixFilter prefixFilter = (MultipleColumnPrefixFilter) filter;

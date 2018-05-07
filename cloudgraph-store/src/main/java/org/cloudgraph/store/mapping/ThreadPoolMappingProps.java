@@ -24,17 +24,11 @@ import org.plasma.query.model.Query;
  * @since 0.6.2
  */
 public class ThreadPoolMappingProps {
-  private int minThreadPoolSize;
-  private int maxThreadPoolSize;
   private int maxThreadDepth;
   private FetchType fetchType;
   private ParallelFetchDisposition fetchDisposition;
 
   public ThreadPoolMappingProps(Query query) {
-    this.minThreadPoolSize = StoreMappingProp.getQueryPoolMin(query);
-    this.maxThreadPoolSize = StoreMappingProp.getQueryPoolMax(query);
-    if (this.minThreadPoolSize > this.maxThreadPoolSize)
-      this.minThreadPoolSize = this.maxThreadPoolSize;
     this.maxThreadDepth = StoreMappingProp.getQueryThreadMaxDepth(query);
     this.fetchType = StoreMappingProp.getQueryFetchType(query);
     this.fetchDisposition = StoreMappingProp.getQueryParallelFetchDisposition(query);
@@ -43,8 +37,6 @@ public class ThreadPoolMappingProps {
   @Deprecated
   public ThreadPoolMappingProps(int minThreadPoolSize, int maxThreadPoolSize, int maxThreadDepth) {
     super();
-    this.minThreadPoolSize = minThreadPoolSize;
-    this.maxThreadPoolSize = maxThreadPoolSize;
     this.maxThreadDepth = maxThreadDepth;
   }
 
@@ -54,14 +46,6 @@ public class ThreadPoolMappingProps {
 
   public FetchType getFetchType() {
     return fetchType;
-  }
-
-  public int getMinThreadPoolSize() {
-    return minThreadPoolSize;
-  }
-
-  public int getMaxThreadPoolSize() {
-    return maxThreadPoolSize;
   }
 
   public int getMaxThreadDepth() {

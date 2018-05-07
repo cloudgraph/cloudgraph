@@ -222,9 +222,9 @@ public class DistributedGraphReader implements DistributedReader {
     int key = dataObject.hashCode();
     RowReader existing = this.rowReaderMap.get(key);
     if (existing != null) {
-      // throw new IllegalArgumentException
-      log.warn("the given data object of type " + dataObject.getType()
-          + " is already associated with a row reader");
+      if (log.isDebugEnabled())
+        log.debug("the given data object of type " + dataObject.getType()
+            + " is already associated with a row reader - ignoring");
       return;
     }
 
@@ -237,8 +237,9 @@ public class DistributedGraphReader implements DistributedReader {
     int key = GraphRow.getHashCode(dataObjectSequence, type);
     RowReader existing = this.rowReaderMap.get(key);
     if (existing != null) {
-      // throw new IllegalArgumentException
-      log.warn("the given data object of type " + key + " is already associated with a row reader");
+      if (log.isDebugEnabled())
+        log.debug("the given data object with sequence " + dataObjectSequence + " of type " + type
+            + " is already associated with a row reader - ignoring");
       return;
     }
 
@@ -250,8 +251,9 @@ public class DistributedGraphReader implements DistributedReader {
     int key = Arrays.hashCode(rowKey);
     RowReader existing = this.rowReaderMap.get(key);
     if (existing != null) {
-      // throw new IllegalArgumentException
-      log.warn("the given row key " + rowKey + " is already associated with a row reader");
+      if (log.isDebugEnabled())
+        log.debug("the given row key " + rowKey
+            + " is already associated with a row reader - ignoring");
       return;
     }
 

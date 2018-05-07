@@ -113,15 +113,12 @@ public class GraphQuery implements QueryDispatcher {
     FetchType fetchType = StoreMappingProp.getQueryFetchType(query);
     switch (fetchType) {
     case PARALLEL:
-      int minPool = StoreMappingProp.getQueryPoolMin(query);
-      ;
-      int maxPool = StoreMappingProp.getQueryPoolMax(query);
-      ;
+      int minPool = StoreMappingProp.getQueryPoolMin();
+      int maxPool = StoreMappingProp.getQueryPoolMax();
       if (minPool > maxPool)
         minPool = maxPool;
       int threadMaxDepth = StoreMappingProp.getQueryThreadMaxDepth(query);
       ConfigProps config = new ConfigProps(minPool, maxPool, threadMaxDepth);
-
       assembler = new ParallelGraphAssembler(type, collector, snapshotDate, config, con);
       break;
     case SERIAL:

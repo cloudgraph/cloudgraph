@@ -127,7 +127,8 @@ public class GraphSliceAssembler extends DistributedAssembler {
         // List<Long> sequences = edgeReader.getSequences();
         Set<Long> sequences = null;
         if (prop.isMany() && where != null) {
-          sequences = this.slice.fetchSequences((PlasmaType) prop.getType(), where, rowReader);
+          sequences = this.slice.fetchSequences((PlasmaType) prop.getType(), where, rowReader,
+              edgeReader);
           if (sequences.size() > 0) {
             // preload properties for the NEXT level into the current
             // row so we have something to assemble

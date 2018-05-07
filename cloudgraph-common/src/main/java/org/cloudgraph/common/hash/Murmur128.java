@@ -3,9 +3,9 @@ package org.cloudgraph.common.hash;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.google.common.hash.HashCode;
-import com.google.common.hash.HashFunction;
-import com.google.common.hash.Hashing;
+import org.apache.jena.ext.com.google.common.hash.HashCode;
+import org.apache.jena.ext.com.google.common.hash.HashFunction;
+import org.apache.jena.ext.com.google.common.hash.Hashing;
 
 public class Murmur128 implements Hash64 {
   private static volatile Murmur128 INSTANCE;

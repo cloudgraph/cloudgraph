@@ -21,7 +21,9 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -58,7 +60,7 @@ public abstract class DefaultEdgeOperation implements EdgeOperation {
   protected PlasmaType collectionBaseType;
   protected PlasmaType collectionDefaultSubType;
   protected String collectionPath;
-  protected List<Long> sequences;
+  protected Set<Long> sequences;
   // protected String table;
   protected List<KeyBytes> rowKeys;
 
@@ -164,8 +166,16 @@ public abstract class DefaultEdgeOperation implements EdgeOperation {
    * @see org.cloudgraph.hbase.io.KeyMeta#getSequences()
    */
   @Override
-  public List<Long> getSequences() {
+  public Set<Long> getSequences() {
     return sequences;
+  }
+
+  @Override
+  public boolean hasSequence(Long seq) {
+    if (this.sequences != null)
+      return this.sequences.contains(seq);
+    else
+      return false;
   }
 
   /*
@@ -296,7 +306,7 @@ public abstract class DefaultEdgeOperation implements EdgeOperation {
 
   protected void decodeSequences(byte[] sequenceBytes) {
     String[] tokens = (new String(sequenceBytes, charset)).split(" ");
-    sequences = new ArrayList<Long>(tokens.length);
+    sequences = new HashSet<Long>(tokens.length);
     for (int i = 0; i < tokens.length; i++)
       sequences.add(Long.parseLong(tokens[i]));
   }

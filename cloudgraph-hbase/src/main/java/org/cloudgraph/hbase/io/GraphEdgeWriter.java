@@ -328,7 +328,7 @@ public class GraphEdgeWriter extends DefaultEdgeOperation implements EdgeWriter 
       if (log.isDebugEnabled())
         log.debug("adding new value " + newValue + " (seq: " + seq + ") to " + this.dataObject);
       if (this.sequences == null)
-        this.sequences = new ArrayList<Long>();
+        this.sequences = new HashSet<Long>();
       if (this.sequences.contains(seq))
         throw new IllegalStateException("duplicate sequence found for opposite, " + newValue);
       this.sequences.add(seq);
@@ -398,7 +398,7 @@ public class GraphEdgeWriter extends DefaultEdgeOperation implements EdgeWriter 
 
       if (!isExternal()) {
         if (this.sequences == null)
-          this.sequences = new ArrayList<Long>(edges.size());
+          this.sequences = new HashSet<Long>(edges.size());
         Long seq = null;
         if (opposite.getDataGraph().getChangeSummary().isCreated(opposite))
           seq = getOrCreateSequence(opposite);

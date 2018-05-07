@@ -70,14 +70,14 @@ public class StoreMappingProp {
     return fetchDisposition;
   }
 
-  public static int getQueryPoolMin(Query query) {
-    int minPool = findIntValue(query,
+  public static int getQueryPoolMin() {
+    int minPool = findIntValue(
         ConfigurationProperty.CLOUDGRAPH___QUERY___THREADPOOL___SIZE___MIN.value(), 10);
     return minPool;
   }
 
-  public static int getQueryPoolMax(Query query) {
-    int maxPool = findIntValue(query,
+  public static int getQueryPoolMax() {
+    int maxPool = findIntValue(
         ConfigurationProperty.CLOUDGRAPH___QUERY___THREADPOOL___SIZE___MAX.value(), 10);
     return maxPool;
   }
@@ -86,6 +86,19 @@ public class StoreMappingProp {
     int depthMax = findIntValue(query,
         ConfigurationProperty.CLOUDGRAPH___QUERY___THREAD___DEPTH___MAX.value(), 3);
     return depthMax;
+  }
+
+  private static int findIntValue(String propertyName, int dflt) {
+    int intValue = dflt;
+    String value = System.getProperty(propertyName);
+    if (value != null)
+      try {
+        intValue = Integer.valueOf(value);
+      } catch (NumberFormatException nfe) {
+        throw new StoreMappingException("invalid system configuration value '" + value
+            + "' for property, " + propertyName, nfe);
+      }
+    return intValue;
   }
 
   private static int findIntValue(Query query, String propertyName, int dflt) {

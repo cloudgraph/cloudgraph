@@ -16,6 +16,7 @@
 package org.cloudgraph.hbase.io;
 
 import java.util.List;
+import java.util.Set;
 
 import org.cloudgraph.hbase.io.DefaultEdgeOperation.KeyBytes;
 import org.plasma.sdo.PlasmaType;
@@ -47,7 +48,9 @@ public interface EdgeOperation {
    * 
    * @return the sequence identifiers for entities of the collection.
    */
-  public abstract List<Long> getSequences();
+  public abstract Set<Long> getSequences();
+
+  public boolean hasSequence(Long seq);
 
   /**
    * Returns the subtype or null if none exists

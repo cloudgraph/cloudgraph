@@ -67,7 +67,6 @@ public class ParallelSlidingResultsAssembler extends DefaultResultsAssembler imp
     ResultsAssembler {
   private static final Log log = LogFactory.getLog(ParallelSlidingResultsAssembler.class);
   private ThreadPoolMappingProps poolProps;
-  private ThreadPoolExecutor executorService;
   private List<GraphAssemblerCallable> tasks;
   private GraphAssemblerFactory assemblerFactory;
 
@@ -78,12 +77,6 @@ public class ParallelSlidingResultsAssembler extends DefaultResultsAssembler imp
     super(graphRecognizerRootExpr, orderingComparator, rootTableReader, startRange, endRange);
     this.assemblerFactory = assemblerFactory;
     this.poolProps = poolProps;
-    // Executors.newWorkStealingPool(parallelism) // uses fork join pool - this
-    // applies here !!
-
-    this.executorService = new ThreadPoolExecutor(poolProps.getMinThreadPoolSize(),
-        poolProps.getMaxThreadPoolSize(), 0L, TimeUnit.MILLISECONDS,
-        new LinkedBlockingQueue<Runnable>(), new ThreadPoolExecutor.CallerRunsPolicy());
   }
 
   @Override
@@ -116,7 +109,7 @@ public class ParallelSlidingResultsAssembler extends DefaultResultsAssembler imp
   public PlasmaDataGraph[] getResults() {
     List<Future<PlasmaDataGraph>> futures = Collections.emptyList();
     try {
-      futures = this.executorService.invokeAll(tasks);
+      futures = QueryThreadPool.instance().getExecutor().invokeAll(tasks);
     } catch (InterruptedException e) {
       throw new GraphServiceException(e);
     }

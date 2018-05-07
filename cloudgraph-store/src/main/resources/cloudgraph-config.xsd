@@ -566,29 +566,6 @@ column field may be specified.
                     </xsd:documentation> 
                 </xsd:annotation>
             </xsd:enumeration>
-            <xsd:enumeration value="cloudgraph.query.threadpool.size.min">
-               <xsd:annotation>
-                    <xsd:documentation>The minimum or core size of the query thread pool when using 'parallel' for the value of the 
-                    &lt;b&gt;cloudgraph.query.fetchtype&lt;/b&gt; configuration property. Ignored if the &lt;b&gt;cloudgraph.query.fetchtype&lt;/b&gt; 
-                    configuration property is not set. If set equal to &lt;b&gt;cloudgraph.query.threadpool.size.max&lt;/b&gt; a fixed
-                    sized thread pool will be allocated.     
-                    &lt;li&gt;Name: cloudgraph.query.threadpool.size.min&lt;/li&gt;
-                    &lt;li&gt;Data Type: int&lt;/li&gt;
-                    &lt;li&gt;Default: 10&lt;/li&gt;
-                    </xsd:documentation> 
-                </xsd:annotation>
-            </xsd:enumeration>
-            <xsd:enumeration value="cloudgraph.query.threadpool.size.max">
-               <xsd:annotation>
-                    <xsd:documentation>The maximum size of the query thread pool when using 'parallel' for the value of the 
-                    &lt;b&gt;cloudgraph.query.fetchtype&lt;/b&gt; configuration property. Ignored if the &lt;b&gt;cloudgraph.query.fetchtype&lt;/b&gt; 
-                    configuration property is not set.
-                    &lt;li&gt;Name: cloudgraph.query.threadpool.size.max&lt;/li&gt;
-                    &lt;li&gt;Data Type: int&lt;/li&gt;
-                    &lt;li&gt;Default: 20&lt;/li&gt;
-                    </xsd:documentation> 
-                </xsd:annotation>
-            </xsd:enumeration>
             <xsd:enumeration value="cloudgraph.query.thread.depth.max">
                <xsd:annotation>
                     <xsd:documentation>The maximum graph traversal depth below which new query threads may be allocated when using 'parallel' for the value of the 
@@ -632,6 +609,29 @@ column field may be specified.
                     &lt;li&gt;Data Type: string&lt;/li&gt;
                     &lt;li&gt;Default: null&lt;/li&gt;
                     &lt;/ul&gt;
+                    </xsd:documentation> 
+                </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="cloudgraph.query.threadpool.size.min">
+               <xsd:annotation>
+                    <xsd:documentation>The minimum or core size of the query thread pool when using 'parallel' for the value of the 
+                    &lt;b&gt;cloudgraph.query.fetchtype&lt;/b&gt; configuration property. Ignored if the &lt;b&gt;cloudgraph.query.fetchtype&lt;/b&gt; 
+                    configuration property is not set. If set equal to &lt;b&gt;cloudgraph.query.threadpool.size.max&lt;/b&gt; a fixed
+                    sized thread pool will be allocated.     
+                    &lt;li&gt;Name: cloudgraph.threadpool.size.min&lt;/li&gt;
+                    &lt;li&gt;Data Type: int&lt;/li&gt;
+                    &lt;li&gt;Default: 10&lt;/li&gt;
+                    </xsd:documentation> 
+                </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="cloudgraph.query.threadpool.size.max">
+               <xsd:annotation>
+                    <xsd:documentation>The maximum size of the query thread pool when using 'parallel' for the value of the 
+                    &lt;b&gt;cloudgraph.query.fetchtype&lt;/b&gt; configuration property. Ignored if the &lt;b&gt;cloudgraph.query.fetchtype&lt;/b&gt; 
+                    configuration property is not set.
+                    &lt;li&gt;Name: cloudgraph.threadpool.size.max&lt;/li&gt;
+                    &lt;li&gt;Data Type: int&lt;/li&gt;
+                    &lt;li&gt;Default: 20&lt;/li&gt;
                     </xsd:documentation> 
                 </xsd:annotation>
             </xsd:enumeration>

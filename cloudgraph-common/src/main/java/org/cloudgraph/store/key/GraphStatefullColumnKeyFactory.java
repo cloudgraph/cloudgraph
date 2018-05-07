@@ -109,4 +109,21 @@ public interface GraphStatefullColumnKeyFactory extends GraphColumnKeyFactory {
    */
   public byte[] createColumnKey(PlasmaType type, long sequenceNum, PlasmaProperty property);
 
+  /**
+   * Generates and returns a column key metadata prefix based on data graph
+   * specific sequence number for a given data object.
+   * {@link org.cloudgraph.config.ColumnKeyModel model} for a specific table
+   * {@link org.cloudgraph.config.Table configuration}.
+   * 
+   * @param type
+   *          the metadata type
+   * @param sequenceNum
+   *          the graph row specific sequence number for the given type for a
+   *          data object
+   * @param property
+   *          the property
+   * @return the column key prefix bytes
+   */
+  public byte[] createColumnKeyMetadataPrefix(PlasmaType type, long sequenceNum,
+      PlasmaProperty property);
 }

@@ -30,8 +30,8 @@ import org.cloudgraph.test.datatypes.query.QNode;
 import org.plasma.query.Expression;
 import org.plasma.sdo.helper.DataConverter;
 
-import com.google.common.primitives.UnsignedInteger;
-import com.google.common.primitives.UnsignedLong;
+import org.apache.jena.ext.com.google.common.primitives.UnsignedInteger;
+import org.apache.jena.ext.com.google.common.primitives.UnsignedLong;
 
 import commonj.sdo.DataGraph;
 import commonj.sdo.Property;

@@ -105,8 +105,13 @@ public class TableMapping {
     return this.table.getDataColumnFamilyName();
   }
 
+  private byte[] columnFamilyNameBytes;
+
   public byte[] getDataColumnFamilyNameBytes() {
-    return this.table.getDataColumnFamilyName().getBytes(this.charset);
+    if (this.columnFamilyNameBytes == null) {
+      this.columnFamilyNameBytes = this.table.getDataColumnFamilyName().getBytes(this.charset);
+    }
+    return this.columnFamilyNameBytes;
   }
 
   /**
