@@ -36,6 +36,8 @@ public interface ResultsAssembler {
    */
   public PlasmaDataGraph[] getResults();
 
+  public PlasmaDataGraph getCurrentResult();
+
   /**
    * Returns the current size of the collection
    * 

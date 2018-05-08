@@ -15,6 +15,8 @@
  */
 package org.cloudgraph.hbase.service;
 
+import io.reactivex.Observable;
+
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -72,7 +74,7 @@ import commonj.sdo.Type;
 public class HBaseGraphService implements PlasmaDataAccessService, GraphService {
 
   private static Log log = LogFactory.getLog(HBaseGraphService.class);
-  private ServiceContext context;
+  protected ServiceContext context;
 
   public HBaseGraphService() {
     this.context = new SimpleServiceContext();
@@ -136,23 +138,23 @@ public class HBaseGraphService implements PlasmaDataAccessService, GraphService 
     if (log.isDebugEnabled()) {
       log(query);
     }
-    GraphQuery dispatcher = null;
+    GraphQuery graphQuery = null;
     try {
-      dispatcher = new GraphQuery(this.context);
-      DataGraph[] results = dispatcher.find(query, -1, new Timestamp((new Date()).getTime()));
+      graphQuery = new GraphQuery(this.context);
+      DataGraph[] results = graphQuery.find(query, -1, new Timestamp((new Date()).getTime()));
       return results;
     } finally {
-      if (dispatcher != null)
-        dispatcher.close();
+      if (graphQuery != null)
+        graphQuery.close();
     }
   }
 
   public List<DataGraph[]> find(Query[] queries) {
     if (queries == null)
       throw new IllegalArgumentException("expected non-null 'queries' argument");
-    GraphQuery dispatcher = null;
+    GraphQuery graphQuery = null;
     try {
-      dispatcher = new GraphQuery(this.context);
+      graphQuery = new GraphQuery(this.context);
       List<DataGraph[]> list = new ArrayList<DataGraph[]>();
       Timestamp snapshotDate = new Timestamp((new Date()).getTime());
       for (int i = 0; i < queries.length; i++) {
@@ -160,13 +162,13 @@ public class HBaseGraphService implements PlasmaDataAccessService, GraphService 
         if (log.isDebugEnabled()) {
           log(queries[i]);
         }
-        DataGraph[] results = dispatcher.find(queries[i], snapshotDate);
+        DataGraph[] results = graphQuery.find(queries[i], snapshotDate);
         list.add(results);
       }
       return list;
     } finally {
-      if (dispatcher != null)
-        dispatcher.close();
+      if (graphQuery != null)
+        graphQuery.close();
     }
   }
 
@@ -220,7 +222,7 @@ public class HBaseGraphService implements PlasmaDataAccessService, GraphService 
     }
   }
 
-  private void validate(Query query) {
+  protected void validate(Query query) {
     From from = (From) query.getFromClause();
     Type type = PlasmaTypeHelper.INSTANCE.getType(from.getEntity().getNamespaceURI(), from
         .getEntity().getName());
@@ -229,7 +231,7 @@ public class HBaseGraphService implements PlasmaDataAccessService, GraphService 
     new QueryValidator((Query) query, type);
   }
 
-  private void log(Query query) {
+  protected void log(Query query) {
     if (log.isDebugEnabled()) {
       String xml = "";
       PlasmaQueryDataBinding binding;
@@ -265,4 +267,46 @@ public class HBaseGraphService implements PlasmaDataAccessService, GraphService 
     this.commit(graphs, username);
   }
 
+  @Override
+  public Observable<DataGraph> findAsStream(Query query) {
+    if (query == null)
+      throw new IllegalArgumentException("expected non-null 'query' argument");
+    // validate(query);
+    if (log.isDebugEnabled()) {
+      log(query);
+    }
+    GraphStreamQuery dispatcher = null;
+    try {
+      dispatcher = new GraphStreamQuery(this.context);
+      Timestamp snapshotDate = new Timestamp((new Date()).getTime());
+      return dispatcher.findAsStream(query, snapshotDate);
+    } finally {
+      if (dispatcher != null)
+        dispatcher.close();
+    }
+  }
+
+  @Override
+  public Observable<DataGraph> findAsStream(Query query, int maxResults) {
+    if (query == null)
+      throw new IllegalArgumentException("expected non-null 'query' argument");
+    validate(query);
+    if (log.isDebugEnabled()) {
+      log(query);
+    }
+    GraphStreamQuery graphQuery = null;
+    try {
+      graphQuery = new GraphStreamQuery(this.context);
+      return graphQuery.findAsStream(query, -1, new Timestamp((new Date()).getTime()));
+    } finally {
+      if (graphQuery != null)
+        graphQuery.close();
+    }
+  }
+
+  @Override
+  public List<Observable<DataGraph>> findAsStream(Query[] queries) {
+    // TODO Auto-generated method stub
+    return null;
+  }
 }

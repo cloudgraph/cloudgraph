@@ -15,6 +15,8 @@
  */
 package org.cloudgraph.rdb.service;
 
+import io.reactivex.Observable;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -496,5 +498,20 @@ public class RDBGraphService implements PlasmaDataAccessService, GraphService {
       username = context.getJobName();
     this.commit(graphs, username);
   }
+
+@Override
+public Observable<DataGraph> findAsStream(Query query) {
+	throw new DataAccessException("not implemented");
+}
+
+@Override
+public Observable<DataGraph> findAsStream(Query query, int maxResults) {
+	throw new DataAccessException("not implemented");
+}
+
+@Override
+public List<Observable<DataGraph>> findAsStream(Query[] queries) {
+	throw new DataAccessException("not implemented");
+}
 
 }

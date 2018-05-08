@@ -126,7 +126,7 @@ import commonj.sdo.helper.XMLDocument;
  */
 public class GraphQuery implements QueryDispatcher {
   private static Log log = LogFactory.getLog(GraphQuery.class);
-  private ServiceContext context;
+  protected ServiceContext context;
 
   public GraphQuery(ServiceContext context) {
     this.context = context;
@@ -193,22 +193,22 @@ public class GraphQuery implements QueryDispatcher {
     if (log.isDebugEnabled())
       log(query);
     Where where = query.findWhereClause();
-    SelectionCollector selectionCollector = null;
+
+    SelectionCollector selection = null;
     if (where != null)
-      selectionCollector = new SelectionCollector(query.getSelectClause(), where, type);
+      selection = new SelectionCollector(query.getSelectClause(), where, type);
     else
-      selectionCollector = new SelectionCollector(query.getSelectClause(), type);
-    selectionCollector.setOnlyDeclaredProperties(false);
-    for (Type t : selectionCollector.getTypes())
-      collectRowKeyProperties(selectionCollector, (PlasmaType) t);
+      selection = new SelectionCollector(query.getSelectClause(), type);
+    selection.setOnlyDeclaredProperties(false);
+    for (Type t : selection.getTypes())
+      collectRowKeyProperties(selection, (PlasmaType) t);
     if (log.isDebugEnabled())
-      log.debug(selectionCollector.dumpInheritedProperties());
+      log.debug(selection.dumpInheritedProperties());
 
     // Create and add a column filter for the initial
     // column set based on existence of path predicates
     // in the Select.
-    HBaseFilterAssembler columnFilterAssembler = createRootColumnFilterAssembler(type,
-        selectionCollector);
+    HBaseFilterAssembler columnFilterAssembler = createRootColumnFilterAssembler(type, selection);
     Filter columnFilter = columnFilterAssembler.getFilter();
 
     List<PartialRowKey> partialScans = new ArrayList<PartialRowKey>();
@@ -257,13 +257,21 @@ public class GraphQuery implements QueryDispatcher {
       orderingComparator = orderingCompAssem.getComparator();
     }
 
+    return execute(query, type, selection, columnFilter, graphRecognizerRootExpr,
+        orderingComparator, partialScans, fuzzyScans, completeKeys, snapshotDate);
+  }
+
+  protected PlasmaDataGraph[] execute(Query query, PlasmaType type, SelectionCollector selection,
+      Filter columnFilter, Expr graphRecognizerRootExpr,
+      Comparator<PlasmaDataGraph> orderingComparator, List<PartialRowKey> partialScans,
+      List<FuzzyRowKey> fuzzyScans, List<CompleteRowKey> completeKeys, Timestamp snapshotDate) {
     // execute
     Connection connection = HBaseConnectionManager.instance().getConnection();
     DistributedGraphReader graphReader = null;
     try {
-      graphReader = new DistributedGraphReader(type, selectionCollector.getTypes(), connection);
+      graphReader = new DistributedGraphReader(type, selection.getTypes(), connection);
       GraphAssemblerFactory assemblerFactory = new GraphAssemblerFactory(query, type, graphReader,
-          selectionCollector, snapshotDate);
+          selection, snapshotDate);
       TableReader rootTableReader = graphReader.getRootTableReader();
       ResultsAssembler resultsCollector = this.createResultsAssembler(query,
           graphRecognizerRootExpr, orderingComparator, rootTableReader, assemblerFactory);
@@ -327,7 +335,7 @@ public class GraphQuery implements QueryDispatcher {
     }
   }
 
-  private ResultsAssembler createResultsAssembler(Query query, Expr graphRecognizerRootExpr,
+  protected ResultsAssembler createResultsAssembler(Query query, Expr graphRecognizerRootExpr,
       Comparator<PlasmaDataGraph> orderingComparator, TableReader rootTableReader,
       GraphAssemblerFactory assemblerFactory) {
 
@@ -358,7 +366,7 @@ public class GraphQuery implements QueryDispatcher {
     return resultsCollector;
   }
 
-  private boolean canAbortScan(boolean hasOrdering, Integer startRange, Integer endRange,
+  protected boolean canAbortScan(boolean hasOrdering, Integer startRange, Integer endRange,
       Set<PlasmaDataGraph> result) {
     if (!hasOrdering && startRange != null && endRange != null) {
       if (result.size() >= endRange.intValue())
@@ -367,13 +375,13 @@ public class GraphQuery implements QueryDispatcher {
     return false;
   }
 
-  private void execute(PartialRowKey partialRowKey, TableReader rootTableReader,
+  protected void execute(PartialRowKey partialRowKey, TableReader rootTableReader,
       Filter columnFilter, ResultsAssembler collector) throws IOException {
     Scan scan = createScan(partialRowKey, columnFilter);
     execute(scan, rootTableReader, collector);
   }
 
-  private Scan createScan(PartialRowKey partialRowKey, Filter columnFilter) {
+  protected Scan createScan(PartialRowKey partialRowKey, Filter columnFilter) {
     FilterList rootFilter = new FilterList(FilterList.Operator.MUST_PASS_ALL);
     rootFilter.addFilter(columnFilter);
     Scan scan = new Scan();
@@ -386,7 +394,7 @@ public class GraphQuery implements QueryDispatcher {
     return scan;
   }
 
-  private void execute(CompleteRowKey rowKey, TableReader rootTableReader, Filter columnFilter,
+  protected void execute(CompleteRowKey rowKey, TableReader rootTableReader, Filter columnFilter,
       ResultsAssembler collector) throws IOException {
     FilterList rootFilter = new FilterList(FilterList.Operator.MUST_PASS_ALL);
     rootFilter.addFilter(columnFilter);
@@ -397,7 +405,7 @@ public class GraphQuery implements QueryDispatcher {
     execute(get, rootTableReader, collector);
   }
 
-  private void execute(List<CompleteRowKey> rowKeys, TableReader rootTableReader,
+  protected void execute(List<CompleteRowKey> rowKeys, TableReader rootTableReader,
       Filter columnFilter, ResultsAssembler collector) throws IOException {
     FilterList rootFilter = new FilterList(FilterList.Operator.MUST_PASS_ALL);
     rootFilter.addFilter(columnFilter);
@@ -423,13 +431,13 @@ public class GraphQuery implements QueryDispatcher {
     execute(gets, rootTableReader, collector);
   }
 
-  private void execute(FuzzyRowKey fuzzyScan, TableReader rootTableReader, Filter columnFilter,
+  protected void execute(FuzzyRowKey fuzzyScan, TableReader rootTableReader, Filter columnFilter,
       ResultsAssembler collector) throws IOException {
     Scan scan = createScan(fuzzyScan, columnFilter);
     execute(scan, rootTableReader, collector);
   }
 
-  private Scan createScan(FuzzyRowKey fuzzyScan, Filter columnFilter) throws IOException {
+  protected Scan createScan(FuzzyRowKey fuzzyScan, Filter columnFilter) throws IOException {
     FilterList rootFilter = new FilterList(FilterList.Operator.MUST_PASS_ALL);
     rootFilter.addFilter(columnFilter);
     Scan scan = new Scan();
@@ -443,7 +451,7 @@ public class GraphQuery implements QueryDispatcher {
     return scan;
   }
 
-  private void execute(Get get, TableReader rootTableReader, ResultsAssembler collector)
+  protected void execute(Get get, TableReader rootTableReader, ResultsAssembler collector)
       throws IOException {
 
     if (log.isDebugEnabled())
@@ -467,7 +475,7 @@ public class GraphQuery implements QueryDispatcher {
     collector.collect(resultRow);
   }
 
-  private void execute(List<Get> gets, TableReader rootTableReader, ResultsAssembler collector)
+  protected void execute(List<Get> gets, TableReader rootTableReader, ResultsAssembler collector)
       throws IOException {
 
     if (log.isDebugEnabled())
@@ -501,7 +509,7 @@ public class GraphQuery implements QueryDispatcher {
     }
   }
 
-  private void execute(Scan scan, TableReader rootTableReader, ResultsAssembler collector)
+  protected void execute(Scan scan, TableReader rootTableReader, ResultsAssembler collector)
       throws IOException {
 
     if (log.isDebugEnabled())
@@ -550,7 +558,7 @@ public class GraphQuery implements QueryDispatcher {
    * @see GraphFetchColumnFilterAssembler
    * @see InitialFetchColumnFilterAssembler
    */
-  private HBaseFilterAssembler createRootColumnFilterAssembler(PlasmaType type,
+  protected HBaseFilterAssembler createRootColumnFilterAssembler(PlasmaType type,
       SelectionCollector collector) {
     HBaseFilterAssembler columnFilterAssembler = null;
     if (collector.getPredicateMap().size() > 0) {
@@ -572,7 +580,7 @@ public class GraphQuery implements QueryDispatcher {
    * @param type
    *          the current type
    */
-  private void collectRowKeyProperties(SelectionCollector collector, PlasmaType type) {
+  protected void collectRowKeyProperties(SelectionCollector collector, PlasmaType type) {
     Config config = StoreMapping.getInstance();
     DataGraphMapping graph = config.findDataGraph(type.getQualifiedName());
     if (graph != null) {
@@ -587,7 +595,7 @@ public class GraphQuery implements QueryDispatcher {
     }
   }
 
-  public List getVariables(Where where) {
+  protected List getVariables(Where where) {
     final List<Variable> list = new ArrayList<Variable>(1);
     QueryVisitor visitor = new DefaultQueryVisitor() {
       public void start(Variable var) {

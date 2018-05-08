@@ -23,15 +23,13 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.plasma.sdo.DataType;
-import org.plasma.sdo.helper.DataConverter;
 import org.apache.jena.ext.com.google.common.primitives.Longs;
 import org.apache.jena.ext.com.google.common.primitives.UnsignedInteger;
-import org.apache.jena.ext.com.google.common.primitives.UnsignedInts;
 import org.apache.jena.ext.com.google.common.primitives.UnsignedLong;
+import org.plasma.sdo.DataType;
+import org.plasma.sdo.helper.DataConverter;
 
 import com.google.common.primitives.Ints;
-
 import commonj.sdo.Property;
 
 /**
@@ -433,7 +431,7 @@ public class HBaseDataConverter {
         UnsignedInteger resultInt = DataConverter.INSTANCE.toUnsignedInt(sourceProperty.getType(),
             value);
         result = Ints.toByteArray(resultInt.intValue());
-         
+
       } else {
         @SuppressWarnings("unchecked")
         List<UnsignedInteger> list = (List<UnsignedInteger>) value;

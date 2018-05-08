@@ -48,6 +48,11 @@
             <artifactId>cloudgraph-core</artifactId>
             <version>1.1.3</version>
         </dependency>
+ 	<dependency>
+		<groupId>io.reactivex.rxjava2</groupId>
+		<artifactId>rxjava</artifactId>
+		<version>2.0.4</version>
+	</dependency>
         <dependency>
             <groupId>org.cloudgraph</groupId>
             <artifactId>cloudgraph-mapreduce</artifactId>
@@ -330,7 +335,7 @@
                       <goal>test</goal>
                     </goals>
                     <configuration>
-                        <skip>false</skip>
+                        <skip>true</skip>
                         <additionalClasspathElements>
                             <additionalClasspathElement>${basedir}/src/main/resources</additionalClasspathElement>
                             <additionalClasspathElement>${basedir}/src/test/resources</additionalClasspathElement>
@@ -356,7 +361,7 @@
                       <goal>test</goal>
                     </goals>
                     <configuration>
-                        <skip>false</skip>
+                        <skip>true</skip>
                         <additionalClasspathElements>
                             <additionalClasspathElement>${basedir}/src/main/resources</additionalClasspathElement>
                             <additionalClasspathElement>${basedir}/src/test/resources</additionalClasspathElement>
@@ -378,7 +383,7 @@
                       <goal>test</goal>
                     </goals>
                     <configuration>
-                        <skip>false</skip>
+                        <skip>true</skip>
                         <additionalClasspathElements>
                             <additionalClasspathElement>${basedir}/src/main/resources</additionalClasspathElement>
                             <additionalClasspathElement>${basedir}/src/test/resources</additionalClasspathElement>
@@ -401,7 +406,7 @@
                       <goal>test</goal>
                     </goals>
                     <configuration>
-	                    <skip>false</skip>
+	                    <skip>true</skip>
 	                    <additionalClasspathElements>
 	                        <additionalClasspathElement>${basedir}/src/main/resources</additionalClasspathElement>
 	                        <additionalClasspathElement>${basedir}/src/test/resources</additionalClasspathElement>
@@ -425,7 +430,7 @@
                       <goal>test</goal>
                     </goals>
                     <configuration>
-	                    <skip>false</skip>
+	                    <skip>true</skip>
 	                    <additionalClasspathElements>
 	                        <additionalClasspathElement>${basedir}/src/main/resources</additionalClasspathElement>
 	                        <additionalClasspathElement>${basedir}/src/test/resources</additionalClasspathElement>
@@ -450,7 +455,7 @@
                       <goal>test</goal>
                     </goals>
                     <configuration>
-                        <skip>false</skip>
+                        <skip>true</skip>
                         <additionalClasspathElements>
                             <additionalClasspathElement>${basedir}/src/main/resources</additionalClasspathElement>
                             <additionalClasspathElement>${basedir}/src/test/resources</additionalClasspathElement>
@@ -485,11 +490,12 @@
                             <log4j.configuration>log4j.properties</log4j.configuration>
                         </systemPropertyVariables>
                         <includes>               
-                             <include>**/StringRowKeyGetTest*</include>  
-                             <include>**/StringPartialRowKeyScanTest*</include>     
-                             <include>**/DatePartialRowKeyScanTest*</include>    
-                             <include>**/DateTimePartialRowKeyScanTest*</include>     
-                             <include>**/LongPartialRowKeyScanTest*</include>    
+<!--                              <include>**/StringRowKeyGetTest*</include>   -->
+<!--                              <include>**/StringPartialRowKeyScanTest*</include>      -->
+<!--                              <include>**/DatePartialRowKeyScanTest*</include>     -->
+<!--                              <include>**/DateTimePartialRowKeyScanTest*</include>      -->
+<!--                              <include>**/LongPartialRowKeyScanTest*</include>     -->
+                             <include>**/StringStreamPartialRowKeyScanTest*</include>     
                         </includes> 
                     </configuration>
                   </execution>
@@ -499,7 +505,7 @@
                       <goal>test</goal>
                     </goals>
                     <configuration>
-                        <skip>false</skip>
+                        <skip>true</skip>
                         <additionalClasspathElements>
                             <additionalClasspathElement>${basedir}/src/main/resources</additionalClasspathElement>
                             <additionalClasspathElement>${basedir}/src/test/resources</additionalClasspathElement>

@@ -16,10 +16,7 @@
 package org.cloudgraph.hbase.service;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,17 +43,16 @@ import org.plasma.sdo.PlasmaDataGraph;
  * @see Expr
  * @see GraphRecognizerContext
  */
-public class SlidingResultsAssembler extends DefaultResultsAssembler implements ResultsAssembler {
-  private static final Log log = LogFactory.getLog(SlidingResultsAssembler.class);
+public class StreamingResultsAssembler extends DefaultResultsAssembler implements ResultsAssembler {
+  private static final Log log = LogFactory.getLog(StreamingResultsAssembler.class);
   protected HBaseGraphAssembler graphAssembler;
-  protected List<PlasmaDataGraph> graphs;
+  protected PlasmaDataGraph graph;
 
-  public SlidingResultsAssembler(Expr graphRecognizerRootExpr,
+  public StreamingResultsAssembler(Expr graphRecognizerRootExpr,
       Comparator<PlasmaDataGraph> orderingComparator, TableReader rootTableReader,
       HBaseGraphAssembler graphAssembler, Integer startRange, Integer endRange) {
     super(graphRecognizerRootExpr, orderingComparator, rootTableReader, startRange, endRange);
     this.graphAssembler = graphAssembler;
-    this.graphs = new ArrayList<PlasmaDataGraph>();
   }
 
   @Override
@@ -87,28 +83,25 @@ public class SlidingResultsAssembler extends DefaultResultsAssembler implements 
         return false;
       }
     }
-    this.graphs.add(graph);
+
+    this.graph = graph;
 
     return true;
   }
 
   @Override
   public int size() {
-    return this.graphs.size();
+    return 1;
   }
 
   @Override
   public PlasmaDataGraph[] getResults() {
-    PlasmaDataGraph[] array = new PlasmaDataGraph[graphs.size()];
-    this.graphs.toArray(array);
-    if (this.orderingComparator != null)
-      Arrays.sort(array, this.orderingComparator);
-    return array;
+    throw new IllegalStateException("not a results collector assembler");
   }
 
   @Override
   public PlasmaDataGraph getCurrentResult() {
-    return this.graphs.get(this.graphs.size() - 1);
+    return this.graph;
   }
 
 }

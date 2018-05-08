@@ -23,9 +23,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -145,6 +142,11 @@ public class ParallelSlidingResultsAssembler extends DefaultResultsAssembler imp
     if (this.orderingComparator != null)
       Arrays.sort(array, this.orderingComparator);
     return array;
+  }
+
+  @Override
+  public PlasmaDataGraph getCurrentResult() {
+    throw new IllegalStateException("not a sequential assembler");
   }
 
 }

@@ -11,14 +11,8 @@ For issues created during beta testing see:
 See https://github.com/cloudgraph/cloudgraph/issues. 
 
 
-[Issue #23] -  Before Edge Sequence Syntax Tree Evaluation, Check for Edge Membership enhancement
-[Issue #22] -  Remove Column Prefix Filtering Where not Needed bug 
-[Issue #21] -  Remove TIMESTAMP in Entity Meta Key enhancement
-[Issue #20] - Remove Old State Marshalling Code
- 
-
 Major Changes
-N/A
+[Issue #24] -  Provide support for streaming of graphs using reactivex for Java.
 
 Bugs
 [Issue #22] -  Remove Column Prefix Filtering Where not Needed   
