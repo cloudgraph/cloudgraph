@@ -15,8 +15,6 @@
  */
 package org.cloudgraph.hbase.io;
 
-import java.io.IOException;
-
 import org.cloudgraph.hbase.connect.Connection;
 
 /**

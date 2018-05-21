@@ -204,6 +204,19 @@ public abstract class SocialGraphModelTest extends HBaseTestCase {
     return root;
   }
 
+  protected Actor createRootActor2(String namePrefix) {
+    String name = namePrefix + String.valueOf(System.nanoTime()).substring(10) + "_test.com";
+    DataGraph dataGraph = PlasmaDataFactory.INSTANCE.createDataGraph();
+    dataGraph.getChangeSummary().beginLogging(); // log changes from this
+    // point
+    Type rootType = PlasmaTypeHelper.INSTANCE.getType(Actor.class);
+    Actor root = (Actor) dataGraph.createRootObject(rootType);
+    root.setName(name);
+    root.setId(UUID.randomUUID().toString());
+
+    return root;
+  }
+
   protected Topic createRootTopic(String name) {
     DataGraph dataGraph = PlasmaDataFactory.INSTANCE.createDataGraph();
     dataGraph.getChangeSummary().beginLogging(); // log changes from this

@@ -157,6 +157,12 @@
           <lowerValue xmi:type="uml:LiteralInteger" xmi:id="1c8f5f22-3330-4b80-9f3a-9fb67faa01cf"/>
           <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="374ca457-67fd-4bdf-b9bc-c911c06db345" value="*"/>
         </ownedAttribute>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="_QO1kEFxiEeijr5fnkfHPtg" name="age">
+          <ownedComment xmi:type="uml:Comment" xmi:id="_QO1kEVxiEeijr5fnkfHPtg">
+            <body>the physical age of the actor</body>
+          </ownedComment>
+          <type xmi:type="uml:DataType" href="pathmap://PLASMA_LIBRARIES/PlasmaSDODataTypes_v1_3.uml#plasma-sdo-profile-datatypes-Int"/>
+        </ownedAttribute>
       </packagedElement>
       <packagedElement xmi:type="uml:Class" xmi:id="f097b61b-1112-4fdc-a038-e6f9e57d684a" name="Media">
         <generalization xmi:type="uml:Generalization" xmi:id="565eebd9-832a-4bf3-8dff-1e202cffd414" general="c6e91dc7-3796-4e62-8f83-d871f67d1a33"/>

@@ -36,9 +36,10 @@ import org.plasma.sdo.PlasmaDataGraph;
 /**
  * Assembler which determines whether results can be ignored under the current
  * context then "slides" past results not within the given range, avoiding the
- * overhead of assembling a graph. When a graph recognizer is present for the
- * current context, no result can be bypassed as the recognizer requires an
- * assembled graph to evaluate and make its determination.
+ * overhead of assembling a graph. When a where clause syntax tree graph
+ * recognizer is present for the current context, no result can be bypassed as
+ * the recognizer requires an assembled graph to evaluate and make its
+ * determination.
  * 
  * @author Scott Cinnamond
  * @since 0.5.9
@@ -67,18 +68,18 @@ public class SlidingResultsAssembler extends DefaultResultsAssembler implements 
     }
 
     if (canIgnoreResults() && currentResultIgnored()) {
-      return false;
+      return false; // slide past it
     }
 
     this.graphAssembler.assemble(new CellValues(resultRow));
     PlasmaDataGraph graph = this.graphAssembler.getDataGraph();
     this.graphAssembler.clear();
 
-    if (this.graphRecognizerRootExpr != null) {
-      if (this.recognizerContext == null)
-        this.recognizerContext = new GraphRecognizerContext();
-      this.recognizerContext.setGraph(graph);
-      if (!this.graphRecognizerRootExpr.evaluate(this.recognizerContext)) {
+    if (this.whereSyntaxTree != null) {
+      if (this.whereContext == null)
+        this.whereContext = new GraphRecognizerContext();
+      this.whereContext.setGraph(graph);
+      if (!this.whereSyntaxTree.evaluate(this.whereContext)) {
         if (log.isDebugEnabled())
           log.debug("recognizer excluded: " + Bytes.toString(resultRow.getRow()));
         if (log.isDebugEnabled())

@@ -120,11 +120,11 @@ public class ParallelSlidingResultsAssembler extends DefaultResultsAssembler imp
         throw new GraphServiceException(e);
       }
 
-      if (this.graphRecognizerRootExpr != null) {
-        if (this.recognizerContext == null)
-          this.recognizerContext = new GraphRecognizerContext();
-        this.recognizerContext.setGraph(graph);
-        if (!this.graphRecognizerRootExpr.evaluate(this.recognizerContext)) {
+      if (this.whereSyntaxTree != null) {
+        if (this.whereContext == null)
+          this.whereContext = new GraphRecognizerContext();
+        this.whereContext.setGraph(graph);
+        if (!this.whereSyntaxTree.evaluate(this.whereContext)) {
           if (log.isDebugEnabled()) {
             log.debug("recognizer excluded: " + graph);
             log.debug(serializeGraph(graph));

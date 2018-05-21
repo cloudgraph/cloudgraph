@@ -103,6 +103,19 @@ public abstract class HBaseTestCase extends CommonTest {
     }
   }
 
+  protected String marshal(Query query) {
+    PlasmaQueryDataBinding binding;
+    try {
+      binding = new PlasmaQueryDataBinding(new DefaultValidationEventHandler());
+      String xml = binding.marshal(query);
+      return xml;
+    } catch (JAXBException e) {
+      throw new RuntimeException(e);
+    } catch (SAXException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   protected void waitForMillis(long time) {
     Object lock = new Object();
     synchronized (lock) {

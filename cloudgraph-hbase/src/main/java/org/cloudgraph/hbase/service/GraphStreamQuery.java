@@ -125,24 +125,24 @@ public class GraphStreamQuery extends GraphQuery implements
     List<PartialRowKey> partialScans = new ArrayList<PartialRowKey>();
     List<FuzzyRowKey> fuzzyScans = new ArrayList<FuzzyRowKey>();
     List<CompleteRowKey> completeKeys = new ArrayList<CompleteRowKey>();
-    Expr graphRecognizerRootExpr = null;
+    Expr whereSyntaxTree = null;
     if (where != null) {
       GraphRecognizerSyntaxTreeAssembler recognizerAssembler = new GraphRecognizerSyntaxTreeAssembler(
           where, type);
-      graphRecognizerRootExpr = recognizerAssembler.getResult();
+      whereSyntaxTree = recognizerAssembler.getResult();
       if (log.isDebugEnabled()) {
         ExprPrinter printer = new ExprPrinter();
-        graphRecognizerRootExpr.accept(printer);
+        whereSyntaxTree.accept(printer);
         log.debug("Graph Recognizer: " + printer.toString());
       }
       ScanCollector scanCollector = new ScanCollector(type);
-      graphRecognizerRootExpr.accept(scanCollector);
+      whereSyntaxTree.accept(scanCollector);
       partialScans = scanCollector.getPartialRowKeyScans();
       fuzzyScans = scanCollector.getFuzzyRowKeyScans();
       completeKeys = scanCollector.getCompleteRowKeys();
       // in which case for a count this effects alot
       if (!scanCollector.isQueryRequiresGraphRecognizer())
-        graphRecognizerRootExpr = null;
+        whereSyntaxTree = null;
     }
 
     if (where == null
@@ -168,14 +168,14 @@ public class GraphStreamQuery extends GraphQuery implements
       orderingComparator = orderingCompAssem.getComparator();
     }
 
-    this.executeAsStream(query, type, selection, columnFilter, graphRecognizerRootExpr,
-        orderingComparator, partialScans, fuzzyScans, completeKeys, snapshotDate);
+    this.executeAsStream(query, selection, type, columnFilter, whereSyntaxTree, orderingComparator,
+        partialScans, fuzzyScans, completeKeys, snapshotDate);
   }
 
-  protected void executeAsStream(Query query, PlasmaType type, SelectionCollector selection,
-      Filter columnFilter, Expr graphRecognizerRootExpr,
-      Comparator<PlasmaDataGraph> orderingComparator, List<PartialRowKey> partialScans,
-      List<FuzzyRowKey> fuzzyScans, List<CompleteRowKey> completeKeys, Timestamp snapshotDate) {
+  protected void executeAsStream(Query query, SelectionCollector selection, PlasmaType type,
+      Filter columnFilter, Expr whereSyntaxTree, Comparator<PlasmaDataGraph> orderingComparator,
+      List<PartialRowKey> partialScans, List<FuzzyRowKey> fuzzyScans,
+      List<CompleteRowKey> completeKeys, Timestamp snapshotDate) {
     Connection connection = HBaseConnectionManager.instance().getConnection();
     DistributedGraphReader graphReader = null;
     try {
@@ -183,8 +183,8 @@ public class GraphStreamQuery extends GraphQuery implements
       GraphAssemblerFactory assemblerFactory = new GraphAssemblerFactory(query, type, graphReader,
           selection, snapshotDate);
       TableReader rootTableReader = graphReader.getRootTableReader();
-      ResultsAssembler resultsCollector = this.createResultsAssembler(query,
-          graphRecognizerRootExpr, orderingComparator, rootTableReader, assemblerFactory);
+      ResultsAssembler resultsCollector = this.createResultsAssembler(query, selection,
+          whereSyntaxTree, orderingComparator, null, null, rootTableReader, assemblerFactory);
 
       long before = System.currentTimeMillis();
       if (partialScans.size() > 0 || fuzzyScans.size() > 0 || completeKeys.size() > 0) {
@@ -277,13 +277,14 @@ public class GraphStreamQuery extends GraphQuery implements
   }
 
   @Override
-  protected StreamingResultsAssembler createResultsAssembler(Query query,
-      Expr graphRecognizerRootExpr, Comparator<PlasmaDataGraph> orderingComparator,
+  protected ResultsAssembler createResultsAssembler(Query query, SelectionCollector selection,
+      Expr whereSyntaxTree, Comparator<PlasmaDataGraph> orderingComparator,
+      Comparator<PlasmaDataGraph> groupingComparator, Expr havingSyntaxTree,
       TableReader rootTableReader, GraphAssemblerFactory assemblerFactory) {
 
-    StreamingResultsAssembler resultsCollector = new StreamingResultsAssembler(
-        graphRecognizerRootExpr, orderingComparator, rootTableReader,
-        assemblerFactory.createAssembler(), query.getStartRange(), query.getEndRange());
+    StreamingResultsAssembler resultsCollector = new StreamingResultsAssembler(whereSyntaxTree,
+        orderingComparator, rootTableReader, assemblerFactory.createAssembler(),
+        query.getStartRange(), query.getEndRange());
     return resultsCollector;
   }
 

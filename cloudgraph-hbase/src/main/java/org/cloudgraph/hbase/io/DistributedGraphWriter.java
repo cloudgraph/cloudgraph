@@ -24,8 +24,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.cloudgraph.hbase.connect.Connection;
-import org.cloudgraph.hbase.connect.HBaseConnectionManager;
-
 import org.cloudgraph.store.mapping.StoreMapping;
 import org.cloudgraph.store.mapping.TableMapping;
 import org.plasma.sdo.PlasmaType;

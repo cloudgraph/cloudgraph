@@ -26,7 +26,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.cloudgraph.hbase.connect.Connection;
-import org.cloudgraph.hbase.connect.HBaseConnectionManager;
 import org.cloudgraph.hbase.io.DistributedGraphWriter;
 import org.cloudgraph.hbase.io.DistributedWriter;
 import org.cloudgraph.hbase.io.RowWriter;
@@ -48,6 +47,7 @@ import org.plasma.sdo.repository.Classifier;
 import org.plasma.sdo.repository.PlasmaRepository;
 
 import sorts.InsertionSort;
+
 import commonj.sdo.DataGraph;
 import commonj.sdo.DataObject;
 import commonj.sdo.Property;

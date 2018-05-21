@@ -65,10 +65,12 @@ import org.cloudgraph.store.mapping.StoreMappingProp;
 import org.cloudgraph.store.mapping.ThreadPoolMappingProps;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.common.bind.DefaultValidationEventHandler;
-import org.plasma.query.OrderBy;
 import org.plasma.query.bind.PlasmaQueryDataBinding;
 import org.plasma.query.collector.SelectionCollector;
 import org.plasma.query.model.From;
+import org.plasma.query.model.GroupBy;
+import org.plasma.query.model.Having;
+import org.plasma.query.model.OrderBy;
 import org.plasma.query.model.Query;
 import org.plasma.query.model.Variable;
 import org.plasma.query.model.Where;
@@ -78,6 +80,7 @@ import org.plasma.sdo.PlasmaDataGraph;
 import org.plasma.sdo.PlasmaType;
 import org.plasma.sdo.access.QueryDispatcher;
 import org.plasma.sdo.access.provider.common.DataGraphComparatorAssembler;
+import org.plasma.sdo.access.provider.common.NoOpDataGraphComparator;
 import org.plasma.sdo.helper.PlasmaTypeHelper;
 import org.plasma.sdo.helper.PlasmaXMLHelper;
 import org.plasma.sdo.xml.DefaultOptions;
@@ -193,12 +196,12 @@ public class GraphQuery implements QueryDispatcher {
     if (log.isDebugEnabled())
       log(query);
     Where where = query.findWhereClause();
+    OrderBy orderBy = query.findOrderByClause();
+    GroupBy groupBy = query.findGroupByClause();
+    Having having = query.findHavingClause();
 
-    SelectionCollector selection = null;
-    if (where != null)
-      selection = new SelectionCollector(query.getSelectClause(), where, type);
-    else
-      selection = new SelectionCollector(query.getSelectClause(), type);
+    SelectionCollector selection = new SelectionCollector(query.getSelectClause(), where, orderBy,
+        groupBy, having, type);
     selection.setOnlyDeclaredProperties(false);
     for (Type t : selection.getTypes())
       collectRowKeyProperties(selection, (PlasmaType) t);
@@ -214,24 +217,24 @@ public class GraphQuery implements QueryDispatcher {
     List<PartialRowKey> partialScans = new ArrayList<PartialRowKey>();
     List<FuzzyRowKey> fuzzyScans = new ArrayList<FuzzyRowKey>();
     List<CompleteRowKey> completeKeys = new ArrayList<CompleteRowKey>();
-    Expr graphRecognizerRootExpr = null;
+    Expr whereSyntaxTree = null;
     if (where != null) {
       GraphRecognizerSyntaxTreeAssembler recognizerAssembler = new GraphRecognizerSyntaxTreeAssembler(
           where, type);
-      graphRecognizerRootExpr = recognizerAssembler.getResult();
+      whereSyntaxTree = recognizerAssembler.getResult();
       if (log.isDebugEnabled()) {
         ExprPrinter printer = new ExprPrinter();
-        graphRecognizerRootExpr.accept(printer);
-        log.debug("Graph Recognizer: " + printer.toString());
+        whereSyntaxTree.accept(printer);
+        log.debug("Where graph Recognizer: " + printer.toString());
       }
       ScanCollector scanCollector = new ScanCollector(type);
-      graphRecognizerRootExpr.accept(scanCollector);
+      whereSyntaxTree.accept(scanCollector);
       partialScans = scanCollector.getPartialRowKeyScans();
       fuzzyScans = scanCollector.getFuzzyRowKeyScans();
       completeKeys = scanCollector.getCompleteRowKeys();
       // in which case for a count this effects alot
       if (!scanCollector.isQueryRequiresGraphRecognizer())
-        graphRecognizerRootExpr = null;
+        whereSyntaxTree = null;
     }
 
     if (where == null
@@ -250,21 +253,44 @@ public class GraphQuery implements QueryDispatcher {
     }
 
     Comparator<PlasmaDataGraph> orderingComparator = null;
-    OrderBy orderBy = query.findOrderByClause();
     if (orderBy != null) {
       DataGraphComparatorAssembler orderingCompAssem = new DataGraphComparatorAssembler(
           (org.plasma.query.model.OrderBy) orderBy, type);
       orderingComparator = orderingCompAssem.getComparator();
     }
 
-    return execute(query, type, selection, columnFilter, graphRecognizerRootExpr,
-        orderingComparator, partialScans, fuzzyScans, completeKeys, snapshotDate);
+    Comparator<PlasmaDataGraph> groupingComparator = null;
+    if (selection.hasAggregateFunctions()) {
+      if (groupBy != null) {
+        DataGraphComparatorAssembler groupingCompAssem = new DataGraphComparatorAssembler(
+            (org.plasma.query.model.GroupBy) groupBy, type);
+        groupingComparator = groupingCompAssem.getComparator();
+
+      } else {
+        groupingComparator = new NoOpDataGraphComparator();
+      }
+    }
+    Expr havingSyntaxTree = null;
+    if (having != null) {
+      GraphRecognizerSyntaxTreeAssembler recognizerAssembler = new GraphRecognizerSyntaxTreeAssembler(
+          having, type);
+      havingSyntaxTree = recognizerAssembler.getResult();
+      if (log.isDebugEnabled()) {
+        ExprPrinter printer = new ExprPrinter();
+        havingSyntaxTree.accept(printer);
+        log.debug("Having graph Recognizer: " + printer.toString());
+      }
+    }
+
+    return execute(query, type, selection, columnFilter, whereSyntaxTree, orderingComparator,
+        groupingComparator, havingSyntaxTree, partialScans, fuzzyScans, completeKeys, snapshotDate);
   }
 
   protected PlasmaDataGraph[] execute(Query query, PlasmaType type, SelectionCollector selection,
-      Filter columnFilter, Expr graphRecognizerRootExpr,
-      Comparator<PlasmaDataGraph> orderingComparator, List<PartialRowKey> partialScans,
-      List<FuzzyRowKey> fuzzyScans, List<CompleteRowKey> completeKeys, Timestamp snapshotDate) {
+      Filter columnFilter, Expr whereSyntaxTree, Comparator<PlasmaDataGraph> orderingComparator,
+      Comparator<PlasmaDataGraph> groupingComparator, Expr havingSyntaxTree,
+      List<PartialRowKey> partialScans, List<FuzzyRowKey> fuzzyScans,
+      List<CompleteRowKey> completeKeys, Timestamp snapshotDate) {
     // execute
     Connection connection = HBaseConnectionManager.instance().getConnection();
     DistributedGraphReader graphReader = null;
@@ -273,8 +299,9 @@ public class GraphQuery implements QueryDispatcher {
       GraphAssemblerFactory assemblerFactory = new GraphAssemblerFactory(query, type, graphReader,
           selection, snapshotDate);
       TableReader rootTableReader = graphReader.getRootTableReader();
-      ResultsAssembler resultsCollector = this.createResultsAssembler(query,
-          graphRecognizerRootExpr, orderingComparator, rootTableReader, assemblerFactory);
+      ResultsAssembler resultsCollector = this.createResultsAssembler(query, selection,
+          whereSyntaxTree, orderingComparator, groupingComparator, havingSyntaxTree,
+          rootTableReader, assemblerFactory);
 
       long before = System.currentTimeMillis();
       if (partialScans.size() > 0 || fuzzyScans.size() > 0 || completeKeys.size() > 0) {
@@ -335,9 +362,10 @@ public class GraphQuery implements QueryDispatcher {
     }
   }
 
-  protected ResultsAssembler createResultsAssembler(Query query, Expr graphRecognizerRootExpr,
-      Comparator<PlasmaDataGraph> orderingComparator, TableReader rootTableReader,
-      GraphAssemblerFactory assemblerFactory) {
+  protected ResultsAssembler createResultsAssembler(Query query, SelectionCollector selection,
+      Expr whereSyntaxTree, Comparator<PlasmaDataGraph> orderingComparator,
+      Comparator<PlasmaDataGraph> groupingComparator, Expr havingSyntaxTree,
+      TableReader rootTableReader, GraphAssemblerFactory assemblerFactory) {
 
     ResultsAssembler resultsCollector = null;
     FetchType fetchType = StoreMappingProp.getQueryFetchType(query);
@@ -348,9 +376,12 @@ public class GraphQuery implements QueryDispatcher {
       switch (fetchDisposition) {
       case TALL: // where a thread is spawned for one or more graph
                  // roots
-        resultsCollector = new ParallelSlidingResultsAssembler(graphRecognizerRootExpr,
-            orderingComparator, rootTableReader, assemblerFactory, query.getStartRange(),
-            query.getEndRange(), new ThreadPoolMappingProps(query));
+        // FIXME: add parallel aggregate grouping
+        if (groupingComparator != null)
+          log.warn("no parallel results aggregator implemented");
+        resultsCollector = new ParallelSlidingResultsAssembler(whereSyntaxTree, orderingComparator,
+            rootTableReader, assemblerFactory, query.getStartRange(), query.getEndRange(),
+            new ThreadPoolMappingProps(query));
         break;
       default:
       }
@@ -359,10 +390,17 @@ public class GraphQuery implements QueryDispatcher {
       break;
     }
 
-    if (resultsCollector == null)
-      resultsCollector = new SlidingResultsAssembler(graphRecognizerRootExpr, orderingComparator,
-          rootTableReader, assemblerFactory.createAssembler(), query.getStartRange(),
-          query.getEndRange());
+    if (resultsCollector == null) {
+      if (groupingComparator == null) {
+        resultsCollector = new SlidingResultsAssembler(whereSyntaxTree, orderingComparator,
+            rootTableReader, assemblerFactory.createAssembler(), query.getStartRange(),
+            query.getEndRange());
+      } else {
+        resultsCollector = new ResultsAggregator(selection, whereSyntaxTree, orderingComparator,
+            groupingComparator, havingSyntaxTree, rootTableReader,
+            assemblerFactory.createAssembler(), query.getStartRange(), query.getEndRange());
+      }
+    }
     return resultsCollector;
   }
 

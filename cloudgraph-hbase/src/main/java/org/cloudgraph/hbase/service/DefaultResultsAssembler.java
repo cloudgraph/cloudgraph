@@ -31,7 +31,7 @@ import org.plasma.sdo.xml.DefaultOptions;
 import commonj.sdo.helper.XMLDocument;
 
 /**
- * DEfault functionality for various results assemblers.
+ * Default functionality for various results assemblers.
  * 
  * @author Scott Cinnamond
  * @since 1.0.7
@@ -41,8 +41,8 @@ import commonj.sdo.helper.XMLDocument;
 public abstract class DefaultResultsAssembler implements ResultsAssembler {
   private static final Log log = LogFactory.getLog(DefaultResultsAssembler.class);
 
-  protected Expr graphRecognizerRootExpr;
-  protected GraphRecognizerContext recognizerContext;
+  protected Expr whereSyntaxTree;
+  protected GraphRecognizerContext whereContext;
   protected Comparator<PlasmaDataGraph> orderingComparator;
   protected TableReader rootTableReader;
   protected Integer startRange;
@@ -56,11 +56,11 @@ public abstract class DefaultResultsAssembler implements ResultsAssembler {
   private DefaultResultsAssembler() {
   }
 
-  public DefaultResultsAssembler(Expr graphRecognizerRootExpr,
+  public DefaultResultsAssembler(Expr whereSyntaxTree,
       Comparator<PlasmaDataGraph> orderingComparator, TableReader rootTableReader,
       Integer startRange, Integer endRange) {
     this();
-    this.graphRecognizerRootExpr = graphRecognizerRootExpr;
+    this.whereSyntaxTree = whereSyntaxTree;
     this.orderingComparator = orderingComparator;
     this.rootTableReader = rootTableReader;
     this.startRange = startRange;
@@ -95,10 +95,11 @@ public abstract class DefaultResultsAssembler implements ResultsAssembler {
     // This could be addressed by storing state
     // somehow on the client. I.e. a skip count or virtual
     // seek index into the records set.
-    return this.graphRecognizerRootExpr == null;
+    return this.whereSyntaxTree == null;
   }
 
-  protected boolean currentResultIgnored() {
+  @Override
+  public boolean currentResultIgnored() {
     if (canIgnoreResults()) {
       if (startRange != null && endRange != null) {
         int current = ignoredResultsPreceedingRange + 1;

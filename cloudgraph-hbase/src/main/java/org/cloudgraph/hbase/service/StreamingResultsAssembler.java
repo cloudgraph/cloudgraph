@@ -70,11 +70,11 @@ public class StreamingResultsAssembler extends DefaultResultsAssembler implement
     PlasmaDataGraph graph = this.graphAssembler.getDataGraph();
     this.graphAssembler.clear();
 
-    if (this.graphRecognizerRootExpr != null) {
-      if (this.recognizerContext == null)
-        this.recognizerContext = new GraphRecognizerContext();
-      this.recognizerContext.setGraph(graph);
-      if (!this.graphRecognizerRootExpr.evaluate(this.recognizerContext)) {
+    if (this.whereSyntaxTree != null) {
+      if (this.whereContext == null)
+        this.whereContext = new GraphRecognizerContext();
+      this.whereContext.setGraph(graph);
+      if (!this.whereSyntaxTree.evaluate(this.whereContext)) {
         if (log.isDebugEnabled())
           log.debug("recognizer excluded: " + Bytes.toString(resultRow.getRow()));
         if (log.isDebugEnabled())

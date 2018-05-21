@@ -17,9 +17,6 @@ package org.cloudgraph.hbase.graph;
 
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.hadoop.hbase.client.Result;
 import org.cloudgraph.hbase.io.DistributedReader;

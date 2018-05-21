@@ -28,7 +28,7 @@ import org.plasma.sdo.PlasmaDataGraph;
  * @author Scott Cinnamond
  * @since 0.5.9
  */
-public interface ResultsAssembler {
+public interface ResultsAssembler extends ResultsSlider {
   /**
    * Returns results
    * 
@@ -44,19 +44,6 @@ public interface ResultsAssembler {
    * @return the current size of the collection
    */
   public int size();
-
-  /**
-   * Returns whether results may be ignored under the current context.
-   * 
-   * @return whether results may be ignored under the current context.
-   */
-  public boolean canIgnoreResults();
-
-  public int getUnrecognizedResults();
-
-  public int getIgnoredResults();
-
-  public boolean isResultEndRangeReached();
 
   /**
    * Determines whether the given row is to be added to the underlying

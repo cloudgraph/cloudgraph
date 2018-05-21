@@ -20,6 +20,7 @@ import org.cloudgraph.query.expr.ExprAssembler;
 import org.cloudgraph.query.expr.RelationalBinaryExpr;
 import org.cloudgraph.query.expr.PredicateBinaryExpr;
 import org.cloudgraph.store.mapping.DataGraphMapping;
+import org.plasma.query.model.Having;
 import org.plasma.query.model.Literal;
 import org.plasma.query.model.PredicateOperator;
 import org.plasma.query.model.Property;
@@ -56,13 +57,26 @@ public class GraphRecognizerSyntaxTreeAssembler extends DefaultBinaryExprTreeAss
    * Constructs an assembler based on the given predicate data graph
    * configuration and graph root type.
    * 
-   * @param predicate
-   *          the predicate
+   * @param predicates
+   *          the predicates
    * @param rootType
    *          the graph root type
    */
-  public GraphRecognizerSyntaxTreeAssembler(Where predicate, PlasmaType rootType) {
-    super(predicate, rootType);
+  public GraphRecognizerSyntaxTreeAssembler(Where predicates, PlasmaType rootType) {
+    super(predicates, rootType);
+  }
+
+  /**
+   * Constructs an assembler based on the given predicate data graph
+   * configuration and graph root type.
+   * 
+   * @param predicates
+   *          the predicates
+   * @param rootType
+   *          the graph root type
+   */
+  public GraphRecognizerSyntaxTreeAssembler(Having predicates, PlasmaType rootType) {
+    super(predicates, rootType);
   }
 
   @Override

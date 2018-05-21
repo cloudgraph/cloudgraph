@@ -30,11 +30,13 @@ import org.plasma.query.model.AbstractPathElement;
 import org.plasma.query.model.Expression;
 import org.plasma.query.model.GroupOperator;
 import org.plasma.query.model.GroupOperatorName;
+import org.plasma.query.model.Having;
 import org.plasma.query.model.Literal;
 import org.plasma.query.model.LogicalOperator;
 import org.plasma.query.model.LogicalOperatorName;
 import org.plasma.query.model.Path;
 import org.plasma.query.model.PathElement;
+import org.plasma.query.model.Predicates;
 import org.plasma.query.model.Property;
 import org.plasma.query.model.RelationalOperator;
 import org.plasma.query.model.RelationalOperatorName;
@@ -94,7 +96,7 @@ public abstract class DefaultBinaryExprTreeAssembler extends ExpresionVisitorSup
   private Map<Object, Integer> precedenceMap = new HashMap<Object, Integer>();
   private Map<Expression, Expr> exprMap = new HashMap<Expression, Expr>();
 
-  protected Where predicate;
+  protected Predicates predicates;
   protected PlasmaType rootType;
   protected PlasmaType contextType;
   protected PlasmaProperty contextProperty;
@@ -116,9 +118,9 @@ public abstract class DefaultBinaryExprTreeAssembler extends ExpresionVisitorSup
    * @param rootType
    *          the graph root type
    */
-  public DefaultBinaryExprTreeAssembler(Where predicate, PlasmaType rootType) {
+  public DefaultBinaryExprTreeAssembler(Predicates predicates, PlasmaType rootType) {
     this.rootType = rootType;
-    this.predicate = predicate;
+    this.predicates = predicates;
 
     precedenceMap.put(LogicalOperatorName.OR, 0);
     precedenceMap.put(LogicalOperatorName.AND, 1);
@@ -142,12 +144,12 @@ public abstract class DefaultBinaryExprTreeAssembler extends ExpresionVisitorSup
     if (log.isDebugEnabled())
       log.debug("begin traverse");
 
-    this.predicate.accept(this); // traverse
+    this.predicates.accept(this); // traverse
 
     if (log.isDebugEnabled())
       log.debug("end traverse");
 
-    Expression root = this.predicate.getExpressions().get(0);
+    Expression root = this.predicates.getExpressions().get(0);
     Expr result = this.exprMap.get(root);
 
     if (log.isDebugEnabled()) {

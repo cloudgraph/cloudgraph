@@ -499,19 +499,19 @@ public class RDBGraphService implements PlasmaDataAccessService, GraphService {
     this.commit(graphs, username);
   }
 
-@Override
-public Observable<DataGraph> findAsStream(Query query) {
-	throw new DataAccessException("not implemented");
-}
+  @Override
+  public Observable<DataGraph> findAsStream(Query query) {
+    throw new DataAccessException("not implemented");
+  }
 
-@Override
-public Observable<DataGraph> findAsStream(Query query, int maxResults) {
-	throw new DataAccessException("not implemented");
-}
+  @Override
+  public Observable<DataGraph> findAsStream(Query query, int maxResults) {
+    throw new DataAccessException("not implemented");
+  }
 
-@Override
-public List<Observable<DataGraph>> findAsStream(Query[] queries) {
-	throw new DataAccessException("not implemented");
-}
+  @Override
+  public List<Observable<DataGraph>> findAsStream(Query[] queries) {
+    throw new DataAccessException("not implemented");
+  }
 
 }

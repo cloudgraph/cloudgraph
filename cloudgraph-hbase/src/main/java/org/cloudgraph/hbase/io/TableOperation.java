@@ -15,8 +15,6 @@
  */
 package org.cloudgraph.hbase.io;
 
-import java.io.IOException;
-
 import org.apache.hadoop.hbase.client.Table;
 import org.cloudgraph.state.TableState;
 

@@ -15,7 +15,6 @@
  */
 package org.cloudgraph.hbase.io;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
