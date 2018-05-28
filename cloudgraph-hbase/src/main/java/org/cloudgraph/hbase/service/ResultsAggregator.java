@@ -144,7 +144,7 @@ public class ResultsAggregator extends DefaultResultsAssembler implements Result
         if (!funcPath.getFunc().getName().isAggreate())
           throw new GraphServiceException("expected aggregate function not, "
               + funcPath.getFunc().getName());
-        this.aggregate(funcPath, graph);
+        this.initAggregate(funcPath, graph);
       }
     }
     this.current = graph;
@@ -178,69 +178,81 @@ public class ResultsAggregator extends DefaultResultsAssembler implements Result
             + scalarType + " - truncating aggregate");
       }
     } else {
-      Object newValue = newEndpoint.get(funcPath.getProperty());
-      Number newScalarValue = (Number) DataConverter.INSTANCE.convert(scalarType, funcPath
-          .getProperty().getType(), newValue);
-      switch (funcPath.getFunc().getName()) {
-      case AVG: // Note; computing a sum until all values accumulated
-        switch (scalarType) {
-        case Double:
-          Double avg = existingFuncValue.doubleValue() + newScalarValue.doubleValue();
-          existingEndpoint.set(funcPath.getFunc().getName(), funcPath.getProperty(), avg);
-          break;
-        case Float:
-          Float floatAvg = existingFuncValue.floatValue() + newScalarValue.floatValue();
-          existingEndpoint.set(funcPath.getFunc().getName(), funcPath.getProperty(), floatAvg);
-          break;
-        default:
-          throw new IllegalArgumentException("illsgal datatype (" + scalarType
-              + ") conversion for function, " + funcPath.getFunc().getName());
-        }
-        break;
-      case MAX:
-        if (Double.valueOf(newScalarValue.doubleValue()).compareTo(existingFuncValue.doubleValue()) > 0)
-          existingEndpoint
-              .set(funcPath.getFunc().getName(), funcPath.getProperty(), newScalarValue);
-        break;
-      case MIN:
-        if (Double.valueOf(newScalarValue.doubleValue()).compareTo(existingFuncValue.doubleValue()) < 0)
-          existingEndpoint
-              .set(funcPath.getFunc().getName(), funcPath.getProperty(), newScalarValue);
-        break;
-      case SUM:
-        switch (scalarType) {
-        case Double:
-          Double doubleSum = existingFuncValue.doubleValue() + newScalarValue.doubleValue();
-          if (!doubleSum.isInfinite()) {
-            existingEndpoint.set(funcPath.getFunc().getName(), funcPath.getProperty(), doubleSum);
-          } else { // overflow
-            log.warn("aggregate " + funcPath.getFunc().getName() + " overflow for target type "
-                + scalarType + " - truncating aggregate");
+      if (newEndpoint.isSet(funcPath.getProperty())) {
+        Object newValue = newEndpoint.get(funcPath.getProperty());
+        Number newScalarValue = (Number) DataConverter.INSTANCE.convert(scalarType, funcPath
+            .getProperty().getType(), newValue);
+        switch (funcPath.getFunc().getName()) {
+        case AVG: // Note; computing a sum until all values accumulated
+          switch (scalarType) {
+          case Double:
+            Double avg = existingFuncValue != null ? existingFuncValue.doubleValue()
+                + newScalarValue.doubleValue() : newScalarValue.doubleValue();
+            existingEndpoint.set(funcPath.getFunc().getName(), funcPath.getProperty(), avg);
+            break;
+          case Float:
+            Float floatAvg = existingFuncValue != null ? existingFuncValue.floatValue()
+                + newScalarValue.floatValue() : newScalarValue.floatValue();
+            existingEndpoint.set(funcPath.getFunc().getName(), funcPath.getProperty(), floatAvg);
+            break;
+          default:
+            throw new IllegalArgumentException("illsgal datatype (" + scalarType
+                + ") conversion for function, " + funcPath.getFunc().getName());
           }
           break;
-        case Long:
-          Long longSum = existingFuncValue.longValue() + newScalarValue.longValue();
-          if (longSum > 0) {
-            existingEndpoint.set(funcPath.getFunc().getName(), funcPath.getProperty(), longSum);
-          } else { // overflow
-            log.warn("aggregate " + funcPath.getFunc().getName() + " overflow for target type "
-                + scalarType + " - truncating aggregate");
+        case MAX:
+
+          if (existingFuncValue == null
+              || Double.valueOf(newScalarValue.doubleValue()).compareTo(
+                  existingFuncValue.doubleValue()) > 0)
+            existingEndpoint.set(funcPath.getFunc().getName(), funcPath.getProperty(),
+                newScalarValue);
+          break;
+        case MIN:
+          if (existingFuncValue == null
+              || Double.valueOf(newScalarValue.doubleValue()).compareTo(
+                  existingFuncValue.doubleValue()) < 0)
+            existingEndpoint.set(funcPath.getFunc().getName(), funcPath.getProperty(),
+                newScalarValue);
+          break;
+        case SUM:
+          switch (scalarType) {
+          case Double:
+            Double doubleSum = existingFuncValue != null ? existingFuncValue.doubleValue()
+                + newScalarValue.doubleValue() : newScalarValue.doubleValue();
+            if (!doubleSum.isInfinite()) {
+              existingEndpoint.set(funcPath.getFunc().getName(), funcPath.getProperty(), doubleSum);
+            } else { // overflow
+              log.warn("aggregate " + funcPath.getFunc().getName() + " overflow for target type "
+                  + scalarType + " - truncating aggregate");
+            }
+            break;
+          case Long:
+            Long longSum = existingFuncValue != null ? existingFuncValue.longValue()
+                + newScalarValue.longValue() : newScalarValue.longValue();
+            if (longSum > 0) {
+              existingEndpoint.set(funcPath.getFunc().getName(), funcPath.getProperty(), longSum);
+            } else { // overflow
+              log.warn("aggregate " + funcPath.getFunc().getName() + " overflow for target type "
+                  + scalarType + " - truncating aggregate");
+            }
+            break;
+          default:
+            throw new IllegalArgumentException("illegal datatype (" + scalarType
+                + ") conversion for function, " + funcPath.getFunc().getName());
           }
           break;
         default:
-          throw new IllegalArgumentException("illsgal datatype (" + scalarType
-              + ") conversion for function, " + funcPath.getFunc().getName());
+          throw new GraphServiceException("unimplemented aggregate function, "
+              + funcPath.getFunc().getName());
         }
-        break;
-      default:
-        throw new GraphServiceException("unimplemented aggregate function, "
-            + funcPath.getFunc().getName());
-      }
+      } else if (!funcPath.getProperty().isNullable())
+        log.warn("expected value for non-nullable property, " + funcPath.getProperty());
     }
 
   }
 
-  private void aggregate(FunctionPath funcPath, PlasmaDataGraph graph) {
+  private void initAggregate(FunctionPath funcPath, PlasmaDataGraph graph) {
     DataType scalarType = funcPath.getFunc().getName().getScalarDatatype(funcPath.getDataType());
     PlasmaDataObject newEndpoint = null;
     if (funcPath.getPath().size() == 0) {
@@ -253,57 +265,63 @@ public class ResultsAggregator extends DefaultResultsAssembler implements Result
     if (funcPath.getFunc().getName().ordinal() == FunctionName.COUNT.ordinal()) {
       Long newCount = new Long(1);
       newEndpoint.set(funcPath.getFunc().getName(), funcPath.getProperty(), newCount);
+      // original scalar value is irrelevant for aggregates
+      newEndpoint.unset(funcPath.getProperty());
     } else {
-      Object newValue = newEndpoint.get(funcPath.getProperty());
-      Number newScalarValue = (Number) DataConverter.INSTANCE.convert(scalarType, funcPath
-          .getProperty().getType(), newValue);
-      switch (funcPath.getFunc().getName()) {
-      case AVG:
-        switch (scalarType) {
-        case Double:
-          Double doubleAvg = newScalarValue.doubleValue();
-          newEndpoint.set(funcPath.getFunc().getName(), funcPath.getProperty(), doubleAvg);
+      if (newEndpoint.isSet(funcPath.getProperty())) {
+        Object newValue = newEndpoint.get(funcPath.getProperty());
+        Number newScalarValue = (Number) DataConverter.INSTANCE.convert(scalarType, funcPath
+            .getProperty().getType(), newValue);
+        newEndpoint.unset(funcPath.getProperty());
+        switch (funcPath.getFunc().getName()) {
+        case AVG:
+          switch (scalarType) {
+          case Double:
+            Double doubleAvg = newScalarValue.doubleValue();
+            newEndpoint.set(funcPath.getFunc().getName(), funcPath.getProperty(), doubleAvg);
+            break;
+          case Float:
+            Float floatAvg = newScalarValue.floatValue();
+            newEndpoint.set(funcPath.getFunc().getName(), funcPath.getProperty(), floatAvg);
+            break;
+          default:
+            throw new IllegalArgumentException("illsgal datatype (" + scalarType
+                + ") conversion for function, " + funcPath.getFunc().getName());
+          }
           break;
-        case Float:
-          Float floatAvg = newScalarValue.floatValue();
-          newEndpoint.set(funcPath.getFunc().getName(), funcPath.getProperty(), floatAvg);
+        case MAX:
+          newEndpoint.set(funcPath.getFunc().getName(), funcPath.getProperty(), newScalarValue);
           break;
+        case MIN:
+          newEndpoint.set(funcPath.getFunc().getName(), funcPath.getProperty(), newScalarValue);
+          break;
+        case SUM:
+          switch (scalarType) {
+          case Double:
+            Double sum = newScalarValue.doubleValue();
+            newEndpoint.set(funcPath.getFunc().getName(), funcPath.getProperty(), sum);
+            break;
+          case Float:
+            Float floatSum = newScalarValue.floatValue();
+            newEndpoint.set(funcPath.getFunc().getName(), funcPath.getProperty(), floatSum);
+            break;
+          case Long:
+            Long longSum = newScalarValue.longValue();
+            newEndpoint.set(funcPath.getFunc().getName(), funcPath.getProperty(), longSum);
+            break;
+          default:
+            throw new IllegalArgumentException("illsgal datatype (" + scalarType
+                + ") conversion for function, " + funcPath.getFunc().getName());
+          }
+          break;
+        case COUNT:
+          break; // handled above
         default:
-          throw new IllegalArgumentException("illsgal datatype (" + scalarType
-              + ") conversion for function, " + funcPath.getFunc().getName());
+          throw new GraphServiceException("unimplemented aggregate function, "
+              + funcPath.getFunc().getName());
         }
-        break;
-      case MAX:
-        newEndpoint.set(funcPath.getFunc().getName(), funcPath.getProperty(), newScalarValue);
-        break;
-      case MIN:
-        newEndpoint.set(funcPath.getFunc().getName(), funcPath.getProperty(), newScalarValue);
-        break;
-      case SUM:
-        switch (scalarType) {
-        case Double:
-          Double sum = newScalarValue.doubleValue();
-          newEndpoint.set(funcPath.getFunc().getName(), funcPath.getProperty(), sum);
-          break;
-        case Float:
-          Float floatSum = newScalarValue.floatValue();
-          newEndpoint.set(funcPath.getFunc().getName(), funcPath.getProperty(), floatSum);
-          break;
-        case Long:
-          Long longSum = newScalarValue.longValue();
-          newEndpoint.set(funcPath.getFunc().getName(), funcPath.getProperty(), longSum);
-          break;
-        default:
-          throw new IllegalArgumentException("illsgal datatype (" + scalarType
-              + ") conversion for function, " + funcPath.getFunc().getName());
-        }
-        break;
-      case COUNT:
-        break; // handled above
-      default:
-        throw new GraphServiceException("unimplemented aggregate function, "
-            + funcPath.getFunc().getName());
-      }
+      } else if (!funcPath.getProperty().isNullable())
+        log.warn("expected value for non-nullable property, " + funcPath.getProperty());
     }
   }
 
