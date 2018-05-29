@@ -265,14 +265,15 @@ public class ResultsAggregator extends DefaultResultsAssembler implements Result
     if (funcPath.getFunc().getName().ordinal() == FunctionName.COUNT.ordinal()) {
       Long newCount = new Long(1);
       newEndpoint.set(funcPath.getFunc().getName(), funcPath.getProperty(), newCount);
-      // original scalar value is irrelevant for aggregates
-      newEndpoint.unset(funcPath.getProperty());
+      // FIXME: original scalar value is irrelevant for aggregates
+      // but need for comparison
+      // newEndpoint.unset(funcPath.getProperty());
     } else {
       if (newEndpoint.isSet(funcPath.getProperty())) {
         Object newValue = newEndpoint.get(funcPath.getProperty());
         Number newScalarValue = (Number) DataConverter.INSTANCE.convert(scalarType, funcPath
             .getProperty().getType(), newValue);
-        newEndpoint.unset(funcPath.getProperty());
+        // newEndpoint.unset(funcPath.getProperty());
         switch (funcPath.getFunc().getName()) {
         case AVG:
           switch (scalarType) {
