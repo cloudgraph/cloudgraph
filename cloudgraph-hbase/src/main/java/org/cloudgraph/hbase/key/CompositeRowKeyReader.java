@@ -25,6 +25,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.cloudgraph.recognizer.Endpoint;
+import org.cloudgraph.recognizer.RecognizerEndpoint;
 import org.cloudgraph.store.key.KeyValue;
 import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
@@ -102,7 +103,7 @@ public class CompositeRowKeyReader {
       }
       Endpoint endpoint = this.endpointMap.get(userDefinedKeyField);
       if (endpoint == null) {
-        endpoint = new Endpoint(endpointProp, userDefinedKeyField.getPropertyPath());
+        endpoint = new RecognizerEndpoint(endpointProp, userDefinedKeyField.getPropertyPath());
         this.endpointMap.put(userDefinedKeyField, endpoint);
       }
     }

@@ -137,7 +137,7 @@ public class GraphRecognizerSupport {
    * @return the SDO property endpoint
    */
   public Endpoint getEndpoint(Property property, PlasmaType rootType) {
-    return new Endpoint(property, rootType);
+    return new RecognizerEndpoint(property, rootType);
   }
 
   /**

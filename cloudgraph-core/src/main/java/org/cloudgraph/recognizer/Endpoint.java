@@ -33,134 +33,22 @@ import org.plasma.sdo.PlasmaType;
  * @author Scott Cinnamond
  * @since 1.0.4
  */
-public class Endpoint {
-  private static Log log = LogFactory.getLog(Endpoint.class);
-  private PlasmaProperty property;
-  private String path;
-  private Property queryProperty;
-  private int hashCode = 0;
+public interface Endpoint {
 
-  @SuppressWarnings("unused")
-  private Endpoint() {
-  }
+  public PlasmaProperty getProperty();
 
-  /**
-   * Constructor which calculates the endpoint for the given query property for
-   * the given initial (root) type, which searches for the endpoint by
-   * traversing the metadata references.
-   * 
-   * @param property
-   *          the query property which may or may not contain a path
-   * @param rootType
-   *          the root type
-   */
-  public Endpoint(Property property, PlasmaType rootType) {
-    this.queryProperty = property;
-    StringBuilder buf = new StringBuilder();
-    Path path = property.getPath();
-    PlasmaType targetType = rootType;
-    if (path != null)
-      for (int i = 0; i < path.getPathNodes().size(); i++) {
-        if (i > 0)
-          buf.append("/");
-        AbstractPathElement pathElem = path.getPathNodes().get(i).getPathElement();
-        if (pathElem instanceof WildcardPathElement)
-          throw new IllegalStateException(
-              "wildcard path elements applicable for 'Select' clause paths only, not 'Where' clause paths");
-        String elem = ((PathElement) pathElem).getValue();
-        buf.append(elem);
-        PlasmaProperty prop = (PlasmaProperty) targetType.getProperty(elem);
-        targetType = (PlasmaType) prop.getType(); // traverse
-      }
+  public boolean hasQueryProperty();
 
-    this.property = (PlasmaProperty) targetType.getProperty(property.getName());
-    this.path = buf.toString();
-    if (this.path.length() == 0)
-      this.path = null;
-  }
+  public Property getQueryProperty();
 
-  public Endpoint(PlasmaProperty endpoint, String path) {
-    this.property = endpoint;
-    if (path != null && path.contains("/")) {
-      this.path = path.substring(0, path.lastIndexOf("/") + 1);
-    } else
-      this.path = null;
-    if (this.path != null && this.path.length() == 0)
-      this.path = null;
-  }
+  public boolean hasFunctions();
 
-  public int hashCode() {
-    if (this.hashCode != 0)
-      return this.hashCode;
-    final int prime = 31;
-    this.hashCode = 1;
-    if (this.path != null)
-      this.hashCode = prime * this.hashCode + this.path.hashCode();
-    this.hashCode = prime * this.hashCode + this.property.getId().hashCode();
-    return this.hashCode;
-  }
+  public Function getSingleFunction();
 
-  public boolean equals(Object other) {
-    if (other != null) {
-      Endpoint otherType = (Endpoint) other;
-      return this.hashCode() == otherType.hashCode();
-    }
-    return false;
-  }
+  public boolean hasPath();
 
-  public PlasmaProperty getProperty() {
-    return property;
-  }
+  public String getPath();
 
-  public boolean hasQueryProperty() {
-    return queryProperty != null;
-  }
+  public int getLevel();
 
-  public Property getQueryProperty() {
-    return queryProperty;
-  }
-
-  public boolean hasFunctions() {
-    return queryProperty != null && queryProperty.getFunctions().size() > 0;
-  }
-
-  public Function getSingleFunction() {
-    if (!hasFunctions())
-      throw new IllegalStateException("expected functions for endpoint," + this
-          + ", use hasFunctions()");
-    Function result = queryProperty.getFunctions().get(0);
-    if (queryProperty.getFunctions().size() > 1)
-      log.warn("ignoring all but first scalar function of total "
-          + queryProperty.getFunctions().size());
-    return result;
-  }
-
-  public boolean hasPath() {
-    return path != null && path.length() > 0;
-  }
-
-  public String getPath() {
-    return path;
-  }
-
-  public int getLevel() {
-    if (hasPath()) {
-      int result = 0;
-      char[] chars = this.path.toCharArray();
-      for (char c : chars) {
-        if (c == '/') {
-          result++;
-        }
-      }
-      return result;
-    }
-    return 0;
-  }
-
-  public String toString() {
-    if (hasPath())
-      return getPath() + "/" + String.valueOf(this.property);
-    else
-      return String.valueOf(this.property);
-  }
 }
