@@ -163,6 +163,12 @@
           </ownedComment>
           <type xmi:type="uml:DataType" href="pathmap://PLASMA_LIBRARIES/PlasmaSDODataTypes_v1_3.uml#plasma-sdo-profile-datatypes-Int"/>
         </ownedAttribute>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="_I10zAGUREeiHg6cm20C6MA" name="iq">
+          <ownedComment xmi:type="uml:Comment" xmi:id="_I10zAWUREeiHg6cm20C6MA">
+            <body>the intelligence quotent</body>
+          </ownedComment>
+          <type xmi:type="uml:DataType" href="pathmap://PLASMA_LIBRARIES/PlasmaSDODataTypes_v1_2.uml#plasma-sdo-profile-datatypes-Int"/>
+        </ownedAttribute>
       </packagedElement>
       <packagedElement xmi:type="uml:Class" xmi:id="f097b61b-1112-4fdc-a038-e6f9e57d684a" name="Media">
         <generalization xmi:type="uml:Generalization" xmi:id="565eebd9-832a-4bf3-8dff-1e202cffd414" general="c6e91dc7-3796-4e62-8f83-d871f67d1a33"/>

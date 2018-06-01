@@ -96,8 +96,8 @@ public class ExternalEdgeRecognizerRelationalBinaryExpr extends DefaultRelationa
 
     Object rowKeyFieldValue = ctx.getValue(this.endpoint);
     if (rowKeyFieldValue != null) {
-      if (this.recognizer.evaluate(this.endpoint.getProperty(), rowKeyFieldValue,
-          this.operator.getValue(), this.literal.getValue())) {
+      if (this.recognizer.evaluate(this.endpoint, rowKeyFieldValue, this.operator.getValue(),
+          this.literal.getValue())) {
         if (log.isDebugEnabled())
           log.debug(this.toString() + " evaluate true: " + String.valueOf(rowKeyFieldValue));
         return true;

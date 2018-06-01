@@ -16,6 +16,8 @@
 package org.cloudgraph.hbase.graph;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import junit.framework.Test;
@@ -33,7 +35,7 @@ import commonj.sdo.DataGraph;
 import commonj.sdo.Property;
 
 /**
- * Tests scan operations
+ * Tests aggregate operations
  * 
  * @author Scott Cinnamond
  * @since 0.5.3
@@ -49,7 +51,7 @@ public class SocialGraphAggregatesTest extends SocialGraphModelTest {
     super.setUp();
   }
 
-  public void testSimpleGroupByHaving() throws IOException {
+  public void testSimpleGroupBy() throws IOException {
 
     String prefix = String.valueOf(System.nanoTime()).substring(10);
 
@@ -76,39 +78,50 @@ public class SocialGraphAggregatesTest extends SocialGraphModelTest {
     root.select(root.age().max());
 
     root.where(root.name().like(prefix + "*"));
-    root.orderBy(root.age());
     root.groupBy(root.age());
-    root.having(root.age().gt(60));
 
     log.info(this.marshal(root.getModel()));
 
     log.debug("fetching initial graphs");
     Actor[] fetchedActors = fetchGraphs(root);
     assertTrue(fetchedActors != null);
-    assertTrue(fetchedActors.length == 2); // 2 aggregates
+    assertTrue(fetchedActors.length == 3);
     for (Actor actor : fetchedActors) {
       // xml = this.serializeGraph(actor.getDataGraph());
       // log.info(xml);
       log.info(actor.dump());
     }
-    Actor agg1 = fetchedActors[0];
-    Property idProperty = agg1.getType().getProperty(Actor.ID);
-    Long count = (Long) agg1.get(FunctionName.COUNT, idProperty);
-    assertTrue(count != null);
-    assertTrue(count.longValue() == 2); // 2 with age 65
 
-    Actor agg2 = fetchedActors[1];
-    count = (Long) agg2.get(FunctionName.COUNT, idProperty);
-    assertTrue(count != null);
-    assertTrue(count.longValue() == 1); // 2 with age 70
+    Property idProperty = fetchedActors[0].getType().getProperty(Actor.ID);
+    List<Actor> countTwo = findCount(2, fetchedActors, idProperty);
+    assertTrue(countTwo != null);
+    assertTrue(countTwo.size() == 1);
+
+    List<Actor> countOne = findCount(1, fetchedActors, idProperty);
+    assertTrue(countOne != null);
+    assertTrue(countOne.size() == 2);
   }
 
-  public void testGraphGroupByHaving() throws IOException {
+  private List<Actor> findCount(long count, Actor[] actors, Property prop) {
+    List<Actor> result = null;
+    for (Actor actor : actors) {
+      Long cnt = (Long) actor.get(FunctionName.COUNT, prop);
+      if (cnt != null && cnt.longValue() == count) {
+        if (result == null)
+          result = new ArrayList<Actor>();
+        result.add(actor);
+      }
+    }
+    return result;
+  }
+
+  public void testSimpleGroupByHaving() throws IOException {
 
     String prefix = String.valueOf(System.nanoTime()).substring(10);
 
     Actor larry = this.createRootActor(prefix + "larry");
     larry.setAge(55);
+    larry.setIq(99);
     Photo air = larry.createPhoto();
     air.setName("air");
     air.setId(UUID.randomUUID().toString());
@@ -117,6 +130,7 @@ public class SocialGraphAggregatesTest extends SocialGraphModelTest {
 
     Actor curly = this.createRootActor(prefix + "curly");
     curly.setAge(60);
+    curly.setIq(122);
     Photo land = curly.createPhoto();
     land.setName("land");
     land.setId(UUID.randomUUID().toString());
@@ -125,6 +139,7 @@ public class SocialGraphAggregatesTest extends SocialGraphModelTest {
 
     Actor moe = this.createRootActor(prefix + "moe");
     moe.setAge(60);
+    moe.setIq(85);
     Photo sea = moe.createPhoto();
     sea.setName("sea");
     sea.setId(UUID.randomUUID().toString());
@@ -137,24 +152,29 @@ public class SocialGraphAggregatesTest extends SocialGraphModelTest {
     air2.setDescription("a photo of some air");
     air2.setContent(air2.getDescription().getBytes());
 
+    Actor shemp = this.createRootActor(prefix + "shemp");
+    shemp.setAge(65);
+    shemp.setIq(82);
+
     this.service.commit(
         new DataGraph[] { larry.getDataGraph(), curly.getDataGraph(), moe.getDataGraph() },
         "stooges");
 
     QActor query = QActor.newQuery();
-    query.select(FunctionName.COUNT, query.id());
+    query.select(query.age().count()).select(query.age().avg()).select(query.age().min())
+        .select(query.age().max());
 
     query.where(query.name().like(prefix + "*"));
     query.orderBy(query.age());
     query.groupBy(query.age());
-    query.having(query.photo().name().eq("air").or(query.photo().name().eq("land")));
+    query.having(query.age().avg().gt(50));
 
     log.info(this.marshal(query.getModel()));
 
     log.debug("fetching initial graphs");
     Actor[] fetchedActors = fetchGraphs(query);
     assertTrue(fetchedActors != null);
-    assertTrue(fetchedActors.length == 2); // 2 aggregates
+    assertTrue(fetchedActors.length == 1); // 1 aggregates
     for (Actor actor : fetchedActors) {
       // xml = this.serializeGraph(actor.getDataGraph());
       // log.info(xml);

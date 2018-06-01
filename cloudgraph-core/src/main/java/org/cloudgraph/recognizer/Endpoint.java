@@ -15,7 +15,10 @@
  */
 package org.cloudgraph.recognizer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.plasma.query.model.AbstractPathElement;
+import org.plasma.query.model.Function;
 import org.plasma.query.model.Path;
 import org.plasma.query.model.PathElement;
 import org.plasma.query.model.Property;
@@ -31,8 +34,10 @@ import org.plasma.sdo.PlasmaType;
  * @since 1.0.4
  */
 public class Endpoint {
+  private static Log log = LogFactory.getLog(Endpoint.class);
   private PlasmaProperty property;
   private String path;
+  private Property queryProperty;
   private int hashCode = 0;
 
   @SuppressWarnings("unused")
@@ -50,6 +55,7 @@ public class Endpoint {
    *          the root type
    */
   public Endpoint(Property property, PlasmaType rootType) {
+    this.queryProperty = property;
     StringBuilder buf = new StringBuilder();
     Path path = property.getPath();
     PlasmaType targetType = rootType;
@@ -104,6 +110,29 @@ public class Endpoint {
 
   public PlasmaProperty getProperty() {
     return property;
+  }
+
+  public boolean hasQueryProperty() {
+    return queryProperty != null;
+  }
+
+  public Property getQueryProperty() {
+    return queryProperty;
+  }
+
+  public boolean hasFunctions() {
+    return queryProperty != null && queryProperty.getFunctions().size() > 0;
+  }
+
+  public Function getSingleFunction() {
+    if (!hasFunctions())
+      throw new IllegalStateException("expected functions for endpoint," + this
+          + ", use hasFunctions()");
+    Function result = queryProperty.getFunctions().get(0);
+    if (queryProperty.getFunctions().size() > 1)
+      log.warn("ignoring all but first scalar function of total "
+          + queryProperty.getFunctions().size());
+    return result;
   }
 
   public boolean hasPath() {

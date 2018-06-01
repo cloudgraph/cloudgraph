@@ -16,6 +16,7 @@
 package org.cloudgraph.hbase.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -103,20 +104,6 @@ public class ResultsAggregator extends DefaultResultsAssembler implements Result
       if (!this.whereSyntaxTree.evaluate(this.whereContext)) {
         if (log.isDebugEnabled())
           log.debug("where recognizer excluded: " + Bytes.toString(resultRow.getRow()));
-        if (log.isDebugEnabled())
-          log.debug(serializeGraph(graph));
-        this.unrecognizedResults++;
-        return false;
-      }
-    }
-
-    if (this.havingSyntaxTree != null) {
-      if (this.havingContext == null)
-        this.havingContext = new GraphRecognizerContext();
-      this.havingContext.setGraph(graph);
-      if (!this.havingSyntaxTree.evaluate(this.havingContext)) {
-        if (log.isDebugEnabled())
-          log.debug("having recognizer excluded: " + Bytes.toString(resultRow.getRow()));
         if (log.isDebugEnabled())
           log.debug(serializeGraph(graph));
         this.unrecognizedResults++;
@@ -372,10 +359,48 @@ public class ResultsAggregator extends DefaultResultsAssembler implements Result
 
   @Override
   public PlasmaDataGraph[] getResults() {
-    PlasmaDataGraph[] array = new PlasmaDataGraph[graphs.size()];
-    this.graphs.values().toArray(array);
-    for (PlasmaDataGraph graph : array)
+    for (PlasmaDataGraph graph : graphs.values())
       this.computeAverages(graph);
+
+    // wipe out the scalar value wherever we created an aggregate as this
+    // is no longer relevant
+    for (FunctionPath funcPath : funcPaths) {
+      if (funcPath.getFunc().getName().isAggreate()) {
+        for (PlasmaDataGraph graph : graphs.values()) {
+          PlasmaDataObject endpoint = null;
+          if (funcPath.getPath().size() == 0) {
+            endpoint = (PlasmaDataObject) graph.getRootObject();
+          } else {
+            endpoint = (PlasmaDataObject) graph.getRootObject().getDataObject(
+                funcPath.getPath().toString());
+          }
+          if (endpoint.isSet(funcPath.getProperty()))
+            endpoint.unset(funcPath.getProperty());
+        }
+      }
+    }
+
+    List<PlasmaDataGraph> recognised = new ArrayList<PlasmaDataGraph>(graphs.size());
+    if (this.havingSyntaxTree != null) {
+      if (this.havingContext == null)
+        this.havingContext = new GraphRecognizerContext();
+      for (PlasmaDataGraph graph : graphs.values()) {
+        this.havingContext.setGraph(graph);
+        if (this.havingSyntaxTree.evaluate(this.havingContext)) {
+          recognised.add(graph);
+        } else {
+          if (log.isDebugEnabled())
+            log.debug("having recognizer excluded: " + graph);
+          if (log.isDebugEnabled())
+            log.debug(serializeGraph(graph));
+        }
+      }
+    } else {
+      recognised.addAll(graphs.values());
+    }
+
+    PlasmaDataGraph[] array = new PlasmaDataGraph[recognised.size()];
+    recognised.toArray(array);
     if (this.orderingComparator != null)
       Arrays.sort(array, this.orderingComparator);
     return array;
