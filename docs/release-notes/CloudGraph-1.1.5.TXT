@@ -1,0 +1,32 @@
+Release Notes
+
+CloudGraph 1.1.5 Release Notes
+
+CloudGraph 1.1.5 is a production release of CloudGraph.
+
+The full list of changes can be found in our issue management system github, and is reproduced below.
+See https://github.com/cloudgraph/cloudgraph/issues. 
+
+For issues created during beta testing see:
+See https://github.com/cloudgraph/cloudgraph/issues. 
+
+
+Major Changes
+N/A
+
+Bugs
+N/A
+[Issue #26] - Restrict Having Clause Syntax Tree Evaluation 
+
+Improvements
+[Issue #25] - Break out Endpoint into Interface and Impl Class
+
+ 
+New Features
+N/A
+
+Tasks
+N/A
+
+Wish
+N/A
