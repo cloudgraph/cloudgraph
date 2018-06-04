@@ -45,6 +45,13 @@ import org.cloudgraph.hbase.filter.InitialFetchColumnFilterAssembler;
 import org.cloudgraph.hbase.filter.PredicateRowFilterAssembler;
 import org.cloudgraph.hbase.io.DistributedGraphReader;
 import org.cloudgraph.hbase.io.TableReader;
+import org.cloudgraph.hbase.results.NoOpResultsComparator;
+import org.cloudgraph.hbase.results.ParallelSlidingResultsAssembler;
+import org.cloudgraph.hbase.results.ResultsComparatorAssembler;
+import org.cloudgraph.hbase.results.ResultsAggregator;
+import org.cloudgraph.hbase.results.ResultsAssembler;
+import org.cloudgraph.hbase.results.ResultsComparator;
+import org.cloudgraph.hbase.results.SlidingResultsAssembler;
 import org.cloudgraph.hbase.scan.CompleteRowKey;
 import org.cloudgraph.hbase.scan.FuzzyRowKey;
 import org.cloudgraph.hbase.scan.PartialRowKey;
@@ -252,22 +259,22 @@ public class GraphQuery implements QueryDispatcher {
       }
     }
 
-    Comparator<PlasmaDataGraph> orderingComparator = null;
+    ResultsComparator orderingComparator = null;
     if (orderBy != null) {
-      DataGraphComparatorAssembler orderingCompAssem = new DataGraphComparatorAssembler(
+      ResultsComparatorAssembler orderingCompAssem = new ResultsComparatorAssembler(
           (org.plasma.query.model.OrderBy) orderBy, type);
       orderingComparator = orderingCompAssem.getComparator();
     }
 
-    Comparator<PlasmaDataGraph> groupingComparator = null;
+    ResultsComparator groupingComparator = null;
     if (selection.hasAggregateFunctions()) {
       if (groupBy != null) {
-        DataGraphComparatorAssembler groupingCompAssem = new DataGraphComparatorAssembler(
+        ResultsComparatorAssembler groupingCompAssem = new ResultsComparatorAssembler(
             (org.plasma.query.model.GroupBy) groupBy, type);
         groupingComparator = groupingCompAssem.getComparator();
 
       } else {
-        groupingComparator = new NoOpDataGraphComparator();
+        groupingComparator = new NoOpResultsComparator();
       }
     }
     Expr havingSyntaxTree = null;
@@ -287,8 +294,8 @@ public class GraphQuery implements QueryDispatcher {
   }
 
   protected PlasmaDataGraph[] execute(Query query, PlasmaType type, SelectionCollector selection,
-      Filter columnFilter, Expr whereSyntaxTree, Comparator<PlasmaDataGraph> orderingComparator,
-      Comparator<PlasmaDataGraph> groupingComparator, Expr havingSyntaxTree,
+      Filter columnFilter, Expr whereSyntaxTree, ResultsComparator orderingComparator,
+      ResultsComparator groupingComparator, Expr havingSyntaxTree,
       List<PartialRowKey> partialScans, List<FuzzyRowKey> fuzzyScans,
       List<CompleteRowKey> completeKeys, Timestamp snapshotDate) {
     // execute
@@ -363,8 +370,8 @@ public class GraphQuery implements QueryDispatcher {
   }
 
   protected ResultsAssembler createResultsAssembler(Query query, SelectionCollector selection,
-      Expr whereSyntaxTree, Comparator<PlasmaDataGraph> orderingComparator,
-      Comparator<PlasmaDataGraph> groupingComparator, Expr havingSyntaxTree,
+      Expr whereSyntaxTree, ResultsComparator orderingComparator,
+      ResultsComparator groupingComparator, Expr havingSyntaxTree,
       TableReader rootTableReader, GraphAssemblerFactory assemblerFactory) {
 
     ResultsAssembler resultsCollector = null;

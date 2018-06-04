@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cloudgraph.hbase.service;
+package org.cloudgraph.hbase.results;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -68,10 +68,11 @@ public class ResultsAggregator extends DefaultResultsAssembler implements Result
   protected List<FunctionPath> funcPaths;
   protected Expr havingSyntaxTree;
   protected GraphRecognizerContext havingContext;
+  protected ResultsComparator groupingComparator;
 
   public ResultsAggregator(Selection selection, Expr whereSyntaxTree,
-      Comparator<PlasmaDataGraph> orderingComparator,
-      Comparator<PlasmaDataGraph> groupingComparator, Expr havingSyntaxTree,
+      ResultsComparator orderingComparator,
+      ResultsComparator groupingComparator, Expr havingSyntaxTree,
       TableReader rootTableReader, HBaseGraphAssembler graphAssembler, Integer startRange,
       Integer endRange) {
     super(whereSyntaxTree, orderingComparator, rootTableReader, startRange, endRange);
@@ -79,6 +80,7 @@ public class ResultsAggregator extends DefaultResultsAssembler implements Result
     this.graphAssembler = graphAssembler;
     this.havingSyntaxTree = havingSyntaxTree;
     this.graphs = new TreeMap<PlasmaDataGraph, PlasmaDataGraph>(groupingComparator);
+    this.groupingComparator = groupingComparator;
     this.funcPaths = this.selection.getAggregateFunctions();
   }
 
@@ -362,10 +364,19 @@ public class ResultsAggregator extends DefaultResultsAssembler implements Result
     for (PlasmaDataGraph graph : graphs.values())
       this.computeAverages(graph);
 
-    // wipe out the scalar value wherever we created an aggregate as this
-    // is no longer relevant
-    for (FunctionPath funcPath : funcPaths) {
+    // wipe out the scalar value wherever we created an aggregate as the scalar
+    // is no longer relevant. This is true with the exception of count()
+    // aggregate on a specific column where the column/path is in the group by
+    for (FunctionPath funcPath : funcPaths) {      
       if (funcPath.getFunc().getName().isAggreate()) {
+        switch (funcPath.getFunc().getName()) {
+        case COUNT:
+          if (this.groupingComparator.contains(funcPath.getProperty(), funcPath.getPath()))
+              continue; // next
+          default:
+            break;
+        }
+        
         for (PlasmaDataGraph graph : graphs.values()) {
           PlasmaDataObject endpoint = null;
           if (funcPath.getPath().size() == 0) {
