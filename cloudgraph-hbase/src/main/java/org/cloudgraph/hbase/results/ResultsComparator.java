@@ -21,20 +21,19 @@ import org.plasma.sdo.access.provider.common.DataGraphComparator;
 import commonj.sdo.Property;
 
 public class ResultsComparator extends DataGraphComparator {
-    
-   public boolean contains(Property property, Path path) {
-     for (PathInfo info : this.paths) {
-       if (info.property.getName().equals(property.getName())) {
-         if (path != null) {
-           if (info.property.getPath() != null)
-             if (info.property.getPath().equals(path))
-               return true;
-         }
-         else {
-           return true;
-         }
-       }
-     }
-     return false;
-   }
+
+  public boolean contains(Property property, Path path) {
+    for (PathInfo info : this.paths) {
+      if (info.property.getName().equals(property.getName())) {
+        if (path != null) {
+          if (info.property.getPath() != null)
+            if (info.property.getPath().equals(path))
+              return true;
+        } else {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
 }

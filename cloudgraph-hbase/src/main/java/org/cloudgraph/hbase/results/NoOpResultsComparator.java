@@ -16,12 +16,12 @@
 package org.cloudgraph.hbase.results;
 
 import org.plasma.sdo.PlasmaDataGraph;
- 
+
 public class NoOpResultsComparator extends ResultsComparator {
 
   @Override
   public int compare(PlasmaDataGraph o1, PlasmaDataGraph o2) {
     return 0;
   }
-  
+
 }

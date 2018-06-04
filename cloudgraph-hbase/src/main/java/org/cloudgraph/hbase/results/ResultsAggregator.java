@@ -71,10 +71,9 @@ public class ResultsAggregator extends DefaultResultsAssembler implements Result
   protected ResultsComparator groupingComparator;
 
   public ResultsAggregator(Selection selection, Expr whereSyntaxTree,
-      ResultsComparator orderingComparator,
-      ResultsComparator groupingComparator, Expr havingSyntaxTree,
-      TableReader rootTableReader, HBaseGraphAssembler graphAssembler, Integer startRange,
-      Integer endRange) {
+      ResultsComparator orderingComparator, ResultsComparator groupingComparator,
+      Expr havingSyntaxTree, TableReader rootTableReader, HBaseGraphAssembler graphAssembler,
+      Integer startRange, Integer endRange) {
     super(whereSyntaxTree, orderingComparator, rootTableReader, startRange, endRange);
     this.selection = selection;
     this.graphAssembler = graphAssembler;
@@ -367,16 +366,16 @@ public class ResultsAggregator extends DefaultResultsAssembler implements Result
     // wipe out the scalar value wherever we created an aggregate as the scalar
     // is no longer relevant. This is true with the exception of count()
     // aggregate on a specific column where the column/path is in the group by
-    for (FunctionPath funcPath : funcPaths) {      
+    for (FunctionPath funcPath : funcPaths) {
       if (funcPath.getFunc().getName().isAggreate()) {
         switch (funcPath.getFunc().getName()) {
         case COUNT:
           if (this.groupingComparator.contains(funcPath.getProperty(), funcPath.getPath()))
-              continue; // next
-          default:
-            break;
+            continue; // next
+        default:
+          break;
         }
-        
+
         for (PlasmaDataGraph graph : graphs.values()) {
           PlasmaDataObject endpoint = null;
           if (funcPath.getPath().size() == 0) {

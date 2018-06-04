@@ -26,14 +26,14 @@ public class ResultsComparatorAssembler extends DataComparatorAssembler {
 
   public ResultsComparatorAssembler(GroupBy groupBy, Type rootType) {
     super(groupBy, rootType, new ResultsComparator());
-   }
+  }
 
   public ResultsComparatorAssembler(OrderBy orderby, Type rootType) {
     super(orderby, rootType, new ResultsComparator());
   }
-  
+
   public ResultsComparator getComparator() {
-    return (ResultsComparator)this.dataComparator;
+    return (ResultsComparator) this.dataComparator;
   }
 
 }
