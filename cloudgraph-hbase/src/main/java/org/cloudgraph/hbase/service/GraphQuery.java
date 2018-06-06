@@ -267,16 +267,17 @@ public class GraphQuery implements QueryDispatcher {
     }
 
     ResultsComparator groupingComparator = null;
-    if (selection.hasAggregateFunctions()) {
-      if (groupBy != null) {
-        ResultsComparatorAssembler groupingCompAssem = new ResultsComparatorAssembler(
-            (org.plasma.query.model.GroupBy) groupBy, type);
-        groupingComparator = groupingCompAssem.getComparator();
+    if (groupBy != null) {
+      ResultsComparatorAssembler groupingCompAssem = new ResultsComparatorAssembler(
+          (org.plasma.query.model.GroupBy) groupBy, type);
+      groupingComparator = groupingCompAssem.getComparator();
 
-      } else {
+    } else {
+      // aggregations but no group by, give it a no-op grouping
+      if (selection.hasAggregateFunctions())
         groupingComparator = new NoOpResultsComparator();
-      }
     }
+
     Expr havingSyntaxTree = null;
     if (having != null) {
       GraphRecognizerSyntaxTreeAssembler recognizerAssembler = new GraphRecognizerSyntaxTreeAssembler(
@@ -371,8 +372,8 @@ public class GraphQuery implements QueryDispatcher {
 
   protected ResultsAssembler createResultsAssembler(Query query, SelectionCollector selection,
       Expr whereSyntaxTree, ResultsComparator orderingComparator,
-      ResultsComparator groupingComparator, Expr havingSyntaxTree,
-      TableReader rootTableReader, GraphAssemblerFactory assemblerFactory) {
+      ResultsComparator groupingComparator, Expr havingSyntaxTree, TableReader rootTableReader,
+      GraphAssemblerFactory assemblerFactory) {
 
     ResultsAssembler resultsCollector = null;
     FetchType fetchType = StoreMappingProp.getQueryFetchType(query);
@@ -398,7 +399,7 @@ public class GraphQuery implements QueryDispatcher {
     }
 
     if (resultsCollector == null) {
-      if (groupingComparator == null) {
+      if (groupingComparator == null && !selection.hasAggregateFunctions()) {
         resultsCollector = new SlidingResultsAssembler(whereSyntaxTree, orderingComparator,
             rootTableReader, assemblerFactory.createAssembler(), query.getStartRange(),
             query.getEndRange());

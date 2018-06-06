@@ -18,7 +18,10 @@ package org.cloudgraph.hbase.results;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -53,7 +56,7 @@ import org.plasma.sdo.helper.DataConverter;
  * assembling a graph.
  * 
  * @author Scott Cinnamond
- * @since 1.4.1
+ * @since 1.1.4
  * @see FunctionPath
  * @see Expr
  * @see GraphRecognizerContext
@@ -65,10 +68,11 @@ public class ResultsAggregator extends DefaultResultsAssembler implements Result
   protected Map<PlasmaDataGraph, PlasmaDataGraph> graphs;
   protected PlasmaDataGraph current;
   protected Selection selection;
-  protected List<FunctionPath> funcPaths;
+  protected Collection<FunctionPath> funcPaths;
   protected Expr havingSyntaxTree;
   protected GraphRecognizerContext havingContext;
   protected ResultsComparator groupingComparator;
+  protected List<PlasmaDataGraph> result;
 
   public ResultsAggregator(Selection selection, Expr whereSyntaxTree,
       ResultsComparator orderingComparator, ResultsComparator groupingComparator,
@@ -80,7 +84,25 @@ public class ResultsAggregator extends DefaultResultsAssembler implements Result
     this.havingSyntaxTree = havingSyntaxTree;
     this.graphs = new TreeMap<PlasmaDataGraph, PlasmaDataGraph>(groupingComparator);
     this.groupingComparator = groupingComparator;
-    this.funcPaths = this.selection.getAggregateFunctions();
+
+    List<FunctionPath> paths = this.selection.getAggregateFunctions();
+    Map<String, FunctionPath> map = new HashMap<>();
+    for (FunctionPath path : paths)
+      map.put(getPathKey(path), path);
+    this.funcPaths = map.values();
+  }
+
+  private String getPathKey(FunctionPath funcPath) {
+    StringBuilder buf = new StringBuilder();
+    buf.append(funcPath.getFunc().getName().name());
+    buf.append("(");
+    if (funcPath.getPath() != null && funcPath.getPath().size() > 0) {
+      buf.append(funcPath.getPath().toString());
+      buf.append("/");
+    }
+    buf.append(funcPath.getProperty().toString());
+    buf.append(")");
+    return buf.toString();
   }
 
   @Override
@@ -363,6 +385,28 @@ public class ResultsAggregator extends DefaultResultsAssembler implements Result
     for (PlasmaDataGraph graph : graphs.values())
       this.computeAverages(graph);
 
+    List<PlasmaDataGraph> recognised = new ArrayList<PlasmaDataGraph>(graphs.size());
+    if (this.havingSyntaxTree != null) {
+      if (this.havingContext == null)
+        this.havingContext = new GraphRecognizerContext();
+      for (PlasmaDataGraph graph : graphs.values()) {
+        this.havingContext.setGraph(graph);
+        if (this.havingSyntaxTree.evaluate(this.havingContext)) {
+          recognised.add(graph);
+        } else {
+          if (log.isDebugEnabled())
+            log.debug("having recognizer excluded: " + graph);
+          if (log.isDebugEnabled())
+            log.debug(serializeGraph(graph));
+        }
+      }
+    } else {
+      recognised.addAll(graphs.values());
+    }
+
+    if (this.orderingComparator != null)
+      Collections.sort(recognised, this.orderingComparator);
+
     // wipe out the scalar value wherever we created an aggregate as the scalar
     // is no longer relevant. This is true with the exception of count()
     // aggregate on a specific column where the column/path is in the group by
@@ -390,29 +434,19 @@ public class ResultsAggregator extends DefaultResultsAssembler implements Result
       }
     }
 
-    List<PlasmaDataGraph> recognised = new ArrayList<PlasmaDataGraph>(graphs.size());
-    if (this.havingSyntaxTree != null) {
-      if (this.havingContext == null)
-        this.havingContext = new GraphRecognizerContext();
-      for (PlasmaDataGraph graph : graphs.values()) {
-        this.havingContext.setGraph(graph);
-        if (this.havingSyntaxTree.evaluate(this.havingContext)) {
-          recognised.add(graph);
-        } else {
-          if (log.isDebugEnabled())
-            log.debug("having recognizer excluded: " + graph);
-          if (log.isDebugEnabled())
-            log.debug(serializeGraph(graph));
-        }
-      }
+    if (!this.hasRange()) {
+      result = recognised;
     } else {
-      recognised.addAll(graphs.values());
+      result = new ArrayList<>();
+      for (PlasmaDataGraph graph : recognised) {
+        if (this.canIgnoreResults() && this.currentResultIgnored())
+          continue;
+        result.add(graph);
+      }
     }
 
-    PlasmaDataGraph[] array = new PlasmaDataGraph[recognised.size()];
-    recognised.toArray(array);
-    if (this.orderingComparator != null)
-      Arrays.sort(array, this.orderingComparator);
+    PlasmaDataGraph[] array = new PlasmaDataGraph[result.size()];
+    result.toArray(array);
     return array;
   }
 

@@ -71,6 +71,10 @@ public abstract class DefaultResultsAssembler implements ResultsAssembler {
     }
   }
 
+  protected boolean hasRange() {
+    return this.range > 0;
+  }
+
   @Override
   public int getUnrecognizedResults() {
     return unrecognizedResults;

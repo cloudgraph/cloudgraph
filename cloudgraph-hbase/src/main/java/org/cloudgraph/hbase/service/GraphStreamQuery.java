@@ -283,8 +283,8 @@ public class GraphStreamQuery extends GraphQuery implements
   @Override
   protected ResultsAssembler createResultsAssembler(Query query, SelectionCollector selection,
       Expr whereSyntaxTree, ResultsComparator orderingComparator,
-      ResultsComparator groupingComparator, Expr havingSyntaxTree,
-      TableReader rootTableReader, GraphAssemblerFactory assemblerFactory) {
+      ResultsComparator groupingComparator, Expr havingSyntaxTree, TableReader rootTableReader,
+      GraphAssemblerFactory assemblerFactory) {
 
     StreamingResultsAssembler resultsCollector = new StreamingResultsAssembler(whereSyntaxTree,
         orderingComparator, rootTableReader, assemblerFactory.createAssembler(),

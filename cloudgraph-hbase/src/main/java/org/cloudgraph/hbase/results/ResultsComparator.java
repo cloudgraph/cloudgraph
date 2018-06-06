@@ -25,8 +25,8 @@ public class ResultsComparator extends DataGraphComparator {
   public boolean contains(Property property, Path path) {
     for (PathInfo info : this.paths) {
       if (info.property.getName().equals(property.getName())) {
-        if (path != null) {
-          if (info.property.getPath() != null)
+        if (path != null && path.size() > 0) {
+          if (info.property.getPath() != null && info.property.getPath().size() > 0)
             if (info.property.getPath().equals(path))
               return true;
         } else {
