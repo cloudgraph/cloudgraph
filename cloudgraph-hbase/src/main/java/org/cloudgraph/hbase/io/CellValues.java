@@ -15,6 +15,7 @@
  */
 package org.cloudgraph.hbase.io;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -43,7 +44,7 @@ import org.apache.hadoop.hbase.util.Bytes;
 public class CellValues {
 
   private byte[] rowKey;
-  private Map<String, Map<String, byte[]>> familyMap;
+  private Map<Integer, Map<Integer, byte[]>> familyMap;
   /**
    * Whether the complete graph selection for context type is found within the
    * cell values
@@ -81,15 +82,16 @@ public class CellValues {
   }
 
   private void addCells(Result row) {
-    String fam = null;
+    int fam;
     for (Cell cell : row.listCells()) {
-      fam = Bytes.toString(CellUtil.cloneFamily(cell));
-      Map<String, byte[]> map = this.familyMap.get(fam);
+      fam = Arrays.hashCode(CellUtil.cloneFamily(cell));
+      Map<Integer, byte[]> map = this.familyMap.get(fam);
       if (map == null) {
         map = new HashMap<>();
         this.familyMap.put(fam, map);
       }
-      map.put(Bytes.toString(CellUtil.cloneQualifier(cell)), CellUtil.cloneValue(cell));
+      byte[] qual = CellUtil.cloneQualifier(cell);
+      map.put(Arrays.hashCode(qual), CellUtil.cloneValue(cell));
     }
   }
 
@@ -131,57 +133,57 @@ public class CellValues {
   }
 
   public void addColumn(KeyValue keyValue) {
-    String fam = Bytes.toString(CellUtil.cloneFamily(keyValue));
-    Map<String, byte[]> map = this.familyMap.get(fam);
+    int fam = Arrays.hashCode(CellUtil.cloneFamily(keyValue));
+    Map<Integer, byte[]> map = this.familyMap.get(fam);
     if (map == null) {
       map = new HashMap<>();
       this.familyMap.put(fam, map);
     }
-    map.put(Bytes.toString(CellUtil.cloneQualifier(keyValue)), CellUtil.cloneValue(keyValue));
+    byte[] qual = CellUtil.cloneQualifier(keyValue);
+    map.put(Arrays.hashCode(qual), CellUtil.cloneValue(keyValue));
   }
 
   public void addColumn(byte[] family, byte[] qual, byte[] value) {
-    String fam = Bytes.toString(family);
-    Map<String, byte[]> map = this.familyMap.get(fam);
+    int fam = Arrays.hashCode(family);
+    Map<Integer, byte[]> map = this.familyMap.get(fam);
     if (map == null) {
       map = new HashMap<>();
       this.familyMap.put(fam, map);
     }
-    map.put(Bytes.toString(qual), value);
+    map.put(Arrays.hashCode(qual), value);
   }
 
   public boolean containsColumn(byte[] family, byte[] qual) {
-    String fam = Bytes.toString(family);
-    Map<String, byte[]> map = this.familyMap.get(fam);
-    return map != null && map.containsKey(Bytes.toString(qual));
+    int fam = Arrays.hashCode(family);
+    Map<Integer, byte[]> map = this.familyMap.get(fam);
+    return map != null && map.containsKey(Arrays.hashCode(qual));
   }
 
   public byte[] getColumnValue(byte[] family, byte[] qual) {
-    String fam = Bytes.toString(family);
-    Map<String, byte[]> map = this.familyMap.get(fam);
+    int fam = Arrays.hashCode(family);
+    Map<Integer, byte[]> map = this.familyMap.get(fam);
     if (map != null)
-      return map.get(Bytes.toString(qual));
+      return map.get(Arrays.hashCode(qual));
     else
       return null;
   }
 
   public String toString() {
     StringBuilder buf = new StringBuilder();
-    // buf.append("map: ");
-    Iterator<String> famIter = this.familyMap.keySet().iterator();
+    Iterator<Integer> famIter = this.familyMap.keySet().iterator();
     for (int i = 0; famIter.hasNext(); i++) {
-      String fam = famIter.next();
+      Integer fam = famIter.next();
       buf.append(fam);
       buf.append(": ");
-      Map<String, byte[]> map = this.familyMap.get(fam);
-      Iterator<String> iter = map.keySet().iterator();
+      Map<Integer, byte[]> map = this.familyMap.get(fam);
+      Iterator<Integer> iter = map.keySet().iterator();
       for (int j = 0; iter.hasNext(); j++) {
         buf.append("\n\t");
-        String qual = iter.next();
+        Integer qual = iter.next();
         byte[] value = map.get(qual);
         buf.append(qual);
-        // buf.append("\t");
-        // buf.append(Bytes.toString(value));
+        buf.append("\t");
+        buf.append(Bytes.toString(value));
       }
     }
     return buf.toString();

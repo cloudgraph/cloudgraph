@@ -83,14 +83,16 @@ public class GraphRecognizerSupport {
             "wildcard path elements applicable for 'Select' clause paths only, not 'Where' clause paths");
       String elem = ((PathElement) pathElem).getValue();
       PlasmaProperty prop = (PlasmaProperty) targetType.getProperty(elem);
-      if (prop.isMany()) {
-        @SuppressWarnings("unchecked")
-        List<DataObject> list = targetObject.getList(prop);
-        for (DataObject next : list)
+      if (targetObject.isSet(prop)) {
+        if (prop.isMany()) {
+          @SuppressWarnings("unchecked")
+          List<DataObject> list = targetObject.getList(prop);
+          for (DataObject next : list)
+            collect(next, property, path, pathIndex + 1, values);
+        } else {
+          DataObject next = targetObject.getDataObject(prop);
           collect(next, property, path, pathIndex + 1, values);
-      } else {
-        DataObject next = targetObject.getDataObject(prop);
-        collect(next, property, path, pathIndex + 1, values);
+        }
       }
     } else {
       PlasmaProperty endpointProp = (PlasmaProperty) targetType.getProperty(property.getName());

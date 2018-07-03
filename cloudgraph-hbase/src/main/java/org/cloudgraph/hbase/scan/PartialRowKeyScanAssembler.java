@@ -32,6 +32,7 @@ import org.cloudgraph.store.mapping.KeyFieldMapping;
 import org.cloudgraph.store.mapping.MetaKeyFieldMapping;
 import org.cloudgraph.store.mapping.StoreMapping;
 import org.cloudgraph.store.mapping.TableMapping;
+import org.plasma.query.model.RelationalOperatorName;
 import org.plasma.query.model.Where;
 import org.plasma.sdo.PlasmaType;
 
@@ -241,7 +242,9 @@ public class PartialRowKeyScanAssembler implements RowKeyScanAssembler, PartialR
 
           byte[] stopBytes = null;
           // if not last field
-          if (i < (fieldCount - 1)) {
+          if (i < (fieldCount - 1)
+              && scanLiteral.relationalOperator.ordinal() == RelationalOperatorName.EQUALS
+                  .ordinal()) {
             stopBytes = scanLiteral.getStartBytes();
           } else {
             // only use stop bytes is last field in (compound) key

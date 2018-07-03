@@ -93,6 +93,8 @@ public interface TableReader extends TableOperation {
    */
   public void addRowReader(UUID uuid, RowReader rowContext) throws IllegalArgumentException;
 
+  public void addRowReader(String rowKey, RowReader rowContext) throws IllegalArgumentException;
+
   /**
    * Creates and adds a row reader based on the given data object and result
    * row.

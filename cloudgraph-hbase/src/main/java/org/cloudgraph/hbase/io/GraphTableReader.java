@@ -58,7 +58,7 @@ public class GraphTableReader extends GraphTable implements TableReader {
 
   private Table table;
   /** maps data object UUIDs strings and row key strings to row readers */
-  private Map<String, RowReader> rowReaderMap = new HashMap<String, RowReader>();
+  private Map<Object, RowReader> rowReaderMap = new HashMap<>();
   private DistributedGraphOperation distributedOperation;
 
   public GraphTableReader(TableMapping table, DistributedGraphOperation distributedOperation) {
@@ -159,9 +159,16 @@ public class GraphTableReader extends GraphTable implements TableReader {
    */
   @Override
   public void addRowReader(UUID uuid, RowReader rowReader) throws IllegalArgumentException {
-    if (rowReaderMap.get(uuid.toString()) != null)
+    if (rowReaderMap.get(uuid) != null)
       throw new IllegalArgumentException("given UUID already mapped to a row reader, " + uuid);
-    rowReaderMap.put(uuid.toString(), rowReader);
+    rowReaderMap.put(uuid, rowReader);
+  }
+
+  @Override
+  public void addRowReader(String rowKey, RowReader rowReader) throws IllegalArgumentException {
+    if (rowReaderMap.get(rowKey) != null)
+      throw new IllegalArgumentException("given row key already mapped to a row reader, " + rowKey);
+    rowReaderMap.put(rowKey, rowReader);
   }
 
   /**
@@ -194,14 +201,14 @@ public class GraphTableReader extends GraphTable implements TableReader {
     byte[] rowKey = resultRow.getRowKeyAsBytes();
     String keyString = Bytes.toString(rowKey);
     UUID uuid = ((PlasmaDataObject) dataObject).getUUID();
-    if (this.rowReaderMap.containsKey(uuid.toString()))
+    if (this.rowReaderMap.containsKey(uuid))
       throw new IllegalArgumentException("given UUID already mapped to a row reader, " + uuid);
     if (this.rowReaderMap.containsKey(keyString))
       throw new IllegalArgumentException(
           "existing row reader is already mapped for the given row key, " + keyString);
     GraphRowReader rowReader = new GraphRowReader(rowKey, resultRow, dataObject, this);
     this.addRowReader(uuid, rowReader);
-    this.rowReaderMap.put(keyString, rowReader);
+    this.addRowReader(keyString, rowReader);
 
     // set the row key so we can look it up on
     // modify and delete ops
