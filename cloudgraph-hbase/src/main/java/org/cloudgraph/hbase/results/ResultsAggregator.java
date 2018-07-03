@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cloudgraph.hbase.service;
+package org.cloudgraph.hbase.results;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -53,7 +56,7 @@ import org.plasma.sdo.helper.DataConverter;
  * assembling a graph.
  * 
  * @author Scott Cinnamond
- * @since 1.4.1
+ * @since 1.1.4
  * @see FunctionPath
  * @see Expr
  * @see GraphRecognizerContext
@@ -65,21 +68,41 @@ public class ResultsAggregator extends DefaultResultsAssembler implements Result
   protected Map<PlasmaDataGraph, PlasmaDataGraph> graphs;
   protected PlasmaDataGraph current;
   protected Selection selection;
-  protected List<FunctionPath> funcPaths;
+  protected Collection<FunctionPath> funcPaths;
   protected Expr havingSyntaxTree;
   protected GraphRecognizerContext havingContext;
+  protected ResultsComparator groupingComparator;
+  protected List<PlasmaDataGraph> result;
 
   public ResultsAggregator(Selection selection, Expr whereSyntaxTree,
-      Comparator<PlasmaDataGraph> orderingComparator,
-      Comparator<PlasmaDataGraph> groupingComparator, Expr havingSyntaxTree,
-      TableReader rootTableReader, HBaseGraphAssembler graphAssembler, Integer startRange,
-      Integer endRange) {
+      ResultsComparator orderingComparator, ResultsComparator groupingComparator,
+      Expr havingSyntaxTree, TableReader rootTableReader, HBaseGraphAssembler graphAssembler,
+      Integer startRange, Integer endRange) {
     super(whereSyntaxTree, orderingComparator, rootTableReader, startRange, endRange);
     this.selection = selection;
     this.graphAssembler = graphAssembler;
     this.havingSyntaxTree = havingSyntaxTree;
     this.graphs = new TreeMap<PlasmaDataGraph, PlasmaDataGraph>(groupingComparator);
-    this.funcPaths = this.selection.getAggregateFunctions();
+    this.groupingComparator = groupingComparator;
+
+    List<FunctionPath> paths = this.selection.getAggregateFunctions();
+    Map<String, FunctionPath> map = new HashMap<>();
+    for (FunctionPath path : paths)
+      map.put(getPathKey(path), path);
+    this.funcPaths = map.values();
+  }
+
+  private String getPathKey(FunctionPath funcPath) {
+    StringBuilder buf = new StringBuilder();
+    buf.append(funcPath.getFunc().getName().name());
+    buf.append("(");
+    if (funcPath.getPath() != null && funcPath.getPath().size() > 0) {
+      buf.append(funcPath.getPath().toString());
+      buf.append("/");
+    }
+    buf.append(funcPath.getProperty().toString());
+    buf.append(")");
+    return buf.toString();
   }
 
   @Override
@@ -362,24 +385,6 @@ public class ResultsAggregator extends DefaultResultsAssembler implements Result
     for (PlasmaDataGraph graph : graphs.values())
       this.computeAverages(graph);
 
-    // wipe out the scalar value wherever we created an aggregate as this
-    // is no longer relevant
-    for (FunctionPath funcPath : funcPaths) {
-      if (funcPath.getFunc().getName().isAggreate()) {
-        for (PlasmaDataGraph graph : graphs.values()) {
-          PlasmaDataObject endpoint = null;
-          if (funcPath.getPath().size() == 0) {
-            endpoint = (PlasmaDataObject) graph.getRootObject();
-          } else {
-            endpoint = (PlasmaDataObject) graph.getRootObject().getDataObject(
-                funcPath.getPath().toString());
-          }
-          if (endpoint.isSet(funcPath.getProperty()))
-            endpoint.unset(funcPath.getProperty());
-        }
-      }
-    }
-
     List<PlasmaDataGraph> recognised = new ArrayList<PlasmaDataGraph>(graphs.size());
     if (this.havingSyntaxTree != null) {
       if (this.havingContext == null)
@@ -399,10 +404,49 @@ public class ResultsAggregator extends DefaultResultsAssembler implements Result
       recognised.addAll(graphs.values());
     }
 
-    PlasmaDataGraph[] array = new PlasmaDataGraph[recognised.size()];
-    recognised.toArray(array);
     if (this.orderingComparator != null)
-      Arrays.sort(array, this.orderingComparator);
+      Collections.sort(recognised, this.orderingComparator);
+
+    // wipe out the scalar value wherever we created an aggregate as the scalar
+    // is no longer relevant. This is true with the exception of count()
+    // aggregate on a specific column where the column/path is in the group by
+    for (FunctionPath funcPath : funcPaths) {
+      if (funcPath.getFunc().getName().isAggreate()) {
+        switch (funcPath.getFunc().getName()) {
+        case COUNT:
+          if (this.groupingComparator.contains(funcPath.getProperty(), funcPath.getPath()))
+            continue; // next
+        default:
+          break;
+        }
+
+        for (PlasmaDataGraph graph : graphs.values()) {
+          PlasmaDataObject endpoint = null;
+          if (funcPath.getPath().size() == 0) {
+            endpoint = (PlasmaDataObject) graph.getRootObject();
+          } else {
+            endpoint = (PlasmaDataObject) graph.getRootObject().getDataObject(
+                funcPath.getPath().toString());
+          }
+          if (endpoint.isSet(funcPath.getProperty()))
+            endpoint.unset(funcPath.getProperty());
+        }
+      }
+    }
+
+    if (!this.hasRange()) {
+      result = recognised;
+    } else {
+      result = new ArrayList<>();
+      for (PlasmaDataGraph graph : recognised) {
+        if (this.canIgnoreResults() && this.currentResultIgnored())
+          continue;
+        result.add(graph);
+      }
+    }
+
+    PlasmaDataGraph[] array = new PlasmaDataGraph[result.size()];
+    result.toArray(array);
     return array;
   }
 

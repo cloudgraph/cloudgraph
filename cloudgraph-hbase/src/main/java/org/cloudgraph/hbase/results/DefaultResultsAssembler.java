@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cloudgraph.hbase.service;
+package org.cloudgraph.hbase.results;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -69,6 +69,10 @@ public abstract class DefaultResultsAssembler implements ResultsAssembler {
       range = endRange.intValue() - startRange.intValue();
       range++; // inclusive
     }
+  }
+
+  protected boolean hasRange() {
+    return this.range > 0;
   }
 
   @Override

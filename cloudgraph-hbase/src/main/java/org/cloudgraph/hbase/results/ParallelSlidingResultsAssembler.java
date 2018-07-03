@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cloudgraph.hbase.service;
+package org.cloudgraph.hbase.results;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,6 +30,8 @@ import org.apache.hadoop.hbase.client.Result;
 import org.cloudgraph.hbase.graph.GraphAssemblerCallable;
 import org.cloudgraph.hbase.graph.HBaseGraphAssembler;
 import org.cloudgraph.hbase.io.TableReader;
+import org.cloudgraph.hbase.service.GraphAssemblerFactory;
+import org.cloudgraph.hbase.service.QueryThreadPool;
 import org.cloudgraph.query.expr.Expr;
 import org.cloudgraph.recognizer.GraphRecognizerContext;
 import org.cloudgraph.store.key.GraphMetaKey;

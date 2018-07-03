@@ -45,6 +45,13 @@ import org.cloudgraph.hbase.filter.InitialFetchColumnFilterAssembler;
 import org.cloudgraph.hbase.filter.PredicateRowFilterAssembler;
 import org.cloudgraph.hbase.io.DistributedGraphReader;
 import org.cloudgraph.hbase.io.TableReader;
+import org.cloudgraph.hbase.results.NoOpResultsComparator;
+import org.cloudgraph.hbase.results.ParallelSlidingResultsAssembler;
+import org.cloudgraph.hbase.results.ResultsComparatorAssembler;
+import org.cloudgraph.hbase.results.ResultsAggregator;
+import org.cloudgraph.hbase.results.ResultsAssembler;
+import org.cloudgraph.hbase.results.ResultsComparator;
+import org.cloudgraph.hbase.results.SlidingResultsAssembler;
 import org.cloudgraph.hbase.scan.CompleteRowKey;
 import org.cloudgraph.hbase.scan.FuzzyRowKey;
 import org.cloudgraph.hbase.scan.PartialRowKey;
@@ -252,24 +259,25 @@ public class GraphQuery implements QueryDispatcher {
       }
     }
 
-    Comparator<PlasmaDataGraph> orderingComparator = null;
+    ResultsComparator orderingComparator = null;
     if (orderBy != null) {
-      DataGraphComparatorAssembler orderingCompAssem = new DataGraphComparatorAssembler(
+      ResultsComparatorAssembler orderingCompAssem = new ResultsComparatorAssembler(
           (org.plasma.query.model.OrderBy) orderBy, type);
       orderingComparator = orderingCompAssem.getComparator();
     }
 
-    Comparator<PlasmaDataGraph> groupingComparator = null;
-    if (selection.hasAggregateFunctions()) {
-      if (groupBy != null) {
-        DataGraphComparatorAssembler groupingCompAssem = new DataGraphComparatorAssembler(
-            (org.plasma.query.model.GroupBy) groupBy, type);
-        groupingComparator = groupingCompAssem.getComparator();
+    ResultsComparator groupingComparator = null;
+    if (groupBy != null) {
+      ResultsComparatorAssembler groupingCompAssem = new ResultsComparatorAssembler(
+          (org.plasma.query.model.GroupBy) groupBy, type);
+      groupingComparator = groupingCompAssem.getComparator();
 
-      } else {
-        groupingComparator = new NoOpDataGraphComparator();
-      }
+    } else {
+      // aggregations but no group by, give it a no-op grouping
+      if (selection.hasAggregateFunctions())
+        groupingComparator = new NoOpResultsComparator();
     }
+
     Expr havingSyntaxTree = null;
     if (having != null) {
       GraphRecognizerSyntaxTreeAssembler recognizerAssembler = new GraphRecognizerSyntaxTreeAssembler(
@@ -287,8 +295,8 @@ public class GraphQuery implements QueryDispatcher {
   }
 
   protected PlasmaDataGraph[] execute(Query query, PlasmaType type, SelectionCollector selection,
-      Filter columnFilter, Expr whereSyntaxTree, Comparator<PlasmaDataGraph> orderingComparator,
-      Comparator<PlasmaDataGraph> groupingComparator, Expr havingSyntaxTree,
+      Filter columnFilter, Expr whereSyntaxTree, ResultsComparator orderingComparator,
+      ResultsComparator groupingComparator, Expr havingSyntaxTree,
       List<PartialRowKey> partialScans, List<FuzzyRowKey> fuzzyScans,
       List<CompleteRowKey> completeKeys, Timestamp snapshotDate) {
     // execute
@@ -363,9 +371,9 @@ public class GraphQuery implements QueryDispatcher {
   }
 
   protected ResultsAssembler createResultsAssembler(Query query, SelectionCollector selection,
-      Expr whereSyntaxTree, Comparator<PlasmaDataGraph> orderingComparator,
-      Comparator<PlasmaDataGraph> groupingComparator, Expr havingSyntaxTree,
-      TableReader rootTableReader, GraphAssemblerFactory assemblerFactory) {
+      Expr whereSyntaxTree, ResultsComparator orderingComparator,
+      ResultsComparator groupingComparator, Expr havingSyntaxTree, TableReader rootTableReader,
+      GraphAssemblerFactory assemblerFactory) {
 
     ResultsAssembler resultsCollector = null;
     FetchType fetchType = StoreMappingProp.getQueryFetchType(query);
@@ -391,7 +399,7 @@ public class GraphQuery implements QueryDispatcher {
     }
 
     if (resultsCollector == null) {
-      if (groupingComparator == null) {
+      if (groupingComparator == null && !selection.hasAggregateFunctions()) {
         resultsCollector = new SlidingResultsAssembler(whereSyntaxTree, orderingComparator,
             rootTableReader, assemblerFactory.createAssembler(), query.getStartRange(),
             query.getEndRange());

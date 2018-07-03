@@ -40,6 +40,10 @@ import org.cloudgraph.hbase.connect.HBaseConnectionManager;
 import org.cloudgraph.hbase.filter.HBaseFilterAssembler;
 import org.cloudgraph.hbase.io.DistributedGraphReader;
 import org.cloudgraph.hbase.io.TableReader;
+import org.cloudgraph.hbase.results.ResultsComparatorAssembler;
+import org.cloudgraph.hbase.results.ResultsAssembler;
+import org.cloudgraph.hbase.results.ResultsComparator;
+import org.cloudgraph.hbase.results.StreamingResultsAssembler;
 import org.cloudgraph.hbase.scan.CompleteRowKey;
 import org.cloudgraph.hbase.scan.FuzzyRowKey;
 import org.cloudgraph.hbase.scan.PartialRowKey;
@@ -160,10 +164,10 @@ public class GraphStreamQuery extends GraphQuery implements
       }
     }
 
-    Comparator<PlasmaDataGraph> orderingComparator = null;
+    ResultsComparator orderingComparator = null;
     OrderBy orderBy = query.findOrderByClause();
     if (orderBy != null) {
-      DataGraphComparatorAssembler orderingCompAssem = new DataGraphComparatorAssembler(
+      ResultsComparatorAssembler orderingCompAssem = new ResultsComparatorAssembler(
           (org.plasma.query.model.OrderBy) orderBy, type);
       orderingComparator = orderingCompAssem.getComparator();
     }
@@ -173,7 +177,7 @@ public class GraphStreamQuery extends GraphQuery implements
   }
 
   protected void executeAsStream(Query query, SelectionCollector selection, PlasmaType type,
-      Filter columnFilter, Expr whereSyntaxTree, Comparator<PlasmaDataGraph> orderingComparator,
+      Filter columnFilter, Expr whereSyntaxTree, ResultsComparator orderingComparator,
       List<PartialRowKey> partialScans, List<FuzzyRowKey> fuzzyScans,
       List<CompleteRowKey> completeKeys, Timestamp snapshotDate) {
     Connection connection = HBaseConnectionManager.instance().getConnection();
@@ -278,9 +282,9 @@ public class GraphStreamQuery extends GraphQuery implements
 
   @Override
   protected ResultsAssembler createResultsAssembler(Query query, SelectionCollector selection,
-      Expr whereSyntaxTree, Comparator<PlasmaDataGraph> orderingComparator,
-      Comparator<PlasmaDataGraph> groupingComparator, Expr havingSyntaxTree,
-      TableReader rootTableReader, GraphAssemblerFactory assemblerFactory) {
+      Expr whereSyntaxTree, ResultsComparator orderingComparator,
+      ResultsComparator groupingComparator, Expr havingSyntaxTree, TableReader rootTableReader,
+      GraphAssemblerFactory assemblerFactory) {
 
     StreamingResultsAssembler resultsCollector = new StreamingResultsAssembler(whereSyntaxTree,
         orderingComparator, rootTableReader, assemblerFactory.createAssembler(),

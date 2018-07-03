@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cloudgraph.hbase.service;
+package org.cloudgraph.hbase.results;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,9 +36,10 @@ import org.plasma.sdo.PlasmaDataGraph;
 /**
  * Assembler which determines whether results can be ignored under the current
  * context then "slides" past results not within the given range, avoiding the
- * overhead of assembling a graph. When a graph recognizer is present for the
- * current context, no result can be bypassed as the recognizer requires an
- * assembled graph to evaluate and make its determination.
+ * overhead of assembling a graph. When a where clause syntax tree graph
+ * recognizer is present for the current context, no result can be bypassed as
+ * the recognizer requires an assembled graph to evaluate and make its
+ * determination.
  * 
  * @author Scott Cinnamond
  * @since 0.5.9
@@ -43,16 +47,17 @@ import org.plasma.sdo.PlasmaDataGraph;
  * @see Expr
  * @see GraphRecognizerContext
  */
-public class StreamingResultsAssembler extends DefaultResultsAssembler implements ResultsAssembler {
-  private static final Log log = LogFactory.getLog(StreamingResultsAssembler.class);
+public class SlidingResultsAssembler extends DefaultResultsAssembler implements ResultsAssembler {
+  private static final Log log = LogFactory.getLog(SlidingResultsAssembler.class);
   protected HBaseGraphAssembler graphAssembler;
-  protected PlasmaDataGraph graph;
+  protected List<PlasmaDataGraph> graphs;
 
-  public StreamingResultsAssembler(Expr graphRecognizerRootExpr,
+  public SlidingResultsAssembler(Expr graphRecognizerRootExpr,
       Comparator<PlasmaDataGraph> orderingComparator, TableReader rootTableReader,
       HBaseGraphAssembler graphAssembler, Integer startRange, Integer endRange) {
     super(graphRecognizerRootExpr, orderingComparator, rootTableReader, startRange, endRange);
     this.graphAssembler = graphAssembler;
+    this.graphs = new ArrayList<PlasmaDataGraph>();
   }
 
   @Override
@@ -63,7 +68,7 @@ public class StreamingResultsAssembler extends DefaultResultsAssembler implement
     }
 
     if (canIgnoreResults() && currentResultIgnored()) {
-      return false;
+      return false; // slide past it
     }
 
     this.graphAssembler.assemble(new CellValues(resultRow));
@@ -83,25 +88,28 @@ public class StreamingResultsAssembler extends DefaultResultsAssembler implement
         return false;
       }
     }
-
-    this.graph = graph;
+    this.graphs.add(graph);
 
     return true;
   }
 
   @Override
   public int size() {
-    return 1;
+    return this.graphs.size();
   }
 
   @Override
   public PlasmaDataGraph[] getResults() {
-    throw new IllegalStateException("not a results collector assembler");
+    PlasmaDataGraph[] array = new PlasmaDataGraph[graphs.size()];
+    this.graphs.toArray(array);
+    if (this.orderingComparator != null)
+      Arrays.sort(array, this.orderingComparator);
+    return array;
   }
 
   @Override
   public PlasmaDataGraph getCurrentResult() {
-    return this.graph;
+    return this.graphs.get(this.graphs.size() - 1);
   }
 
 }

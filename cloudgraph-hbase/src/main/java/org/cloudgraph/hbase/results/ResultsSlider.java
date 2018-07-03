@@ -1,4 +1,4 @@
-package org.cloudgraph.hbase.service;
+package org.cloudgraph.hbase.results;
 
 public interface ResultsSlider {
   /**
