@@ -13,7 +13,7 @@
     <description>CloudGraph(tm) is a suite of Service Data Object (SDO) 2.1 services designed for relational and big-table style "cloud" databases, such as HBase and others.</description>
 	<properties>
 		<cloudgraph.version>1.1.6</cloudgraph.version>
-		<plasma.version>2.0.6</plasma.version>
+		<plasma.version>2.0.5</plasma.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <slf4j.version>1.6.1</slf4j.version>
  	</properties>
@@ -67,13 +67,13 @@
         <dependency>                                 
             <groupId>com.oracle</groupId>          
             <artifactId>ojdbc6</artifactId>    
-            <version>11.2.0.6</version>                   
+            <version>11.2.0.5</version>                   
         </dependency>  
         -->                              
         <!--
         Note: for Oracle JDBC driver use e.g. : 
-        mvn install:install-file -DgroupId=com.oracle -DartifactId=ojdbc5 -Dversion=11.2.0.6 -Dpackaging=jar -Dfile=E:\download\jdbc\ojdbc5.jar -DgeneratePom=true
-        mvn install:install-file -DgroupId=com.oracle -DartifactId=ojdbc6 -Dversion=11.2.0.6 -Dpackaging=jar -Dfile=E:\download\jdbc\ojdbc6.jar -DgeneratePom=true 
+        mvn install:install-file -DgroupId=com.oracle -DartifactId=ojdbc5 -Dversion=11.2.0.5 -Dpackaging=jar -Dfile=E:\download\jdbc\ojdbc5.jar -DgeneratePom=true
+        mvn install:install-file -DgroupId=com.oracle -DartifactId=ojdbc6 -Dversion=11.2.0.5 -Dpackaging=jar -Dfile=E:\download\jdbc\ojdbc6.jar -DgeneratePom=true 
         -->
 	</dependencies>
 	<build>
