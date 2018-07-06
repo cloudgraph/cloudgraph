@@ -84,14 +84,14 @@ public class Padding {
     byte[] result = null;
     switch (dataFlavor) {
     case integral:
-    case real: // front pad with zeros
-      result = strip(value, maxLength, zero);
+    case real: // strip leading zero pad
+      result = stripLeading(value, maxLength, zero);
       break;
     case temporal:
     case string:
     case other:
-    default: // end pad with spaces
-      result = strip(value, maxLength, space);
+    default: // strip trailing space pad
+      result = stripTrailing(value, maxLength, space);
       break;
     }
     return result;
@@ -113,6 +113,7 @@ public class Padding {
     return result;
   }
 
+  @Deprecated
   public byte[] strip(byte[] src, int maxLength, byte pad) {
     if (src.length != maxLength)
       throw new IllegalArgumentException("expected src length of " + maxLength);
@@ -129,6 +130,38 @@ public class Padding {
     return result;
   }
 
+  public byte[] stripLeading(byte[] src, int maxLength, byte pad) {
+    if (src.length != maxLength)
+      throw new IllegalArgumentException("expected src length of " + maxLength);
+    byte[] stripped = new byte[maxLength];
+    int idx = 0;
+    boolean firstNonPad = false;
+    for (int i = 0; i < maxLength; i++) {
+      if (src[i] != pad || firstNonPad) {
+    	firstNonPad = true;
+        stripped[idx] = src[i];
+        idx++;
+      }
+    }
+    byte[] result = new byte[idx];
+    System.arraycopy(stripped, 0, result, 0, result.length);
+    return result;
+  }
+  
+  public byte[] stripTrailing(byte[] src, int maxLength, byte pad) {
+	if (src.length != maxLength)
+	  throw new IllegalArgumentException("expected src length of " + maxLength);
+	int lastNonPad = -1;
+	for (int i = maxLength -1 ; i >= 0; i--) {
+		if (src[i] != pad) {
+			lastNonPad = i;
+			break;
+		}
+	}
+    byte[] result = new byte[lastNonPad+1];
+    System.arraycopy(src, 0, result, 0, lastNonPad);
+    return result;
+  }  
   /**
    * Returns an array front padded with zeros or rear padded with spaces
    * depending on the given data flavor.
