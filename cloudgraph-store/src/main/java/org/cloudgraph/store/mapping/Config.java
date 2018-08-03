@@ -114,12 +114,28 @@ public interface Config {
   public void addTable(TableMapping table);
 
   /**
+   * Adds the given configuration if not already exists
+   * 
+   * @param table
+   *          the table configuration
+   */
+  public void addTableIfNotExists(TableMapping table);
+
+  /**
    * Adds the given configuration
    * 
    * @param table
    *          the table configuration
    */
   public void removeTable(TableMapping table);
+
+  /**
+   * Adds the given configuration if exists
+   * 
+   * @param table
+   *          the table configuration
+   */
+  public void removeTableIfExists(TableMapping table);
 
   /**
    * Returns a data graph config for the given qualified SDO Type name or null

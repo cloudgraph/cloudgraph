@@ -370,9 +370,14 @@ public class StoreMapping implements Config {
    */
   @Override
   public TableMapping findTable(QName typeName) {
-    PlasmaType type = (PlasmaType) PlasmaTypeHelper.INSTANCE.getType(typeName.getNamespaceURI(),
-        typeName.getLocalPart());
-    return this.graphURIToTableMap.get(type.getQualifiedName());
+    lock.readLock().lock();
+    try {
+      PlasmaType type = (PlasmaType) PlasmaTypeHelper.INSTANCE.getType(typeName.getNamespaceURI(),
+          typeName.getLocalPart());
+      return this.graphURIToTableMap.get(type.getQualifiedName());
+    } finally {
+      lock.readLock().unlock();
+    }
   }
 
   /*
@@ -382,11 +387,16 @@ public class StoreMapping implements Config {
    */
   @Override
   public TableMapping getTable(QName typeName) {
-    TableMapping result = findTable(typeName);
-    if (result == null)
-      throw new StoreMappingException("no HTable configured for " + " graph URI '"
-          + typeName.toString() + "'");
-    return result;
+    lock.readLock().lock();
+    try {
+      TableMapping result = findTable(typeName);
+      if (result == null)
+        throw new StoreMappingException("no HTable configured for " + " graph URI '"
+            + typeName.toString() + "'");
+      return result;
+    } finally {
+      lock.readLock().unlock();
+    }
   }
 
   /*
@@ -396,7 +406,12 @@ public class StoreMapping implements Config {
    */
   @Override
   public TableMapping findTable(Type type) {
-    return this.graphURIToTableMap.get(((PlasmaType) type).getQualifiedName());
+    lock.readLock().lock();
+    try {
+      return this.graphURIToTableMap.get(((PlasmaType) type).getQualifiedName());
+    } finally {
+      lock.readLock().unlock();
+    }
   }
 
   /*
@@ -406,15 +421,16 @@ public class StoreMapping implements Config {
    */
   @Override
   public TableMapping getTable(Type type) {
-    TableMapping result = findTable(type);
-    if (result == null)
-      throw new StoreMappingException("no HTable configured for " + " graph URI '"
-          + ((PlasmaType) type).getQualifiedName() + "'");
-    return result;
-  }
-
-  public void addTable() {
-
+    lock.readLock().lock();
+    try {
+      TableMapping result = findTable(type);
+      if (result == null)
+        throw new StoreMappingException("no HTable configured for " + " graph URI '"
+            + ((PlasmaType) type).getQualifiedName() + "'");
+      return result;
+    } finally {
+      lock.readLock().unlock();
+    }
   }
 
   private void collectTypeHierarchy(PlasmaType type, Map<QName, PlasmaType> map) {
@@ -455,8 +471,13 @@ public class StoreMapping implements Config {
    */
   @Override
   public TableMapping findTable(String tableName) {
-    TableMapping result = this.tableNameToTableMap.get(tableName);
-    return result;
+    lock.readLock().lock();
+    try {
+      TableMapping result = this.tableNameToTableMap.get(tableName);
+      return result;
+    } finally {
+      lock.readLock().unlock();
+    }
   }
 
   /*
@@ -466,11 +487,16 @@ public class StoreMapping implements Config {
    */
   @Override
   public TableMapping getTable(String tableNamespace, String tableName) {
-    TableMapping result = this.tableNameToTableMap.get(tableName);
-    if (result == null)
-      throw new StoreMappingException("no table configured for" + " name '" + tableName.toString()
-          + "'");
-    return result;
+    lock.readLock().lock();
+    try {
+      TableMapping result = this.tableNameToTableMap.get(tableName);
+      if (result == null)
+        throw new StoreMappingException("no table configured for" + " name '"
+            + tableName.toString() + "'");
+      return result;
+    } finally {
+      lock.readLock().unlock();
+    }
   }
 
   /*
@@ -481,11 +507,16 @@ public class StoreMapping implements Config {
    */
   @Override
   public String getTableName(QName typeName) {
-    TableMapping result = this.graphURIToTableMap.get(typeName);
-    if (result == null)
-      throw new StoreMappingException("no HTable configured for" + " CloudGraph '"
-          + typeName.toString() + "'");
-    return result.getQualifiedName();
+    lock.readLock().lock();
+    try {
+      TableMapping result = this.graphURIToTableMap.get(typeName);
+      if (result == null)
+        throw new StoreMappingException("no HTable configured for" + " CloudGraph '"
+            + typeName.toString() + "'");
+      return result.getQualifiedName();
+    } finally {
+      lock.readLock().unlock();
+    }
   }
 
   @Override
@@ -493,6 +524,17 @@ public class StoreMapping implements Config {
     lock.writeLock().lock();
     try {
       this.mapTable(tableConfig);
+    } finally {
+      lock.writeLock().unlock();
+    }
+  }
+
+  @Override
+  public void addTableIfNotExists(TableMapping tableConfig) {
+    lock.writeLock().lock();
+    try {
+      if ((this.tableNameToTableMap.get(tableConfig.getQualifiedName())) == null)
+        this.mapTable(tableConfig);
     } finally {
       lock.writeLock().unlock();
     }
@@ -508,6 +550,17 @@ public class StoreMapping implements Config {
     }
   }
 
+  @Override
+  public void removeTableIfExists(TableMapping tableConfig) {
+    lock.writeLock().lock();
+    try {
+      if ((this.tableNameToTableMap.get(tableConfig.getQualifiedName())) != null)
+        this.unmapTable(tableConfig);
+    } finally {
+      lock.writeLock().unlock();
+    }
+  }
+
   /*
    * (non-Javadoc)
    * 
@@ -516,8 +569,13 @@ public class StoreMapping implements Config {
    */
   @Override
   public DataGraphMapping findDataGraph(QName qname) {
-    DataGraphMapping result = this.graphURIToGraphMap.get(qname);
-    return result;
+    lock.readLock().lock();
+    try {
+      DataGraphMapping result = this.graphURIToGraphMap.get(qname);
+      return result;
+    } finally {
+      lock.readLock().unlock();
+    }
   }
 
   /*
@@ -528,10 +586,15 @@ public class StoreMapping implements Config {
    */
   @Override
   public DataGraphMapping getDataGraph(QName qname) {
-    DataGraphMapping result = this.graphURIToGraphMap.get(qname);
-    if (result == null)
-      throw new StoreMappingException("no configured for" + " '" + qname.toString() + "'");
-    return result;
+    lock.readLock().lock();
+    try {
+      DataGraphMapping result = this.graphURIToGraphMap.get(qname);
+      if (result == null)
+        throw new StoreMappingException("no configured for" + " '" + qname.toString() + "'");
+      return result;
+    } finally {
+      lock.readLock().unlock();
+    }
   }
 
   /*

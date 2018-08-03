@@ -135,10 +135,10 @@ public class Padding {
       throw new IllegalArgumentException("expected src length of " + maxLength);
     byte[] stripped = new byte[maxLength];
     int idx = 0;
-    boolean firstNonPad = false;
+    boolean leadingStripped = false;
     for (int i = 0; i < maxLength; i++) {
-      if (src[i] != pad || firstNonPad) {
-    	firstNonPad = true;
+      if (src[i] != pad || leadingStripped) {
+        leadingStripped = true;
         stripped[idx] = src[i];
         idx++;
       }
@@ -147,21 +147,22 @@ public class Padding {
     System.arraycopy(stripped, 0, result, 0, result.length);
     return result;
   }
-  
+
   public byte[] stripTrailing(byte[] src, int maxLength, byte pad) {
-	if (src.length != maxLength)
-	  throw new IllegalArgumentException("expected src length of " + maxLength);
-	int lastNonPad = -1;
-	for (int i = maxLength -1 ; i >= 0; i--) {
-		if (src[i] != pad) {
-			lastNonPad = i;
-			break;
-		}
-	}
-    byte[] result = new byte[lastNonPad+1];
+    if (src.length != maxLength)
+      throw new IllegalArgumentException("expected src length of " + maxLength);
+    int lastNonPad = -1;
+    for (int i = maxLength - 1; i >= 0; i--) {
+      if (src[i] != pad) {
+        lastNonPad = i;
+        break;
+      }
+    }
+    byte[] result = new byte[lastNonPad + 1];
     System.arraycopy(src, 0, result, 0, lastNonPad);
     return result;
-  }  
+  }
+
   /**
    * Returns an array front padded with zeros or rear padded with spaces
    * depending on the given data flavor.

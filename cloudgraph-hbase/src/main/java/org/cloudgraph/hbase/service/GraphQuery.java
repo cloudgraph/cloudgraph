@@ -548,9 +548,13 @@ public class GraphQuery implements QueryDispatcher {
         if (!collector.isResultEndRangeReached())
           collector.collect(resultRow);
       } else {
-        if (log.isDebugEnabled())
+        if (log.isDebugEnabled()) {
+          String rowKey = "";
+          if (resultRow.getRow() != null)
+            rowKey = Bytes.toString(resultRow.getRow());
           log.debug("no results from table " + rootTableReader.getTableConfig().getName()
-              + " for row '" + new String(resultRow.getRow()) + "' - returning no results graph");
+              + " for row '" + rowKey + "' - returning no results graph");
+        }
       }
     }
   }
