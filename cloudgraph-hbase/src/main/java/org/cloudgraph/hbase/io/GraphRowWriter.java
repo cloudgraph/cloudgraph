@@ -81,7 +81,7 @@ public class GraphRowWriter extends DefaultRowOperation implements RowWriter {
   private Put row;
   private Delete delete;
   private Increment increment;
- 
+
   private Map<Integer, EdgeWriter> edgeWriterMap = new HashMap<Integer, EdgeWriter>();
   private Qualifiers qualifierMap = new Qualifiers();
   private Map<DataObject, Long> dataObjectSequenceMap = new HashMap<>();
@@ -435,18 +435,21 @@ public class GraphRowWriter extends DefaultRowOperation implements RowWriter {
       qual = keyFac.createColumnKey(plasmaType, property);
     this.getPut().addColumn(fam, qual, value);
     this.qualifierMap.add(fam, qual, dataObject, property);
-    
+
     if (plasmaType.isConcurrent()) {
-      this.getPut().setAttribute(RowWriter.ROW_ATTR_NAME_IS_CONCURRENT_BOOL, Bytes.toBytes(Boolean.TRUE));  
-      PlasmaProperty concurrProp = (PlasmaProperty)plasmaType.findProperty(ConcurrencyType.optimistic);
+      this.getPut().setAttribute(RowWriter.ROW_ATTR_NAME_IS_CONCURRENT_BOOL,
+          Bytes.toBytes(Boolean.TRUE));
+      PlasmaProperty concurrProp = (PlasmaProperty) plasmaType
+          .findProperty(ConcurrencyType.optimistic);
       Concurrent concurrent = concurrProp.getConcurrent();
       Object dataValue = dataObject.get(concurrProp);
       if (dataValue == null)
-        throw new GraphServiceException("expected data value for concurrent property, " + concurrProp + ", with datatype "
-            + concurrProp.getType() + "");
+        throw new GraphServiceException("expected data value for concurrent property, "
+            + concurrProp + ", with datatype " + concurrProp.getType() + "");
       switch (concurrent.getDataFlavor()) {
       case version:
-        // always bump version by 1 for update on managed concurrent version prop
+        // always bump version by 1 for update on managed concurrent version
+        // prop
         long longDataValue = DataConverter.INSTANCE.toLong(property.getType(), dataValue);
         longDataValue++;
         byte[] valueBytes = HBaseDataConverter.INSTANCE.toBytes(property, longDataValue);
@@ -455,19 +458,20 @@ public class GraphRowWriter extends DefaultRowOperation implements RowWriter {
           concurrQual = keyFac.createColumnKey(plasmaType, sequence, concurrProp);
         else
           concurrQual = keyFac.createColumnKey(plasmaType, concurrProp);
-        
-        this.getPut().setAttribute(RowWriter.ROW_ATTR_NAME_CONCURRENT_FAM_BYTES, fam);  
-        this.getPut().setAttribute(RowWriter.ROW_ATTR_NAME_CONCURRENT_QUAL_BYTES, concurrQual);  
-        this.getPut().setAttribute(RowWriter.ROW_ATTR_NAME_CONCURRENT_VALUE_BYTES, valueBytes);  
-        
+
+        this.getPut().setAttribute(RowWriter.ROW_ATTR_NAME_CONCURRENT_FAM_BYTES, fam);
+        this.getPut().setAttribute(RowWriter.ROW_ATTR_NAME_CONCURRENT_QUAL_BYTES, concurrQual);
+        this.getPut().setAttribute(RowWriter.ROW_ATTR_NAME_CONCURRENT_VALUE_BYTES, valueBytes);
+
         this.getTableWriter().setHasConcurrentRows(true);
         break;
       default:
-        throw new GraphServiceException("unsupported concurrent data flavor ("+concurrent.getDataFlavor()+") for property, " + concurrProp + ", with datatype "
+        throw new GraphServiceException("unsupported concurrent data flavor ("
+            + concurrent.getDataFlavor() + ") for property, " + concurrProp + ", with datatype "
             + concurrProp.getType() + "");
-      }             
+      }
     }
-    
+
     if (log.isDebugEnabled())
       log.debug("writing " + Bytes.toString(qual) + " / " + Bytes.toString(value));
   }
@@ -479,14 +483,14 @@ public class GraphRowWriter extends DefaultRowOperation implements RowWriter {
 
   @Override
   public void writeRowAttribute(String name, byte[] value) throws IOException {
-    this.getPut().setAttribute(name, value);   
+    this.getPut().setAttribute(name, value);
   }
-  
+
   @Override
   public byte[] readRowAttribute(String name) throws IOException {
-    return this.getPut().getAttribute(name);     
+    return this.getPut().getAttribute(name);
   }
-  
+
   @Override
   public void deleteRowData(PlasmaDataObject dataObject, long sequence, PlasmaProperty property)
       throws IOException {
@@ -526,8 +530,6 @@ public class GraphRowWriter extends DefaultRowOperation implements RowWriter {
 
     this.getIncrement().addColumn(fam, qual, value);
     this.qualifierMap.add(fam, qual, dataObject, property);
-    
-    
 
     if (log.isDebugEnabled())
       log.debug("incrementing " + Bytes.toString(qual) + " / " + value);

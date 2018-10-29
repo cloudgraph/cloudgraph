@@ -242,7 +242,5 @@
   <PlasmaSDOProfile:SDOAlias xmi:id="_1bsh4CiREeirAetiHFkJpA" base_NamedElement="_xukv4CiREeirAetiHFkJpA" physicalName="ID"/>
   <PlasmaSDOProfile:SDOValueConstraint xmi:id="_1ccIwCiREeirAetiHFkJpA" base_Property="_xukv4CiREeirAetiHFkJpA" maxLength="36"/>
   <PlasmaSDOProfile:SDOKey xmi:id="_EiyfACihEeirAetiHFkJpA" base_Property="_xukv4CiREeirAetiHFkJpA" type="primary"/>
-  <PlasmaSDOProfile:SDOConcurrent xmi:id="_qXrygNZDEeioCO29qEYzvA" base_Property="9e81d497-065a-4594-98c2-e398e166ed0e" dataFlavor="time"/>
   <PlasmaSDOProfile:SDOAlias xmi:id="_90wPMNZDEeioCO29qEYzvA" base_NamedElement="_6F4wwNZDEeioCO29qEYzvA" physicalName="MV"/>
-  <PlasmaSDOProfile:SDOConcurrent xmi:id="_906AMNZDEeioCO29qEYzvA" base_Property="_6F4wwNZDEeioCO29qEYzvA"/>
 </xmi:XMI>

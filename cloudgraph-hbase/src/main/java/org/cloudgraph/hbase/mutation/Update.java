@@ -119,45 +119,43 @@ public class Update extends DefaultMutation implements Collector {
         edgeWriter.write();
       } else {
         Increment increment = property.getIncrement();
-         if (dataValue != null) {
+        if (dataValue != null) {
           if (increment == null) {
             byte[] valueBytes = HBaseDataConverter.INSTANCE.toBytes(property, dataValue);
             rowWriter.writeRowData(dataObject, sequence, property, valueBytes);
-          } else { // increment  
+          } else { // increment
             if (type.isConcurrent())
-              throw new GraphServiceException("increment property, " + property + ", found on concurrent type, "
-                  + type + " - increment properties cannot coexist within a concurrent type");             
+              throw new GraphServiceException("increment property, " + property
+                  + ", found on concurrent type, " + type
+                  + " - increment properties cannot coexist within a concurrent type");
             DataType dataType = DataType.valueOf(property.getType().getName());
-            if (increment != null) { // user can increment/decrement by whatever value
-               if (dataType.ordinal() != DataType.Long.ordinal())
+            if (increment != null) { // user can increment/decrement by whatever
+                                     // value
+              if (dataType.ordinal() != DataType.Long.ordinal())
                 throw new GraphServiceException("property, " + property + ", must be datatype "
                     + DataType.Long + " to support increment operations");
               long longDataValue = DataConverter.INSTANCE.toLong(property.getType(), dataValue);
               rowWriter.incrementRowData(dataObject, sequence, property, longDataValue);
             }
           }
-          
+
           if (type.isConcurrent()) {
-            
+
           }
-/*
-              switch (concurrent.getDataFlavor()) {
-              case version:
-                // always bump version by 1 for update on managed concurrent version prop
-                long longDataValue = DataConverter.INSTANCE.toLong(property.getType(), dataValue);
-                longDataValue++;
-                byte[] valueBytes = HBaseDataConverter.INSTANCE.toBytes(property, longDataValue);
-                rowWriter.writeRowData(dataObject, sequence, property, valueBytes);
-                rowWriter.getTableWriter().setHasConcurrentRows(true);
-                break;
-              default:
-                throw new GraphServiceException("unsupported concurrent data flavor ("+concurrent.getDataFlavor()+") for property, " + property + ", with datatype "
-                    + dataType + "");
-              }             
-          
- */
-          
-          
+          /*
+           * switch (concurrent.getDataFlavor()) { case version: // always bump
+           * version by 1 for update on managed concurrent version prop long
+           * longDataValue = DataConverter.INSTANCE.toLong(property.getType(),
+           * dataValue); longDataValue++; byte[] valueBytes =
+           * HBaseDataConverter.INSTANCE.toBytes(property, longDataValue);
+           * rowWriter.writeRowData(dataObject, sequence, property, valueBytes);
+           * rowWriter.getTableWriter().setHasConcurrentRows(true); break;
+           * default: throw new
+           * GraphServiceException("unsupported concurrent data flavor ("
+           * +concurrent.getDataFlavor()+") for property, " + property +
+           * ", with datatype " + dataType + ""); }
+           */
+
         } else {
           rowWriter.deleteRowData(dataObject, sequence, property);
         }

@@ -105,7 +105,7 @@ public class GraphTableWriter extends GraphTable implements TableWriter {
     }
     return this.table;
   }
-  
+
   @Override
   public BufferedMutator getBufferedMutator() {
     try {
@@ -122,11 +122,13 @@ public class GraphTableWriter extends GraphTable implements TableWriter {
         this.bufferedMutator = distributedGraphWriter.getConnection().getBufferedMutator(tableName);
       } else {
         try {
-          this.bufferedMutator = distributedGraphWriter.getConnection().getBufferedMutator(tableName);
+          this.bufferedMutator = distributedGraphWriter.getConnection().getBufferedMutator(
+              tableName);
         } catch (TableNotFoundException | NamespaceNotFoundException e) {
           HBaseConnectionManager.instance().createTable(distributedGraphWriter.getConnection(),
               tableName);
-          this.bufferedMutator = distributedGraphWriter.getConnection().getBufferedMutator(tableName);
+          this.bufferedMutator = distributedGraphWriter.getConnection().getBufferedMutator(
+              tableName);
         }
       }
     } catch (IOException e) {
@@ -172,13 +174,12 @@ public class GraphTableWriter extends GraphTable implements TableWriter {
 
   @Override
   public boolean hasConcurrentRows() {
-     return this.hasConcurentRows;
+    return this.hasConcurentRows;
   }
 
   @Override
   public void setHasConcurrentRows(boolean value) {
-    this.hasConcurentRows = value;    
+    this.hasConcurentRows = value;
   }
-
 
 }

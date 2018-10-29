@@ -42,23 +42,24 @@ public interface TableWriter extends TableOperation {
   public DistributedWriter getDistributedWriter();
 
   public BufferedMutator getBufferedMutator();
-  
+
   /**
-   * Return whether any concurrent rows have been detected for the table
-   * writer. Optimization to enable bypassing of concurrent processing
-   * for an entire table.   
+   * Return whether any concurrent rows have been detected for the table writer.
+   * Optimization to enable bypassing of concurrent processing for an entire
+   * table.
+   * 
    * @return whether any concurrent rows have been detected for the table
-   * writer.
+   *         writer.
    */
   public boolean hasConcurrentRows();
 
   /**
-   * Sets whether any concurrent rows have been detected for the table
-   * writer. Optimization to enable bypassing of concurrent processing
-   * for an entire table. 
+   * Sets whether any concurrent rows have been detected for the table writer.
+   * Optimization to enable bypassing of concurrent processing for an entire
+   * table.
    */
   public void setHasConcurrentRows(boolean value);
-  
+
   @Deprecated
   public void setDistributedWriter(DistributedGraphWriter distributedGraphWriter);
 
