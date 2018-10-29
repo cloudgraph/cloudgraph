@@ -18,6 +18,8 @@ package org.cloudgraph.hbase.io;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.hadoop.hbase.client.BufferedMutator;
+
 /**
  * Provides access to the operational, configuration and other state information
  * required for write operations on a single graph table.
@@ -39,6 +41,24 @@ public interface TableWriter extends TableOperation {
 
   public DistributedWriter getDistributedWriter();
 
+  public BufferedMutator getBufferedMutator();
+  
+  /**
+   * Return whether any concurrent rows have been detected for the table
+   * writer. Optimization to enable bypassing of concurrent processing
+   * for an entire table.   
+   * @return whether any concurrent rows have been detected for the table
+   * writer.
+   */
+  public boolean hasConcurrentRows();
+
+  /**
+   * Sets whether any concurrent rows have been detected for the table
+   * writer. Optimization to enable bypassing of concurrent processing
+   * for an entire table. 
+   */
+  public void setHasConcurrentRows(boolean value);
+  
   @Deprecated
   public void setDistributedWriter(DistributedGraphWriter distributedGraphWriter);
 

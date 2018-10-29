@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.hbase.util.Bytes;
 import org.cloudgraph.common.CloudGraphConstants;
 import org.cloudgraph.hbase.io.DistributedWriter;
 import org.cloudgraph.hbase.io.EdgeWriter;
@@ -31,6 +32,7 @@ import org.cloudgraph.hbase.io.TableWriter;
 import org.cloudgraph.hbase.service.HBaseDataConverter;
 import org.cloudgraph.hbase.service.ServiceContext;
 import org.cloudgraph.store.service.GraphServiceException;
+import org.plasma.sdo.Concurrent;
 import org.plasma.sdo.DataType;
 import org.plasma.sdo.Increment;
 import org.plasma.sdo.PlasmaDataObject;
@@ -43,6 +45,7 @@ import org.plasma.sdo.core.CoreConstants;
 import org.plasma.sdo.core.CoreNode;
 import org.plasma.sdo.core.SnapshotMap;
 import org.plasma.sdo.helper.DataConverter;
+import org.plasma.sdo.profile.ConcurrentDataFlavor;
 
 import commonj.sdo.ChangeSummary.Setting;
 import commonj.sdo.DataGraph;
@@ -78,9 +81,6 @@ public class Update extends DefaultMutation implements Collector {
 
     if (log.isDebugEnabled())
       log.debug(dataObject + " (seq: " + sequence + ")");
-
-    checkLock(dataObject, type, snapshotDate);
-    // updateOptimistic(dataObject, type, rowWriter);
 
     List<Setting> settingList = dataGraph.getChangeSummary().getOldValues(dataObject);
     HashSet<PlasmaProperty> properties = this.collectProperties(settingList);
@@ -118,25 +118,48 @@ public class Update extends DefaultMutation implements Collector {
         }
         edgeWriter.write();
       } else {
-        // FIXME: research best way to encode multiple
-        // primitives as bytes
-        if (dataValue != null) {
-          Increment increment = property.getIncrement();
+        Increment increment = property.getIncrement();
+         if (dataValue != null) {
           if (increment == null) {
             byte[] valueBytes = HBaseDataConverter.INSTANCE.toBytes(property, dataValue);
             rowWriter.writeRowData(dataObject, sequence, property, valueBytes);
-          } else {
+          } else { // increment  
+            if (type.isConcurrent())
+              throw new GraphServiceException("increment property, " + property + ", found on concurrent type, "
+                  + type + " - increment properties cannot coexist within a concurrent type");             
             DataType dataType = DataType.valueOf(property.getType().getName());
-            if (dataType.ordinal() != DataType.Long.ordinal())
-              throw new GraphServiceException("property, " + property + ", must be datatype "
-                  + DataType.Long + " for increment operation");
-            long longDataValue = DataConverter.INSTANCE.toLong(property.getType(), dataValue);
-            rowWriter.incrementRowData(dataObject, sequence, property, longDataValue);
+            if (increment != null) { // user can increment/decrement by whatever value
+               if (dataType.ordinal() != DataType.Long.ordinal())
+                throw new GraphServiceException("property, " + property + ", must be datatype "
+                    + DataType.Long + " to support increment operations");
+              long longDataValue = DataConverter.INSTANCE.toLong(property.getType(), dataValue);
+              rowWriter.incrementRowData(dataObject, sequence, property, longDataValue);
+            }
           }
+          
+          if (type.isConcurrent()) {
+            
+          }
+/*
+              switch (concurrent.getDataFlavor()) {
+              case version:
+                // always bump version by 1 for update on managed concurrent version prop
+                long longDataValue = DataConverter.INSTANCE.toLong(property.getType(), dataValue);
+                longDataValue++;
+                byte[] valueBytes = HBaseDataConverter.INSTANCE.toBytes(property, longDataValue);
+                rowWriter.writeRowData(dataObject, sequence, property, valueBytes);
+                rowWriter.getTableWriter().setHasConcurrentRows(true);
+                break;
+              default:
+                throw new GraphServiceException("unsupported concurrent data flavor ("+concurrent.getDataFlavor()+") for property, " + property + ", with datatype "
+                    + dataType + "");
+              }             
+          
+ */
+          
+          
         } else {
           rowWriter.deleteRowData(dataObject, sequence, property);
-          // this.deleteDataCell(rowWriter, dataObject, sequence,
-          // property);
         }
       }
     }

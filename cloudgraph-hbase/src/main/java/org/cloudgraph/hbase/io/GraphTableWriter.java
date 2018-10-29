@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.NamespaceNotFoundException;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.TableNotFoundException;
+import org.apache.hadoop.hbase.client.BufferedMutator;
 import org.apache.hadoop.hbase.client.Table;
 import org.cloudgraph.hbase.connect.HBaseConnectionManager;
 import org.cloudgraph.state.GraphTable;
@@ -52,9 +53,11 @@ import org.cloudgraph.store.mapping.TableMapping;
 public class GraphTableWriter extends GraphTable implements TableWriter {
   private static Log log = LogFactory.getLog(GraphTableWriter.class);
   private Table table;
+  private BufferedMutator bufferedMutator;
   /** maps data object UUIDs to row writers */
   private Map<String, RowWriter> rowContextMap = new HashMap<String, RowWriter>();
   private DistributedGraphWriter distributedGraphWriter;
+  public boolean hasConcurentRows = false;
 
   public GraphTableWriter(TableMapping table) {
     super(table);
@@ -102,6 +105,35 @@ public class GraphTableWriter extends GraphTable implements TableWriter {
     }
     return this.table;
   }
+  
+  @Override
+  public BufferedMutator getBufferedMutator() {
+    try {
+      TableName tableName = TableName.valueOf(tableConfig.getQualifiedName());
+      // Note: calling tableExists() using the admin HBase API is expensive
+      // and is
+      // showing up on CPU profiling results. Just call get table and catch :(
+      // Unfortunately at least on windows client, below get operation does
+      // not throw
+      // anything and continues on.
+      if (!distributedGraphWriter.getConnection().tableExists(tableName)) {
+        HBaseConnectionManager.instance().createTable(distributedGraphWriter.getConnection(),
+            tableName);
+        this.bufferedMutator = distributedGraphWriter.getConnection().getBufferedMutator(tableName);
+      } else {
+        try {
+          this.bufferedMutator = distributedGraphWriter.getConnection().getBufferedMutator(tableName);
+        } catch (TableNotFoundException | NamespaceNotFoundException e) {
+          HBaseConnectionManager.instance().createTable(distributedGraphWriter.getConnection(),
+              tableName);
+          this.bufferedMutator = distributedGraphWriter.getConnection().getBufferedMutator(tableName);
+        }
+      }
+    } catch (IOException e) {
+      throw new OperationException(e);
+    }
+    return this.bufferedMutator;
+  }
 
   @Override
   public RowWriter getRowWriter(UUID uuid) {
@@ -135,6 +167,18 @@ public class GraphTableWriter extends GraphTable implements TableWriter {
   @Override
   public void close() {
     this.table = null;
+    this.bufferedMutator = null;
   }
+
+  @Override
+  public boolean hasConcurrentRows() {
+     return this.hasConcurentRows;
+  }
+
+  @Override
+  public void setHasConcurrentRows(boolean value) {
+    this.hasConcurentRows = value;    
+  }
+
 
 }

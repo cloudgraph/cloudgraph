@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.cloudgraph</groupId>
         <artifactId>cloudgraph</artifactId>
-        <version>1.1.7</version>
+        <version>1.1.8</version>
     </parent>
 	<groupId>org.cloudgraph</groupId>
 	<artifactId>cloudgraph-rdb</artifactId>
@@ -12,8 +12,8 @@
 	<name>CloudGraph Relational Database Service</name>
     <description>CloudGraph(tm) is a suite of Service Data Object (SDO) 2.1 services designed for relational and big-table style "cloud" databases, such as HBase and others.</description>
 	<properties>
-		<cloudgraph.version>1.1.7</cloudgraph.version>
-		<plasma.version>2.0.6</plasma.version>
+		<cloudgraph.version>1.1.8</cloudgraph.version>
+		<plasma.version>2.0.7</plasma.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <slf4j.version>1.6.1</slf4j.version>
  	</properties>
@@ -27,17 +27,17 @@
 		<dependency>
 			<groupId>org.cloudgraph</groupId>
 			<artifactId>cloudgraph-common</artifactId>
-			<version>1.1.7</version>
+			<version>1.1.8</version>
 		</dependency>
 		<dependency>
 			<groupId>org.cloudgraph</groupId>
 			<artifactId>cloudgraph-store</artifactId>
-			<version>1.1.7</version>
+			<version>1.1.8</version>
 		</dependency>
 		<dependency>
 			<groupId>org.cloudgraph</groupId>
 			<artifactId>cloudgraph-mapreduce</artifactId>
-			<version>1.1.7</version>
+			<version>1.1.8</version>
 		</dependency>
 		
 		<!-- Plasma Dependencies -->
@@ -67,7 +67,7 @@
         <dependency>                                 
             <groupId>com.oracle</groupId>          
             <artifactId>ojdbc6</artifactId>    
-            <version>11.2.0.6</version>                   
+            <version>11.2.0.7</version>                   
         </dependency>  
         -->                              
         <!--

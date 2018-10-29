@@ -44,6 +44,11 @@ import commonj.sdo.DataObject;
  */
 public interface RowWriter extends RowOperation {
 
+  public static final String ROW_ATTR_NAME_IS_CONCURRENT_BOOL = "_is_cncrnt";
+  public static final String ROW_ATTR_NAME_CONCURRENT_FAM_BYTES = "_cncrnt_fam";
+  public static final String ROW_ATTR_NAME_CONCURRENT_QUAL_BYTES = "_cncrnt_qual";
+  public static final String ROW_ATTR_NAME_CONCURRENT_VALUE_BYTES = "_cncrnt_value";
+  
   /**
    * Returns the row put mutation.
    * 
@@ -134,6 +139,9 @@ public interface RowWriter extends RowOperation {
 
   public void writeRowData(byte[] fam, byte[] qualifier, byte[] value) throws IOException;
 
+  public void writeRowAttribute(String key, byte[] value) throws IOException;
+  public byte[] readRowAttribute(String key) throws IOException;
+ 
   public void deleteRowData(PlasmaDataObject dataObject, long sequence, PlasmaProperty property)
       throws IOException;
 
@@ -161,18 +169,26 @@ public interface RowWriter extends RowOperation {
       long sequence) throws IOException;
 
   /**
-   * 
+   * Maps an edge sequence within the writer for the given data object
    * @param dataObject
    * @param sequence
-   * @param type
    */
   public void addSequence(DataObject dataObject, long sequence);
 
+  /**
+   * Returns whether the writer has a mapping the the given data object. 
+   * @param dataObject
+   * @return whether the writer has a mapping the the given data object.
+   */
   public boolean containsSequence(DataObject dataObject);
 
+  /**
+   * Returs the sequence number for the given data object if exists. 
+   */
   public long getSequence(DataObject dataObject);
 
   public byte[] encodeRootType();
 
   public byte[] encodeType(PlasmaType type);
+
 }

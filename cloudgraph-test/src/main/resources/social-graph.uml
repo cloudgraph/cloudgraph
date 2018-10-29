@@ -98,6 +98,12 @@
           </ownedComment>
           <type xmi:type="uml:DataType" href="pathmap://PLASMA_LIBRARIES/PlasmaSDODataTypes_v1_2.uml#plasma-sdo-profile-datatypes-String"/>
         </ownedAttribute>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="_6F4wwNZDEeioCO29qEYzvA" name="modifiedVersion">
+          <ownedComment xmi:type="uml:Comment" xmi:id="_6F4wwdZDEeioCO29qEYzvA">
+            <body>the version num</body>
+          </ownedComment>
+          <type xmi:type="uml:DataType" href="pathmap://PLASMA_LIBRARIES/PlasmaSDODataTypes_v1_3.uml#plasma-sdo-profile-datatypes-Long"/>
+        </ownedAttribute>
       </packagedElement>
       <packagedElement xmi:type="uml:Class" xmi:id="559d9b05-de30-4e18-a930-811b53292dcb" name="Mutual">
         <generalization xmi:type="uml:Generalization" xmi:id="14432162-2675-4bf6-85c8-34c5e707ab8e" general="964f2464-ae77-43bb-babd-7581e7eeef3d"/>
@@ -236,4 +242,7 @@
   <PlasmaSDOProfile:SDOAlias xmi:id="_1bsh4CiREeirAetiHFkJpA" base_NamedElement="_xukv4CiREeirAetiHFkJpA" physicalName="ID"/>
   <PlasmaSDOProfile:SDOValueConstraint xmi:id="_1ccIwCiREeirAetiHFkJpA" base_Property="_xukv4CiREeirAetiHFkJpA" maxLength="36"/>
   <PlasmaSDOProfile:SDOKey xmi:id="_EiyfACihEeirAetiHFkJpA" base_Property="_xukv4CiREeirAetiHFkJpA" type="primary"/>
+  <PlasmaSDOProfile:SDOConcurrent xmi:id="_qXrygNZDEeioCO29qEYzvA" base_Property="9e81d497-065a-4594-98c2-e398e166ed0e" dataFlavor="time"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_90wPMNZDEeioCO29qEYzvA" base_NamedElement="_6F4wwNZDEeioCO29qEYzvA" physicalName="MV"/>
+  <PlasmaSDOProfile:SDOConcurrent xmi:id="_906AMNZDEeioCO29qEYzvA" base_Property="_6F4wwNZDEeioCO29qEYzvA"/>
 </xmi:XMI>
