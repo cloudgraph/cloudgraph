@@ -436,39 +436,49 @@ public class GraphRowWriter extends DefaultRowOperation implements RowWriter {
     this.getPut().addColumn(fam, qual, value);
     this.qualifierMap.add(fam, qual, dataObject, property);
 
-    if (plasmaType.isConcurrent()) {
-      this.getPut().setAttribute(RowWriter.ROW_ATTR_NAME_IS_CONCURRENT_BOOL,
-          Bytes.toBytes(Boolean.TRUE));
-      PlasmaProperty concurrProp = (PlasmaProperty) plasmaType
-          .findProperty(ConcurrencyType.optimistic);
-      Concurrent concurrent = concurrProp.getConcurrent();
-      Object dataValue = dataObject.get(concurrProp);
-      if (dataValue == null)
-        throw new GraphServiceException("expected data value for concurrent property, "
-            + concurrProp + ", with datatype " + concurrProp.getType() + "");
-      switch (concurrent.getDataFlavor()) {
-      case version:
-        // always bump version by 1 for update on managed concurrent version
-        // prop
-        long longDataValue = DataConverter.INSTANCE.toLong(property.getType(), dataValue);
-        longDataValue++;
-        byte[] valueBytes = HBaseDataConverter.INSTANCE.toBytes(property, longDataValue);
-        byte[] concurrQual = null;
-        if (sequence > 0)
-          concurrQual = keyFac.createColumnKey(plasmaType, sequence, concurrProp);
-        else
-          concurrQual = keyFac.createColumnKey(plasmaType, concurrProp);
-
-        this.getPut().setAttribute(RowWriter.ROW_ATTR_NAME_CONCURRENT_FAM_BYTES, fam);
-        this.getPut().setAttribute(RowWriter.ROW_ATTR_NAME_CONCURRENT_QUAL_BYTES, concurrQual);
-        this.getPut().setAttribute(RowWriter.ROW_ATTR_NAME_CONCURRENT_VALUE_BYTES, valueBytes);
-
-        this.getTableWriter().setHasConcurrentRows(true);
-        break;
-      default:
-        throw new GraphServiceException("unsupported concurrent data flavor ("
-            + concurrent.getDataFlavor() + ") for property, " + concurrProp + ", with datatype "
-            + concurrProp.getType() + "");
+    // For concurrent types, annotate the mutation with bytes data
+    // from the concurrency property
+    if (plasmaType.isConcurrent() && !dataObject.getDataGraph().getChangeSummary().isCreated(dataObject)) {
+      // If we haven't already done this
+      if ((this.readRowAttribute(RowWriter.ROW_ATTR_NAME_IS_CONCURRENT_BOOL)) == null) {
+        this.writeRowAttribute(RowWriter.ROW_ATTR_NAME_IS_CONCURRENT_BOOL,
+            Bytes.toBytes(Boolean.TRUE));
+        PlasmaProperty concurrProp = (PlasmaProperty) plasmaType
+            .findProperty(ConcurrencyType.optimistic);
+        Concurrent concurrent = concurrProp.getConcurrent();
+        Object dataValue = dataObject.get(concurrProp);
+        if (dataValue == null)
+          throw new GraphServiceException("expected data value for concurrent property, "
+              + concurrProp + ", with datatype " + concurrProp.getType() + "");
+        switch (concurrent.getDataFlavor()) {
+        case version:
+          // always bump version by 1 for update on managed concurrent version
+          // prop
+          long longDataValue = DataConverter.INSTANCE.toLong(property.getType(), dataValue);
+          byte[] valueBytes = HBaseDataConverter.INSTANCE.toBytes(property, longDataValue);
+          byte[] concurrQual = null;
+          if (sequence > 0)
+            concurrQual = keyFac.createColumnKey(plasmaType, sequence, concurrProp);
+          else
+            concurrQual = keyFac.createColumnKey(plasmaType, concurrProp);
+  
+          this.writeRowAttribute(RowWriter.ROW_ATTR_NAME_CONCURRENT_FAM_BYTES, fam);
+          this.writeRowAttribute(RowWriter.ROW_ATTR_NAME_CONCURRENT_QUAL_BYTES, concurrQual);
+          this.writeRowAttribute(RowWriter.ROW_ATTR_NAME_CONCURRENT_VALUE_BYTES, valueBytes);
+  
+          this.getTableWriter().setHasConcurrentRows(true);
+          
+          // increment and set this managed concurrent property
+          longDataValue++;
+          byte[] updatedValueBytes = HBaseDataConverter.INSTANCE.toBytes(property, longDataValue);
+          this.getPut().addColumn(fam, concurrQual, updatedValueBytes);
+          
+          break;
+        default:
+          throw new GraphServiceException("unsupported concurrent data flavor ("
+              + concurrent.getDataFlavor() + ") for property, " + concurrProp + ", with datatype "
+              + concurrProp.getType() + "");
+        }
       }
     }
 

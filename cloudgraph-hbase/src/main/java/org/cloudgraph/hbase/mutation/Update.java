@@ -139,23 +139,6 @@ public class Update extends DefaultMutation implements Collector {
             }
           }
 
-          if (type.isConcurrent()) {
-
-          }
-          /*
-           * switch (concurrent.getDataFlavor()) { case version: // always bump
-           * version by 1 for update on managed concurrent version prop long
-           * longDataValue = DataConverter.INSTANCE.toLong(property.getType(),
-           * dataValue); longDataValue++; byte[] valueBytes =
-           * HBaseDataConverter.INSTANCE.toBytes(property, longDataValue);
-           * rowWriter.writeRowData(dataObject, sequence, property, valueBytes);
-           * rowWriter.getTableWriter().setHasConcurrentRows(true); break;
-           * default: throw new
-           * GraphServiceException("unsupported concurrent data flavor ("
-           * +concurrent.getDataFlavor()+") for property, " + property +
-           * ", with datatype " + dataType + ""); }
-           */
-
         } else {
           rowWriter.deleteRowData(dataObject, sequence, property);
         }

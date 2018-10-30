@@ -28,7 +28,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.CellUtil;
 import org.apache.hadoop.hbase.client.Mutation;
-import org.apache.hadoop.hbase.client.OperationWithAttributes;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Result;
@@ -45,7 +44,6 @@ import org.plasma.sdo.Increment;
 import org.plasma.sdo.PlasmaDataObject;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.access.provider.common.PropertyPair;
-import org.plasma.sdo.Concurrent;
 import org.plasma.sdo.core.SnapshotMap;
 
 public class GraphMutationWriter {
@@ -78,58 +76,85 @@ public class GraphMutationWriter {
         // attempt commit of all concurrent rows
         // before any others
         List<Row> rows = getConcurrentRows(tableMutations, tableWriter);
-
-        // map list of row mutations to common rows
-        Map<String, List<Row>> tableRowMap = new HashMap<>();
-        for (Row row : rows) {
-          List<Row> rowMutations = tableRowMap.get(Bytes.toString(row.getRow()));
-          if (rowMutations == null) {
-            rowMutations = new ArrayList<>();
-            tableRowMap.put(Bytes.toString(row.getRow()), rowMutations);
-          }
-          rowMutations.add(row);
-        }
-
+        Map<String, List<Row>> tableRowMap = collectRowMutations(rows);
         for (List<Row> rowMutations : tableRowMap.values()) {
-          RowMutations checkedMutations = new RowMutations(null);
-          Mutation commitRow = null;
-          for (Row row : rowMutations) {
-            if (commitRow == null)
-              commitRow = (Mutation) row;
-            if (Put.class.isInstance(row))
-              checkedMutations.add(Put.class.cast(row));
-            else if (Delete.class.isInstance(row))
-              checkedMutations.add(Delete.class.cast(row));
-            else
-              throw new GraphServiceException("unexpected mutation class for concurrent row, "
-                  + row.getClass());
-          }
+          commitConcurrentRow(rowMutations, tableWriter);
+        }  
+        
+        //after every concurrent row succeeds
+        rows = getNonConcurrentRows(tableMutations, tableWriter);
 
-          byte[] checkFamBytes = commitRow
-              .getAttribute(RowWriter.ROW_ATTR_NAME_CONCURRENT_FAM_BYTES);
-          if (checkFamBytes == null)
-            throw new GraphServiceException("expected row attribute, "
-                + RowWriter.ROW_ATTR_NAME_CONCURRENT_FAM_BYTES);
-          byte[] checkQualBytes = commitRow
-              .getAttribute(RowWriter.ROW_ATTR_NAME_CONCURRENT_QUAL_BYTES);
-          if (checkQualBytes == null)
-            throw new GraphServiceException("expected row attribute, "
-                + RowWriter.ROW_ATTR_NAME_CONCURRENT_QUAL_BYTES);
-          byte[] checkValueBytes = commitRow
-              .getAttribute(RowWriter.ROW_ATTR_NAME_CONCURRENT_VALUE_BYTES);
-          if (checkValueBytes == null)
-            throw new GraphServiceException("expected row attribute, "
-                + RowWriter.ROW_ATTR_NAME_CONCURRENT_VALUE_BYTES);
-
-          if (!tableWriter.getTable().checkAndMutate(commitRow.getRow(), checkFamBytes,
-              checkQualBytes, CompareOp.EQUAL, checkValueBytes, checkedMutations))
-            throw new OptimisticConcurrencyException("concurrency failure detected - there were "
-                + "one or more intervening updates for entity");
+        // commit
+        Object[] results = new Object[rows.size()];
+        try {
+          tableWriter.getTable().batch(rows, results);
+        } catch (InterruptedException e) {
+          throw new GraphServiceException(e);
         }
-
+        // read results and map back to client if applicable
+        mapResults(results, tableMutations, snapshotMap, jobName);
+       
       }
 
     }
+  }
+  
+  private void commitConcurrentRow(List<Row> rowMutations, TableWriter tableWriter) throws IOException {
+    Mutation commitRow = (Mutation)rowMutations.get(0); // all should be same row
+    RowMutations checkedMutations  = new RowMutations(commitRow.getRow());;
+    for (Row row : rowMutations) {
+      if (Put.class.isInstance(row))
+        checkedMutations.add(Put.class.cast(row));
+      else if (Delete.class.isInstance(row))
+        checkedMutations.add(Delete.class.cast(row));
+      else
+        throw new GraphServiceException("unexpected mutation class for concurrent row, "
+            + row.getClass());
+      if (log.isDebugEnabled()) {
+        log.debug("commiting concurrent " + row.getClass().getSimpleName() + " mutation to table: "
+            + tableWriter.getTableConfig().getName());
+        debugRowValues(row);
+      }
+    }
+
+    byte[] checkFamBytes = commitRow.getAttribute(
+        RowWriter.ROW_ATTR_NAME_CONCURRENT_FAM_BYTES);
+    if (checkFamBytes == null)
+      throw new GraphServiceException("expected row attribute, "
+          + RowWriter.ROW_ATTR_NAME_CONCURRENT_FAM_BYTES);
+    byte[] checkQualBytes = commitRow.getAttribute(
+        RowWriter.ROW_ATTR_NAME_CONCURRENT_QUAL_BYTES);
+    if (checkQualBytes == null)
+      throw new GraphServiceException("expected row attribute, "
+          + RowWriter.ROW_ATTR_NAME_CONCURRENT_QUAL_BYTES);
+    byte[] checkValueBytes = commitRow.getAttribute(
+        RowWriter.ROW_ATTR_NAME_CONCURRENT_VALUE_BYTES);
+    if (checkValueBytes == null)
+      throw new GraphServiceException("expected row attribute, "
+          + RowWriter.ROW_ATTR_NAME_CONCURRENT_VALUE_BYTES);
+
+    if (!tableWriter.getTable().checkAndMutate(commitRow.getRow(), checkFamBytes,
+        checkQualBytes, CompareOp.EQUAL, checkValueBytes, checkedMutations))
+      throw new OptimisticConcurrencyException("concurrency failure detected - "
+          + "one or more intervening updates have occurred");
+  }
+  
+  /**
+   * Map list of row mutations to common rows
+   * @param rows
+   * @return
+   */
+  private Map<String, List<Row>>  collectRowMutations(List<Row> rows) {
+    Map<String, List<Row>> tableRowMap = new HashMap<>();
+    for (Row row : rows) {
+      List<Row> rowMutations = tableRowMap.get(Bytes.toString(row.getRow()));
+      if (rowMutations == null) {
+        rowMutations = new ArrayList<>();
+        tableRowMap.put(Bytes.toString(row.getRow()), rowMutations);
+      }
+      rowMutations.add(row);
+    }
+    return tableRowMap;
   }
 
   private void mapResults(Object[] results, Map<String, Mutations> tableMutations,
@@ -197,13 +222,20 @@ public class GraphMutationWriter {
           rows.add(row);
         }
       }
-    if (log.isDebugEnabled()) {
-      for (Row row : rows) {
-        log.debug("commiting concurrent " + row.getClass().getSimpleName() + " mutation to table: "
-            + tableWriter.getTableConfig().getName());
-        debugRowValues(row);
+    return rows;
+  }
+  
+  private List<Row> getNonConcurrentRows(Map<String, Mutations> tableMutations, TableWriter tableWriter) {
+    List<Row> rows = new ArrayList<>();
+    for (Mutations rowMutations : tableMutations.values())
+      for (Row row : rowMutations.getRows()) {
+        // FIXME: get rid of cast
+        byte[] concurrent = Mutation.class.cast(row).getAttribute(
+            RowWriter.ROW_ATTR_NAME_IS_CONCURRENT_BOOL);
+        if (concurrent == null || !Bytes.toBoolean(concurrent)) {
+          rows.add(row);
+        }
       }
-    }
     return rows;
   }
 
