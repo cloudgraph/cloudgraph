@@ -170,4 +170,6 @@ public interface Config {
 
   public String maprdbTablePathPrefix();
 
+  public boolean optimisticConcurrency();
+
 }

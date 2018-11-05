@@ -39,6 +39,7 @@ import org.plasma.sdo.PlasmaNode;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
 import org.plasma.sdo.access.RequiredPropertyException;
+import org.plasma.sdo.access.provider.common.PropertyPair;
 import org.plasma.sdo.core.CoreConstants;
 import org.plasma.sdo.core.CoreDataObject;
 import org.plasma.sdo.core.NullValue;
@@ -116,61 +117,59 @@ abstract class DefaultMutation {
     return result;
   }
 
-  protected void setOrigination(PlasmaDataObject dataObject, PlasmaType type) {
-    // FIXME - could be a reference to a user
-    Property originationUserProperty = type.findProperty(ConcurrencyType.origination,
-        ConcurrentDataFlavor.user);
-    if (originationUserProperty != null) {
-      if (!originationUserProperty.isReadOnly())
-        dataObject.set(originationUserProperty, username);
-      else
-        ((CoreDataObject) dataObject).setValue(originationUserProperty.getName(), username); // FIXME:
-      // bypassing
-      // readonly
-      // modification
-      // detection
-    } // else if (log.isDebugEnabled())
-      // log.debug(
-      // "could not find origination (username) property for type, " +
-      // type.getURI() + "#" + type.getName());
+  protected void setupOptimistic(DataGraph dataGraph, PlasmaDataObject dataObject, PlasmaType type,
+      long sequence, RowWriter rowWriter) throws IOException {
+    PlasmaProperty concurrencyUserProperty = (PlasmaProperty) type.findProperty(
+        ConcurrencyType.optimistic, ConcurrentDataFlavor.user);
+    if (concurrencyUserProperty != null) {
+      byte[] bytes = HBaseDataConverter.INSTANCE.toBytes(concurrencyUserProperty, username);
+      rowWriter.writeRowData(dataObject, sequence, concurrencyUserProperty, bytes);
+      this.snapshotMap.put(dataObject.getUUID(),
+          new PropertyPair(concurrencyUserProperty, username));
+    }
 
-    Property originationTimestampProperty = type.findProperty(ConcurrencyType.origination,
-        ConcurrentDataFlavor.time);
-    if (originationTimestampProperty != null) {
+    PlasmaProperty concurrencyTimestampProperty = (PlasmaProperty) type.findProperty(
+        ConcurrencyType.optimistic, ConcurrentDataFlavor.time);
+    if (concurrencyTimestampProperty != null) {
       Date dateSnapshot = new Date(this.snapshotMap.getSnapshotDate().getTime());
-      Object snapshot = DataConverter.INSTANCE.convert(originationTimestampProperty.getType(),
+      Object snapshot = DataConverter.INSTANCE.convert(concurrencyTimestampProperty.getType(),
           dateSnapshot);
-      if (!originationTimestampProperty.isReadOnly())
-        dataObject.set(originationTimestampProperty, snapshot);
-      else
-        ((CoreDataObject) dataObject).setValue(originationTimestampProperty.getName(), snapshot); // FIXME:
-      // bypassing
-      // readonly
-      // modification
-      // detection
-    } // else if (log.isDebugEnabled())
-      // log.debug("could not find origination date property for type, " +
-      // type.getURI() + "#" + type.getName());
+      byte[] bytes = HBaseDataConverter.INSTANCE.toBytes(concurrencyTimestampProperty, snapshot);
+      rowWriter.writeRowData(dataObject, sequence, concurrencyTimestampProperty, bytes);
+      this.snapshotMap.put(dataObject.getUUID(), new PropertyPair(concurrencyTimestampProperty,
+          dateSnapshot));
+    }
+
+    PlasmaProperty concurrencyVersionProperty = (PlasmaProperty) type.findProperty(
+        ConcurrencyType.optimistic, ConcurrentDataFlavor.version);
+    if (concurrencyVersionProperty != null) {
+      long longVersion = 0;
+      if (dataObject.isSet(concurrencyVersionProperty))
+        longVersion = dataObject.getLong(concurrencyVersionProperty);
+      longVersion++;
+      Object version = DataConverter.INSTANCE.convert(concurrencyVersionProperty.getType(),
+          longVersion);
+      byte[] bytes = HBaseDataConverter.INSTANCE.toBytes(concurrencyVersionProperty, version);
+      // write the incremented version into both the row mutation
+      // and the snapshot map, so on concurrency failure, neither of these
+      // will succeed
+      rowWriter.writeRowData(dataObject, sequence, concurrencyVersionProperty, bytes);
+      this.snapshotMap.put(dataObject.getUUID(), new PropertyPair(concurrencyVersionProperty,
+          new Long(longVersion)));
+    }
+
   }
 
-  protected void updateOrigination(PlasmaDataObject dataObject, long sequence, PlasmaType type,
-      RowWriter rowContext) throws IOException {
-    // FIXME - could be a reference to a user
-    Property originationUserProperty = type.findProperty(ConcurrencyType.origination,
-        ConcurrentDataFlavor.user);
+  protected void setupOrigination(DataGraph dataGraph, PlasmaDataObject dataObject,
+      PlasmaType type, long sequence, RowWriter rowWriter) throws IOException {
+    PlasmaProperty originationUserProperty = (PlasmaProperty) type.findProperty(
+        ConcurrencyType.origination, ConcurrentDataFlavor.user);
     if (originationUserProperty != null) {
-      if (!originationUserProperty.isReadOnly())
-        dataObject.set(originationUserProperty, username);
-      else
-        ((CoreDataObject) dataObject).setValue(originationUserProperty.getName(), username); // FIXME:
-      // bypassing
-      // readonly
-      // modification
-      // detection
-    } // else if (log.isDebugEnabled())
-      // log.debug(
-      // "could not find origination (username) property for type, " +
-      // type.getURI() + "#" + type.getName());
+      byte[] bytes = HBaseDataConverter.INSTANCE.toBytes(originationUserProperty, username);
+      rowWriter.writeRowData(dataObject, sequence, originationUserProperty, bytes);
+      this.snapshotMap.put(dataObject.getUUID(),
+          new PropertyPair(originationUserProperty, username));
+    }
 
     PlasmaProperty originationTimestampProperty = (PlasmaProperty) type.findProperty(
         ConcurrencyType.origination, ConcurrentDataFlavor.time);
@@ -179,74 +178,9 @@ abstract class DefaultMutation {
       Object snapshot = DataConverter.INSTANCE.convert(originationTimestampProperty.getType(),
           dateSnapshot);
       byte[] bytes = HBaseDataConverter.INSTANCE.toBytes(originationTimestampProperty, snapshot);
-      rowContext.writeRowData(dataObject, sequence, originationTimestampProperty, bytes);
-    } // else if (log.isDebugEnabled())
-      // log.debug("could not find origination date property for type, " +
-      // type + "#" + type.getName());
-  }
-
-  protected void setOptimistic(PlasmaDataObject dataObject, PlasmaType type, Timestamp snapshotDate) {
-    PlasmaProperty concurrencyUserProperty = (PlasmaProperty) type.findProperty(
-        ConcurrencyType.optimistic, ConcurrentDataFlavor.user);
-    if (concurrencyUserProperty == null) {
-      // if (log.isDebugEnabled())
-      // log.debug("could not find optimistic concurrency (username) property for type, "
-      // + type.getURI() + "#"
-      // + type.getName());
-    } else {
-      if (!concurrencyUserProperty.isReadOnly())
-        dataObject.set(concurrencyUserProperty, username);
-      else
-        ((CoreDataObject) dataObject).setValue(concurrencyUserProperty.getName(), username);
-    }
-
-    PlasmaProperty concurrencyTimestampProperty = (PlasmaProperty) type.findProperty(
-        ConcurrencyType.optimistic, ConcurrentDataFlavor.time);
-    if (concurrencyTimestampProperty == null) {
-      // if (log.isDebugEnabled())
-      // log.debug("could not find optimistic concurrency timestamp property for type, "
-      // + type.getURI() + "#"
-      // + type.getName());
-    } else {
-      Date dateSnapshot = new Date(this.snapshotMap.getSnapshotDate().getTime());
-      Object snapshot = DataConverter.INSTANCE.convert(concurrencyTimestampProperty.getType(),
-          dateSnapshot);
-      if (!concurrencyTimestampProperty.isReadOnly())
-        dataObject.set(concurrencyTimestampProperty, snapshot);
-      else
-        ((CoreDataObject) dataObject).setValue(concurrencyTimestampProperty.getName(), snapshot);
-    }
-  }
-
-  // FIXME: need CG configuration related to enabling and handling concurrency
-  // checks
-  protected void updateOptimistic(PlasmaDataObject dataObject, long sequence, PlasmaType type,
-      RowWriter rowContext) throws IOException {
-    PlasmaProperty concurrencyUserProperty = (PlasmaProperty) type.findProperty(
-        ConcurrencyType.optimistic, ConcurrentDataFlavor.user);
-    if (concurrencyUserProperty == null) {
-      // if (log.isDebugEnabled())
-      // log.debug("could not find optimistic concurrency (username) property for type, "
-      // + type.getURI() + "#"
-      // + type.getName());
-    } else {
-      byte[] bytes = HBaseDataConverter.INSTANCE.toBytes(concurrencyUserProperty, username);
-      rowContext.writeRowData(dataObject, sequence, concurrencyUserProperty, bytes);
-    }
-
-    PlasmaProperty concurrencyTimestampProperty = (PlasmaProperty) type.findProperty(
-        ConcurrencyType.optimistic, ConcurrentDataFlavor.time);
-    if (concurrencyTimestampProperty == null) {
-      // if (log.isDebugEnabled())
-      // log.debug("could not find optimistic concurrency timestamp property for type, "
-      // + type.getURI() + "#"
-      // + type.getName());
-    } else {
-      Date dateSnapshot = new Date(this.snapshotMap.getSnapshotDate().getTime());
-      Object snapshot = DataConverter.INSTANCE.convert(concurrencyTimestampProperty.getType(),
-          dateSnapshot);
-      byte[] bytes = HBaseDataConverter.INSTANCE.toBytes(concurrencyTimestampProperty, snapshot);
-      rowContext.writeRowData(dataObject, sequence, concurrencyTimestampProperty, bytes);
+      rowWriter.writeRowData(dataObject, sequence, originationTimestampProperty, bytes);
+      this.snapshotMap.put(dataObject.getUUID(), new PropertyPair(originationTimestampProperty,
+          dateSnapshot));
     }
   }
 
@@ -256,8 +190,6 @@ abstract class DefaultMutation {
     if (log.isDebugEnabled())
       log.debug("updating " + type.getName() + " '"
           + ((PlasmaDataObject) dataObject).getUUIDAsString() + "'");
-    PlasmaNode dataNode = (PlasmaNode) dataObject;
-
     PlasmaType rootType = (PlasmaType) rowWriter.getRootDataObject().getType();
     DataGraphMapping dataGraphConfig = StoreMapping.getInstance().getDataGraph(
         rootType.getQualifiedName());
@@ -285,68 +217,6 @@ abstract class DefaultMutation {
       // FIXME: what if an entire entity is deleted which is part
       // of the row key. Detect this. Or added for that matter.
     }
-  }
-
-  protected void checkConcurrency(DataGraph dataGraph, PlasmaDataObject dataObject) {
-    PlasmaType type = (PlasmaType) dataObject.getType();
-
-    if (dataGraph.getChangeSummary().isCreated(dataObject)) {
-      this.setOrigination(dataObject, type);
-    } else if (dataGraph.getChangeSummary().isModified(dataObject)) {
-      Timestamp snapshotDate = (Timestamp) ((CoreDataObject) dataObject)
-          .getValue(CoreConstants.PROPERTY_NAME_SNAPSHOT_TIMESTAMP);
-      if (snapshotDate == null)
-        throw new RequiredPropertyException("instance property '"
-            + CoreConstants.PROPERTY_NAME_SNAPSHOT_TIMESTAMP + "' is required to update entity "
-            + dataObject);
-      // FIXME: check optimistic/pessimistic concurrency
-      this.setOptimistic(dataObject, type, snapshotDate);
-    } else if (dataGraph.getChangeSummary().isDeleted(dataObject)) {
-      // FIXME: check optimistic/pessimistic concurrency
-    }
-  }
-
-  // FIXME: need CG configuration related to enabling and handling concurrency
-  // checks
-  protected void checkOptimistic(PlasmaDataObject dataObject, PlasmaType type,
-      Timestamp snapshotDate) {
-    PlasmaProperty concurrencyUserProperty = (PlasmaProperty) type.findProperty(
-        ConcurrencyType.optimistic, ConcurrentDataFlavor.user);
-    if (concurrencyUserProperty == null) {
-      // if (log.isDebugEnabled())
-      // log.debug("could not find optimistic concurrency (username) property for type, "
-      // + type.getURI() + "#"
-      // + type.getName());
-    }
-
-    PlasmaProperty concurrencyTimestampProperty = (PlasmaProperty) type.findProperty(
-        ConcurrencyType.optimistic, ConcurrentDataFlavor.time);
-    if (concurrencyTimestampProperty == null) {
-      // if (log.isDebugEnabled())
-      // log.debug("could not find optimistic concurrency timestamp property for type, "
-      // + type.getURI() + "#"
-      // + type.getName());
-    }
-  }
-
-  // FIXME: need CG configuration related to enabling and handling concurrency
-  // checks
-  protected void checkLock(PlasmaDataObject dataObject, PlasmaType type, Timestamp snapshotDate) {
-    PlasmaProperty lockingUserProperty = (PlasmaProperty) type.findProperty(
-        ConcurrencyType.pessimistic, ConcurrentDataFlavor.user);
-    // if (lockingUserProperty == null)
-    // if (log.isDebugEnabled())
-    // log.debug("could not find locking user property for type, " +
-    // type.getURI() + "#" + type.getName());
-
-    PlasmaProperty lockingTimestampProperty = (PlasmaProperty) type.findProperty(
-        ConcurrencyType.pessimistic, ConcurrentDataFlavor.time);
-    // if (lockingTimestampProperty == null)
-    // if (log.isDebugEnabled())
-    // log.debug(
-    // "could not find locking timestamp property for type, " +
-    // type.getURI() + "#" + type.getName());
-
   }
 
   protected String toString(Map<String, DataObject> map) {

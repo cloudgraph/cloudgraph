@@ -50,7 +50,7 @@ import org.plasma.sdo.profile.ConcurrentDataFlavor;
 import commonj.sdo.ChangeSummary.Setting;
 import commonj.sdo.DataGraph;
 
-public class Update extends DefaultMutation implements Collector {
+public class Update extends DefaultMutation implements Mutation {
   private static Log log = LogFactory.getLog(Update.class);
 
   public Update(ServiceContext context, SnapshotMap snapshotMap, String username) {
@@ -58,12 +58,36 @@ public class Update extends DefaultMutation implements Collector {
   }
 
   @Override
+  public void init(DataGraph dataGraph, PlasmaDataObject dataObject, RowWriter rowWriter)
+      throws IllegalAccessException, IOException {
+    // noop
+  }
+
+  @Override
+  public void validate(DataGraph dataGraph, PlasmaDataObject dataObject, RowWriter rowWriter)
+      throws IllegalAccessException {
+    this.validateModifications(dataGraph, dataObject, rowWriter);
+  }
+
+  @Override
+  public void setup(DataGraph dataGraph, PlasmaDataObject dataObject, RowWriter rowWriter)
+      throws IllegalAccessException, IOException {
+    CoreNode coreNode = (CoreNode) dataObject;
+    PlasmaType type = (PlasmaType) dataObject.getType();
+    Long sequence = (Long) coreNode.getValue(CloudGraphConstants.SEQUENCE);
+    if (sequence == null)
+      throw new RequiredPropertyException("instance property '" + CloudGraphConstants.SEQUENCE
+          + "' is required to update data object, " + dataObject);
+    this.setupOptimistic(dataGraph, dataObject, type, sequence, rowWriter);
+    this.setupOrigination(dataGraph, dataObject, type, sequence, rowWriter);
+  }
+
+  @Override
   public void collect(DataGraph dataGraph, PlasmaDataObject dataObject,
       DistributedWriter graphWriter, TableWriter tableWriter, RowWriter rowWriter)
       throws IllegalAccessException, IOException {
     PlasmaType type = (PlasmaType) dataObject.getType();
-
-    CoreNode dataNode = ((CoreNode) dataObject);
+    CoreNode dataNode = (CoreNode) dataObject;
     // FIXME: get rid of cast - define instance properties in 'base type'
     Timestamp snapshotDate = (Timestamp) dataNode
         .getValue(CoreConstants.PROPERTY_NAME_SNAPSHOT_TIMESTAMP);

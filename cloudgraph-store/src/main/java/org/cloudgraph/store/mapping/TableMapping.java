@@ -177,6 +177,17 @@ public class TableMapping {
     return this.maprdbTablePathPrefixVar;
   }
 
+  private Boolean optimisticConcurrencyVar = null;
+
+  public boolean optimisticConcurrency() {
+    if (optimisticConcurrencyVar == null) {
+      optimisticConcurrencyVar = getTablePropertyBoolean(
+          ConfigurationProperty.CLOUDGRAPH___CONCURRENCY___OPTIMISTIC___ENABLED,
+          this.table.isOptimisticConcurrency(), true);
+    }
+    return this.optimisticConcurrencyVar.booleanValue();
+  }
+
   /**
    * Checks for system property, then value changed at table level, then global
    * config level.

@@ -653,6 +653,18 @@ public class StoreMapping implements Config {
     return this.maprdbTablePathPrefixVar;
   }
 
+  private Boolean optimisticConcurrencyVar = null;
+
+  @Override
+  public boolean optimisticConcurrency() {
+    if (optimisticConcurrencyVar == null) {
+      optimisticConcurrencyVar = getTablePropertyBoolean(
+          ConfigurationProperty.CLOUDGRAPH___CONCURRENCY___OPTIMISTIC___ENABLED,
+          this.config.isOptimisticConcurrency(), true);
+    }
+    return this.optimisticConcurrencyVar.booleanValue();
+  }
+
   /**
    * Checks for system property, then value changed at table level, then global
    * config level.

@@ -112,9 +112,6 @@ public class GraphMutationCollector extends DefaultMutation implements MutationC
       return mutations;
     }
 
-    for (DataObject changed : changeSummary.getChangedDataObjects())
-      this.checkConcurrency(dataGraph, (PlasmaDataObject) changed);
-
     PlasmaDataObject[] created = sortCreated(changeSummary);
 
     ModifiedObjectCollector modified = new ModifiedObjectCollector(dataGraph);
@@ -171,12 +168,6 @@ public class GraphMutationCollector extends DefaultMutation implements MutationC
       return mutations;
     }
 
-    for (DataGraph dataGraph : dataGraphs) {
-      PlasmaChangeSummary changeSummary = (PlasmaChangeSummary) dataGraph.getChangeSummary();
-      for (DataObject changed : changeSummary.getChangedDataObjects())
-        this.checkConcurrency(dataGraph, (PlasmaDataObject) changed);
-    }
-
     List<DistributedWriter> graphWriters = new ArrayList<DistributedWriter>();
     for (DataGraph dataGraph : dataGraphs) {
       PlasmaChangeSummary changeSummary = (PlasmaChangeSummary) dataGraph.getChangeSummary();
@@ -224,14 +215,9 @@ public class GraphMutationCollector extends DefaultMutation implements MutationC
     for (PlasmaDataObject dataObject : modified.getResult()) {
       RowWriter rowWriter = graphWriter.getRowWriter(dataObject);
       TableWriter tableWriter = rowWriter.getTableWriter();
-      if (log.isDebugEnabled())
-        log.debug("validating modifications: " + dataObject.getType().getURI() + "#"
-            + dataObject.getType().getName());
-      this.validateModifications(dataGraph, dataObject, rowWriter);
-
-      if (log.isDebugEnabled())
-        log.debug("modifying: " + dataObject.getType().getURI() + "#"
-            + dataObject.getType().getName());
+      this.update.init(dataGraph, dataObject, rowWriter);
+      this.update.validate(dataGraph, dataObject, rowWriter);
+      this.update.setup(dataGraph, dataObject, rowWriter);
       this.update.collect(dataGraph, dataObject, graphWriter, tableWriter, rowWriter);
     }
   }
@@ -242,10 +228,9 @@ public class GraphMutationCollector extends DefaultMutation implements MutationC
 
       RowWriter rowWriter = graphWriter.getRowWriter(dataObject);
       TableWriter tableWriter = rowWriter.getTableWriter();
-      if (log.isDebugEnabled())
-        log.debug("deleting: " + dataObject.getType().getURI() + "#"
-            + dataObject.getType().getName());
-
+      this.delete.init(dataGraph, dataObject, rowWriter);
+      this.delete.validate(dataGraph, dataObject, rowWriter);
+      this.delete.setup(dataGraph, dataObject, rowWriter);
       this.delete.collect(dataGraph, dataObject, graphWriter, tableWriter, rowWriter);
       // rowWriter.getGraphState().removeSequence(dataObject);
     }
@@ -257,9 +242,9 @@ public class GraphMutationCollector extends DefaultMutation implements MutationC
     for (PlasmaDataObject dataObject : created) {
       RowWriter rowWriter = graphWriter.getRowWriter(dataObject);
       TableWriter tableWriter = rowWriter.getTableWriter();
-      if (log.isDebugEnabled())
-        log.debug("creating: " + dataObject.getType().getURI() + "#"
-            + dataObject.getType().getName());
+      this.create.init(dataGraph, dataObject, rowWriter);
+      this.create.validate(dataGraph, dataObject, rowWriter);
+      this.create.setup(dataGraph, dataObject, rowWriter);
       this.create.collect(dataGraph, dataObject, graphWriter, tableWriter, rowWriter);
     }
   }

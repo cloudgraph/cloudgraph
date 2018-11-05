@@ -40,7 +40,7 @@ import org.plasma.sdo.profile.ConcurrentDataFlavor;
 import commonj.sdo.DataGraph;
 import commonj.sdo.Property;
 
-public class Delete extends DefaultMutation implements Collector {
+public class Delete extends DefaultMutation implements Mutation {
   private static Log log = LogFactory.getLog(Delete.class);
 
   public Delete(ServiceContext context, SnapshotMap snapshotMap, String username) {
@@ -48,9 +48,33 @@ public class Delete extends DefaultMutation implements Collector {
   }
 
   @Override
+  public void init(DataGraph dataGraph, PlasmaDataObject dataObject, RowWriter rowWriter)
+      throws IllegalAccessException, IOException {
+    // noop
+  }
+
+  @Override
+  public void validate(DataGraph dataGraph, PlasmaDataObject dataObject, RowWriter rowWriter)
+      throws IllegalAccessException {
+  }
+
+  @Override
+  public void setup(DataGraph dataGraph, PlasmaDataObject dataObject, RowWriter rowWriter)
+      throws IllegalAccessException, IOException {
+    CoreNode coreNode = (CoreNode) dataObject;
+    PlasmaType type = (PlasmaType) dataObject.getType();
+    Long sequence = (Long) coreNode.getValue(CloudGraphConstants.SEQUENCE);
+    if (sequence == null)
+      throw new RequiredPropertyException("instance property '" + CloudGraphConstants.SEQUENCE
+          + "' is required to update data object, " + dataObject);
+    this.setupOptimistic(dataGraph, dataObject, type, sequence, rowWriter);
+    this.setupOrigination(dataGraph, dataObject, type, sequence, rowWriter);
+  }
+
+  @Override
   public void collect(DataGraph dataGraph, PlasmaDataObject dataObject,
-      DistributedWriter graphWriter, TableWriter context, RowWriter rowWriter) throws IOException,
-      IllegalAccessException {
+      DistributedWriter graphWriter, TableWriter tableWriter, RowWriter rowWriter)
+      throws IOException, IllegalAccessException {
     PlasmaType type = (PlasmaType) dataObject.getType();
 
     CoreNode coreNode = ((CoreNode) dataObject);
@@ -70,9 +94,6 @@ public class Delete extends DefaultMutation implements Collector {
           + "' is required to delete data object, " + dataObject);
     if (log.isDebugEnabled())
       log.debug(dataObject + " (seq: " + sequence + ")");
-
-    this.checkLock(dataObject, type, snapshotDate);
-    this.checkOptimistic(dataObject, type, snapshotDate);
 
     PlasmaProperty concurrencyUserProperty = (PlasmaProperty) type.findProperty(
         ConcurrencyType.optimistic, ConcurrentDataFlavor.user);
@@ -95,7 +116,7 @@ public class Delete extends DefaultMutation implements Collector {
     // the given data object is part of the row, just return.
     // No need to delete its individual properties, as the row is going away
     // anyway.
-    if (!context.getTableConfig().tombstoneRows()) {
+    if (!tableWriter.getTableConfig().tombstoneRows()) {
       if (rowWriter.isRootDeleted()) {
         if (rowWriter.getRootDataObject().equals(dataObject)) {
           rowWriter.deleteRow();

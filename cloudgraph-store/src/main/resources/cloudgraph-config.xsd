@@ -39,6 +39,12 @@ Top level configuration settings
                     <xsd:documentation>The path to prepend to all MAPRD-DB (M7) table names for tables found within a configuration. Used for only MAPR-DB (M7) tables. To fully qualify Apache HBase tables, use table namespaces.</xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
+                <xsd:attribute name="optimisticConcurrency" type="xsd:boolean" use="optional" default="false">
+                    <xsd:annotation>
+                    <xsd:documentation>Whether optimistic concurrency processing is enabled. This setting effects all entities
+                    with types that contain concurrent properties of type optimistic</xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute> 
             </xsd:extension>
         </xsd:complexContent>
          
@@ -106,6 +112,12 @@ Configuration settings for a table.
                     <xsd:documentation>The path to prepend to all MAPRD-DB (M7) table names for tables found within a configuration. Used for only MAPR-DB (M7) tables. To fully qualify Apache HBase tables, use table namespaces.</xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
+                <xsd:attribute name="optimisticConcurrency" type="xsd:boolean" use="optional" default="false">
+                    <xsd:annotation>
+                    <xsd:documentation>Whether optimistic concurrency processing is enabled. This setting effects all entities
+                    with types that contain concurrent properties of type optimistic</xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute> 
                
             </xsd:extension>
         </xsd:complexContent>
@@ -632,6 +644,17 @@ column field may be specified.
                     &lt;li&gt;Name: cloudgraph.threadpool.size.max&lt;/li&gt;
                     &lt;li&gt;Data Type: int&lt;/li&gt;
                     &lt;li&gt;Default: 20&lt;/li&gt;
+                    </xsd:documentation> 
+                </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="cloudgraph.concurrency.optimistic.enabled">
+               <xsd:annotation>
+                    <xsd:documentation>Whether optimistic concurrency processing is enabled. This setting effects all entities
+                    with types that contain concurrent properties of type optimistic.   
+                    &lt;li&gt;Name: cloudgraph.concurrency.optimistic.enabled&lt;/li&gt;
+                    &lt;li&gt;Data Type: boolean&lt;/li&gt;
+                    &lt;li&gt;Expected Values: true,false&lt;/li&gt;
+                    &lt;li&gt;Default: false&lt;/li&gt;
                     </xsd:documentation> 
                 </xsd:annotation>
             </xsd:enumeration>
