@@ -26,6 +26,7 @@ import org.plasma.query.model.Literal;
 import org.plasma.query.model.PredicateOperator;
 import org.plasma.query.model.Property;
 import org.plasma.sdo.PlasmaType;
+import org.plasma.sdo.core.NullValue;
 
 /**
  * An {@link PredicateBinaryExpr} implementation which uses a specific
@@ -48,6 +49,7 @@ public class ExternalEdgeRecognizerWildcardBinaryExpr extends DefaultPredicateBi
   private static Log log = LogFactory.getLog(ExternalEdgeRecognizerWildcardBinaryExpr.class);
   protected Endpoint endpoint;
   protected GraphRecognizerSupport recognizer = new GraphRecognizerSupport();
+  private static NullValue NULL_OBJECT = new NullValue();
 
   /**
    * Constructs an expression based on the given terms and column qualifier
@@ -95,22 +97,23 @@ public class ExternalEdgeRecognizerWildcardBinaryExpr extends DefaultPredicateBi
       this.endpoint = this.recognizer.getEndpoint(this.property, (PlasmaType) ctx.getContextType());
 
     Object rowKeyFieldValue = ctx.getValue(this.endpoint);
-    if (rowKeyFieldValue != null)
-      if (this.recognizer.evaluate(this.endpoint, rowKeyFieldValue, this.operator.getValue(),
-          this.literal.getValue())) {
-        if (log.isDebugEnabled())
-          log.debug(this.toString() + " evaluate true: " + String.valueOf(rowKeyFieldValue));
-        return true;
-      } else {
-        if (log.isDebugEnabled())
-          log.debug(this.toString() + " evaluate false: " + String.valueOf(rowKeyFieldValue));
-        return false;
-      }
-    // for external edges, we return true when the
-    // row field is not found but indicate
-    // the row evaluation was not complete.
-    ctx.setRowEvaluatedCompletely(false);
-    return true;
+    if (rowKeyFieldValue == null) {
+      // for external edges, we return true when the
+      // row field is not found but indicate
+      // the row evaluation was not complete.
+      ctx.setRowEvaluatedCompletely(false);
+      rowKeyFieldValue = NULL_OBJECT;
+    }
+    if (this.recognizer.evaluate(this.endpoint, rowKeyFieldValue, this.operator.getValue(),
+        this.literal)) {
+      if (log.isDebugEnabled())
+        log.debug(this.toString() + " evaluate true: " + String.valueOf(rowKeyFieldValue));
+      return true;
+    } else {
+      if (log.isDebugEnabled())
+        log.debug(this.toString() + " evaluate false: " + String.valueOf(rowKeyFieldValue));
+      return false;
+    }
   }
 
 }

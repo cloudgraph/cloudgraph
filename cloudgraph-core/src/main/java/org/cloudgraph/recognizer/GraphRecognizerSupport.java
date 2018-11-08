@@ -27,6 +27,8 @@ import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.query.model.AbstractPathElement;
 import org.plasma.query.model.Function;
 import org.plasma.query.model.FunctionName;
+import org.plasma.query.model.Literal;
+import org.plasma.query.model.NullLiteral;
 import org.plasma.query.model.Path;
 import org.plasma.query.model.PathElement;
 import org.plasma.query.model.PredicateOperatorName;
@@ -37,6 +39,7 @@ import org.plasma.sdo.DataType;
 import org.plasma.sdo.PlasmaDataObject;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
+import org.plasma.sdo.core.NullValue;
 import org.plasma.sdo.helper.DataConverter;
 
 import commonj.sdo.DataObject;
@@ -57,6 +60,7 @@ public class GraphRecognizerSupport {
   private DataConverter dataConverter = DataConverter.INSTANCE;
   /** cached wildcard pattern */
   private Pattern wildcardLiteralPattern;
+  private static NullValue NULL_OBJECT = new NullValue();
 
   /**
    * Collects and returns data values at the endpoint of the given path,
@@ -99,18 +103,20 @@ public class GraphRecognizerSupport {
       if (!endpointProp.getType().isDataType())
         throw new GraphServiceException("expected datatype property for, " + endpointProp);
       if (property.getFunctions().size() == 0) {
-        if (targetObject.isSet(endpointProp)) {
-          if (endpointProp.isMany()) {
+           if (endpointProp.isMany()) {
             @SuppressWarnings("unchecked")
             List<Object> list = targetObject.getList(endpointProp);
+            if (list != null)
             for (Object value : list)
               values.add(value);
           } else {
             Object value = targetObject.get(endpointProp);
-            values.add(value);
+            if (value != null)
+                values.add(value);
+              else
+            	  values.add(NULL_OBJECT);
           }
-        }
-      } else {
+       } else {
         if (property.getFunctions().size() > 1)
           log.warn("ignoring all but first scalar function of total "
               + property.getFunctions().size());
@@ -122,6 +128,8 @@ public class GraphRecognizerSupport {
           Object value = target.get(func.getName(), endpointProp);
           if (value != null)
             values.add(value);
+          else
+        	  values.add(NULL_OBJECT);
         }
 
       }
@@ -158,7 +166,9 @@ public class GraphRecognizerSupport {
    *         literal and relational operator
    */
   public boolean evaluate(Endpoint endpoint, Object propertyValue, RelationalOperatorName operator,
-      String literal) {
+      Literal literal) {
+	  if (propertyValue == null)
+		  throw new IllegalArgumentException("expected non-null value");
     DataType dataType = DataType.valueOf(endpoint.getProperty().getType().getName());
     boolean result = true;
 
@@ -166,47 +176,82 @@ public class GraphRecognizerSupport {
     case integral:
     case real:
       if (Number.class.isAssignableFrom(propertyValue.getClass())) {
+    	if (!literal.isNullLiteral()) {  
         Number propertyNumberValue = (Number) propertyValue;
         Number literalNumberValue = null;
         if (!endpoint.hasFunctions()) {
           literalNumberValue = (Number) this.dataConverter.convert(
-              endpoint.getProperty().getType(), literal);
+              endpoint.getProperty().getType(), literal.getValue());
         } else {
           Function func = endpoint.getSingleFunction();
           FunctionName funcName = func.getName();
           DataType scalarDataType = funcName.getScalarDatatype(dataType);
-          literalNumberValue = (Number) this.dataConverter.fromString(scalarDataType, literal);
+          literalNumberValue = (Number) this.dataConverter.fromString(scalarDataType, literal.getValue());
         }
         result = evaluate(propertyNumberValue, operator, literalNumberValue);
+    	}
+        else {
+        	result = evaluate(propertyValue, operator, NullLiteral.class.cast(literal));
+        }
       } else if (Boolean.class.isAssignableFrom(propertyValue.getClass())) {
+    	  if (!literal.isNullLiteral()) {  
         Boolean propertyBooleanValue = (Boolean) propertyValue;
         Boolean literalBooleanValue = (Boolean) this.dataConverter.convert(endpoint.getProperty()
-            .getType(), literal);
+            .getType(), literal.getValue());
         result = evaluate(propertyBooleanValue, operator, literalBooleanValue);
+    	  }
+    	  else {
+    		  result = evaluate(propertyValue, operator, NullLiteral.class.cast(literal));
+    	  }
       } else
         throw new GraphServiceException("unexpected instanceof "
             + propertyValue.getClass().getName() + " for property, " + endpoint.getProperty()
             + " with data flavor " + endpoint.getProperty().getDataFlavor());
       break;
     case string:
+    	if (!literal.isNullLiteral()) {
+    		if (!NullValue.class.isInstance(propertyValue)) {
       String propertyStringValue = (String) propertyValue;
       String literalStringValue = (String) this.dataConverter.convert(endpoint.getProperty()
-          .getType(), literal);
+          .getType(), literal.getValue());
       result = evaluate(propertyStringValue, operator, literalStringValue);
+    		}
+    		else {
+    			result = false;
+    		}
+    	}
+    	else {
+    		result = evaluate(propertyValue, operator, NullLiteral.class.cast(literal));
+    	}
       break;
     case temporal:
       switch (dataType) {
       case Date:
+      	if (!literal.isNullLiteral()) {
+    		if (!NullValue.class.isInstance(propertyValue)) {
         Date propertyDateValue = (Date) propertyValue;
         Date literalDateValue = (Date) this.dataConverter.convert(endpoint.getProperty().getType(),
-            literal);
+            literal.getValue());
         result = evaluate(propertyDateValue, operator, literalDateValue);
+    		}
+    		else {
+    			result = false;
+    		}
+    	}
+    	else {
+    		result = evaluate(propertyValue, operator, NullLiteral.class.cast(literal));
+    	}
         break;
       default:
-        propertyStringValue = (String) propertyValue;
-        literalStringValue = (String) this.dataConverter.convert(endpoint.getProperty().getType(),
-            literal);
+        	if (!literal.isNullLiteral()) {
+        String propertyStringValue = (String) propertyValue;
+        String literalStringValue = (String) this.dataConverter.convert(endpoint.getProperty().getType(),
+            literal.getValue());
         result = evaluate(propertyStringValue, operator, literalStringValue);
+        	}
+        	else {
+        		result = evaluate(propertyValue, operator, NullLiteral.class.cast(literal));
+        	}
         break;
       }
       break;
@@ -233,20 +278,27 @@ public class GraphRecognizerSupport {
    *         literal and wildcard operator
    */
   public boolean evaluate(Endpoint endpoint, Object propertyValue, PredicateOperatorName operator,
-      String literal) {
+      Literal literal) {
+	  if (propertyValue == null)
+		  throw new IllegalArgumentException("expected non-null value");
     boolean result = true;
 
     switch (operator) {
     case LIKE:
       switch (endpoint.getProperty().getDataFlavor()) {
       case string:
+  		if (!NullValue.class.isInstance(propertyValue)) {
         String propertyStringValue = (String) propertyValue;
         // as trailing newlines confuse regexp greatly
         propertyStringValue = propertyStringValue.trim();
         String literalStringValue = (String) this.dataConverter.convert(endpoint.getProperty()
-            .getType(), literal);
+            .getType(), literal.getValue());
         result = evaluate(propertyStringValue, operator, literalStringValue);
-        break;
+  		}
+		else {
+			result = false;
+		}
+       break;
       case integral:
       case real:
       case temporal:
@@ -256,10 +308,11 @@ public class GraphRecognizerSupport {
       }
       break;
     case IN:
+  		if (!NullValue.class.isInstance(propertyValue)) {
       // evals true if property value equals any or given literals
       String[] literals = null;
       if (literal != null)
-        literals = literal.split(" ");
+        literals = literal.getValue().split(" ");
       boolean anySuccess = false;
       for (String lit : literals) {
         if (evaluate(endpoint.getProperty(), propertyValue, lit)) {
@@ -268,9 +321,13 @@ public class GraphRecognizerSupport {
         }
       }
       result = anySuccess;
+  		}
+		else {
+			result = false;
+		}
       break;
     default:
-      throw new GraphServiceException("operator '+operator+' not supported for context");
+      throw new GraphServiceException("operator '"+operator+"' not supported for context");
     }
     return result;
   }
@@ -294,7 +351,7 @@ public class GraphRecognizerSupport {
     case other:
     default:
       throw new GraphServiceException(
-          "data flavor '+property.getDataFlavor()+' not supported for context");
+          "data flavor '"+property.getDataFlavor()+"' not supported for context");
     }
     return result;
   }
@@ -324,15 +381,18 @@ public class GraphRecognizerSupport {
 
   private boolean evaluate(String propertyValue, RelationalOperatorName operator,
       String literalValue) {
-    try {
       int comp = propertyValue.compareTo(literalValue);
       return evaluate(operator, comp);
-    } catch (NullPointerException e) {
-      throw e;
-    }
   }
 
-  private boolean evaluate(String propertyValue, PredicateOperatorName operator, String literalValue) {
+  private boolean evaluate(Object propertyValue, RelationalOperatorName operator,
+	      NullLiteral literalValue) {
+  	if (NullValue.class.isInstance(propertyValue))
+		return true;
+	else
+		return false;
+	  }
+ private boolean evaluate(String propertyValue, PredicateOperatorName operator, String literalValue) {
     if (this.wildcardLiteralPattern == null) {
       String pattern = wildcardToRegex(literalValue);
       this.wildcardLiteralPattern = Pattern.compile(pattern);

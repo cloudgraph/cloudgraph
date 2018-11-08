@@ -67,8 +67,11 @@ public class Delete extends DefaultMutation implements Mutation {
     if (sequence == null)
       throw new RequiredPropertyException("instance property '" + CloudGraphConstants.SEQUENCE
           + "' is required to update data object, " + dataObject);
-    this.setupOptimistic(dataGraph, dataObject, type, sequence, rowWriter);
-    this.setupOrigination(dataGraph, dataObject, type, sequence, rowWriter);
+    //unless we're deleting entire row
+    if (!rowWriter.isRootDeleted()) {
+      this.setupOptimistic(dataGraph, dataObject, type, sequence, rowWriter);
+      this.setupOrigination(dataGraph, dataObject, type, sequence, rowWriter);
+    }
   }
 
   @Override
@@ -94,22 +97,6 @@ public class Delete extends DefaultMutation implements Mutation {
           + "' is required to delete data object, " + dataObject);
     if (log.isDebugEnabled())
       log.debug(dataObject + " (seq: " + sequence + ")");
-
-    PlasmaProperty concurrencyUserProperty = (PlasmaProperty) type.findProperty(
-        ConcurrencyType.optimistic, ConcurrentDataFlavor.user);
-    if (concurrencyUserProperty == null) {
-      if (log.isDebugEnabled())
-        log.debug("could not find optimistic concurrency (username) property for type, "
-            + type.getURI() + "#" + type.getName());
-    }
-
-    PlasmaProperty concurrencyTimestampProperty = (PlasmaProperty) type.findProperty(
-        ConcurrencyType.optimistic, ConcurrentDataFlavor.time);
-    if (concurrencyTimestampProperty == null) {
-      if (log.isDebugEnabled())
-        log.debug("could not find optimistic concurrency timestamp property for type, "
-            + type.getURI() + "#" + type.getName());
-    }
 
     // If no tombstones, and if the root of the row is deleted if this
     // object is the root, delete it, else if

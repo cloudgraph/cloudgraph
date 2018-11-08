@@ -95,7 +95,7 @@ public class GraphRecognizerPredicateBinaryExpr extends DefaultPredicateBinaryEx
         values);
     for (Object value : values) {
       if (this.recognizer.evaluate(this.endpoint, value, this.operator.getValue(),
-          this.literal.getValue())) {
+          this.literal)) {
         if (log.isDebugEnabled())
           log.debug(this.toString() + " evaluate true: " + String.valueOf(value));
         return true;
