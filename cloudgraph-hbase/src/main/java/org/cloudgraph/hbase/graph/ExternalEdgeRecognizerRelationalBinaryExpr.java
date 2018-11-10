@@ -104,17 +104,17 @@ public class ExternalEdgeRecognizerRelationalBinaryExpr extends DefaultRelationa
       ctx.setRowEvaluatedCompletely(false);
       rowKeyFieldValue = NULL_OBJECT;
     }
-    
-      if (this.recognizer.evaluate(this.endpoint, rowKeyFieldValue, this.operator.getValue(),
-          this.literal)) {
-        if (log.isDebugEnabled())
-          log.debug(this.toString() + " evaluate true: " + String.valueOf(rowKeyFieldValue));
-        return true;
-      } else {
-        if (log.isDebugEnabled())
-          log.debug(this.toString() + " evaluate false: " + String.valueOf(rowKeyFieldValue));
-        return false;
-      }
+
+    if (this.recognizer.evaluate(this.endpoint, rowKeyFieldValue, this.operator.getValue(),
+        this.literal)) {
+      if (log.isDebugEnabled())
+        log.debug(this.toString() + " evaluate true: " + String.valueOf(rowKeyFieldValue));
+      return true;
+    } else {
+      if (log.isDebugEnabled())
+        log.debug(this.toString() + " evaluate false: " + String.valueOf(rowKeyFieldValue));
+      return false;
+    }
   }
 
 }

@@ -67,7 +67,7 @@ public class Delete extends DefaultMutation implements Mutation {
     if (sequence == null)
       throw new RequiredPropertyException("instance property '" + CloudGraphConstants.SEQUENCE
           + "' is required to update data object, " + dataObject);
-    //unless we're deleting entire row
+    // unless we're deleting entire row
     if (!rowWriter.isRootDeleted()) {
       this.setupOptimistic(dataGraph, dataObject, type, sequence, rowWriter);
       this.setupOrigination(dataGraph, dataObject, type, sequence, rowWriter);
