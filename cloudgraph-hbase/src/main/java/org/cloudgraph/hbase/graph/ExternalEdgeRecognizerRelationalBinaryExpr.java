@@ -96,6 +96,7 @@ public class ExternalEdgeRecognizerRelationalBinaryExpr extends DefaultRelationa
     if (this.endpoint == null)
       this.endpoint = this.recognizer.getEndpoint(this.property, (PlasmaType) ctx.getContextType());
 
+    ctx.setRowEvaluatedCompletely(true);
     Object rowKeyFieldValue = ctx.getValue(this.endpoint);
     if (rowKeyFieldValue == null) {
       // for external edges, we return true when the
@@ -111,9 +112,16 @@ public class ExternalEdgeRecognizerRelationalBinaryExpr extends DefaultRelationa
         log.debug(this.toString() + " evaluate true: " + String.valueOf(rowKeyFieldValue));
       return true;
     } else {
+      if (ctx.isRowEvaluatedCompletely()) {
       if (log.isDebugEnabled())
         log.debug(this.toString() + " evaluate false: " + String.valueOf(rowKeyFieldValue));
       return false;
+      }
+      else {
+        if (log.isDebugEnabled())
+          log.debug(this.toString() + " evaluate true (permit further downstream eval): " + String.valueOf(rowKeyFieldValue));
+        return true;
+      }
     }
   }
 
