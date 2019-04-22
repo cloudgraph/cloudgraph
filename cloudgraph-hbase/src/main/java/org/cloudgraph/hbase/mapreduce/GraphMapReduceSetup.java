@@ -77,10 +77,12 @@ import org.cloudgraph.hbase.util.FilterUtil;
 import org.cloudgraph.job.JobSetup;
 import org.cloudgraph.query.expr.Expr;
 import org.cloudgraph.query.expr.ExprPrinter;
-import org.cloudgraph.store.mapping.Config;
+import org.cloudgraph.store.mapping.ConfigurationProperty;
+import org.cloudgraph.store.mapping.MappingConfiguration;
 import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.common.bind.DefaultValidationEventHandler;
 import org.plasma.query.From;
@@ -92,6 +94,7 @@ import org.plasma.sdo.PlasmaType;
 import org.xml.sax.SAXException;
 
 import com.google.protobuf.InvalidProtocolBufferException;
+
 import commonj.sdo.Type;
 
 /**
@@ -159,6 +162,17 @@ public class GraphMapReduceSetup extends JobSetup {
     job.setMapperClass(mapper);
     Configuration conf = job.getConfiguration();
     HBaseConfiguration.merge(conf, HBaseConfiguration.create(conf));
+    StoreMappingContext mappingContext = new StoreMappingContext();
+    String rootPath = conf.get(ConfigurationProperty.CLOUDGRAPH___MAPRDB___TABLE___PATH___PREFIX
+        .value());
+    if (rootPath != null)
+      mappingContext.setProperty(
+          ConfigurationProperty.CLOUDGRAPH___MAPRDB___TABLE___PATH___PREFIX.value(), rootPath);
+    String volume = conf.get(ConfigurationProperty.CLOUDGRAPH___MAPRDB___VOLUME___PATH___PREFIX
+        .value());
+    if (volume != null)
+      mappingContext.setProperty(
+          ConfigurationProperty.CLOUDGRAPH___MAPRDB___VOLUME___PATH___PREFIX.value(), volume);
 
     PlasmaType type = getRootType(query);
 
@@ -171,18 +185,18 @@ public class GraphMapReduceSetup extends JobSetup {
     selectionCollector.setOnlyDeclaredProperties(false);
     // FIXME: generalize collectRowKeyProperties
     for (Type t : selectionCollector.getTypes())
-      collectRowKeyProperties(selectionCollector, (PlasmaType) t);
+      collectRowKeyProperties(selectionCollector, (PlasmaType) t, mappingContext);
 
     // FIXME: just need the root table reader - remove
     DistributedGraphReader graphReader = new DistributedGraphReader(type,
-        selectionCollector.getTypes(), null);
+        selectionCollector.getTypes(), null, mappingContext);
 
     HBaseFilterAssembler columnFilterAssembler = new GraphFetchColumnFilterAssembler(
-        selectionCollector, type);
+        selectionCollector, type, mappingContext);
     Filter columnFilter = columnFilterAssembler.getFilter();
 
     From from = query.getModel().getFromClause();
-    List<Scan> scans = createScans(from, where, type, columnFilter, conf);
+    List<Scan> scans = createScans(from, where, type, columnFilter, conf, mappingContext);
 
     conf.set(GraphInputFormat.QUERY, marshal(query));
     conf.set(GraphInputFormat.ROOT_TABLE, graphReader.getRootTableReader().getTableName());
@@ -203,25 +217,26 @@ public class GraphMapReduceSetup extends JobSetup {
   }
 
   private static List<Scan> createScans(From from, Where where, PlasmaType type,
-      Filter columnFilter, Configuration conf) throws IOException {
+      Filter columnFilter, Configuration conf, StoreMappingContext mappingContext)
+      throws IOException {
 
     List<Scan> result = new ArrayList<Scan>();
     if (where == null) {
       conf.setBoolean(GraphInputFormat.RECOGNIZER, false);
-      Scan scan = createDefaultScan(from, type, columnFilter);
+      Scan scan = createDefaultScan(from, type, columnFilter, mappingContext);
       result.add(scan);
       return result;
     }
 
     ScanRecognizerSyntaxTreeAssembler recognizerAssembler = new ScanRecognizerSyntaxTreeAssembler(
-        where, type);
+        where, type, mappingContext);
     Expr scanRecognizerRootExpr = recognizerAssembler.getResult();
     if (LOG.isDebugEnabled()) {
       ExprPrinter printer = new ExprPrinter();
       scanRecognizerRootExpr.accept(printer);
       LOG.debug("Scan Recognizer: " + printer.toString());
     }
-    ScanCollector scanCollector = new ScanCollector(type);
+    ScanCollector scanCollector = new ScanCollector(type, mappingContext);
     scanRecognizerRootExpr.accept(scanCollector);
     List<PartialRowKey> partialScans = scanCollector.getPartialRowKeyScans();
     List<FuzzyRowKey> fuzzyScans = scanCollector.getFuzzyRowKeyScans();
@@ -247,17 +262,18 @@ public class GraphMapReduceSetup extends JobSetup {
     }
 
     if (result.size() == 0) {
-      Scan scan = createDefaultScan(from, type, columnFilter);
+      Scan scan = createDefaultScan(from, type, columnFilter, mappingContext);
       result.add(scan);
     }
 
     return result;
   }
 
-  private static Scan createDefaultScan(From from, PlasmaType type, Filter columnFilter) {
+  private static Scan createDefaultScan(From from, PlasmaType type, Filter columnFilter,
+      StoreMappingContext mappingContext) {
     Scan scan;
 
-    PartialRowKeyScanAssembler scanAssembler = new PartialRowKeyScanAssembler(type);
+    PartialRowKeyScanAssembler scanAssembler = new PartialRowKeyScanAssembler(type, mappingContext);
     scanAssembler.assemble();
     byte[] startKey = scanAssembler.getStartKey();
     if (startKey != null && startKey.length > 0) {
@@ -403,8 +419,8 @@ public class GraphMapReduceSetup extends JobSetup {
    *           When determining the region count fails.
    */
   public static void setupGraphReducerJob(Query query, Class<? extends GraphReducer> reducer,
-      Job job) throws IOException {
-    setupGraphReducerJob(query, reducer, job, null);
+      Job job, StoreMappingContext mappingContext) throws IOException {
+    setupGraphReducerJob(query, reducer, job, null, mappingContext);
   }
 
   /**
@@ -424,8 +440,8 @@ public class GraphMapReduceSetup extends JobSetup {
    *           When determining the region count fails.
    */
   public static void setupGraphReducerJob(Query query, Class<? extends GraphReducer> reducer,
-      Job job, Class partitioner) throws IOException {
-    setupGraphReducerJob(query, reducer, job, partitioner, null, null, null);
+      Job job, Class partitioner, StoreMappingContext mappingContext) throws IOException {
+    setupGraphReducerJob(query, reducer, job, partitioner, null, null, null, mappingContext);
   }
 
   /**
@@ -461,10 +477,10 @@ public class GraphMapReduceSetup extends JobSetup {
    *           When determining the region count fails.
    */
   public static void setupGraphReducerJob(Query query, Class<? extends GraphReducer> reducer,
-      Job job, Class partitioner, String quorumAddress, String serverClass, String serverImpl)
-      throws IOException {
+      Job job, Class partitioner, String quorumAddress, String serverClass, String serverImpl,
+      StoreMappingContext mappingContext) throws IOException {
     setupGraphReducerJob(query, reducer, job, partitioner, quorumAddress, serverClass, serverImpl,
-        true);
+        true, mappingContext);
   }
 
   /**
@@ -504,7 +520,7 @@ public class GraphMapReduceSetup extends JobSetup {
    */
   public static void setupGraphReducerJob(Query query, Class<? extends GraphReducer> reducer,
       Job job, Class partitioner, String quorumAddress, String serverClass, String serverImpl,
-      boolean addDependencyJars) throws IOException {
+      boolean addDependencyJars, StoreMappingContext mappingContext) throws IOException {
 
     Configuration conf = job.getConfiguration();
     HBaseConfiguration.merge(conf, HBaseConfiguration.create(conf));
@@ -520,7 +536,7 @@ public class GraphMapReduceSetup extends JobSetup {
     selectionCollector.setOnlyDeclaredProperties(false);
     // FIXME: generalize collectRowKeyProperties
     for (Type t : selectionCollector.getTypes())
-      collectRowKeyProperties(selectionCollector, (PlasmaType) t);
+      collectRowKeyProperties(selectionCollector, (PlasmaType) t, mappingContext);
 
     // DistributedGraphReader graphReader = new DistributedGraphReader(type,
     // selectionCollector.getTypes(), marshallingContext);
@@ -831,9 +847,10 @@ public class GraphMapReduceSetup extends JobSetup {
     return scan;
   }
 
-  private static void collectRowKeyProperties(SelectionCollector collector, PlasmaType type) {
-    Config config = StoreMapping.getInstance();
-    DataGraphMapping graph = config.findDataGraph(type.getQualifiedName());
+  private static void collectRowKeyProperties(SelectionCollector collector, PlasmaType type,
+      StoreMappingContext mappingContext) {
+    MappingConfiguration config = StoreMapping.getInstance();
+    DataGraphMapping graph = config.findDataGraph(type.getQualifiedName(), mappingContext);
     if (graph != null) {
       DataRowKeyFieldMapping[] fields = new DataRowKeyFieldMapping[graph
           .getUserDefinedRowKeyFields().size()];
@@ -841,7 +858,7 @@ public class GraphMapReduceSetup extends JobSetup {
       for (DataRowKeyFieldMapping field : fields) {
         List<Type> types = collector.addProperty(graph.getRootType(), field.getPropertyPath());
         for (Type nextType : types)
-          collectRowKeyProperties(collector, (PlasmaType) nextType);
+          collectRowKeyProperties(collector, (PlasmaType) nextType, mappingContext);
       }
     }
   }

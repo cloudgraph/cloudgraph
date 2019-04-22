@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.query.QueryException;
 import org.plasma.query.model.GroupOperator;
@@ -79,14 +80,14 @@ public class ScanContext extends DefaultQueryVisitor {
    * @param where
    *          the predicates
    */
-  public ScanContext(PlasmaType rootType, Where where) {
+  public ScanContext(PlasmaType rootType, Where where, StoreMappingContext mappingContext) {
     this.rootType = rootType;
     QName rootTypeQname = this.rootType.getQualifiedName();
-    this.graph = StoreMapping.getInstance().getDataGraph(rootTypeQname);
+    this.graph = StoreMapping.getInstance().getDataGraph(rootTypeQname, mappingContext);
     if (log.isDebugEnabled())
       log.debug("begin traverse");
 
-    ScanLiteralAssembler literalAssembler = new ScanLiteralAssembler(this.rootType);
+    ScanLiteralAssembler literalAssembler = new ScanLiteralAssembler(this.rootType, mappingContext);
     where.accept(literalAssembler); // traverse
     this.partialKeyScanLiterals = literalAssembler.getPartialKeyScanResult();
     this.fuzzyKeyScanLiterals = literalAssembler.getFuzzyKeyScanResult();

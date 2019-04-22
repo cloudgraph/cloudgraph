@@ -16,6 +16,7 @@
 package org.cloudgraph.hbase.io;
 
 import org.cloudgraph.hbase.connect.Connection;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 
 /**
  * Encapsulates one or more graph table operation components for federation
@@ -46,6 +47,8 @@ public interface DistributedGraphOperation {
 
   /** returns the shared connection for the operation */
   public Connection getConnection();
+
+  public StoreMappingContext getMappingContext();
 
   /**
    * Closes tables and connections.

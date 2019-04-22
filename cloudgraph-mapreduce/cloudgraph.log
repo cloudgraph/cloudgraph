@@ -1,0 +1,76 @@
+21 Apr 2019 08:53:07,564 DEBUG [main] runtime.PlasmaRuntime initializing...
+21 Apr 2019 08:53:07,580 DEBUG [main] runtime.PlasmaRuntimeDataBinding loading schema chain...
+21 Apr 2019 08:53:07,979 DEBUG [main] runtime.PlasmaRuntime artifact: (datatypes.uml) http://cloudgraph.org/datatypes.uml - detected as Plasma SDO Profile version (PLASMA_SDO_PROFILE_V_1_3_UML) http:///schemas/PlasmaSDOProfile/_S-dOMBWkEei92ZhmTudv_w/1
+21 Apr 2019 08:53:07,982 DEBUG [main] runtime.PlasmaRuntime artifact: (social-graph.uml) http://cloudgraph.org/social-graph.uml - detected as Plasma SDO Profile version (PLASMA_SDO_PROFILE_V_1_3_UML) http:///schemas/PlasmaSDOProfile/_S-dOMBWkEei92ZhmTudv_w/1
+21 Apr 2019 08:53:07,986 DEBUG [main] runtime.PlasmaRuntime loading known UML/XMI artifact, PlasmaSDO.profile_v1_3.uml (http:///schemas/PlasmaSDOProfile/_S-dOMBWkEei92ZhmTudv_w/1)
+21 Apr 2019 08:53:07,991 INFO  [main] fuml.Fuml loading artifact, PlasmaSDO.profile_v1_3.uml
+21 Apr 2019 08:53:08,010 INFO  [main] config.FumlConfiguration initializing...
+21 Apr 2019 08:53:08,013 INFO  [main] config.FumlConfigDataBinding loading schema chain...
+21 Apr 2019 08:53:08,079 INFO  [main] config.FumlConfiguration loading configuration, DefaultFumlConfig.xml
+21 Apr 2019 08:53:08,165 INFO  [main] model.InMemoryRepository initializing...
+21 Apr 2019 08:53:08,168 INFO  [main] repository.RepositoryConfigDataBinding loading schema chain...
+21 Apr 2019 08:53:08,201 INFO  [main] model.PrimitiveTypesAssembler initializing...
+21 Apr 2019 08:53:08,218 INFO  [main] model.InfrastructureAssembler initializing...
+21 Apr 2019 08:53:08,278 INFO  [main] model.SuperstructureAssembler initializing...
+21 Apr 2019 08:53:08,319 INFO  [main] model.fUML_SyntaxAssembler initializing...
+21 Apr 2019 08:53:08,328 INFO  [main] model.InMemoryRepository performing package merge...
+21 Apr 2019 08:53:08,370 INFO  [main] model.InMemoryRepository cacheing classifier attributes and operations...
+21 Apr 2019 08:53:08,442 INFO  [main] library.Library initializing...
+21 Apr 2019 08:53:08,935 DEBUG [main] runtime.PlasmaRuntime loading known UML/XMI artifact, PlasmaSDODataTypes_v1_3.uml (http:///schemas/PlasmaSDODataTypes/_Z68-YCG2EeSfsoM4aIlAPw)
+21 Apr 2019 08:53:08,935 INFO  [main] fuml.Fuml loading artifact, PlasmaSDODataTypes_v1_3.uml
+21 Apr 2019 08:53:09,002 INFO  [main] fuml.Fuml loading artifact, datatypes.uml
+21 Apr 2019 08:53:09,166 INFO  [main] fuml.Fuml loading artifact, social-graph.uml
+21 Apr 2019 08:53:09,449 ERROR [main] util.Shell Failed to locate the winutils binary in the hadoop binary path
+java.io.IOException: Could not locate executable null\bin\winutils.exe in the Hadoop binaries.
+	at org.apache.hadoop.util.Shell.getQualifiedBinPath(Shell.java:379)
+	at org.apache.hadoop.util.Shell.getWinUtilsPath(Shell.java:394)
+	at org.apache.hadoop.util.Shell.<clinit>(Shell.java:387)
+	at org.apache.hadoop.util.StringUtils.<clinit>(StringUtils.java:80)
+	at org.apache.hadoop.conf.Configuration.getTrimmedStrings(Configuration.java:1900)
+	at org.apache.hadoop.io.serializer.SerializationFactory.<init>(SerializationFactory.java:58)
+	at org.apache.hadoop.mrunit.internal.io.Serialization.<init>(Serialization.java:39)
+	at org.apache.hadoop.mrunit.TestDriver.getSerialization(TestDriver.java:530)
+	at org.apache.hadoop.mrunit.TestDriver.copy(TestDriver.java:675)
+	at org.apache.hadoop.mrunit.TestDriver.copyPair(TestDriver.java:679)
+	at org.apache.hadoop.mrunit.MapDriverBase.addInput(MapDriverBase.java:120)
+	at org.apache.hadoop.mrunit.MapDriverBase.withInput(MapDriverBase.java:210)
+	at test.GraphXmlTest.testMapper(GraphXmlTest.java:72)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at junit.framework.TestCase.runTest(TestCase.java:168)
+	at junit.framework.TestCase.runBare(TestCase.java:134)
+	at junit.framework.TestResult$1.protect(TestResult.java:110)
+	at junit.framework.TestResult.runProtected(TestResult.java:128)
+	at junit.framework.TestResult.run(TestResult.java:113)
+	at junit.framework.TestCase.run(TestCase.java:124)
+	at junit.framework.TestSuite.runTest(TestSuite.java:243)
+	at junit.framework.TestSuite.run(TestSuite.java:238)
+	at junit.extensions.TestDecorator.basicRun(TestDecorator.java:24)
+	at junit.extensions.TestSetup$1.protect(TestSetup.java:23)
+	at junit.framework.TestResult.runProtected(TestResult.java:128)
+	at junit.extensions.TestSetup.run(TestSetup.java:27)
+	at org.junit.internal.runners.JUnit38ClassRunner.run(JUnit38ClassRunner.java:83)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:252)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:141)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:112)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray(ReflectionUtils.java:189)
+	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:165)
+	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:85)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
+21 Apr 2019 08:53:09,936 INFO  [main] test.GraphXmlTest <?xml version="1.0"?>
+<ns1:Actor xmlns:ns1="http://cloudgraph.org/test/socialgraph/actor" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" serialId="2c7f9db8-1e97-4aac-aaab-6a5307a065ba" name="actor 1" id="1df4a3ba-7022-4209-ac8d-7a53c4fc8d58">
+  <blog serialId="ac02d43d-b510-4c1d-908b-3e891c42a983" name="my blog"></blog>
+</ns1:Actor>
+
+21 Apr 2019 08:53:09,975 INFO  [main] test.GraphXmlTest <?xml version="1.0"?>
+<ns1:Actor xmlns:ns1="http://cloudgraph.org/test/socialgraph/actor" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" serialId="5d4f2c58-eeca-4e03-8805-e8eb250c2a32" name="actor 1" id="01aab1a5-f440-4ecc-9f8f-edeea3315c1f">
+  <blog serialId="a1bfa04f-8e22-42c7-87f6-4012475a4ee9" name="my blog" id="c62ae79a-ba22-453d-aa74-c12c4ab052cf"></blog>
+</ns1:Actor>
+

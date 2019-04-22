@@ -25,6 +25,7 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.cloudgraph.hbase.key.StatefullColumnKeyFactory;
 import org.cloudgraph.state.ProtoSequenceGenerator;
 import org.cloudgraph.store.key.GraphMetaKey;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.service.ToumbstoneRowException;
 import org.plasma.sdo.PlasmaDataObject;
 import org.plasma.sdo.PlasmaProperty;
@@ -57,8 +58,8 @@ public class GraphRowReader extends DefaultRowOperation implements RowReader {
   private Map<Integer, EdgeReader> edgeReaderMap = new HashMap<Integer, EdgeReader>();
 
   public GraphRowReader(byte[] rowKey, CellValues result, DataObject rootDataObject,
-      TableReader tableReader) {
-    super(rowKey, rootDataObject);
+      TableReader tableReader, StoreMappingContext mappingContext) {
+    super(rowKey, rootDataObject, mappingContext);
     this.row = result;
     this.tableReader = tableReader;
     byte[] state = this.row.getColumnValue(this.tableReader.getTableConfig()
@@ -96,6 +97,11 @@ public class GraphRowReader extends DefaultRowOperation implements RowReader {
   @Override
   public TableReader getTableReader() {
     return this.tableReader;
+  }
+
+  @Override
+  public StoreMappingContext getMappingContext() {
+    return this.tableReader.getMappingContext();
   }
 
   /**

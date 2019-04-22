@@ -26,6 +26,7 @@ import org.cloudgraph.query.expr.PredicateBinaryExpr;
 import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.cloudgraph.store.mapping.StoreMapping;
 import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.plasma.sdo.PlasmaType;
 
 /**
@@ -60,11 +61,13 @@ public class GraphRecognizerDetector implements ExprVisitor {
   private PlasmaType rootType;
   private DataGraphMapping graph;
   private boolean queryRequiresGraphRecognizer = false;
+  protected StoreMappingContext mappingContext;
 
-  public GraphRecognizerDetector(PlasmaType rootType) {
+  public GraphRecognizerDetector(PlasmaType rootType, StoreMappingContext mappingContext) {
     this.rootType = rootType;
+    this.mappingContext = mappingContext;
     QName rootTypeQname = this.rootType.getQualifiedName();
-    this.graph = StoreMapping.getInstance().getDataGraph(rootTypeQname);
+    this.graph = StoreMapping.getInstance().getDataGraph(rootTypeQname, this.mappingContext);
   }
 
   public boolean isQueryRequiresGraphRecognizer() {

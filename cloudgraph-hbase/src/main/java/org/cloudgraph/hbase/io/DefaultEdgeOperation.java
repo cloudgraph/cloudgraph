@@ -37,6 +37,7 @@ import org.cloudgraph.state.proto.RowKeysProto.RowKeys;
 import org.cloudgraph.store.key.RequiredKeyFieldException;
 import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.mapping.TableMapping;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
@@ -55,6 +56,7 @@ public abstract class DefaultEdgeOperation implements EdgeOperation {
   protected PlasmaProperty sourceProp;
   protected TableMapping tableConfig;
   protected DataGraphMapping graphConfig;
+  protected RowOperation rowOperation;
   protected static Charset charset = Charset.forName("UTF-8");
 
   protected PlasmaType collectionBaseType;
@@ -84,12 +86,14 @@ public abstract class DefaultEdgeOperation implements EdgeOperation {
   protected String countQualStr;
 
   protected DefaultEdgeOperation(PlasmaType sourceType, PlasmaProperty sourceProp,
-      TableMapping tableConfig, DataGraphMapping graphConfig) throws IOException {
+      TableMapping tableConfig, DataGraphMapping graphConfig, RowOperation rowOperation)
+      throws IOException {
     super();
     this.sourceType = sourceType;
     this.sourceProp = sourceProp;
     this.tableConfig = tableConfig;
     this.graphConfig = graphConfig;
+    this.rowOperation = rowOperation;
     charset = tableConfig.getCharset();
 
     this.family = tableConfig.getDataColumnFamilyNameBytes();
@@ -190,10 +194,11 @@ public abstract class DefaultEdgeOperation implements EdgeOperation {
 
     TableMapping table = null;
     if (this.collectionDefaultSubType != null) {
-      table = StoreMapping.getInstance()
-          .findTable(this.collectionDefaultSubType.getQualifiedName());
+      table = StoreMapping.getInstance().findTable(
+          this.collectionDefaultSubType.getQualifiedName(), this.rowOperation.getMappingContext());
     } else {
-      table = StoreMapping.getInstance().findTable(this.collectionBaseType.getQualifiedName());
+      table = StoreMapping.getInstance().findTable(this.collectionBaseType.getQualifiedName(),
+          this.rowOperation.getMappingContext());
     }
     return table.getName();
   }
@@ -222,11 +227,12 @@ public abstract class DefaultEdgeOperation implements EdgeOperation {
     } else {
       boolean result = false;
       if (this.collectionDefaultSubType != null) {
-        result = StoreMapping.getInstance().findTable(
-            this.collectionDefaultSubType.getQualifiedName()) != null;
+        result = StoreMapping.getInstance()
+            .findTable(this.collectionDefaultSubType.getQualifiedName(),
+                this.rowOperation.getMappingContext()) != null;
       } else {
         edgeTypeBound = StoreMapping.getInstance().findTable(
-            this.collectionBaseType.getQualifiedName()) != null;
+            this.collectionBaseType.getQualifiedName(), this.rowOperation.getMappingContext()) != null;
         result = edgeTypeBound;
       }
       return result;

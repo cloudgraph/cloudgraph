@@ -35,6 +35,7 @@ import org.cloudgraph.hbase.io.TableReader;
 import org.cloudgraph.store.key.EntityMetaKey;
 import org.cloudgraph.store.key.GraphColumnKeyFactory;
 import org.cloudgraph.store.key.GraphMetaKey;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.mapping.TableMapping;
 import org.cloudgraph.store.mapping.ThreadPoolMappingProps;
 import org.cloudgraph.store.service.GraphServiceException;
@@ -75,10 +76,11 @@ class ParallelSliceSubgraphTask extends DefaultSubgraphTask implements SubgraphT
       EdgeReader collection, PlasmaDataObject source, PlasmaProperty sourceProperty,
       RowReader rowReader, int level, int sequence, ThreadPoolExecutor executorService,
       ThreadPoolMappingProps config) {
+
     super(subroot, subrootSequence, selection, snapshotDate, distributedReader, collection, source,
         sourceProperty, rowReader, level, sequence, executorService, config);
     this.sliceSupport = new GraphSliceSupport(selection, snapshotDate,
-        distributedReader.getConnection());
+        distributedReader.getConnection(), distributedReader.getMappingContext());
   }
 
   @Override

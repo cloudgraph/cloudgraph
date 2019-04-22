@@ -33,6 +33,7 @@ import org.cloudgraph.store.mapping.KeyFieldCodecType;
 import org.cloudgraph.store.mapping.KeyFieldMapping;
 import org.cloudgraph.store.mapping.MetaKeyFieldMapping;
 import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.mapping.TableMapping;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
@@ -62,17 +63,20 @@ public class CompositeRowKeyReader {
   private char rowKeyFieldDelimChar;
   private Map<DataRowKeyFieldMapping, Endpoint> endpointMap;
   private Map<Endpoint, KeyValue> valueMap;
+  private StoreMappingContext mappingContext;
 
   @SuppressWarnings("unused")
   private CompositeRowKeyReader() {
   }
 
-  public CompositeRowKeyReader(PlasmaType contextType) {
+  public CompositeRowKeyReader(PlasmaType contextType, StoreMappingContext mappingContext) {
     if (contextType == null)
       throw new IllegalArgumentException("expected arg contextType");
     this.contextType = contextType;
-    this.table = StoreMapping.getInstance().getTable(this.contextType);
-    this.graph = StoreMapping.getInstance().getDataGraph(this.contextType.getQualifiedName());
+    this.mappingContext = mappingContext;
+    this.table = StoreMapping.getInstance().getTable(this.contextType, this.mappingContext);
+    this.graph = StoreMapping.getInstance().getDataGraph(this.contextType.getQualifiedName(),
+        this.mappingContext);
 
     this.valueMap = new HashMap<>();
     this.endpointMap = new HashMap<>();

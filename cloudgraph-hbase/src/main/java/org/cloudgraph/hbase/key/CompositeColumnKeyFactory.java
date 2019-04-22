@@ -17,12 +17,14 @@ package org.cloudgraph.hbase.key;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.cloudgraph.hbase.io.RowOperation;
 import org.cloudgraph.state.RowState;
 import org.cloudgraph.store.key.EdgeMetaKey;
 import org.cloudgraph.store.key.EntityMetaKey;
 import org.cloudgraph.store.key.GraphColumnKeyFactory;
 import org.cloudgraph.store.mapping.KeyFieldMapping;
 import org.cloudgraph.store.mapping.MetaKeyFieldMapping;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
 
@@ -52,11 +54,11 @@ public class CompositeColumnKeyFactory extends ByteBufferKeyFactory implements
     GraphColumnKeyFactory {
   private static final Log log = LogFactory.getLog(CompositeColumnKeyFactory.class);
 
-  public CompositeColumnKeyFactory(PlasmaType rootType) {
-    super(rootType);
+  public CompositeColumnKeyFactory(PlasmaType rootType, StoreMappingContext mappingContext) {
+    super(rootType, mappingContext);
   }
 
-  public CompositeColumnKeyFactory(RowState graphRow) {
+  public CompositeColumnKeyFactory(RowOperation graphRow) {
     super(graphRow);
     // TODO Auto-generated constructor stub
   }

@@ -16,6 +16,7 @@
 package org.cloudgraph.hbase.io;
 
 import org.cloudgraph.state.RowState;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 
 /**
  * Represents the operational aspects of a statefull graph row.
@@ -24,4 +25,5 @@ import org.cloudgraph.state.RowState;
  * @since 0.5.1
  */
 public interface RowOperation extends RowState {
+  public StoreMappingContext getMappingContext();
 }

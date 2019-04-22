@@ -51,7 +51,7 @@ public class GraphEdgeWriter extends DefaultEdgeOperation implements EdgeWriter 
 
   GraphEdgeWriter(PlasmaDataObject source, PlasmaProperty sourceProp, TableMapping tableConfig,
       DataGraphMapping graphConfig, RowWriter rowWriter) throws IOException {
-    super((PlasmaType) source.getType(), sourceProp, tableConfig, graphConfig);
+    super((PlasmaType) source.getType(), sourceProp, tableConfig, graphConfig, rowWriter);
     this.dataObject = source;
     this.rowWriter = rowWriter;
 
@@ -76,7 +76,7 @@ public class GraphEdgeWriter extends DefaultEdgeOperation implements EdgeWriter 
       TableMapping tableConfig, DataGraphMapping graphConfig, RowWriter rowWriter)
       throws IOException {
 
-    super((PlasmaType) source.getType(), sourceProp, tableConfig, graphConfig);
+    super((PlasmaType) source.getType(), sourceProp, tableConfig, graphConfig, rowWriter);
     this.dataObject = source;
     this.typeSequenceNum = typeSequenceNum;
     this.rowWriter = rowWriter;
@@ -223,14 +223,14 @@ public class GraphEdgeWriter extends DefaultEdgeOperation implements EdgeWriter 
     }
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.cloudgraph.hbase.io.EdgeWriter#getRowWriter()
-   */
   @Override
   public RowWriter getRowWriter() {
     return rowWriter;
+  }
+
+  @Override
+  public TableWriter getTableWriter() {
+    return rowWriter.getTableWriter();
   }
 
   /*

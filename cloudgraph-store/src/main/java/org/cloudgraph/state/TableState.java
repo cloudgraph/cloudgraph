@@ -15,6 +15,7 @@
  */
 package org.cloudgraph.state;
 
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.mapping.TableMapping;
 
 /**
@@ -34,4 +35,5 @@ public interface TableState {
    */
   public TableMapping getTableConfig();
 
+  public StoreMappingContext getMappingContext();
 }

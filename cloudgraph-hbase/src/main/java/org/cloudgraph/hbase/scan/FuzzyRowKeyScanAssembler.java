@@ -33,6 +33,7 @@ import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.cloudgraph.store.mapping.KeyFieldMapping;
 import org.cloudgraph.store.mapping.MetaKeyFieldMapping;
 import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.mapping.TableMapping;
 import org.plasma.query.Wildcard;
 import org.plasma.query.model.Where;
@@ -58,6 +59,7 @@ public class FuzzyRowKeyScanAssembler implements RowKeyScanAssembler, FuzzyRowKe
   protected ByteBuffer keyBytes = ByteBuffer.allocate(bufsize);
   protected ByteBuffer infoBytes = ByteBuffer.allocate(bufsize);
   protected PlasmaType rootType;
+  protected StoreMappingContext mappingContext;
   protected DataGraphMapping graph;
   protected TableMapping table;
   protected ScanLiterals scanLiterals;
@@ -77,11 +79,12 @@ public class FuzzyRowKeyScanAssembler implements RowKeyScanAssembler, FuzzyRowKe
    * @param rootType
    *          the root type
    */
-  public FuzzyRowKeyScanAssembler(PlasmaType rootType) {
+  public FuzzyRowKeyScanAssembler(PlasmaType rootType, StoreMappingContext mappingContext) {
     this.rootType = rootType;
+    this.mappingContext = mappingContext;
     QName rootTypeQname = this.rootType.getQualifiedName();
-    this.graph = StoreMapping.getInstance().getDataGraph(rootTypeQname);
-    this.table = StoreMapping.getInstance().getTable(rootTypeQname);
+    this.graph = StoreMapping.getInstance().getDataGraph(rootTypeQname, this.mappingContext);
+    this.table = StoreMapping.getInstance().getTable(rootTypeQname, this.mappingContext);
     this.delimMask = new byte[graph.getRowKeyFieldDelimiterBytes().length];
     for (int i = 0; i < delimMask.length; i++)
       delimMask[i] = fixedMaskByte;
@@ -96,8 +99,9 @@ public class FuzzyRowKeyScanAssembler implements RowKeyScanAssembler, FuzzyRowKe
    * @param rootUUID
    *          the root UUID.
    */
-  public FuzzyRowKeyScanAssembler(PlasmaType rootType, String rootUUID) {
-    this(rootType);
+  public FuzzyRowKeyScanAssembler(PlasmaType rootType, String rootUUID,
+      StoreMappingContext mappingContext) {
+    this(rootType, mappingContext);
     this.rootUUID = rootUUID;
   }
 
@@ -144,7 +148,8 @@ public class FuzzyRowKeyScanAssembler implements RowKeyScanAssembler, FuzzyRowKe
     if (log.isDebugEnabled())
       log.debug("begin traverse");
 
-    ScanLiteralAssembler literalAssembler = new ScanLiteralAssembler(this.rootType);
+    ScanLiteralAssembler literalAssembler = new ScanLiteralAssembler(this.rootType,
+        this.mappingContext);
     where.accept(literalAssembler); // traverse
 
     this.scanLiterals = literalAssembler.getPartialKeyScanResult();

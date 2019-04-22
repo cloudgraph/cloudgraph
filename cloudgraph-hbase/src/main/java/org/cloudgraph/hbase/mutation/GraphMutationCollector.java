@@ -33,6 +33,7 @@ import org.cloudgraph.hbase.io.TableWriter;
 import org.cloudgraph.hbase.io.TableWriterCollector;
 import org.cloudgraph.hbase.service.ServiceContext;
 import org.cloudgraph.store.key.GraphMetaKey;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.service.CreatedCommitComparator;
 import org.plasma.sdo.AssociationPath;
 import org.plasma.sdo.PlasmaChangeSummary;
@@ -47,7 +48,6 @@ import org.plasma.sdo.repository.Classifier;
 import org.plasma.sdo.repository.PlasmaRepository;
 
 import sorts.InsertionSort;
-
 import commonj.sdo.DataGraph;
 import commonj.sdo.DataObject;
 import commonj.sdo.Property;
@@ -75,11 +75,12 @@ public class GraphMutationCollector extends DefaultMutation implements MutationC
   protected Update update;
   protected Delete delete;
 
-  public GraphMutationCollector(ServiceContext context, SnapshotMap snapshotMap, String username) {
-    super(context, snapshotMap, username);
-    this.create = new Create(context, snapshotMap, username);
-    this.update = new Update(context, snapshotMap, username);
-    this.delete = new Delete(context, snapshotMap, username);
+  public GraphMutationCollector(ServiceContext context, SnapshotMap snapshotMap, String username,
+      StoreMappingContext mappingContext) {
+    super(context, snapshotMap, username, mappingContext);
+    this.create = new Create(context, snapshotMap, username, mappingContext);
+    this.update = new Update(context, snapshotMap, username, mappingContext);
+    this.delete = new Delete(context, snapshotMap, username, mappingContext);
   }
 
   /*
@@ -117,10 +118,11 @@ public class GraphMutationCollector extends DefaultMutation implements MutationC
     ModifiedObjectCollector modified = new ModifiedObjectCollector(dataGraph);
     DeletedObjectCollector deleted = new DeletedObjectCollector(dataGraph);
 
-    TableWriterCollector collector = new TableWriterCollector(dataGraph, created, modified, deleted);
+    TableWriterCollector collector = new TableWriterCollector(dataGraph, created, modified,
+        deleted, this.mappingContext);
 
     DistributedGraphWriter graphWriter = new DistributedGraphWriter(dataGraph, collector,
-        connection);
+        connection, this.mappingContext);
 
     this.create(dataGraph, created, graphWriter);
     this.modify(dataGraph, modified, graphWriter);
@@ -178,9 +180,10 @@ public class GraphMutationCollector extends DefaultMutation implements MutationC
       DeletedObjectCollector deleted = new DeletedObjectCollector(dataGraph);
 
       TableWriterCollector collector = new TableWriterCollector(dataGraph, created, modified,
-          deleted);
+          deleted, this.mappingContext);
 
-      DistributedWriter graphWriter = new DistributedGraphWriter(dataGraph, collector, connection);
+      DistributedWriter graphWriter = new DistributedGraphWriter(dataGraph, collector, connection,
+          this.mappingContext);
       graphWriters.add(graphWriter);
 
       this.create(dataGraph, created, graphWriter);

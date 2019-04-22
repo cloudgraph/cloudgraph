@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.cloudgraph.hbase.connect.Connection;
 import org.cloudgraph.state.GraphRow;
 import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.mapping.TableMapping;
 import org.plasma.sdo.PlasmaType;
 
@@ -70,17 +71,22 @@ public class DistributedGraphReader implements DistributedReader {
 
   private Connection connection;
 
+  private StoreMappingContext mappingContext;
+
   @SuppressWarnings("unused")
   private DistributedGraphReader() {
   }
 
-  public DistributedGraphReader(Type rootType, List<Type> types, Connection connection) {
+  public DistributedGraphReader(Type rootType, List<Type> types, Connection connection,
+      StoreMappingContext mappingContext) {
     PlasmaType root = (PlasmaType) rootType;
 
-    TableMapping rootTable = StoreMapping.getInstance().getTable(root.getQualifiedName());
+    this.mappingContext = mappingContext;
+    TableMapping rootTable = StoreMapping.getInstance().getTable(root.getQualifiedName(),
+        this.mappingContext);
     this.connection = connection;
 
-    TableReader tableReader = new GraphTableReader(rootTable, this);
+    TableReader tableReader = new GraphTableReader(rootTable, this, this.mappingContext);
     this.tableReaderMap.put(tableReader.getTableConfig().getName(), tableReader);
 
     this.rootReader = tableReader;
@@ -91,7 +97,8 @@ public class DistributedGraphReader implements DistributedReader {
 
     for (Type t : types) {
       PlasmaType type = (PlasmaType) t;
-      TableMapping table = StoreMapping.getInstance().findTable(type.getQualifiedName());
+      TableMapping table = StoreMapping.getInstance().findTable(type.getQualifiedName(),
+          this.mappingContext);
       if (table == null)
         continue; // not a graph root
 
@@ -100,7 +107,7 @@ public class DistributedGraphReader implements DistributedReader {
         // create a new table reader if not added already, e.g.
         // as root above or from a graph root type
         // mapped to a table we have seen here
-        tableReader = new GraphTableReader(table, this);
+        tableReader = new GraphTableReader(table, this, this.mappingContext);
         this.tableReaderMap.put(tableReader.getTableConfig().getName(), tableReader);
       }
 
@@ -307,6 +314,11 @@ public class DistributedGraphReader implements DistributedReader {
     }
     // don't close the connection here, we don't own it
     this.connection = null;
+  }
+
+  @Override
+  public StoreMappingContext getMappingContext() {
+    return this.mappingContext;
   }
 
 }

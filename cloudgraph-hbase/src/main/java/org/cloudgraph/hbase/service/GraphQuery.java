@@ -61,19 +61,21 @@ import org.cloudgraph.hbase.util.FilterUtil;
 import org.cloudgraph.query.expr.Expr;
 import org.cloudgraph.query.expr.ExprPrinter;
 import org.cloudgraph.recognizer.GraphRecognizerSyntaxTreeAssembler;
-import org.cloudgraph.store.mapping.Config;
+import org.cloudgraph.store.mapping.MappingConfiguration;
 import org.cloudgraph.store.mapping.DataGraph;
 import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.cloudgraph.store.mapping.FetchType;
 import org.cloudgraph.store.mapping.ParallelFetchDisposition;
 import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.mapping.StoreMappingProp;
 import org.cloudgraph.store.mapping.ThreadPoolMappingProps;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.common.bind.DefaultValidationEventHandler;
 import org.plasma.query.bind.PlasmaQueryDataBinding;
 import org.plasma.query.collector.SelectionCollector;
+import org.plasma.query.model.ConfigurationProperty;
 import org.plasma.query.model.From;
 import org.plasma.query.model.GroupBy;
 import org.plasma.query.model.Having;
@@ -206,19 +208,21 @@ public class GraphQuery implements QueryDispatcher {
     OrderBy orderBy = query.findOrderByClause();
     GroupBy groupBy = query.findGroupByClause();
     Having having = query.findHavingClause();
+    StoreMappingContext mappingContext = createMappingContext(query);
 
     SelectionCollector selection = new SelectionCollector(query.getSelectClause(), where, orderBy,
         groupBy, having, type);
     selection.setOnlyDeclaredProperties(false);
     for (Type t : selection.getTypes())
-      collectRowKeyProperties(selection, (PlasmaType) t);
+      collectRowKeyProperties(selection, (PlasmaType) t, mappingContext);
     if (log.isDebugEnabled())
       log.debug(selection.dumpInheritedProperties());
 
     // Create and add a column filter for the initial
     // column set based on existence of path predicates
     // in the Select.
-    HBaseFilterAssembler columnFilterAssembler = createRootColumnFilterAssembler(type, selection);
+    HBaseFilterAssembler columnFilterAssembler = createRootColumnFilterAssembler(type, selection,
+        mappingContext);
     Filter columnFilter = columnFilterAssembler.getFilter();
 
     List<PartialRowKey> partialScans = new ArrayList<PartialRowKey>();
@@ -234,7 +238,7 @@ public class GraphQuery implements QueryDispatcher {
         whereSyntaxTree.accept(printer);
         log.debug("Where graph Recognizer: " + printer.toString());
       }
-      ScanCollector scanCollector = new ScanCollector(type);
+      ScanCollector scanCollector = new ScanCollector(type, mappingContext);
       whereSyntaxTree.accept(scanCollector);
       partialScans = scanCollector.getPartialRowKeyScans();
       fuzzyScans = scanCollector.getFuzzyRowKeyScans();
@@ -246,7 +250,8 @@ public class GraphQuery implements QueryDispatcher {
 
     if (where == null
         || (partialScans.size() == 0 && fuzzyScans.size() == 0 && completeKeys.size() == 0)) {
-      PartialRowKeyScanAssembler scanAssembler = new PartialRowKeyScanAssembler(type);
+      PartialRowKeyScanAssembler scanAssembler = new PartialRowKeyScanAssembler(type,
+          mappingContext);
       scanAssembler.assemble();
       byte[] startKey = scanAssembler.getStartKey();
       if (startKey != null && startKey.length > 0) {
@@ -290,12 +295,14 @@ public class GraphQuery implements QueryDispatcher {
       }
     }
 
-    return execute(query, type, selection, columnFilter, whereSyntaxTree, orderingComparator,
-        groupingComparator, havingSyntaxTree, partialScans, fuzzyScans, completeKeys, snapshotDate);
+    return execute(query, type, mappingContext, selection, columnFilter, whereSyntaxTree,
+        orderingComparator, groupingComparator, havingSyntaxTree, partialScans, fuzzyScans,
+        completeKeys, snapshotDate);
   }
 
-  protected PlasmaDataGraph[] execute(Query query, PlasmaType type, SelectionCollector selection,
-      Filter columnFilter, Expr whereSyntaxTree, ResultsComparator orderingComparator,
+  protected PlasmaDataGraph[] execute(Query query, PlasmaType type,
+      StoreMappingContext mappingContext, SelectionCollector selection, Filter columnFilter,
+      Expr whereSyntaxTree, ResultsComparator orderingComparator,
       ResultsComparator groupingComparator, Expr havingSyntaxTree,
       List<PartialRowKey> partialScans, List<FuzzyRowKey> fuzzyScans,
       List<CompleteRowKey> completeKeys, Timestamp snapshotDate) {
@@ -303,9 +310,10 @@ public class GraphQuery implements QueryDispatcher {
     Connection connection = HBaseConnectionManager.instance().getConnection();
     DistributedGraphReader graphReader = null;
     try {
-      graphReader = new DistributedGraphReader(type, selection.getTypes(), connection);
+      graphReader = new DistributedGraphReader(type, selection.getTypes(), connection,
+          mappingContext);
       GraphAssemblerFactory assemblerFactory = new GraphAssemblerFactory(query, type, graphReader,
-          selection, snapshotDate);
+          selection, snapshotDate, mappingContext);
       TableReader rootTableReader = graphReader.getRootTableReader();
       ResultsAssembler resultsCollector = this.createResultsAssembler(query, selection,
           whereSyntaxTree, orderingComparator, groupingComparator, havingSyntaxTree,
@@ -609,12 +617,12 @@ public class GraphQuery implements QueryDispatcher {
    * @see InitialFetchColumnFilterAssembler
    */
   protected HBaseFilterAssembler createRootColumnFilterAssembler(PlasmaType type,
-      SelectionCollector collector) {
+      SelectionCollector collector, StoreMappingContext mappingContext) {
     HBaseFilterAssembler columnFilterAssembler = null;
     if (collector.getPredicateMap().size() > 0) {
-      columnFilterAssembler = new InitialFetchColumnFilterAssembler(collector, type);
+      columnFilterAssembler = new InitialFetchColumnFilterAssembler(collector, type, mappingContext);
     } else {
-      columnFilterAssembler = new GraphFetchColumnFilterAssembler(collector, type);
+      columnFilterAssembler = new GraphFetchColumnFilterAssembler(collector, type, mappingContext);
     }
     return columnFilterAssembler;
   }
@@ -630,9 +638,10 @@ public class GraphQuery implements QueryDispatcher {
    * @param type
    *          the current type
    */
-  protected void collectRowKeyProperties(SelectionCollector collector, PlasmaType type) {
-    Config config = StoreMapping.getInstance();
-    DataGraphMapping graph = config.findDataGraph(type.getQualifiedName());
+  protected void collectRowKeyProperties(SelectionCollector collector, PlasmaType type,
+      StoreMappingContext mappingContext) {
+    MappingConfiguration config = StoreMapping.getInstance();
+    DataGraphMapping graph = config.findDataGraph(type.getQualifiedName(), mappingContext);
     if (graph != null) {
       DataRowKeyFieldMapping[] fields = new DataRowKeyFieldMapping[graph
           .getUserDefinedRowKeyFields().size()];
@@ -640,7 +649,7 @@ public class GraphQuery implements QueryDispatcher {
       for (DataRowKeyFieldMapping field : fields) {
         List<Type> types = collector.addProperty(graph.getRootType(), field.getPropertyPath());
         for (Type nextType : types)
-          collectRowKeyProperties(collector, (PlasmaType) nextType);
+          collectRowKeyProperties(collector, (PlasmaType) nextType, mappingContext);
       }
     }
   }
@@ -654,6 +663,13 @@ public class GraphQuery implements QueryDispatcher {
     };
     where.accept(visitor);
     return list;
+  }
+
+  protected StoreMappingContext createMappingContext(Query query) {
+    StoreMappingContext result = new StoreMappingContext();
+    for (ConfigurationProperty cp : query.getConfigurationProperties())
+      result.setProperty(cp.getName(), cp.getValue());
+    return result;
   }
 
   protected void log(Query query) {

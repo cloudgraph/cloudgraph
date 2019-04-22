@@ -35,13 +35,15 @@ public class GraphEdgeReader extends DefaultEdgeOperation implements EdgeReader 
   private static Log log = LogFactory.getLog(GraphEdgeReader.class);
   private PlasmaType oppositeType;
   private boolean oppositeTypeBound;
+  private RowReader rowReader;
 
   GraphEdgeReader(PlasmaType sourceType, PlasmaProperty sourceProp, Long typeSequenceNum,
       TableMapping tableConfig, DataGraphMapping graphConfig, RowReader rowReader)
       throws IOException {
 
-    super(sourceType, sourceProp, tableConfig, graphConfig);
+    super(sourceType, sourceProp, tableConfig, graphConfig, rowReader);
 
+    this.rowReader = rowReader;
     this.family = tableConfig.getDataColumnFamilyNameBytes();
     this.baseTypeQual = rowReader.getColumnKeyFactory().createColumnKey(this.sourceType,
         typeSequenceNum, sourceProp, EdgeMetaKey.BASETYPE);
@@ -70,8 +72,9 @@ public class GraphEdgeReader extends DefaultEdgeOperation implements EdgeReader 
 
   GraphEdgeReader(PlasmaType targetType, PlasmaProperty sourceProp, TableMapping tableConfig,
       DataGraphMapping graphConfig, RowReader rowReader) throws IOException {
-    super(targetType, sourceProp, tableConfig, graphConfig);
+    super(targetType, sourceProp, tableConfig, graphConfig, rowReader);
 
+    this.rowReader = rowReader;
     this.family = tableConfig.getDataColumnFamilyNameBytes();
     this.baseTypeQual = rowReader.getColumnKeyFactory().createColumnKey(this.sourceType,
         sourceProp, EdgeMetaKey.BASETYPE);
@@ -112,7 +115,7 @@ public class GraphEdgeReader extends DefaultEdgeOperation implements EdgeReader 
 
     this.oppositeType = (PlasmaType) sourceProp.getType();
     this.oppositeTypeBound = StoreMapping.getInstance().findTable(
-        this.oppositeType.getQualifiedName()) != null;
+        this.oppositeType.getQualifiedName(), this.rowOperation.getMappingContext()) != null;
 
     byte[] typeBytes = fetchValue(family, baseTypeQual, rowReader.getRow());
     decodeCollectionBaseType(typeBytes);
@@ -159,14 +162,26 @@ public class GraphEdgeReader extends DefaultEdgeOperation implements EdgeReader 
     PlasmaType subType = this.collectionBaseType;
     if (this.getSubType() != null)
       subType = this.getSubType();
-    CompositeRowKeyReader rowKeyReader = new CompositeRowKeyReader(subType);
-    CellConverter cellConverter = new CellConverter(subType, this.tableConfig);
+    CompositeRowKeyReader rowKeyReader = new CompositeRowKeyReader(subType,
+        this.rowOperation.getMappingContext());
+    CellConverter cellConverter = new CellConverter(subType, this.tableConfig,
+        this.rowOperation.getMappingContext());
     for (KeyBytes rowKeyBYtes : this.getRowKeys()) {
       rowKeyReader.read(rowKeyBYtes.getKey());
       result.add(cellConverter.convert(rowKeyBYtes.getKey(), rowKeyReader.getValues()));
     }
 
     return result;
+  }
+
+  @Override
+  public RowReader getRowReader() {
+    return this.rowReader;
+  }
+
+  @Override
+  public TableReader getTableReader() {
+    return this.rowReader.getTableReader();
   }
 
 }

@@ -112,13 +112,13 @@ public class ExternalEdgeRecognizerWildcardBinaryExpr extends DefaultPredicateBi
       return true;
     } else {
       if (ctx.isRowEvaluatedCompletely()) {
-      if (log.isDebugEnabled())
-        log.debug(this.toString() + " evaluate false: " + String.valueOf(rowKeyFieldValue));
-      return false;
-      }
-      else {
         if (log.isDebugEnabled())
-          log.debug(this.toString() + " evaluate true (permit further downstream eval): " + String.valueOf(rowKeyFieldValue));
+          log.debug(this.toString() + " evaluate false: " + String.valueOf(rowKeyFieldValue));
+        return false;
+      } else {
+        if (log.isDebugEnabled())
+          log.debug(this.toString() + " evaluate true (permit further downstream eval): "
+              + String.valueOf(rowKeyFieldValue));
         return true;
       }
     }

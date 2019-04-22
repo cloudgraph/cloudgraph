@@ -24,6 +24,7 @@ import org.cloudgraph.hbase.graph.ParallelGraphAssembler;
 import org.cloudgraph.hbase.graph.ParallelGraphSliceAssembler;
 import org.cloudgraph.hbase.io.DistributedReader;
 import org.cloudgraph.store.mapping.FetchType;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.mapping.StoreMappingProp;
 import org.cloudgraph.store.mapping.ThreadPoolMappingProps;
 import org.plasma.query.collector.Selection;
@@ -47,19 +48,21 @@ public class GraphAssemblerFactory {
   private DistributedReader graphReader;
   private Selection selection;
   private Timestamp snapshotDate;
+  protected StoreMappingContext mappingContext;
 
   @SuppressWarnings("unused")
   private GraphAssemblerFactory() {
   }
 
   public GraphAssemblerFactory(Query query, PlasmaType type, DistributedReader graphReader,
-      Selection selection, Timestamp snapshotDate) {
+      Selection selection, Timestamp snapshotDate, StoreMappingContext mappingContext) {
     super();
     this.query = query;
     this.type = type;
     this.graphReader = graphReader;
     this.selection = selection;
     this.snapshotDate = snapshotDate;
+    this.mappingContext = mappingContext;
   }
 
   public HBaseGraphAssembler createAssembler() {
@@ -81,7 +84,8 @@ public class GraphAssemblerFactory {
         break;
       case TALL:
         if (selection.hasPredicates()) {
-          graphAssembler = new GraphSliceAssembler(type, selection, graphReader, snapshotDate);
+          graphAssembler = new GraphSliceAssembler(type, this.mappingContext, selection,
+              graphReader, snapshotDate);
         } else {
           graphAssembler = new GraphAssembler(type, selection, graphReader, snapshotDate);
         }
@@ -91,7 +95,8 @@ public class GraphAssemblerFactory {
     case SERIAL:
     default:
       if (selection.hasPredicates()) {
-        graphAssembler = new GraphSliceAssembler(type, selection, graphReader, snapshotDate);
+        graphAssembler = new GraphSliceAssembler(type, this.mappingContext, selection, graphReader,
+            snapshotDate);
       } else {
         graphAssembler = new GraphAssembler(type, selection, graphReader, snapshotDate);
       }

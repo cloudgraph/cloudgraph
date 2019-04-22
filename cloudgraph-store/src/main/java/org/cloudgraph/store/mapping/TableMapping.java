@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.namespace.QName;
+
 import org.plasma.sdo.core.CoreConstants;
 
 /**
@@ -29,13 +31,13 @@ import org.plasma.sdo.core.CoreConstants;
  * @author Scott Cinnamond
  * @since 0.5
  */
-public class TableMapping {
+public abstract class TableMapping {
   /** Apache HBase namespace table-name delimiter */
-  private static final String TABLE_NAME_DELIM = ":";
+  static final String TABLE_NAME_DELIM = ":";
   /** MAPRDB table path delimiter */
-  private static final String TABLE_PATH_DELIM = "/";
+  static final String TABLE_PATH_DELIM = "/";
   private Table table;
-  private Config config;
+  private MappingConfiguration config;
   private Charset charset;
   private Map<String, Property> propertyNameToPropertyMap = new HashMap<String, Property>();
 
@@ -43,7 +45,7 @@ public class TableMapping {
   private TableMapping() {
   }
 
-  public TableMapping(Table table, Config config) {
+  public TableMapping(Table table, MappingConfiguration config) {
     super();
     this.table = table;
     this.config = config;
@@ -90,15 +92,33 @@ public class TableMapping {
     return this.table.getNamespace();
   }
 
-  public String getQualifiedName() {
-    return qualifiedNameFor(this.getNamespace(), this.getName());
+  public abstract StoreMappingContext getMappingContext();
+
+  public abstract String getQualifiedName();
+
+  public static String qualifiedNameFor(String namespace, String tableName,
+      StoreMappingContext context) {
+    StringBuilder name = new StringBuilder();
+    if (context != null && context.hasMaprdbVolumePath()) {
+      name.append(context.getMaprdbVolumePath());
+      name.append(TABLE_NAME_DELIM);
+    }
+    if (namespace != null) {
+      name.append(namespace);
+      name.append(TABLE_NAME_DELIM);
+    }
+    name.append(tableName);
+    return name.toString();
   }
 
-  public static String qualifiedNameFor(String namespace, String tableName) {
-    String qualifiedName = tableName;
-    if (namespace != null)
-      qualifiedName = namespace + TABLE_NAME_DELIM + qualifiedName;
-    return qualifiedName;
+  public static String qualifiedNameFor(QName typeName, StoreMappingContext context) {
+    StringBuilder name = new StringBuilder();
+    if (context != null && context.hasMaprdbVolumePath()) {
+      name.append(context.getMaprdbVolumePath());
+      name.append(TABLE_NAME_DELIM);
+    }
+    name.append(typeName.toString());
+    return name.toString();
   }
 
   public String getDataColumnFamilyName() {
@@ -175,6 +195,17 @@ public class TableMapping {
           this.table.getMaprdbTablePathPrefix(), null);
     }
     return this.maprdbTablePathPrefixVar;
+  }
+
+  private String maprdbVolumePathPrefixVar = null;
+
+  public String maprdbVolumePathPrefix() {
+    if (maprdbVolumePathPrefixVar == null) {
+      maprdbVolumePathPrefixVar = getTablePropertyString(
+          ConfigurationProperty.CLOUDGRAPH___MAPRDB___VOLUME___PATH___PREFIX,
+          this.table.getMaprdbVolumePathPrefix(), null);
+    }
+    return this.maprdbVolumePathPrefixVar;
   }
 
   private Boolean optimisticConcurrencyVar = null;

@@ -18,6 +18,7 @@ package org.cloudgraph.hbase.scan;
 import java.util.Arrays;
 
 import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.plasma.query.model.RelationalOperatorName;
 import org.plasma.sdo.PlasmaType;
 
@@ -44,8 +45,9 @@ public class StringLiteral extends ScanLiteral implements PartialRowKeyLiteral, 
   public static final byte INCREMENT = Byte.MIN_VALUE;
 
   public StringLiteral(String literal, PlasmaType rootType,
-      RelationalOperatorName relationalOperator, DataRowKeyFieldMapping fieldConfig) {
-    super(literal, rootType, relationalOperator, fieldConfig);
+      RelationalOperatorName relationalOperator, DataRowKeyFieldMapping fieldConfig,
+      StoreMappingContext mappingContext) {
+    super(literal, rootType, relationalOperator, fieldConfig, mappingContext);
   }
 
   /**

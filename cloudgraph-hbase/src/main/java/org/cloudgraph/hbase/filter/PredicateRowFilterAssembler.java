@@ -20,6 +20,7 @@ import javax.xml.bind.JAXBException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.cloudgraph.hbase.key.CompositeRowKeyExpressionFactory;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.plasma.common.bind.DefaultValidationEventHandler;
 import org.plasma.query.bind.PlasmaQueryDataBinding;
 import org.plasma.query.model.Where;
@@ -67,9 +68,9 @@ public class PredicateRowFilterAssembler extends RowPredicateVisitor implements
    *          the root type
    * @see CompositeRowKeyExpressionFactory
    */
-  public PredicateRowFilterAssembler(PlasmaType rootType) {
+  public PredicateRowFilterAssembler(PlasmaType rootType, StoreMappingContext mappingContext) {
     super(rootType);
-    this.rowKeyFac = new CompositeRowKeyExpressionFactory(rootType);
+    this.rowKeyFac = new CompositeRowKeyExpressionFactory(rootType, mappingContext);
   }
 
   /**

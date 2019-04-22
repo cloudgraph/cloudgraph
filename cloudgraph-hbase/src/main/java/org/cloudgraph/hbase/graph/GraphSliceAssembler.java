@@ -31,6 +31,7 @@ import org.cloudgraph.hbase.io.RowReader;
 import org.cloudgraph.hbase.io.TableReader;
 import org.cloudgraph.recognizer.GraphRecognizerContext;
 import org.cloudgraph.recognizer.GraphRecognizerSyntaxTreeAssembler;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.mapping.TableMapping;
 import org.plasma.query.collector.Selection;
 import org.plasma.query.model.Where;
@@ -82,12 +83,12 @@ public class GraphSliceAssembler extends DistributedAssembler {
   private GraphSliceSupport slice;
   private Charset charset;
 
-  public GraphSliceAssembler(PlasmaType rootType, Selection selection,
-      DistributedReader distributedReader, Timestamp snapshotDate) {
+  public GraphSliceAssembler(PlasmaType rootType, StoreMappingContext mappingContext,
+      Selection selection, DistributedReader distributedReader, Timestamp snapshotDate) {
     super(rootType, selection, distributedReader, snapshotDate);
     this.charset = Charset.forName(CoreConstants.UTF8_ENCODING);
     this.slice = new GraphSliceSupport(this.selection, this.snapshotDate,
-        distributedReader.getConnection());
+        distributedReader.getConnection(), mappingContext);
   }
 
   @Override

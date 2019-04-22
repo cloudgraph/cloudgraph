@@ -18,5 +18,9 @@ package org.cloudgraph.hbase.io;
 import java.util.List;
 
 public interface EdgeReader extends EdgeOperation {
-  public List<CellValues> getRowValues();
+  public abstract List<CellValues> getRowValues();
+
+  public abstract RowReader getRowReader();
+
+  public abstract TableReader getTableReader();
 }

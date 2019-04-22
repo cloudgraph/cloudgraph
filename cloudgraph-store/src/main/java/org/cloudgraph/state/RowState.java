@@ -19,6 +19,7 @@ import java.io.IOException;
 
 import org.cloudgraph.store.key.GraphStatefullColumnKeyFactory;
 import org.cloudgraph.store.mapping.DataGraphMapping;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.plasma.sdo.PlasmaType;
 
 import commonj.sdo.DataObject;

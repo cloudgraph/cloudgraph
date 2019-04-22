@@ -31,6 +31,7 @@ import org.apache.hadoop.hbase.client.BufferedMutator;
 import org.apache.hadoop.hbase.client.Table;
 import org.cloudgraph.hbase.connect.HBaseConnectionManager;
 import org.cloudgraph.state.GraphTable;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.mapping.TableMapping;
 
 /**
@@ -59,12 +60,13 @@ public class GraphTableWriter extends GraphTable implements TableWriter {
   private DistributedGraphWriter distributedGraphWriter;
   public boolean hasConcurentRows = false;
 
-  public GraphTableWriter(TableMapping table) {
-    super(table);
+  public GraphTableWriter(TableMapping table, StoreMappingContext mappingContext) {
+    super(table, mappingContext);
   }
 
-  public GraphTableWriter(TableMapping table, DistributedGraphWriter distributedOperation) {
-    super(table);
+  public GraphTableWriter(TableMapping table, DistributedGraphWriter distributedOperation,
+      StoreMappingContext mappingContext) {
+    super(table, mappingContext);
     this.distributedGraphWriter = distributedOperation;
   }
 

@@ -66,6 +66,7 @@ import org.cloudgraph.recognizer.GraphRecognizerSyntaxTreeAssembler;
 import org.cloudgraph.store.key.EntityMetaKey;
 import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.common.bind.DefaultValidationEventHandler;
 import org.plasma.query.bind.PlasmaQueryDataBinding;
@@ -98,15 +99,18 @@ class GraphSliceSupport {
   private Timestamp snapshotDate;
   private Charset charset;
   private Connection connection;
+  private StoreMappingContext mappingContext;
 
   @SuppressWarnings("unused")
   private GraphSliceSupport() {
   }
 
-  public GraphSliceSupport(Selection selection, Timestamp snapshotDate, Connection connection) {
+  public GraphSliceSupport(Selection selection, Timestamp snapshotDate, Connection connection,
+      StoreMappingContext mappingContext) {
     this.selection = selection;
     this.snapshotDate = snapshotDate;
     this.connection = connection;
+    this.mappingContext = mappingContext;
     this.charset = Charset.forName(CoreConstants.UTF8_ENCODING);
   }
 
@@ -151,9 +155,10 @@ class GraphSliceSupport {
       edgeRecognizerRootExpr.accept(printer);
       log.debug("Edge Recognizer: " + printer.toString());
     }
-    CellConverter cellConverter = new CellConverter(contextType, tableReader.getTableConfig());
+    CellConverter cellConverter = new CellConverter(contextType, tableReader.getTableConfig(),
+        this.mappingContext);
     ExternalEdgeRecognizerContext edgeRecogniserContext = new ExternalEdgeRecognizerContext(
-        contextType);
+        contextType, this.mappingContext);
     boolean complete = rowKeyModelCompleteSelection(contextType, level,
         edgeRecogniserContext.getEndpoints());
     for (KeyBytes rowKeyBytes : edgeReader.getRowKeys()) {
@@ -182,7 +187,7 @@ class GraphSliceSupport {
     // linked to the parent graph. Cannot link to sub-graph as well.
     DistributedReader existingReader = (DistributedReader) tableReader.getDistributedOperation();
     DistributedGraphReader sliceGraphReader = new DistributedGraphReader(contextType,
-        predicateSelection.getTypes(), existingReader.getConnection());
+        predicateSelection.getTypes(), existingReader.getConnection(), this.mappingContext);
     // Note: don't need to close this distributed reader because the slice graph
     // must
     // always have a parent graph, which will close the resources
@@ -201,8 +206,10 @@ class GraphSliceSupport {
 
     // column filter
     HBaseFilterAssembler columnFilterAssembler = new GraphFetchColumnFilterAssembler(
-        predicateSelection, contextType); // use predicate selection not entire
-                                          // graph selection
+        predicateSelection, contextType, this.mappingContext); // use predicate
+                                                               // selection not
+                                                               // entire
+    // graph selection
     Filter columnFilter = columnFilterAssembler.getFilter();
 
     List<Get> gets = new ArrayList<Get>();
@@ -215,7 +222,7 @@ class GraphSliceSupport {
       gets.add(get);
     }
     DataGraphMapping graphConfig = StoreMapping.getInstance().getDataGraph(
-        contextType.getQualifiedName());
+        contextType.getQualifiedName(), this.mappingContext);
     Result[] rows = this.fetchResult(gets, tableReader, graphConfig);
 
     GraphRecognizerContext recognizerContext = new GraphRecognizerContext();
@@ -359,14 +366,14 @@ class GraphSliceSupport {
     }
     PlasmaType rootType = (PlasmaType) rowReader.getRootType();
     DataGraphMapping graphConfig = StoreMapping.getInstance().getDataGraph(
-        rootType.getQualifiedName());
+        rootType.getQualifiedName(), this.mappingContext);
     Get get = new Get(rowReader.getRowKey());
 
     PredicateUtil predicateUtil = new PredicateUtil();
     PredicateFilterAssembler filterAssembler = null;
     boolean multiDescendantProperties = predicateUtil.hasHeterogeneousDescendantProperties(where);
     // if (!multiDescendantProperties) {
-    filterAssembler = new ColumnPredicateFilterAssembler(rootType);
+    filterAssembler = new ColumnPredicateFilterAssembler(rootType, this.mappingContext);
     // }
     // else {
     // filterAssembler = new
@@ -388,7 +395,7 @@ class GraphSliceSupport {
     // assemble a recognizer once for
     // all results. Then only evaluate each result.
     LocalEdgeRecognizerSyntaxTreeAssembler assembler = new LocalEdgeRecognizerSyntaxTreeAssembler(
-        where, graphConfig, contextType, rootType);
+        where, graphConfig, contextType, rootType, this.mappingContext);
     Expr recogniser = assembler.getResult();
     LocalEdgeRecognizerContext context = new LocalEdgeRecognizerContext();
     for (Long seq : buckets.keySet()) {
@@ -604,7 +611,7 @@ class GraphSliceSupport {
 
     PlasmaType rootType = (PlasmaType) rowReader.getRootType();
     BinaryPrefixColumnFilterAssembler columnFilterAssembler = new BinaryPrefixColumnFilterAssembler(
-        rootType);
+        rootType, this.mappingContext);
     columnFilterAssembler.assemble(properties, contextType);
     Filter filter = columnFilterAssembler.getFilter();
     get.setFilter(filter);
@@ -638,7 +645,8 @@ class GraphSliceSupport {
       Filter filter = columnFilterAssembler.getFilter();
       get.setFilter(filter);
     } else {
-      StatefullColumnKeyFactory columnKeyFac = new StatefullColumnKeyFactory(rootType);
+      StatefullColumnKeyFactory columnKeyFac = new StatefullColumnKeyFactory(rootType,
+          this.mappingContext);
       PlasmaType subType = edgeReader.getSubType();
       if (subType == null)
         subType = edgeReader.getBaseType();

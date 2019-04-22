@@ -16,13 +16,15 @@
 package org.cloudgraph.hbase.io;
 
 import org.cloudgraph.state.GraphRow;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 
 import commonj.sdo.DataObject;
 
-public class DefaultRowOperation extends GraphRow implements RowOperation {
+public abstract class DefaultRowOperation extends GraphRow implements RowOperation {
 
-  public DefaultRowOperation(byte[] rowKey, DataObject rootDataObject) {
-    super(rowKey, rootDataObject);
+  public DefaultRowOperation(byte[] rowKey, DataObject rootDataObject,
+      StoreMappingContext mappingContext) {
+    super(rowKey, rootDataObject, mappingContext);
   }
 
 }

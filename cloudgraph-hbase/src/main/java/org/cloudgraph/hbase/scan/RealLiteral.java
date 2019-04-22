@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 
 import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.plasma.query.model.RelationalOperatorName;
 import org.plasma.sdo.DataType;
 import org.plasma.sdo.PlasmaType;
@@ -49,8 +50,9 @@ public class RealLiteral extends ScanLiteral implements PartialRowKeyLiteral, Fu
   public static final BigDecimal INCREMENT_DECIMAL = BigDecimal.valueOf(Double.MIN_VALUE);
 
   public RealLiteral(String literal, PlasmaType rootType,
-      RelationalOperatorName relationalOperator, DataRowKeyFieldMapping fieldConfig) {
-    super(literal, rootType, relationalOperator, fieldConfig);
+      RelationalOperatorName relationalOperator, DataRowKeyFieldMapping fieldConfig,
+      StoreMappingContext mappingContext) {
+    super(literal, rootType, relationalOperator, fieldConfig, mappingContext);
   }
 
   /**

@@ -15,6 +15,7 @@
  */
 package org.cloudgraph.state;
 
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.mapping.TableMapping;
 
 /**
@@ -27,20 +28,27 @@ import org.cloudgraph.store.mapping.TableMapping;
  */
 public abstract class GraphTable implements TableState {
   protected TableMapping tableConfig;
+  protected StoreMappingContext mappingContext;
 
   @SuppressWarnings("unused")
   private GraphTable() {
   }
 
-  public GraphTable(TableMapping table) {
+  public GraphTable(TableMapping table, StoreMappingContext mappingContext) {
     if (table == null)
       throw new IllegalArgumentException("unexpected null value for 'table'");
     this.tableConfig = table;
+    this.mappingContext = mappingContext;
   }
 
   @Override
   public TableMapping getTableConfig() {
     return this.tableConfig;
+  }
+
+  @Override
+  public StoreMappingContext getMappingContext() {
+    return this.mappingContext;
   }
 
 }

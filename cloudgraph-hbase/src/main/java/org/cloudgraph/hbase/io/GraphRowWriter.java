@@ -42,6 +42,7 @@ import org.cloudgraph.state.SequenceGenerator;
 import org.cloudgraph.store.key.EntityMetaKey;
 import org.cloudgraph.store.key.GraphMetaKey;
 import org.cloudgraph.store.key.GraphStatefullColumnKeyFactory;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.mapping.TableMapping;
 import org.cloudgraph.store.service.DuplicateRowException;
 import org.cloudgraph.store.service.GraphServiceException;
@@ -87,10 +88,16 @@ public class GraphRowWriter extends DefaultRowOperation implements RowWriter {
   private Qualifiers qualifierMap = new Qualifiers();
   private Map<DataObject, Long> dataObjectSequenceMap = new HashMap<>();
 
-  public GraphRowWriter(byte[] rowKey, DataObject rootDataObject, TableWriter tableWriter) {
-    super(rowKey, rootDataObject);
+  public GraphRowWriter(byte[] rowKey, DataObject rootDataObject, TableWriter tableWriter,
+      StoreMappingContext mappingContext) {
+    super(rowKey, rootDataObject, mappingContext);
     this.tableWriter = tableWriter;
     this.row = new Put(rowKey);
+  }
+
+  @Override
+  public StoreMappingContext getMappingContext() {
+    return this.tableWriter.getMappingContext();
   }
 
   @Override

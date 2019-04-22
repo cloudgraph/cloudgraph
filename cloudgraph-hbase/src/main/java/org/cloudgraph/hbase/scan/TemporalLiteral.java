@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.Date;
 
 import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.plasma.query.model.RelationalOperatorName;
 import org.plasma.sdo.DataType;
 import org.plasma.sdo.PlasmaType;
@@ -49,8 +50,9 @@ public class TemporalLiteral extends ScanLiteral implements PartialRowKeyLiteral
   // resolution is seconds
 
   public TemporalLiteral(String literal, PlasmaType rootType,
-      RelationalOperatorName relationalOperator, DataRowKeyFieldMapping fieldConfig) {
-    super(literal, rootType, relationalOperator, fieldConfig);
+      RelationalOperatorName relationalOperator, DataRowKeyFieldMapping fieldConfig,
+      StoreMappingContext mappingContext) {
+    super(literal, rootType, relationalOperator, fieldConfig, mappingContext);
   }
 
   protected int getIncrement(DataType dataType) {

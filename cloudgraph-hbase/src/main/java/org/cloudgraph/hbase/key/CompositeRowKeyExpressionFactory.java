@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.cloudgraph.hbase.io.RowOperation;
 import org.cloudgraph.state.RowState;
 import org.cloudgraph.store.key.GraphKeyException;
 import org.cloudgraph.store.key.GraphRowKeyExpressionFactory;
@@ -26,6 +27,7 @@ import org.cloudgraph.store.key.KeyValue;
 import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.cloudgraph.store.mapping.KeyFieldMapping;
 import org.cloudgraph.store.mapping.MetaKeyFieldMapping;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.plasma.sdo.DataFlavor;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
@@ -56,12 +58,12 @@ public class CompositeRowKeyExpressionFactory extends ByteBufferKeyFactory imple
     GraphRowKeyExpressionFactory {
   private static final Log log = LogFactory.getLog(CompositeRowKeyExpressionFactory.class);
 
-  public CompositeRowKeyExpressionFactory(RowState graphRow) {
+  public CompositeRowKeyExpressionFactory(RowOperation graphRow) {
     super(graphRow);
   }
 
-  public CompositeRowKeyExpressionFactory(PlasmaType rootType) {
-    super(rootType);
+  public CompositeRowKeyExpressionFactory(PlasmaType rootType, StoreMappingContext mappingContext) {
+    super(rootType, mappingContext);
   }
 
   @Override

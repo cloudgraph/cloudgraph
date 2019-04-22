@@ -1,0 +1,76 @@
+20 Apr 2019 09:06:48,982 INFO  [main] fuml.Fuml loading artifact, PlasmaSDO.profile_v1_3.uml
+20 Apr 2019 09:06:48,997 INFO  [main] config.FumlConfiguration initializing...
+20 Apr 2019 09:06:48,997 INFO  [main] config.FumlConfigDataBinding loading schema chain...
+20 Apr 2019 09:06:49,060 INFO  [main] config.FumlConfiguration loading configuration, DefaultFumlConfig.xml
+20 Apr 2019 09:06:49,154 INFO  [main] model.InMemoryRepository initializing...
+20 Apr 2019 09:06:49,154 INFO  [main] repository.RepositoryConfigDataBinding loading schema chain...
+20 Apr 2019 09:06:49,185 INFO  [main] model.PrimitiveTypesAssembler initializing...
+20 Apr 2019 09:06:49,200 INFO  [main] model.InfrastructureAssembler initializing...
+20 Apr 2019 09:06:49,247 INFO  [main] model.SuperstructureAssembler initializing...
+20 Apr 2019 09:06:49,279 INFO  [main] model.fUML_SyntaxAssembler initializing...
+20 Apr 2019 09:06:49,294 INFO  [main] model.InMemoryRepository performing package merge...
+20 Apr 2019 09:06:49,325 INFO  [main] model.InMemoryRepository cacheing classifier attributes and operations...
+20 Apr 2019 09:06:49,357 INFO  [main] library.Library initializing...
+20 Apr 2019 09:06:49,857 INFO  [main] fuml.Fuml loading artifact, PlasmaSDODataTypes_v1_3.uml
+20 Apr 2019 09:06:49,919 INFO  [main] fuml.Fuml loading artifact, datatypes.uml
+20 Apr 2019 09:06:50,107 INFO  [main] fuml.Fuml loading artifact, social-graph.uml
+20 Apr 2019 09:06:50,216 DEBUG [main] state.ProtoSequenceGenerator adding type {http://cloudgraph.org/test/socialgraph/actor}Actor seq: 1 hash: 2017957485
+20 Apr 2019 09:06:50,247 DEBUG [main] state.ProtoSequenceGenerator adding type {http://cloudgraph.org/test/socialgraph/story}Blog seq: 1 hash: 2090196346
+20 Apr 2019 09:06:50,247 DEBUG [main] state.ProtoSequenceGenerator adding type {http://cloudgraph.org/test/socialgraph/story}Story seq: 1 hash: 2017621613
+20 Apr 2019 09:06:50,294 DEBUG [main] state.ProtoSequenceGenerator marshal: uri {
+  name: "S"
+  typeEntry {
+    name: "AC"
+    uriName: "S"
+    sequence: 3
+    hashValue: 2017957485
+  }
+}
+uri {
+  name: "Y"
+  typeEntry {
+    name: "BL"
+    uriName: "Y"
+    sequence: 2
+    hashValue: 2090196346
+  }
+  typeEntry {
+    name: "SY"
+    uriName: "Y"
+    sequence: 5
+    hashValue: 2017621613
+  }
+}
+
+20 Apr 2019 09:06:50,294 DEBUG [main] state.ProtoSequenceGenerator adding type {http://cloudgraph.org/test/socialgraph/actor}Friendship seq: 1 hash: 1974365762
+20 Apr 2019 09:06:50,294 DEBUG [main] state.ProtoSequenceGenerator marshal: uri {
+  name: "S"
+  typeEntry {
+    name: "FP"
+    uriName: "S"
+    sequence: 3
+    hashValue: 1974365762
+  }
+  typeEntry {
+    name: "AC"
+    uriName: "S"
+    sequence: 3
+    hashValue: 2017957485
+  }
+}
+uri {
+  name: "Y"
+  typeEntry {
+    name: "BL"
+    uriName: "Y"
+    sequence: 2
+    hashValue: 2090196346
+  }
+  typeEntry {
+    name: "SY"
+    uriName: "Y"
+    sequence: 5
+    hashValue: 2017621613
+  }
+}
+

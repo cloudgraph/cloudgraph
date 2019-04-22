@@ -21,6 +21,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.cloudgraph.hbase.io.RowOperation;
 import org.cloudgraph.state.RowState;
 import org.cloudgraph.store.key.GraphRowKeyFactory;
 import org.cloudgraph.store.key.KeyFieldOverflowException;
@@ -29,6 +30,7 @@ import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.cloudgraph.store.mapping.KeyFieldMapping;
 //import org.cloudgraph.store.mapping.Padding;
 import org.cloudgraph.store.mapping.MetaKeyFieldMapping;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.plasma.sdo.PlasmaType;
 
 import commonj.sdo.DataGraph;
@@ -58,12 +60,12 @@ import commonj.sdo.Type;
 public class CompositeRowKeyFactory extends ByteBufferKeyFactory implements GraphRowKeyFactory {
   private static final Log log = LogFactory.getLog(CompositeRowKeyFactory.class);
 
-  public CompositeRowKeyFactory(RowState graphRow) {
+  public CompositeRowKeyFactory(RowOperation graphRow) {
     super(graphRow);
   }
 
-  public CompositeRowKeyFactory(PlasmaType rootType) {
-    super(rootType);
+  public CompositeRowKeyFactory(PlasmaType rootType, StoreMappingContext mappingContext) {
+    super(rootType, mappingContext);
   }
 
   /**

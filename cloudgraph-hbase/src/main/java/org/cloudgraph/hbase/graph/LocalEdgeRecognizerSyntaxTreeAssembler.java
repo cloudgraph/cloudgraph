@@ -24,6 +24,7 @@ import org.cloudgraph.query.expr.LogicalBinaryExpr;
 import org.cloudgraph.query.expr.PredicateBinaryExpr;
 import org.cloudgraph.query.expr.RelationalBinaryExpr;
 import org.cloudgraph.store.mapping.DataGraphMapping;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.plasma.query.model.Literal;
 import org.plasma.query.model.LogicalOperator;
 import org.plasma.query.model.PredicateOperator;
@@ -85,8 +86,8 @@ public class LocalEdgeRecognizerSyntaxTreeAssembler extends PathPredicateBinaryE
    *          the graph config
    */
   public LocalEdgeRecognizerSyntaxTreeAssembler(Where predicate, DataGraphMapping graphConfig,
-      PlasmaType edgeType, PlasmaType rootType) {
-    super(predicate, edgeType, rootType);
+      PlasmaType edgeType, PlasmaType rootType, StoreMappingContext mappingContext) {
+    super(predicate, edgeType, rootType, mappingContext);
     this.graphConfig = graphConfig;
   }
 

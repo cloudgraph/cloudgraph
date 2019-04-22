@@ -17,6 +17,7 @@ package org.cloudgraph.hbase.io;
 
 import org.apache.hadoop.hbase.client.Table;
 import org.cloudgraph.state.TableState;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 
 /**
  * The the pooled connection and other context for read or write operations for

@@ -22,6 +22,7 @@ import org.apache.commons.logging.LogFactory;
 import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.mapping.TableMapping;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.query.model.AbstractPathElement;
@@ -53,6 +54,7 @@ import org.plasma.sdo.PlasmaType;
 public class ScanLiteralAssembler extends DefaultQueryVisitor {
   private static Log log = LogFactory.getLog(ScanLiteralAssembler.class);
   protected PlasmaType rootType;
+  protected StoreMappingContext mappingContext;
   protected PlasmaType contextType;
   protected PlasmaProperty contextProperty;
   protected String contextPropertyPath;
@@ -69,12 +71,13 @@ public class ScanLiteralAssembler extends DefaultQueryVisitor {
   private ScanLiteralAssembler() {
   }
 
-  public ScanLiteralAssembler(PlasmaType rootType) {
+  public ScanLiteralAssembler(PlasmaType rootType, StoreMappingContext mappingContext) {
     this.rootType = rootType;
     this.contextType = this.rootType;
     QName rootTypeQname = this.rootType.getQualifiedName();
-    this.graph = StoreMapping.getInstance().getDataGraph(rootTypeQname);
-    this.table = StoreMapping.getInstance().getTable(rootTypeQname);
+    this.mappingContext = mappingContext;
+    this.graph = StoreMapping.getInstance().getDataGraph(rootTypeQname, this.mappingContext);
+    this.table = StoreMapping.getInstance().getTable(rootTypeQname, this.mappingContext);
   }
 
   public ScanLiterals getPartialKeyScanResult() {
@@ -170,7 +173,7 @@ public class ScanLiteralAssembler extends DefaultQueryVisitor {
       ScanLiteral scanLiteral = null;
       if (this.contextRelationalOperator != null) {
         scanLiteral = this.scanLiteralFactory.createLiteral(content, property, this.rootType,
-            this.contextRelationalOperator, fieldConfig);
+            this.contextRelationalOperator, fieldConfig, this.mappingContext);
         // partial scan does not accommodate 'not equals' as it scans
         // for
         // contiguous set of row keys
@@ -183,7 +186,7 @@ public class ScanLiteralAssembler extends DefaultQueryVisitor {
           this.fuzzyKeyScanLiterals.addLiteral(scanLiteral);
       } else if (this.contextWildcardOperator != null) {
         scanLiteral = this.scanLiteralFactory.createLiteral(content, property, this.rootType,
-            this.contextWildcardOperator, fieldConfig);
+            this.contextWildcardOperator, fieldConfig, this.mappingContext);
         this.fuzzyKeyScanLiterals.addLiteral(scanLiteral);
       } else
         throw new GraphServiceException("expected relational or wildcard operator for query path '"

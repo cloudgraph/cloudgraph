@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.namespace.QName;
+
 import org.plasma.runtime.ConfigurationException;
 import org.plasma.runtime.PlasmaRuntime;
 import org.plasma.sdo.core.CoreConstants;
@@ -36,6 +38,7 @@ import commonj.sdo.Type;
  * @since 0.5
  */
 public class DataGraphMapping {
+  static final String GRAPH_PATH_DELIM = "/";
   private DataGraph graph;
   private TableMapping table;
   private Map<MetaFieldName, MetaKeyFieldMapping> metaRowKeyFieldMap = new HashMap<MetaFieldName, MetaKeyFieldMapping>();
@@ -152,6 +155,16 @@ public class DataGraphMapping {
       this.columnKeyFieldList.add(columnFieldConfig);
       seqNum++;
     }
+  }
+
+  public static String qualifiedNameFor(QName typeName, StoreMappingContext context) {
+    StringBuilder name = new StringBuilder();
+    if (context != null && context.hasMaprdbVolumePath()) {
+      name.append(context.getMaprdbVolumePath());
+      name.append(GRAPH_PATH_DELIM);
+    }
+    name.append(typeName.toString());
+    return name.toString();
   }
 
   public DataGraph getGraph() {

@@ -26,6 +26,7 @@ import org.cloudgraph.hbase.io.TableWriter;
 import org.cloudgraph.hbase.mutation.GraphMutationCollector;
 import org.cloudgraph.hbase.mutation.GraphMutationWriter;
 import org.cloudgraph.hbase.mutation.Mutations;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.service.DuplicateRowException;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.sdo.access.DataAccessException;
@@ -67,7 +68,7 @@ public class GraphDispatcher extends GraphMutationCollector implements DataGraph
   private static Log log = LogFactory.getLog(GraphDispatcher.class);
 
   public GraphDispatcher(ServiceContext context, SnapshotMap snapshotMap, String username) {
-    super(context, snapshotMap, username);
+    super(context, snapshotMap, username, new StoreMappingContext()); // FIXME:
   }
 
   public void close() {

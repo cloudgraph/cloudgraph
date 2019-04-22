@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.cloudgraph.hbase.connect.Connection;
 import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.mapping.TableMapping;
 import org.plasma.sdo.PlasmaType;
 
@@ -60,13 +61,9 @@ public class DistributedGraphWriter extends WriterSupport implements Distributed
   private Map<TableWriter, List<Type>> tableWriterTypeMap = new HashMap<TableWriter, List<Type>>();
   private Connection connection;
 
-  @SuppressWarnings("unused")
-  private DistributedGraphWriter() {
-  }
-
   public DistributedGraphWriter(DataGraph dataGraph, TableWriterCollector collector,
-      Connection connection) throws IOException {
-
+      Connection connection, StoreMappingContext mappingContext) throws IOException {
+    super(mappingContext);
     this.connection = connection;
     this.rootWriter = collector.getRootTableWriter();
     for (TableWriter tableWriter : collector.getTableWriters()) {
@@ -202,7 +199,7 @@ public class DistributedGraphWriter extends WriterSupport implements Distributed
   @Override
   public RowWriter createRowWriter(DataObject dataObject) throws IOException {
     PlasmaType type = (PlasmaType) dataObject.getType();
-    TableMapping table = StoreMapping.getInstance().findTable(type);
+    TableMapping table = StoreMapping.getInstance().findTable(type, this.mappingContext);
     RowWriter rowWriter = this.rowWriterMap.get(dataObject);
     if (rowWriter != null)
       throw new IllegalArgumentException("the given data object " + dataObject.toString()
@@ -222,7 +219,7 @@ public class DistributedGraphWriter extends WriterSupport implements Distributed
       // a table is configured with this type as root
       TableWriter tableWriter = (TableWriter) tableWriterMap.get(table.getName());
       if (tableWriter == null) {
-        tableWriter = new GraphTableWriter(table, this);
+        tableWriter = new GraphTableWriter(table, this, this.mappingContext);
         rowWriter = createRowWriter(tableWriter, dataObject);
         tableWriter = rowWriter.getTableWriter();
         tableWriterMap.put(tableWriter.getTableConfig().getName(), tableWriter);
@@ -279,4 +276,8 @@ public class DistributedGraphWriter extends WriterSupport implements Distributed
     this.connection = null;
   }
 
+  @Override
+  public StoreMappingContext getMappingContext() {
+    return this.mappingContext;
+  }
 }

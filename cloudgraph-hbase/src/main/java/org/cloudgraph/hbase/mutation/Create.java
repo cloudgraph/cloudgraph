@@ -29,6 +29,7 @@ import org.cloudgraph.hbase.io.TableWriter;
 import org.cloudgraph.hbase.service.HBaseDataConverter;
 import org.cloudgraph.hbase.service.ServiceContext;
 import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.plasma.sdo.PlasmaDataObject;
 import org.plasma.sdo.PlasmaEdge;
 import org.plasma.sdo.PlasmaNode;
@@ -48,8 +49,9 @@ import commonj.sdo.Property;
 public class Create extends DefaultMutation implements Mutation {
   private static Log log = LogFactory.getLog(Create.class);
 
-  public Create(ServiceContext context, SnapshotMap snapshotMap, String username) {
-    super(context, snapshotMap, username);
+  public Create(ServiceContext context, SnapshotMap snapshotMap, String username,
+      StoreMappingContext mappingContext) {
+    super(context, snapshotMap, username, mappingContext);
   }
 
   /**
@@ -61,7 +63,8 @@ public class Create extends DefaultMutation implements Mutation {
       throws IllegalAccessException, IOException {
     PlasmaType type = (PlasmaType) dataObject.getType();
     CoreNode coreNode = ((CoreNode) dataObject);
-    boolean typeBound = StoreMapping.getInstance().findTable(type.getQualifiedName()) != null;
+    boolean typeBound = StoreMapping.getInstance().findTable(type.getQualifiedName(),
+        this.mappingContext) != null;
 
     long sequence = CloudGraphConstants.ROOT_SEQUENCE;
     // if were not creating a root in this or another graph

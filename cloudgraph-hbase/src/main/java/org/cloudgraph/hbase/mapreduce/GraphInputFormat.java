@@ -379,7 +379,7 @@ public class GraphInputFormat extends InputFormat<ImmutableBytesWritable, GraphW
     GraphRecordReader reader = this.graphRecordReader;
     // if no record reader was provided use default
     if (reader == null) {
-      reader = new GraphRecordReader();
+      reader = new GraphRecordReader(this.conf);
     }
     Scan sc = tSplit.getScan();
     log.debug("SCAN: " + sc.toString());

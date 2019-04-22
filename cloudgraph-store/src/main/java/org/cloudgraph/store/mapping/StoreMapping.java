@@ -47,16 +47,17 @@ import org.xml.sax.SAXException;
 import commonj.sdo.Type;
 
 /**
- * Configuration marshaling and un-marshaling with data access convenience
- * methods. Looks for the Java command line '-Dcloudgraph.configuration' setting
- * for the name of the configuration file. If not found looks for the default
- * file name 'cloudgraph-config.xml'. The CloudGraph configuration file must be
+ * Configuration mapping marshaling and un-marshaling with data access
+ * convenience methods. Looks for the Java command line
+ * '-Dcloudgraph.configuration' setting for the name of the mapping
+ * configuration file. If not found looks for the default file name
+ * 'cloudgraph-config.xml'. The CloudGraph mapping configuration file must be
  * somewhere on the Java class path.
  * 
  * @author Scott Cinnamond
  * @since 0.5
  */
-public class StoreMapping implements Config {
+public class StoreMapping implements MappingConfiguration {
 
   private static Log log = LogFactory.getLog(StoreMapping.class);
   private static volatile StoreMapping instance = null;
@@ -68,8 +69,12 @@ public class StoreMapping implements Config {
   private ConfigProperties configProperties;
   private Charset charset = Charset.forName(CoreConstants.UTF8_ENCODING);
 
-  private Map<QName, TableMapping> graphURIToTableMap = new HashMap<QName, TableMapping>();
-  private Map<QName, DataGraphMapping> graphURIToGraphMap = new HashMap<QName, DataGraphMapping>();
+  // private Map<QName, DataGraphMapping> graphURIToGraphMap = new
+  // HashMap<QName, DataGraphMapping>();
+  private Map<String, DataGraphMapping> graphURIToGraphMap = new HashMap<String, DataGraphMapping>();
+  private Map<String, TableMapping> graphURIToTableMap = new HashMap<String, TableMapping>();
+  // private Map<QName, TableMapping> graphURIToTableMap = new HashMap<QName,
+  // TableMapping>();
   private Map<String, TableMapping> tableNameToTableMap = new HashMap<String, TableMapping>();
   private Map<String, Property> propertyNameToPropertyMap = new HashMap<String, Property>();
 
@@ -139,7 +144,7 @@ public class StoreMapping implements Config {
         propertyNameToPropertyMap.put(prop.getName(), prop);
 
       for (Table table : config.tables) {
-        TableMapping tableConfig = new TableMapping(table, this);
+        TableMapping tableConfig = new StaticTableMapping(table, this);
         mapTable(tableConfig);
       }
     } catch (SAXException e) {
@@ -228,33 +233,33 @@ public class StoreMapping implements Config {
     return result;
   }
 
-  private void mapTable(TableMapping tableConfig) {
-    if (this.tableNameToTableMap.get(tableConfig.getQualifiedName()) != null)
+  private void mapTable(TableMapping tableMapping) {
+    if (this.tableNameToTableMap.get(tableMapping.getQualifiedName()) != null)
       throw new StoreMappingException("a table definition already exists for qualified name '"
-          + tableConfig.getQualifiedName() + "'");
-    this.tableNameToTableMap.put(tableConfig.getQualifiedName(), tableConfig);
-    for (DataGraph graph : tableConfig.getTable().getDataGraphs()) {
-      DataGraphMapping dataGraphConfig = new DataGraphMapping(graph, tableConfig);
-      mapDataGraph(dataGraphConfig);
+          + tableMapping.getQualifiedName() + "'");
+    this.tableNameToTableMap.put(tableMapping.getQualifiedName(), tableMapping);
+    for (DataGraph graph : tableMapping.getTable().getDataGraphs()) {
+      DataGraphMapping dataGraphConfig = new DataGraphMapping(graph, tableMapping);
+      mapDataGraph(dataGraphConfig, tableMapping);
     }
   }
 
-  private void unmapTable(TableMapping tableConfig) {
-    if (this.tableNameToTableMap.get(tableConfig.getQualifiedName()) == null)
+  private void unmapTable(TableMapping tableMapping) {
+    if (this.tableNameToTableMap.get(tableMapping.getQualifiedName()) == null)
       throw new StoreMappingException("table definition does not exist exists for qualified name '"
-          + tableConfig.getQualifiedName() + "'");
+          + tableMapping.getQualifiedName() + "'");
 
-    for (DataGraph graph : tableConfig.getTable().getDataGraphs()) {
-      DataGraphMapping dataGraphConfig = new DataGraphMapping(graph, tableConfig);
+    for (DataGraph graph : tableMapping.getTable().getDataGraphs()) {
+      DataGraphMapping dataGraphConfig = new DataGraphMapping(graph, tableMapping);
       unmapDataGraph(dataGraphConfig);
     }
 
-    this.tableNameToTableMap.remove(tableConfig.getQualifiedName());
+    this.tableNameToTableMap.remove(tableMapping.getQualifiedName());
   }
 
-  private void mapDataGraph(DataGraphMapping dataGraphConfig) {
+  private void mapDataGraph(DataGraphMapping dataGraphMapping, TableMapping tableMapping) {
 
-    QName qname = new QName(dataGraphConfig.getGraph().getUri(), dataGraphConfig.getGraph()
+    QName qname = new QName(dataGraphMapping.getGraph().getUri(), dataGraphMapping.getGraph()
         .getType());
     PlasmaType configuredType = (PlasmaType) PlasmaTypeHelper.INSTANCE.getType(
         qname.getNamespaceURI(), qname.getLocalPart());
@@ -264,12 +269,17 @@ public class StoreMapping implements Config {
     // + table.getName() + "' has an abstract type (uri/name), "
     // + graph.getUri() + "#" + graph.getType() +
     // " - use a non abstract type");
-    if (graphURIToTableMap.get(qname) != null)
+    String qualifiedTableName = tableMapping.getQualifiedName();
+
+    String qualifiedGraphName = DataGraphMapping.qualifiedNameFor(qname,
+        tableMapping.getMappingContext());
+
+    if (graphURIToTableMap.get(qualifiedGraphName) != null)
       throw new StoreMappingException("a data graph definition already exists within table '"
-          + dataGraphConfig.getTable().getTable().getName() + "' for type (uri/name), "
-          + dataGraphConfig.getGraph().getUri() + "#" + dataGraphConfig.getGraph().getType());
-    graphURIToTableMap.put(qname, dataGraphConfig.getTable());
-    graphURIToGraphMap.put(qname, dataGraphConfig);
+          + qualifiedTableName + "' for type (uri/name), " + dataGraphMapping.getGraph().getUri()
+          + "#" + dataGraphMapping.getGraph().getType());
+    graphURIToTableMap.put(qualifiedGraphName, dataGraphMapping.getTable());
+    graphURIToGraphMap.put(qualifiedGraphName, dataGraphMapping);
     /*
      * Map<QName, PlasmaType> hierarchy = new HashMap<QName, PlasmaType>();
      * this.collectTypeHierarchy(configuredType, hierarchy);
@@ -286,8 +296,8 @@ public class StoreMapping implements Config {
 
   private void unmapDataGraph(DataGraphMapping dataGraphConfig) {
 
-    QName qname = new QName(dataGraphConfig.getGraph().getUri(), dataGraphConfig.getGraph()
-        .getType());
+    String qname = (new QName(dataGraphConfig.getGraph().getUri(), dataGraphConfig.getGraph()
+        .getType())).toString();
     if (graphURIToTableMap.get(qname) == null)
       throw new StoreMappingException("no data graph definition already exists within table '"
           + dataGraphConfig.getTable().getTable().getName() + "' for type (uri/name), "
@@ -326,7 +336,7 @@ public class StoreMapping implements Config {
     }
   }
 
-  public static Config getInstance() throws StoreMappingException {
+  public static MappingConfiguration getInstance() throws StoreMappingException {
     if (instance == null)
       initializeInstance();
     return instance;
@@ -362,34 +372,24 @@ public class StoreMapping implements Config {
     return this.propertyNameToPropertyMap.get(name);
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.cloudgraph.config.TableMapping#findTable(javax.xml.namespace.QName)
-   */
   @Override
-  public TableMapping findTable(QName typeName) {
+  public TableMapping findTable(QName typeName, StoreMappingContext context) {
     lock.readLock().lock();
     try {
       PlasmaType type = (PlasmaType) PlasmaTypeHelper.INSTANCE.getType(typeName.getNamespaceURI(),
           typeName.getLocalPart());
-      return this.graphURIToTableMap.get(type.getQualifiedName());
+      String qualifiedName = TableMapping.qualifiedNameFor(type.getQualifiedName(), context);
+      return this.graphURIToTableMap.get(qualifiedName);
     } finally {
       lock.readLock().unlock();
     }
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.cloudgraph.config.TableMapping#getTable(javax.xml.namespace.QName)
-   */
   @Override
-  public TableMapping getTable(QName typeName) {
+  public TableMapping getTable(QName typeName, StoreMappingContext context) {
     lock.readLock().lock();
     try {
-      TableMapping result = findTable(typeName);
+      TableMapping result = findTable(typeName, context);
       if (result == null)
         throw new StoreMappingException("no HTable configured for " + " graph URI '"
             + typeName.toString() + "'");
@@ -399,16 +399,12 @@ public class StoreMapping implements Config {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.cloudgraph.config.TableMapping#findTable(commonj.sdo.Type)
-   */
   @Override
-  public TableMapping findTable(Type type) {
+  public TableMapping findTable(Type type, StoreMappingContext context) {
     lock.readLock().lock();
     try {
-      return this.graphURIToTableMap.get(((PlasmaType) type).getQualifiedName());
+      String qualifiedName = ((PlasmaType) type).getQualifiedName().toString();
+      return this.graphURIToTableMap.get(qualifiedName);
     } finally {
       lock.readLock().unlock();
     }
@@ -420,10 +416,10 @@ public class StoreMapping implements Config {
    * @see org.cloudgraph.config.TableMapping#getTable(commonj.sdo.Type)
    */
   @Override
-  public TableMapping getTable(Type type) {
+  public TableMapping getTable(Type type, StoreMappingContext context) {
     lock.readLock().lock();
     try {
-      TableMapping result = findTable(type);
+      TableMapping result = findTable(type, context);
       if (result == null)
         throw new StoreMappingException("no HTable configured for " + " graph URI '"
             + ((PlasmaType) type).getQualifiedName() + "'");
@@ -464,35 +460,27 @@ public class StoreMapping implements Config {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.cloudgraph.config.TableMapping#findTable(java.lang.String)
-   */
   @Override
-  public TableMapping findTable(String tableName) {
+  public TableMapping findTable(String tableName, StoreMappingContext context) {
     lock.readLock().lock();
     try {
-      TableMapping result = this.tableNameToTableMap.get(tableName);
+      String qualifiedName = TableMapping.qualifiedNameFor(null, tableName, context);
+      TableMapping result = this.tableNameToTableMap.get(qualifiedName);
       return result;
     } finally {
       lock.readLock().unlock();
     }
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.cloudgraph.config.TableMapping#getTable(java.lang.String)
-   */
   @Override
-  public TableMapping getTable(String tableNamespace, String tableName) {
+  public TableMapping getTable(String tableNamespace, String tableName, StoreMappingContext context) {
     lock.readLock().lock();
     try {
-      TableMapping result = this.tableNameToTableMap.get(tableName);
+      // FIXME: called by 
+      String qualifiedName = TableMapping.qualifiedNameFor(null, tableName, context);
+      TableMapping result = this.tableNameToTableMap.get(qualifiedName);
       if (result == null)
-        throw new StoreMappingException("no table configured for" + " name '"
-            + tableName.toString() + "'");
+        throw new StoreMappingException("no table configured for '" + qualifiedName + "'");
       return result;
     } finally {
       lock.readLock().unlock();
@@ -506,10 +494,11 @@ public class StoreMapping implements Config {
    * org.cloudgraph.config.TableMapping#getTableName(javax.xml.namespace.QName )
    */
   @Override
-  public String getTableName(QName typeName) {
+  public String getTableName(QName typeName, StoreMappingContext context) {
     lock.readLock().lock();
     try {
-      TableMapping result = this.graphURIToTableMap.get(typeName);
+      String qualifiedName = TableMapping.qualifiedNameFor(typeName, context);
+      TableMapping result = this.graphURIToTableMap.get(qualifiedName);
       if (result == null)
         throw new StoreMappingException("no HTable configured for" + " CloudGraph '"
             + typeName.toString() + "'");
@@ -568,10 +557,11 @@ public class StoreMapping implements Config {
    * QName)
    */
   @Override
-  public DataGraphMapping findDataGraph(QName qname) {
+  public DataGraphMapping findDataGraph(QName typeName, StoreMappingContext context) {
     lock.readLock().lock();
     try {
-      DataGraphMapping result = this.graphURIToGraphMap.get(qname);
+      String graphQualifiedName = DataGraphMapping.qualifiedNameFor(typeName, context);
+      DataGraphMapping result = this.graphURIToGraphMap.get(graphQualifiedName);
       return result;
     } finally {
       lock.readLock().unlock();
@@ -585,12 +575,14 @@ public class StoreMapping implements Config {
    * org.cloudgraph.config.TableMapping#getDataGraph(javax.xml.namespace.QName )
    */
   @Override
-  public DataGraphMapping getDataGraph(QName qname) {
+  public DataGraphMapping getDataGraph(QName typeName, StoreMappingContext context) {
     lock.readLock().lock();
     try {
-      DataGraphMapping result = this.graphURIToGraphMap.get(qname);
+      String graphQualifiedName = DataGraphMapping.qualifiedNameFor(typeName, context);
+
+      DataGraphMapping result = this.graphURIToGraphMap.get(graphQualifiedName);
       if (result == null)
-        throw new StoreMappingException("no configured for" + " '" + qname.toString() + "'");
+        throw new StoreMappingException("no configured for" + " '" + graphQualifiedName + "'");
       return result;
     } finally {
       lock.readLock().unlock();
@@ -651,6 +643,18 @@ public class StoreMapping implements Config {
           this.config.getMaprdbTablePathPrefix(), null);
     }
     return this.maprdbTablePathPrefixVar;
+  }
+
+  private String maprdbVolumePathPrefixVar = null;
+
+  @Override
+  public String maprdbVolumePathPrefix() {
+    if (maprdbVolumePathPrefixVar == null) {
+      maprdbVolumePathPrefixVar = getTablePropertyString(
+          ConfigurationProperty.CLOUDGRAPH___MAPRDB___VOLUME___PATH___PREFIX,
+          this.config.getMaprdbVolumePathPrefix(), null);
+    }
+    return this.maprdbVolumePathPrefixVar;
   }
 
   private Boolean optimisticConcurrencyVar = null;

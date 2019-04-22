@@ -53,6 +53,7 @@ import org.cloudgraph.hbase.util.FilterUtil;
 import org.cloudgraph.query.expr.Expr;
 import org.cloudgraph.query.expr.ExprPrinter;
 import org.cloudgraph.recognizer.GraphRecognizerSyntaxTreeAssembler;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.query.OrderBy;
 import org.plasma.query.collector.SelectionCollector;
@@ -108,6 +109,7 @@ public class GraphStreamQuery extends GraphQuery implements
         .getNamespaceURI(), from.getEntity().getName());
 
     Where where = query.findWhereClause();
+    StoreMappingContext mappingContext = createMappingContext(query);
 
     SelectionCollector selection = null;
     if (where != null)
@@ -116,14 +118,15 @@ public class GraphStreamQuery extends GraphQuery implements
       selection = new SelectionCollector(query.getSelectClause(), type);
     selection.setOnlyDeclaredProperties(false);
     for (Type t : selection.getTypes())
-      collectRowKeyProperties(selection, (PlasmaType) t);
+      collectRowKeyProperties(selection, (PlasmaType) t, mappingContext);
     if (log.isDebugEnabled())
       log.debug(selection.dumpInheritedProperties());
 
     // Create and add a column filter for the initial
     // column set based on existence of path predicates
     // in the Select.
-    HBaseFilterAssembler columnFilterAssembler = createRootColumnFilterAssembler(type, selection);
+    HBaseFilterAssembler columnFilterAssembler = createRootColumnFilterAssembler(type, selection,
+        mappingContext);
     Filter columnFilter = columnFilterAssembler.getFilter();
 
     List<PartialRowKey> partialScans = new ArrayList<PartialRowKey>();
@@ -139,7 +142,7 @@ public class GraphStreamQuery extends GraphQuery implements
         whereSyntaxTree.accept(printer);
         log.debug("Graph Recognizer: " + printer.toString());
       }
-      ScanCollector scanCollector = new ScanCollector(type);
+      ScanCollector scanCollector = new ScanCollector(type, mappingContext);
       whereSyntaxTree.accept(scanCollector);
       partialScans = scanCollector.getPartialRowKeyScans();
       fuzzyScans = scanCollector.getFuzzyRowKeyScans();
@@ -151,7 +154,8 @@ public class GraphStreamQuery extends GraphQuery implements
 
     if (where == null
         || (partialScans.size() == 0 && fuzzyScans.size() == 0 && completeKeys.size() == 0)) {
-      PartialRowKeyScanAssembler scanAssembler = new PartialRowKeyScanAssembler(type);
+      PartialRowKeyScanAssembler scanAssembler = new PartialRowKeyScanAssembler(type,
+          mappingContext);
       scanAssembler.assemble();
       byte[] startKey = scanAssembler.getStartKey();
       if (startKey != null && startKey.length > 0) {
@@ -172,20 +176,21 @@ public class GraphStreamQuery extends GraphQuery implements
       orderingComparator = orderingCompAssem.getComparator();
     }
 
-    this.executeAsStream(query, selection, type, columnFilter, whereSyntaxTree, orderingComparator,
-        partialScans, fuzzyScans, completeKeys, snapshotDate);
+    this.executeAsStream(query, selection, type, mappingContext, columnFilter, whereSyntaxTree,
+        orderingComparator, partialScans, fuzzyScans, completeKeys, snapshotDate);
   }
 
   protected void executeAsStream(Query query, SelectionCollector selection, PlasmaType type,
-      Filter columnFilter, Expr whereSyntaxTree, ResultsComparator orderingComparator,
-      List<PartialRowKey> partialScans, List<FuzzyRowKey> fuzzyScans,
-      List<CompleteRowKey> completeKeys, Timestamp snapshotDate) {
+      StoreMappingContext mappingContext, Filter columnFilter, Expr whereSyntaxTree,
+      ResultsComparator orderingComparator, List<PartialRowKey> partialScans,
+      List<FuzzyRowKey> fuzzyScans, List<CompleteRowKey> completeKeys, Timestamp snapshotDate) {
     Connection connection = HBaseConnectionManager.instance().getConnection();
     DistributedGraphReader graphReader = null;
     try {
-      graphReader = new DistributedGraphReader(type, selection.getTypes(), connection);
+      graphReader = new DistributedGraphReader(type, selection.getTypes(), connection,
+          mappingContext);
       GraphAssemblerFactory assemblerFactory = new GraphAssemblerFactory(query, type, graphReader,
-          selection, snapshotDate);
+          selection, snapshotDate, mappingContext);
       TableReader rootTableReader = graphReader.getRootTableReader();
       ResultsAssembler resultsCollector = this.createResultsAssembler(query, selection,
           whereSyntaxTree, orderingComparator, null, null, rootTableReader, assemblerFactory);

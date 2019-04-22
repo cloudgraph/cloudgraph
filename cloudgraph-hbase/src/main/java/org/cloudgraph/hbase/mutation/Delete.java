@@ -27,6 +27,7 @@ import org.cloudgraph.hbase.io.EdgeWriter;
 import org.cloudgraph.hbase.io.RowWriter;
 import org.cloudgraph.hbase.io.TableWriter;
 import org.cloudgraph.hbase.service.ServiceContext;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.plasma.sdo.PlasmaDataObject;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
@@ -43,8 +44,9 @@ import commonj.sdo.Property;
 public class Delete extends DefaultMutation implements Mutation {
   private static Log log = LogFactory.getLog(Delete.class);
 
-  public Delete(ServiceContext context, SnapshotMap snapshotMap, String username) {
-    super(context, snapshotMap, username);
+  public Delete(ServiceContext context, SnapshotMap snapshotMap, String username,
+      StoreMappingContext mappingContext) {
+    super(context, snapshotMap, username, mappingContext);
   }
 
   @Override

@@ -23,7 +23,7 @@ import javax.xml.namespace.QName;
 
 import commonj.sdo.Type;
 
-public interface Config {
+public interface MappingConfiguration {
 
   public void marshal(OutputStream stream);
 
@@ -41,7 +41,7 @@ public interface Config {
    *          the qualified name of an SDO Type
    * @return the table configuration or null if not found
    */
-  public TableMapping findTable(QName typeName);
+  public TableMapping findTable(QName typeName, StoreMappingContext context);
 
   /**
    * Returns a table configuration for the given qualified SDO Type name.
@@ -52,7 +52,7 @@ public interface Config {
    * @throws StoreMappingException
    *           if the given name is not found
    */
-  public TableMapping getTable(QName typeName);
+  public TableMapping getTable(QName typeName, StoreMappingContext context);
 
   /**
    * Returns a table configuration for the given SDO Type or null if not found.
@@ -61,7 +61,7 @@ public interface Config {
    *          the SDO Type
    * @return the table configuration or null if not found
    */
-  public TableMapping findTable(Type type);
+  public TableMapping findTable(Type type, StoreMappingContext context);
 
   /**
    * Returns a table configuration for the given SDO Type.
@@ -72,7 +72,7 @@ public interface Config {
    * @throws StoreMappingException
    *           if the given type is not found
    */
-  public TableMapping getTable(Type type);
+  public TableMapping getTable(Type type, StoreMappingContext context);
 
   /**
    * Returns a table configuration based on the given table name.
@@ -81,10 +81,10 @@ public interface Config {
    *          the table name or null if not found.
    * @return the table configuration or null if not found.
    */
-  public TableMapping findTable(String tableName);
+  public TableMapping findTable(String tableName, StoreMappingContext context);
 
   /**
-   * Returns a table configuration based on the given table name.
+   * Returns a table mapping based on the given table name.
    * 
    * @param tableNamespace
    *          the table namespace
@@ -94,7 +94,7 @@ public interface Config {
    * @throws StoreMappingException
    *           if the given name is not found
    */
-  public TableMapping getTable(String tableNamespace, String tableName);
+  public TableMapping getTable(String tableNamespace, String tableName, StoreMappingContext context);
 
   /**
    * Returns a table name for the given qualified SDO Type name.
@@ -103,7 +103,7 @@ public interface Config {
    *          the qualified name of an SDO Type
    * @return the table name
    */
-  public String getTableName(QName typeName);
+  public String getTableName(QName typeName, StoreMappingContext context);
 
   /**
    * Adds the given configuration
@@ -143,22 +143,22 @@ public interface Config {
    * 
    * @param typeName
    *          the qualified name of an SDO Type
-   * @return a data graph config for the given qualified SDO Type name or null
+   * @return a data graph mapping for the given qualified SDO Type name or null
    *         of not exists.
    */
-  public DataGraphMapping findDataGraph(QName qname);
+  public DataGraphMapping findDataGraph(QName qname, StoreMappingContext context);
 
   /**
-   * Returns a data graph config for the given qualified SDO Type name.
+   * Returns a data graph mapping for the given qualified SDO Type name.
    * 
    * @param typeName
    *          the qualified name of an SDO Type
-   * @return a data graph config for the given qualified SDO Type name.
+   * @return a data graph mapping for the given qualified SDO Type name.
    * @throws StoreMappingException
    *           if no configured data graph exists for the given qualified SDO
    *           Type name
    */
-  public DataGraphMapping getDataGraph(QName qname);
+  public DataGraphMapping getDataGraph(QName qname, StoreMappingContext context);
 
   public Charset getCharset();
 
@@ -169,6 +169,8 @@ public interface Config {
   public boolean tombstoneRowsOverwriteable();
 
   public String maprdbTablePathPrefix();
+
+  public String maprdbVolumePathPrefix();
 
   public boolean optimisticConcurrency();
 

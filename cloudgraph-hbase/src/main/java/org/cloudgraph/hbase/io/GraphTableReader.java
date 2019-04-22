@@ -32,6 +32,7 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.cloudgraph.common.CloudGraphConstants;
 import org.cloudgraph.hbase.connect.HBaseConnectionManager;
 import org.cloudgraph.state.GraphTable;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.mapping.TableMapping;
 //import org.cloudgraph.state.UUID;
 import org.plasma.sdo.PlasmaDataObject;
@@ -61,8 +62,9 @@ public class GraphTableReader extends GraphTable implements TableReader {
   private Map<Object, RowReader> rowReaderMap = new HashMap<>();
   private DistributedGraphOperation distributedOperation;
 
-  public GraphTableReader(TableMapping table, DistributedGraphOperation distributedOperation) {
-    super(table);
+  public GraphTableReader(TableMapping table, DistributedGraphOperation distributedOperation,
+      StoreMappingContext mappingContext) {
+    super(table, mappingContext);
     this.distributedOperation = distributedOperation;
   }
 
@@ -206,7 +208,8 @@ public class GraphTableReader extends GraphTable implements TableReader {
     if (this.rowReaderMap.containsKey(keyString))
       throw new IllegalArgumentException(
           "existing row reader is already mapped for the given row key, " + keyString);
-    GraphRowReader rowReader = new GraphRowReader(rowKey, resultRow, dataObject, this);
+    GraphRowReader rowReader = new GraphRowReader(rowKey, resultRow, dataObject, this,
+        this.mappingContext);
     this.addRowReader(uuid, rowReader);
     this.addRowReader(keyString, rowReader);
 

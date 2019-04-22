@@ -25,6 +25,7 @@ import javax.xml.namespace.QName;
 import org.cloudgraph.store.key.GraphStatefullColumnKeyFactory;
 import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.plasma.sdo.PlasmaDataObject;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
@@ -57,14 +58,14 @@ public class GraphRow implements RowState {
   private GraphRow() {
   }
 
-  public GraphRow(byte[] rowKey, DataObject rootDataObject) {
+  public GraphRow(byte[] rowKey, DataObject rootDataObject, StoreMappingContext mappingContext) {
     this.rowKey = rowKey;
     this.rootDataObject = rootDataObject;
     int hashCode = getHashCode((PlasmaDataObject) this.rootDataObject);
     this.dataObjectMap.put(hashCode, rootDataObject);
 
     QName rootTypeQname = ((PlasmaType) this.rootDataObject.getType()).getQualifiedName();
-    this.graphConfig = StoreMapping.getInstance().getDataGraph(rootTypeQname);
+    this.graphConfig = StoreMapping.getInstance().getDataGraph(rootTypeQname, mappingContext);
   }
 
   @Override

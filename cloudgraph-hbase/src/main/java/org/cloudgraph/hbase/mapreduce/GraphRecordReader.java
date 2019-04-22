@@ -17,6 +17,7 @@ package org.cloudgraph.hbase.mapreduce;
 
 import java.io.IOException;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
@@ -36,7 +37,17 @@ import org.cloudgraph.mapreduce.GraphWritable;
  */
 public class GraphRecordReader extends RecordReader<ImmutableBytesWritable, GraphWritable> {
 
-  private GraphRecordRecognizer recordReaderImpl = new GraphRecordRecognizer();
+  private GraphRecordRecognizer recordReaderImpl;
+  private Configuration configuration;
+
+  @SuppressWarnings("unused")
+  private GraphRecordReader() {
+  }
+
+  public GraphRecordReader(Configuration configuration) {
+    this.configuration = configuration;
+    recordReaderImpl = new GraphRecordRecognizer(configuration);
+  }
 
   /**
    * Restart from survivable exceptions by creating a new scanner.

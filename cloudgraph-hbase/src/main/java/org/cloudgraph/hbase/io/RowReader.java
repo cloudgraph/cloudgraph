@@ -18,6 +18,7 @@ package org.cloudgraph.hbase.io;
 
 import java.io.IOException;
 
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
 

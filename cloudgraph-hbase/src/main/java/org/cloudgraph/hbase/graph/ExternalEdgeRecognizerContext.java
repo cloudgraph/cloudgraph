@@ -21,6 +21,7 @@ import org.cloudgraph.hbase.key.CompositeRowKeyReader;
 import org.cloudgraph.query.expr.EvaluationContext;
 import org.cloudgraph.recognizer.Endpoint;
 import org.cloudgraph.store.key.KeyValue;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.plasma.sdo.PlasmaType;
 
 /**
@@ -50,8 +51,8 @@ public class ExternalEdgeRecognizerContext implements EvaluationContext {
   /**
    * Constructs an empty context.
    */
-  public ExternalEdgeRecognizerContext(PlasmaType contextType) {
-    this.rowKeyReader = new CompositeRowKeyReader(contextType);
+  public ExternalEdgeRecognizerContext(PlasmaType contextType, StoreMappingContext mappingContext) {
+    this.rowKeyReader = new CompositeRowKeyReader(contextType, mappingContext);
   }
 
   public void read(byte[] rowKey) {

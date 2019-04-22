@@ -27,6 +27,8 @@ public interface EdgeWriter extends EdgeOperation {
 
   public abstract RowWriter getRowWriter();
 
+  public abstract TableWriter getTableWriter();
+
   public abstract void replace(PlasmaDataObject oldValue, PlasmaDataObject newValue)
       throws IOException;
 

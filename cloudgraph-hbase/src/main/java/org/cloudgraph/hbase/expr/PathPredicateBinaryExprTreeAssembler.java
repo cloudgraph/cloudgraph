@@ -22,6 +22,7 @@ import org.cloudgraph.query.expr.DefaultBinaryExprTreeAssembler;
 import org.cloudgraph.query.expr.Expr;
 import org.cloudgraph.query.expr.ExprAssembler;
 import org.cloudgraph.store.lang.GraphFilterException;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.plasma.query.model.Path;
 import org.plasma.query.model.Property;
 import org.plasma.query.model.Where;
@@ -86,10 +87,10 @@ public abstract class PathPredicateBinaryExprTreeAssembler extends DefaultBinary
    *          the graph root type
    */
   public PathPredicateBinaryExprTreeAssembler(Where predicate, PlasmaType edgeType,
-      PlasmaType rootType) {
+      PlasmaType rootType, StoreMappingContext mappingContext) {
     super(predicate, rootType);
     this.edgeType = edgeType;
-    this.columnKeyFactory = new CompositeColumnKeyFactory(this.rootType);
+    this.columnKeyFactory = new CompositeColumnKeyFactory(this.rootType, mappingContext);
 
   }
 

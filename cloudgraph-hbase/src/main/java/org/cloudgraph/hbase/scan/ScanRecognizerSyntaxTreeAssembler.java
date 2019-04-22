@@ -21,6 +21,7 @@ import org.cloudgraph.query.expr.ExprAssembler;
 import org.cloudgraph.query.expr.LogicalBinaryExpr;
 import org.cloudgraph.query.expr.RelationalBinaryExpr;
 import org.cloudgraph.store.mapping.DataGraphMapping;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.plasma.query.model.Literal;
 import org.plasma.query.model.LogicalOperator;
 import org.plasma.query.model.Property;
@@ -54,6 +55,7 @@ import org.plasma.sdo.PlasmaType;
  */
 public class ScanRecognizerSyntaxTreeAssembler extends DefaultBinaryExprTreeAssembler {
   protected DataGraphMapping graphConfig;
+  protected StoreMappingContext mappingContext;
 
   /**
    * Constructs an assembler based on the given predicate data graph
@@ -64,8 +66,10 @@ public class ScanRecognizerSyntaxTreeAssembler extends DefaultBinaryExprTreeAsse
    * @param rootType
    *          the graph root type
    */
-  public ScanRecognizerSyntaxTreeAssembler(Where predicate, PlasmaType rootType) {
+  public ScanRecognizerSyntaxTreeAssembler(Where predicate, PlasmaType rootType,
+      StoreMappingContext mappingContext) {
     super(predicate, rootType);
+    this.mappingContext = mappingContext;
   }
 
   /**
@@ -90,7 +94,7 @@ public class ScanRecognizerSyntaxTreeAssembler extends DefaultBinaryExprTreeAsse
   @Override
   public RelationalBinaryExpr createRelationalBinaryExpr(Property property, Literal literal,
       RelationalOperator operator) {
-    return new ScanRecognizerRelationalBinaryExpr(property, literal, operator);
+    return new ScanRecognizerRelationalBinaryExpr(property, literal, operator, this.mappingContext);
   }
 
   /**

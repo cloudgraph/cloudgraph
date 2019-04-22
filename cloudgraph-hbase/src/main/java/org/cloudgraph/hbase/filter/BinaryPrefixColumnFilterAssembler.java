@@ -25,6 +25,7 @@ import org.apache.hadoop.hbase.filter.FilterList;
 import org.apache.hadoop.hbase.filter.QualifierFilter;
 import org.cloudgraph.hbase.key.CompositeColumnKeyFactory;
 import org.cloudgraph.store.key.GraphColumnKeyFactory;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
 
@@ -58,9 +59,9 @@ public class BinaryPrefixColumnFilterAssembler extends FilterListAssembler {
   private static Log log = LogFactory.getLog(BinaryPrefixColumnFilterAssembler.class);
   private GraphColumnKeyFactory columnKeyFac;
 
-  public BinaryPrefixColumnFilterAssembler(PlasmaType rootType) {
+  public BinaryPrefixColumnFilterAssembler(PlasmaType rootType, StoreMappingContext mappingContext) {
     super(rootType);
-    this.columnKeyFac = new CompositeColumnKeyFactory(rootType);
+    this.columnKeyFac = new CompositeColumnKeyFactory(rootType, mappingContext);
 
     this.rootFilter = new FilterList(FilterList.Operator.MUST_PASS_ONE);
   }

@@ -20,10 +20,12 @@ import java.nio.charset.Charset;
 
 import javax.xml.namespace.QName;
 
+import org.cloudgraph.hbase.io.RowOperation;
 import org.cloudgraph.state.RowState;
-import org.cloudgraph.store.mapping.Config;
+import org.cloudgraph.store.mapping.MappingConfiguration;
 import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.mapping.TableMapping;
 import org.plasma.sdo.PlasmaType;
 
@@ -73,12 +75,12 @@ public abstract class ByteBufferKeyFactory implements ConfigurableKeyFactory {
    * creating the underlying row. Not for query operations where we have nothing
    * but metadata.
    * 
-   * @param graphRow
+   * @param rowOperation
    */
-  protected ByteBufferKeyFactory(RowState graphRow) {
-    this.table = graphRow.getDataGraph().getTable();
+  protected ByteBufferKeyFactory(RowOperation rowOperation) {
+    this.table = rowOperation.getDataGraph().getTable();
     this.charset = table.getCharset();
-    this.graph = graphRow.getDataGraph();
+    this.graph = rowOperation.getDataGraph();
   }
 
   /**
@@ -89,15 +91,15 @@ public abstract class ByteBufferKeyFactory implements ConfigurableKeyFactory {
    * @param rootType
    *          the SDO type
    */
-  protected ByteBufferKeyFactory(PlasmaType rootType) {
+  protected ByteBufferKeyFactory(PlasmaType rootType, StoreMappingContext mappingContext) {
     this.rootType = rootType;
     // FIXME: should be table context delegate?
     QName rootTypeQname = this.rootType.getQualifiedName();
-    Config config = StoreMapping.getInstance();
-    if (config.findTable(rootTypeQname) == null)
+    MappingConfiguration config = StoreMapping.getInstance();
+    if (config.findTable(rootTypeQname, mappingContext) == null)
       throw new IllegalArgumentException("given type is not a bound (graph root) type, " + rootType);
-    this.table = config.getTable(rootTypeQname);
-    this.graph = config.getDataGraph(rootTypeQname);
+    this.table = config.getTable(rootTypeQname, mappingContext);
+    this.graph = config.getDataGraph(rootTypeQname, mappingContext);
     this.charset = config.getCharset();
   }
 

@@ -37,9 +37,12 @@ import org.cloudgraph.hbase.service.GraphQuery;
 import org.cloudgraph.hbase.service.ServiceContext;
 import org.cloudgraph.hbase.service.SimpleServiceContext;
 import org.cloudgraph.mapreduce.GraphService;
+import org.cloudgraph.store.mapping.ConfigurationProperty;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.query.Query;
 import org.plasma.sdo.PlasmaNode;
+import org.plasma.sdo.PlasmaType;
 import org.plasma.sdo.core.SnapshotMap;
 
 import commonj.sdo.DataGraph;
@@ -70,6 +73,7 @@ public class GraphServiceDelegate implements GraphService {
 
   @Override
   public void commit(DataGraph graph, JobContext jobContext) throws IOException {
+    StoreMappingContext mappingContext = createMappingContext(jobContext);
 
     String jobName = this.getClass().getSimpleName();
     if (jobContext != null)
@@ -78,7 +82,7 @@ public class GraphServiceDelegate implements GraphService {
     MutationCollector collector = null;
     Connection connection = HBaseConnectionManager.instance().getConnection();
     try {
-      collector = new GraphMutationCollector(this.context, snapshotMap, jobName);
+      collector = new GraphMutationCollector(this.context, snapshotMap, jobName, mappingContext);
 
       // FIXME: if an exception happens here we don't have table writers
       // to close
@@ -121,9 +125,8 @@ public class GraphServiceDelegate implements GraphService {
 
   @Override
   public void commit(DataGraph[] graphs, JobContext jobContext) throws IOException {
-    String jobName = this.getClass().getSimpleName();
-    if (jobContext != null)
-      jobName = jobContext.getJobName();
+    String jobName = jobContext.getJobName();
+    StoreMappingContext mappingContext = createMappingContext(jobContext);
     SnapshotMap snapshotMap = new SnapshotMap(new Timestamp((new Date()).getTime()));
     // Map<TableWriter, List<Row>> mutations = new HashMap<TableWriter,
     // List<Row>>();
@@ -131,7 +134,7 @@ public class GraphServiceDelegate implements GraphService {
     MutationCollector collector = null;
     Connection connection = HBaseConnectionManager.instance().getConnection();
     try {
-      collector = new GraphMutationCollector(this.context, snapshotMap, jobName);
+      collector = new GraphMutationCollector(this.context, snapshotMap, jobName, mappingContext);
       try {
         mutations = collector.collectChanges(graphs, connection);
       } catch (IllegalAccessException e) {
@@ -164,6 +167,21 @@ public class GraphServiceDelegate implements GraphService {
       if (collector != null)
         collector.close();
     }
+  }
+
+  private StoreMappingContext createMappingContext(JobContext jobContext) {
+    StoreMappingContext mappingContext = new StoreMappingContext();
+    String rootPath = jobContext.getConfiguration().get(
+        ConfigurationProperty.CLOUDGRAPH___MAPRDB___TABLE___PATH___PREFIX.value());
+    if (rootPath != null)
+      mappingContext.setProperty(
+          ConfigurationProperty.CLOUDGRAPH___MAPRDB___TABLE___PATH___PREFIX.value(), rootPath);
+    String volume = jobContext.getConfiguration().get(
+        ConfigurationProperty.CLOUDGRAPH___MAPRDB___VOLUME___PATH___PREFIX.value());
+    if (volume != null)
+      mappingContext.setProperty(
+          ConfigurationProperty.CLOUDGRAPH___MAPRDB___VOLUME___PATH___PREFIX.value(), volume);
+    return mappingContext;
   }
 
   private void writeChanges(TableWriter[] tableWriters, Map<TableWriter, List<Row>> mutations,

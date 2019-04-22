@@ -54,10 +54,13 @@ import org.cloudgraph.recognizer.GraphRecognizerContext;
 import org.cloudgraph.recognizer.GraphRecognizerSyntaxTreeAssembler;
 import org.cloudgraph.store.key.GraphMetaKey;
 import org.cloudgraph.store.mapping.CloudGraphStoreMapping;
-import org.cloudgraph.store.mapping.Config;
+import org.cloudgraph.store.mapping.ConfigurationProperty;
+import org.cloudgraph.store.mapping.DynamicTableMapping;
+import org.cloudgraph.store.mapping.MappingConfiguration;
 import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.mapping.StoreMappingDataBinding;
 import org.cloudgraph.store.mapping.StoreMappingException;
 import org.cloudgraph.store.mapping.StoreMappingValidationEventHandler;
@@ -145,6 +148,28 @@ public class GraphRecordRecognizer {
   private long totalGraphNodesAssembled = 0;
   private long totalGraphAssemblyTime = 0;
   private long totalGrapRecognitionTime = 0;
+
+  private Configuration configuration;
+  private StoreMappingContext mappingContext;
+
+  @SuppressWarnings("unused")
+  private GraphRecordRecognizer() {
+  }
+
+  public GraphRecordRecognizer(Configuration configuration) {
+    this.configuration = configuration;
+    this.mappingContext = new StoreMappingContext();
+    String rootPath = this.configuration
+        .get(ConfigurationProperty.CLOUDGRAPH___MAPRDB___TABLE___PATH___PREFIX.value());
+    if (rootPath != null)
+      mappingContext.setProperty(
+          ConfigurationProperty.CLOUDGRAPH___MAPRDB___TABLE___PATH___PREFIX.value(), rootPath);
+    String volume = this.configuration
+        .get(ConfigurationProperty.CLOUDGRAPH___MAPRDB___VOLUME___PATH___PREFIX.value());
+    if (volume != null)
+      mappingContext.setProperty(
+          ConfigurationProperty.CLOUDGRAPH___MAPRDB___VOLUME___PATH___PREFIX.value(), volume);
+  }
 
   /**
    * Restart from survivable exceptions by creating a new scanner.
@@ -254,15 +279,15 @@ public class GraphRecordRecognizer {
       selectionCollector.setOnlyDeclaredProperties(false);
       // FIXME generalize
       for (Type t : selectionCollector.getTypes())
-        collectRowKeyProperties(selectionCollector, (PlasmaType) t);
+        collectRowKeyProperties(selectionCollector, (PlasmaType) t, this.mappingContext);
 
       this.connection = HBaseConnectionManager.instance().getConnection();
       DistributedGraphReader graphReader = new DistributedGraphReader(type,
-          selectionCollector.getTypes(), this.connection);
+          selectionCollector.getTypes(), this.connection, this.mappingContext);
       this.rootTableReader = graphReader.getRootTableReader();
 
-      this.graphAssembler = createGraphAssembler(type, graphReader, selectionCollector,
-          new Timestamp(System.currentTimeMillis()));
+      this.graphAssembler = createGraphAssembler(type, this.mappingContext, graphReader,
+          selectionCollector, new Timestamp(System.currentTimeMillis()));
 
       boolean needsRecognizer = context.getConfiguration().getBoolean(GraphInputFormat.RECOGNIZER,
           false);
@@ -283,8 +308,8 @@ public class GraphRecordRecognizer {
   }
 
   private void loadMapping(org.cloudgraph.store.mapping.Table table) {
-    TableMapping tableCondig = new TableMapping(table);
-    if (StoreMapping.getInstance().findTable(tableCondig.getQualifiedName()) == null)
+    TableMapping tableCondig = new DynamicTableMapping(table, this.mappingContext);
+    if (StoreMapping.getInstance().findTable(tableCondig.getQualifiedName(), this.mappingContext) == null)
       StoreMapping.getInstance().addTable(tableCondig);
   }
 
@@ -526,9 +551,10 @@ public class GraphRecordRecognizer {
     return 0;
   }
 
-  private static void collectRowKeyProperties(SelectionCollector collector, PlasmaType type) {
-    Config config = StoreMapping.getInstance();
-    DataGraphMapping graph = config.findDataGraph(type.getQualifiedName());
+  private static void collectRowKeyProperties(SelectionCollector collector, PlasmaType type,
+      StoreMappingContext mappingContext) {
+    MappingConfiguration config = StoreMapping.getInstance();
+    DataGraphMapping graph = config.findDataGraph(type.getQualifiedName(), mappingContext);
     if (graph != null) {
       DataRowKeyFieldMapping[] fields = new DataRowKeyFieldMapping[graph
           .getUserDefinedRowKeyFields().size()];
@@ -536,7 +562,7 @@ public class GraphRecordRecognizer {
       for (DataRowKeyFieldMapping field : fields) {
         List<Type> types = collector.addProperty(graph.getRootType(), field.getPropertyPath());
         for (Type nextType : types)
-          collectRowKeyProperties(collector, (PlasmaType) nextType);
+          collectRowKeyProperties(collector, (PlasmaType) nextType, mappingContext);
       }
     }
   }
@@ -556,11 +582,13 @@ public class GraphRecordRecognizer {
   }
 
   private static HBaseGraphAssembler createGraphAssembler(PlasmaType type,
-      DistributedReader graphReader, Selection collector, Timestamp snapshotDate) {
+      StoreMappingContext mappingContext, DistributedReader graphReader, Selection collector,
+      Timestamp snapshotDate) {
     HBaseGraphAssembler graphAssembler = null;
 
     if (collector.hasPredicates()) {
-      graphAssembler = new GraphSliceAssembler(type, collector, graphReader, snapshotDate);
+      graphAssembler = new GraphSliceAssembler(type, mappingContext, collector, graphReader,
+          snapshotDate);
     } else {
       graphAssembler = new GraphAssembler(type, collector, graphReader, snapshotDate);
     }

@@ -32,6 +32,7 @@ import org.cloudgraph.query.expr.RelationalBinaryExpr;
 import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.plasma.query.model.LogicalOperatorName;
 import org.plasma.query.model.RelationalOperatorName;
 import org.plasma.sdo.PlasmaProperty;
@@ -73,6 +74,7 @@ public class ScanCollector implements ExprVisitor {
   private List<Map<DataRowKeyFieldMapping, List<ScanLiteral>>> literals = new ArrayList<Map<DataRowKeyFieldMapping, List<ScanLiteral>>>();
 
   private PlasmaType rootType;
+  private StoreMappingContext mappingContext;
   private DataGraphMapping graph;
   private List<PartialRowKey> partialKeyScans;
   private List<FuzzyRowKey> fuzzyKeyScans;
@@ -80,10 +82,11 @@ public class ScanCollector implements ExprVisitor {
   private ScanLiteralFactory factory = new ScanLiteralFactory();
   private boolean queryRequiresGraphRecognizer = false;
 
-  public ScanCollector(PlasmaType rootType) {
+  public ScanCollector(PlasmaType rootType, StoreMappingContext mappingContext) {
     this.rootType = rootType;
+    this.mappingContext = mappingContext;
     QName rootTypeQname = this.rootType.getQualifiedName();
-    this.graph = StoreMapping.getInstance().getDataGraph(rootTypeQname);
+    this.graph = StoreMapping.getInstance().getDataGraph(rootTypeQname, this.mappingContext);
   }
 
   private void init() {
@@ -103,15 +106,18 @@ public class ScanCollector implements ExprVisitor {
         // keys over fuzzy keys
 
         if (scanLiterals.supportCompleteRowKey(this.graph)) {
-          CompleteRowKeyAssembler assembler = new CompleteRowKeyAssembler(this.rootType);
+          CompleteRowKeyAssembler assembler = new CompleteRowKeyAssembler(this.rootType,
+              this.mappingContext);
           assembler.assemble(scanLiterals);
           this.completeKeys.add(assembler);
         } else if (scanLiterals.supportPartialRowKeyScan(this.graph)) {
-          PartialRowKeyScanAssembler assembler = new PartialRowKeyScanAssembler(this.rootType);
+          PartialRowKeyScanAssembler assembler = new PartialRowKeyScanAssembler(this.rootType,
+              this.mappingContext);
           assembler.assemble(scanLiterals);
           this.partialKeyScans.add(assembler);
         } else {
-          FuzzyRowKeyScanAssembler assembler = new FuzzyRowKeyScanAssembler(this.rootType);
+          FuzzyRowKeyScanAssembler assembler = new FuzzyRowKeyScanAssembler(this.rootType,
+              this.mappingContext);
           assembler.assemble(scanLiterals);
           this.fuzzyKeyScans.add(assembler);
         }
@@ -160,7 +166,7 @@ public class ScanCollector implements ExprVisitor {
     PlasmaProperty property = (PlasmaProperty) fieldConfig.getEndpointProperty();
 
     ScanLiteral scanLiteral = factory.createLiteral(target.getLiteral().getValue(), property,
-        (PlasmaType) graph.getRootType(), target.getOperator(), fieldConfig);
+        (PlasmaType) graph.getRootType(), target.getOperator(), fieldConfig, this.mappingContext);
     if (log.isDebugEnabled())
       log.debug("collecting path: " + target.getPropertyPath());
     collect(scanLiteral, fieldConfig, source);
@@ -180,13 +186,14 @@ public class ScanCollector implements ExprVisitor {
       String[] literals = target.getLiteral().getValue().split(" ");
       for (String literal : literals) {
         ScanLiteral scanLiteral = factory.createLiteral(literal, property,
-            (PlasmaType) graph.getRootType(), target.getOperator(), fieldConfig);
+            (PlasmaType) graph.getRootType(), target.getOperator(), fieldConfig,
+            this.mappingContext);
         this.collect(fieldConfig, LogicalOperatorName.OR, scanLiteral);
       }
       break;
     default:
       ScanLiteral scanLiteral = factory.createLiteral(target.getLiteral().getValue(), property,
-          (PlasmaType) graph.getRootType(), target.getOperator(), fieldConfig);
+          (PlasmaType) graph.getRootType(), target.getOperator(), fieldConfig, this.mappingContext);
       if (log.isDebugEnabled())
         log.debug("collecting path: " + target.getPropertyPath());
       collect(scanLiteral, fieldConfig, source);

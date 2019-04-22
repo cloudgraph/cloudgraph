@@ -2,7 +2,7 @@
 <cloudgraph:CloudGraphStoreMapping  
     xmlns:cloudgraph="http://www.cloudgraph.org/config">
     
-    <Property name="hbase.zookeeper.quorum">u16677374.onlinehome-server.com:2181,u16551142.onlinehome-server.com:2181,u16548889.onlinehome-server.com:2181</Property>
+    <Property name="hbase.zookeeper.quorum">192.168.1.27:2181</Property>
     <Property name="hbase.zookeeper.property.clientPort">2181</Property>     
 
     <Property name="org.plasma.sdo.access.provider.hbase.ConnectionPoolMinSize">1</Property>    

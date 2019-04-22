@@ -31,6 +31,7 @@ import org.cloudgraph.store.mapping.KeyFieldMapping;
 //import org.cloudgraph.store.mapping.Padding;
 import org.cloudgraph.store.mapping.MetaKeyFieldMapping;
 import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.mapping.TableMapping;
 import org.plasma.query.model.RelationalOperatorName;
 import org.plasma.query.model.Where;
@@ -55,6 +56,7 @@ public class PartialRowKeyScanAssembler implements RowKeyScanAssembler, PartialR
   protected ByteBuffer startKey = ByteBuffer.allocate(bufsize);
   protected ByteBuffer stopKey = ByteBuffer.allocate(bufsize);
   protected PlasmaType rootType;
+  protected StoreMappingContext mappingContext;
   protected DataGraphMapping graph;
   protected TableMapping table;
   protected KeySupport keySupport = new KeySupport();
@@ -74,11 +76,12 @@ public class PartialRowKeyScanAssembler implements RowKeyScanAssembler, PartialR
    * @param rootType
    *          the root type
    */
-  public PartialRowKeyScanAssembler(PlasmaType rootType) {
+  public PartialRowKeyScanAssembler(PlasmaType rootType, StoreMappingContext mappingContext) {
     this.rootType = rootType;
+    this.mappingContext = mappingContext;
     QName rootTypeQname = this.rootType.getQualifiedName();
-    this.graph = StoreMapping.getInstance().getDataGraph(rootTypeQname);
-    this.table = StoreMapping.getInstance().getTable(rootTypeQname);
+    this.graph = StoreMapping.getInstance().getDataGraph(rootTypeQname, mappingContext);
+    this.table = StoreMapping.getInstance().getTable(rootTypeQname, mappingContext);
     this.charset = StoreMapping.getInstance().getCharset();
   }
 
@@ -91,8 +94,9 @@ public class PartialRowKeyScanAssembler implements RowKeyScanAssembler, PartialR
    * @param rootUUID
    *          the root UUID.
    */
-  public PartialRowKeyScanAssembler(PlasmaType rootType, String rootUUID) {
-    this(rootType);
+  public PartialRowKeyScanAssembler(PlasmaType rootType, String rootUUID,
+      StoreMappingContext mappingContext) {
+    this(rootType, mappingContext);
     this.rootUUID = rootUUID;
   }
 
@@ -145,7 +149,8 @@ public class PartialRowKeyScanAssembler implements RowKeyScanAssembler, PartialR
     if (log.isDebugEnabled())
       log.debug("begin traverse");
 
-    ScanLiteralAssembler literalAssembler = new ScanLiteralAssembler(this.rootType);
+    ScanLiteralAssembler literalAssembler = new ScanLiteralAssembler(this.rootType,
+        this.mappingContext);
     where.accept(literalAssembler); // traverse
 
     this.scanLiterals = literalAssembler.getPartialKeyScanResult();

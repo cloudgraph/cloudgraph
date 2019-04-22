@@ -33,6 +33,7 @@ import org.cloudgraph.hbase.key.CompositeColumnKeyFactory;
 import org.cloudgraph.store.key.EntityMetaKey;
 import org.cloudgraph.store.key.GraphColumnKeyFactory;
 import org.cloudgraph.store.key.GraphMetaKey;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.plasma.common.bind.DefaultValidationEventHandler;
 import org.plasma.query.bind.PlasmaQueryDataBinding;
 import org.plasma.query.collector.Selection;
@@ -65,11 +66,12 @@ public class GraphFetchColumnFilterAssembler extends FilterListAssembler impleme
   private Map<String, byte[]> prefixMap = new HashMap<String, byte[]>();
   private Selection propertySelection;
 
-  public GraphFetchColumnFilterAssembler(Selection selection, PlasmaType rootType) {
+  public GraphFetchColumnFilterAssembler(Selection selection, PlasmaType rootType,
+      StoreMappingContext mappingContext) {
 
     super(rootType);
     this.propertySelection = selection;
-    this.columnKeyFac = new CompositeColumnKeyFactory(rootType);
+    this.columnKeyFac = new CompositeColumnKeyFactory(rootType, mappingContext);
 
     this.rootFilter = new FilterList(FilterList.Operator.MUST_PASS_ONE);
 

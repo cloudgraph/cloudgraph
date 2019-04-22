@@ -17,6 +17,7 @@ package org.cloudgraph.hbase.scan;
 
 import org.cloudgraph.common.Padding;
 import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.query.Wildcard;
 import org.plasma.query.model.PredicateOperator;
@@ -43,8 +44,9 @@ public class WildcardStringLiteral extends StringLiteral implements WildcardPart
   protected Padding padding;
 
   public WildcardStringLiteral(String literal, PlasmaType rootType,
-      PredicateOperator wildcardOperator, DataRowKeyFieldMapping fieldConfig) {
-    super(literal, rootType, null, fieldConfig);
+      PredicateOperator wildcardOperator, DataRowKeyFieldMapping fieldConfig,
+      StoreMappingContext mappingContext) {
+    super(literal, rootType, null, fieldConfig, mappingContext);
     this.wildcardOperator = wildcardOperator;
     this.padding = new Padding(this.charset);
   }

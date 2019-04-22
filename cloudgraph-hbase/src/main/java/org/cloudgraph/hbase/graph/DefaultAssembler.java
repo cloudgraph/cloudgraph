@@ -48,7 +48,7 @@ import org.cloudgraph.hbase.util.FilterUtil;
 import org.cloudgraph.state.GraphRow;
 import org.cloudgraph.store.key.EntityMetaKey;
 import org.cloudgraph.store.key.GraphColumnKeyFactory;
-import org.cloudgraph.store.mapping.Config;
+import org.cloudgraph.store.mapping.MappingConfiguration;
 import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.cloudgraph.store.mapping.StoreMapping;
 import org.cloudgraph.store.mapping.TableMapping;
@@ -117,11 +117,12 @@ public abstract class DefaultAssembler {
 
     // FIXME: table context obj?
     QName rootTypeQname = this.rootType.getQualifiedName();
-    Config config = StoreMapping.getInstance();
-    this.graph = config.getDataGraph(rootTypeQname);
+    MappingConfiguration config = StoreMapping.getInstance();
+    this.graph = config.getDataGraph(rootTypeQname, this.rootTableReader.getMappingContext());
     this.charset = config.getCharset();
     this.keyFactories = new HashMap<>();
-    this.keyFactories.put(this.rootType, new CompositeColumnKeyFactory(this.rootType));
+    this.keyFactories.put(this.rootType, new CompositeColumnKeyFactory(this.rootType,
+        this.rootTableReader.getMappingContext()));
   }
 
   /**
@@ -134,7 +135,7 @@ public abstract class DefaultAssembler {
   protected GraphColumnKeyFactory getKeyFactory(PlasmaType type) {
     GraphColumnKeyFactory result = this.keyFactories.get(type);
     if (result == null) {
-      result = new CompositeColumnKeyFactory(type);
+      result = new CompositeColumnKeyFactory(type, this.rootTableReader.getMappingContext());
       this.keyFactories.put(type, result);
     }
     return result;
@@ -633,7 +634,7 @@ public abstract class DefaultAssembler {
     FilterList rootFilter = new FilterList(FilterList.Operator.MUST_PASS_ALL);
     row.setFilter(rootFilter);
     GraphFetchColumnFilterAssembler columnFilterAssembler = new GraphFetchColumnFilterAssembler(
-        this.selection, type);
+        this.selection, type, this.rootTableReader.getMappingContext());
     rootFilter.addFilter(columnFilterAssembler.getFilter());
     long before = System.currentTimeMillis();
     if (log.isDebugEnabled())

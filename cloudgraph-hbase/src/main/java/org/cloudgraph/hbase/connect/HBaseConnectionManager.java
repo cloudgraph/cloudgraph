@@ -33,6 +33,7 @@ import org.apache.hadoop.hbase.ZooKeeperConnectionException;
 import org.apache.hadoop.hbase.client.Admin;
 import org.cloudgraph.hbase.service.CloudGraphContext;
 import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.mapping.TableMapping;
 import org.cloudgraph.store.service.GraphServiceException;
 
@@ -320,7 +321,7 @@ public class HBaseConnectionManager {
     try {
       admin = connection.getAdmin();
       TableMapping tableConfig = StoreMapping.getInstance().getTable(name.getNamespaceAsString(),
-          name.getNameAsString());
+          name.getNameAsString(), new StoreMappingContext()); // FIXME:
       HTableDescriptor tableDesc = new HTableDescriptor(name);
       HColumnDescriptor fam1 = new HColumnDescriptor(tableConfig.getDataColumnFamilyName()
           .getBytes());

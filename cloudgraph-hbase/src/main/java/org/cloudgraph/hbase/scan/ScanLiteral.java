@@ -23,6 +23,7 @@ import org.cloudgraph.hbase.key.KeySupport;
 import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 //import org.cloudgraph.store.mapping.Padding;
 import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.mapping.TableMapping;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.query.model.RelationalOperatorName;
@@ -63,7 +64,8 @@ public abstract class ScanLiteral {
   }
 
   public ScanLiteral(String literal, PlasmaType rootType,
-      RelationalOperatorName relationalOperator, DataRowKeyFieldMapping fieldConfig) {
+      RelationalOperatorName relationalOperator, DataRowKeyFieldMapping fieldConfig,
+      StoreMappingContext mappingContext) {
     super();
     this.rootType = rootType;
     this.relationalOperator = relationalOperator;
@@ -72,7 +74,7 @@ public abstract class ScanLiteral {
     this.literal = literal;
 
     QName rootTypeQname = this.rootType.getQualifiedName();
-    this.table = StoreMapping.getInstance().getTable(rootTypeQname);
+    this.table = StoreMapping.getInstance().getTable(rootTypeQname, mappingContext);
     // Hash hash = this.keySupport.getHashAlgorithm(this.table);
     this.charset = StoreMapping.getInstance().getCharset();
     // this.hashing = new Hashing(hash, this.charset);

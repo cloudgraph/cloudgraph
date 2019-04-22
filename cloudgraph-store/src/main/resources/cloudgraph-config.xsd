@@ -39,6 +39,11 @@ Top level configuration settings
                     <xsd:documentation>The path to prepend to all MAPRD-DB (M7) table names for tables found within a configuration. Used for only MAPR-DB (M7) tables. To fully qualify Apache HBase tables, use table namespaces.</xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
+                 <xsd:attribute name="maprdbVolumePathPrefix" type="xsd:string" use="optional" >
+                    <xsd:annotation>
+                    <xsd:documentation>The volume path to prepend to all MAPRD-DB (M7) table names for tables found within a configuration. Used for only MAPR-DB (M7) tables. To fully qualify Apache HBase tables, use table namespaces.</xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
                 <xsd:attribute name="optimisticConcurrency" type="xsd:boolean" use="optional" default="false">
                     <xsd:annotation>
                     <xsd:documentation>Whether optimistic concurrency processing is enabled. This setting effects all entities
@@ -110,6 +115,11 @@ Configuration settings for a table.
                 <xsd:attribute name="maprdbTablePathPrefix" type="xsd:string" use="optional" >
                     <xsd:annotation>
                     <xsd:documentation>The path to prepend to all MAPRD-DB (M7) table names for tables found within a configuration. Used for only MAPR-DB (M7) tables. To fully qualify Apache HBase tables, use table namespaces.</xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="maprdbVolumePathPrefix" type="xsd:string" use="optional" >
+                    <xsd:annotation>
+                    <xsd:documentation>The volume path to prepend to all MAPRD-DB (M7) table names for tables found within a configuration. Used for only MAPR-DB (M7) tables. To fully qualify Apache HBase tables, use table namespaces.</xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
                 <xsd:attribute name="optimisticConcurrency" type="xsd:boolean" use="optional" default="false">
@@ -617,7 +627,18 @@ column field may be specified.
                 <xsd:annotation>
                     <xsd:documentation>The path to prepend to all MAPRD-DB (M7) table names for tables found within a configuration. Used for only MAPR-DB (M7) tables. To fully qualify Apache HBase tables, use table namespaces.  
                     &lt;ul&gt;
-                    &lt;li&gt;Name: cloudgraph.tombstone.rows.overwriteable&lt;/li&gt;
+                    &lt;li&gt;Name: cloudgraph.maprdb.table.path.prefix&lt;/li&gt;
+                    &lt;li&gt;Data Type: string&lt;/li&gt;
+                    &lt;li&gt;Default: null&lt;/li&gt;
+                    &lt;/ul&gt;
+                    </xsd:documentation> 
+                </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="cloudgraph.maprdb.volume.path.prefix">
+                <xsd:annotation>
+                    <xsd:documentation>The volume path to prepend to all MAPRD-DB (M7) table names for tables found within a configuration. Used for only MAPR-DB (M7) tables. To fully qualify Apache HBase tables, use table namespaces.  
+                    &lt;ul&gt;
+                    &lt;li&gt;Name: cloudgraph.maprdb.volume.path.prefix&lt;/li&gt;
                     &lt;li&gt;Data Type: string&lt;/li&gt;
                     &lt;li&gt;Default: null&lt;/li&gt;
                     &lt;/ul&gt;

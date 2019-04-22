@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.cloudgraph.common.CloudGraphConstants;
 import org.cloudgraph.hbase.key.CompositeRowKeyFactory;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.plasma.sdo.PlasmaDataGraph;
 import org.plasma.sdo.PlasmaDataObject;
 import org.plasma.sdo.PlasmaType;
@@ -36,9 +37,14 @@ import commonj.sdo.DataObject;
 public abstract class WriterSupport {
   private static Log log = LogFactory.getLog(WriterSupport.class);
   protected Map<DataObject, RowWriter> rowWriterMap = new HashMap<DataObject, RowWriter>();
+  protected StoreMappingContext mappingContext;
 
-  protected WriterSupport() {
+  @SuppressWarnings("unused")
+  private WriterSupport() {
+  }
 
+  protected WriterSupport(StoreMappingContext mappingContext) {
+    this.mappingContext = mappingContext;
   }
 
   /**
@@ -123,7 +129,8 @@ public abstract class WriterSupport {
     CoreDataObject coreObject = (CoreDataObject) target;
     byte[] rowKey = (byte[]) coreObject.getValueObject().get(CloudGraphConstants.ROW_KEY);
     if (rowKey == null) {
-      CompositeRowKeyFactory rowKeyGen = new CompositeRowKeyFactory((PlasmaType) target.getType());
+      CompositeRowKeyFactory rowKeyGen = new CompositeRowKeyFactory((PlasmaType) target.getType(),
+          this.mappingContext);
       rowKey = rowKeyGen.createRowKeyBytes(target);
       coreObject.getValueObject().put(CloudGraphConstants.ROW_KEY, rowKey);
       if (target.getDataGraph().getRootObject().equals(target)) // graph
@@ -143,7 +150,7 @@ public abstract class WriterSupport {
   /**
    * Creates and returns a new row writer for the given (row root) data object.
    * 
-   * @param tableContext
+   * @param tableWriter
    *          the table context
    * @param dataObject
    *          the (row root) data object
@@ -152,12 +159,12 @@ public abstract class WriterSupport {
    * @return the new row writer
    * @throws IOException
    */
-  protected RowWriter createRowWriter(TableWriter tableContext, DataObject dataObject, byte[] rowKey)
+  protected RowWriter createRowWriter(TableWriter tableWriter, DataObject dataObject, byte[] rowKey)
       throws IOException {
-    RowWriter rowContext = new GraphRowWriter(rowKey, dataObject, tableContext);
+    RowWriter rowContext = new GraphRowWriter(rowKey, dataObject, tableWriter, this.mappingContext);
 
     UUID uuid = ((PlasmaDataObject) dataObject).getUUID();
-    tableContext.addRowWriter(uuid, rowContext);
+    tableWriter.addRowWriter(uuid, rowContext);
 
     return rowContext;
   }
@@ -175,25 +182,25 @@ public abstract class WriterSupport {
    * 
    * @param dataObject
    *          the target (row root) data object
-   * @param tableContext
+   * @param tableWriter
    *          the table context
    * @return the new row writer
    * @throws IOException
    */
-  protected RowWriter addRowWriter(DataObject dataObject, TableWriter tableContext)
+  protected RowWriter addRowWriter(DataObject dataObject, TableWriter tableWriter)
       throws IOException {
     byte[] rowKey = null;
     CoreDataObject coreObject = (CoreDataObject) dataObject;
     rowKey = (byte[]) coreObject.getValueObject().get(CloudGraphConstants.ROW_KEY);
     if (rowKey == null) {
       CompositeRowKeyFactory rowKeyGen = new CompositeRowKeyFactory(
-          (PlasmaType) dataObject.getType());
+          (PlasmaType) dataObject.getType(), this.mappingContext);
       rowKey = rowKeyGen.createRowKeyBytes(dataObject);
       coreObject.getValueObject().put(CloudGraphConstants.ROW_KEY, rowKey);
     }
-    RowWriter rowContext = new GraphRowWriter(rowKey, dataObject, tableContext);
+    RowWriter rowContext = new GraphRowWriter(rowKey, dataObject, tableWriter, this.mappingContext);
     UUID uuid = ((PlasmaDataObject) dataObject).getUUID();
-    tableContext.addRowWriter(uuid, rowContext);
+    tableWriter.addRowWriter(uuid, rowContext);
     return rowContext;
   }
 }

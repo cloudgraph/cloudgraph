@@ -18,11 +18,13 @@ package org.cloudgraph.hbase.key;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.cloudgraph.hbase.io.RowOperation;
 import org.cloudgraph.state.RowState;
 import org.cloudgraph.store.key.EdgeMetaKey;
 import org.cloudgraph.store.key.EntityMetaKey;
 import org.cloudgraph.store.key.GraphStatefullColumnKeyFactory;
 import org.cloudgraph.store.key.MetaKey;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.plasma.sdo.PlasmaDataObject;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
@@ -54,11 +56,11 @@ public class StatefullColumnKeyFactory extends CompositeColumnKeyFactory impleme
     GraphStatefullColumnKeyFactory {
   private static final Log log = LogFactory.getLog(StatefullColumnKeyFactory.class);
 
-  public StatefullColumnKeyFactory(PlasmaType rootType) {
-    super(rootType);
+  public StatefullColumnKeyFactory(PlasmaType rootType, StoreMappingContext mappingContext) {
+    super(rootType, mappingContext);
   }
 
-  public StatefullColumnKeyFactory(RowState graphRow) {
+  public StatefullColumnKeyFactory(RowOperation graphRow) {
     super(graphRow);
   }
 

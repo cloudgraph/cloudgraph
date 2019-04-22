@@ -33,6 +33,7 @@ import org.cloudgraph.hbase.service.ServiceContext;
 import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.plasma.sdo.PlasmaDataObject;
 import org.plasma.sdo.PlasmaEdge;
 import org.plasma.sdo.PlasmaNode;
@@ -58,12 +59,15 @@ abstract class DefaultMutation {
   protected SnapshotMap snapshotMap;
   protected String username;
   protected ServiceContext context;
+  protected StoreMappingContext mappingContext;
 
-  public DefaultMutation(ServiceContext context, SnapshotMap snapshotMap, String username) {
+  public DefaultMutation(ServiceContext context, SnapshotMap snapshotMap, String username,
+      StoreMappingContext mappingContext) {
     super();
     this.snapshotMap = snapshotMap;
     this.username = username;
     this.context = context;
+    this.mappingContext = mappingContext;
   }
 
   protected HashMap<String, DataObject> getOldEdgeMap(Object oldValue, Property property) {
@@ -97,7 +101,7 @@ abstract class DefaultMutation {
       PlasmaDataObject opposite = edge.getOpposite(dataNode).getDataObject();
       PlasmaType oppositeType = (PlasmaType) opposite.getType();
       boolean oppositeTypeBound = StoreMapping.getInstance().findTable(
-          oppositeType.getQualifiedName()) != null;
+          oppositeType.getQualifiedName(), this.mappingContext) != null;
       RowWriter oppositeRowWriter = graphWriter.findRowWriter(opposite);
       if (oppositeRowWriter == null) {
         oppositeRowWriter = graphWriter.createRowWriter(opposite);
@@ -192,7 +196,7 @@ abstract class DefaultMutation {
           + ((PlasmaDataObject) dataObject).getUUIDAsString() + "'");
     PlasmaType rootType = (PlasmaType) rowWriter.getRootDataObject().getType();
     DataGraphMapping dataGraphConfig = StoreMapping.getInstance().getDataGraph(
-        rootType.getQualifiedName());
+        rootType.getQualifiedName(), this.mappingContext);
 
     List<Property> properties = type.getProperties();
     for (Property p : properties) {
