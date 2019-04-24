@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -162,17 +163,18 @@ public class GraphMapReduceSetup extends JobSetup {
     job.setMapperClass(mapper);
     Configuration conf = job.getConfiguration();
     HBaseConfiguration.merge(conf, HBaseConfiguration.create(conf));
-    StoreMappingContext mappingContext = new StoreMappingContext();
+    Properties mappingProps = new Properties();
     String rootPath = conf.get(ConfigurationProperty.CLOUDGRAPH___MAPRDB___TABLE___PATH___PREFIX
         .value());
     if (rootPath != null)
-      mappingContext.setProperty(
+      mappingProps.setProperty(
           ConfigurationProperty.CLOUDGRAPH___MAPRDB___TABLE___PATH___PREFIX.value(), rootPath);
     String volume = conf.get(ConfigurationProperty.CLOUDGRAPH___MAPRDB___VOLUME___PATH___PREFIX
         .value());
     if (volume != null)
-      mappingContext.setProperty(
+      mappingProps.setProperty(
           ConfigurationProperty.CLOUDGRAPH___MAPRDB___VOLUME___PATH___PREFIX.value(), volume);
+    StoreMappingContext mappingContext = new StoreMappingContext(mappingProps);
 
     PlasmaType type = getRootType(query);
 

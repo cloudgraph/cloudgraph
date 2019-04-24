@@ -15,6 +15,9 @@
  */
 package org.cloudgraph.hbase.service;
 
+import org.cloudgraph.store.mapping.StoreMappingContext;
+import org.plasma.sdo.access.AccessServiceContext;
+
 /**
  * Holds temporary state information for use within services held for the
  * duration of a service call. For most implementations the <{@link close}
@@ -24,10 +27,6 @@ package org.cloudgraph.hbase.service;
  * @author Scott Cinnamond
  * @since 0.6.3
  */
-public interface ServiceContext {
-
-  /**
-   * Frees any resources associated with this context.
-   */
-  public void close();
+public interface ServiceContext extends AccessServiceContext {
+  public StoreMappingContext getStoreMapping();
 }

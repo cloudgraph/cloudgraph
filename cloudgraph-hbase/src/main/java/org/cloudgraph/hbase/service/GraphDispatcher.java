@@ -68,7 +68,7 @@ public class GraphDispatcher extends GraphMutationCollector implements DataGraph
   private static Log log = LogFactory.getLog(GraphDispatcher.class);
 
   public GraphDispatcher(ServiceContext context, SnapshotMap snapshotMap, String username) {
-    super(context, snapshotMap, username, new StoreMappingContext()); // FIXME:
+    super(context, snapshotMap, username);
   }
 
   public void close() {

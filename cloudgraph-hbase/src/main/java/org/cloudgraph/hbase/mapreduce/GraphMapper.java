@@ -92,16 +92,20 @@ import commonj.sdo.DataGraph;
  * @since 0.5.8
  */
 public class GraphMapper<KEYOUT, VALUEOUT> extends
-    Mapper<ImmutableBytesWritable, GraphWritable, KEYOUT, VALUEOUT> implements GraphMutator {
+    Mapper<ImmutableBytesWritable, GraphWritable, KEYOUT, VALUEOUT> /*
+                                                                     * implements
+                                                                     * GraphMutator
+                                                                     */{
 
   private static Log log = LogFactory.getLog(GraphMapper.class);
-  private GraphServiceDelegate serviceDelegate;
+
+  // private GraphServiceDelegate serviceDelegate;
 
   /**
    * Default constructor
    */
   public GraphMapper() {
-    this.serviceDelegate = new GraphServiceDelegate();
+    // this.serviceDelegate = new GraphServiceDelegate();
   }
 
   /*
@@ -123,13 +127,15 @@ public class GraphMapper<KEYOUT, VALUEOUT> extends
    * org.cloudgraph.hbase.mapreduce.GraphMutator#commit(commonj.sdo.DataGraph,
    * org.apache.hadoop.mapreduce.JobContext)
    */
-  @Override
-  public void commit(DataGraph graph, JobContext jobContext) throws IOException {
-    this.serviceDelegate.commit(graph, jobContext);
-  }
-
-  @Override
-  public void commit(DataGraph[] graphs, JobContext jobContext) throws IOException {
-    this.serviceDelegate.commit(graphs, jobContext);
-  }
+  // @Override
+  // public void commit(DataGraph graph, JobContext jobContext) throws
+  // IOException {
+  // this.serviceDelegate.commit(graph, jobContext);
+  // }
+  //
+  // @Override
+  // public void commit(DataGraph[] graphs, JobContext jobContext) throws
+  // IOException {
+  // this.serviceDelegate.commit(graphs, jobContext);
+  // }
 }

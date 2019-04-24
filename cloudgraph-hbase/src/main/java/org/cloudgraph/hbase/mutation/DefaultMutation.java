@@ -59,15 +59,12 @@ abstract class DefaultMutation {
   protected SnapshotMap snapshotMap;
   protected String username;
   protected ServiceContext context;
-  protected StoreMappingContext mappingContext;
 
-  public DefaultMutation(ServiceContext context, SnapshotMap snapshotMap, String username,
-      StoreMappingContext mappingContext) {
+  public DefaultMutation(ServiceContext context, SnapshotMap snapshotMap, String username) {
     super();
     this.snapshotMap = snapshotMap;
     this.username = username;
     this.context = context;
-    this.mappingContext = mappingContext;
   }
 
   protected HashMap<String, DataObject> getOldEdgeMap(Object oldValue, Property property) {
@@ -101,7 +98,7 @@ abstract class DefaultMutation {
       PlasmaDataObject opposite = edge.getOpposite(dataNode).getDataObject();
       PlasmaType oppositeType = (PlasmaType) opposite.getType();
       boolean oppositeTypeBound = StoreMapping.getInstance().findTable(
-          oppositeType.getQualifiedName(), this.mappingContext) != null;
+          oppositeType.getQualifiedName(), this.context.getStoreMapping()) != null;
       RowWriter oppositeRowWriter = graphWriter.findRowWriter(opposite);
       if (oppositeRowWriter == null) {
         oppositeRowWriter = graphWriter.createRowWriter(opposite);
@@ -196,7 +193,7 @@ abstract class DefaultMutation {
           + ((PlasmaDataObject) dataObject).getUUIDAsString() + "'");
     PlasmaType rootType = (PlasmaType) rowWriter.getRootDataObject().getType();
     DataGraphMapping dataGraphConfig = StoreMapping.getInstance().getDataGraph(
-        rootType.getQualifiedName(), this.mappingContext);
+        rootType.getQualifiedName(), this.context.getStoreMapping());
 
     List<Property> properties = type.getProperties();
     for (Property p : properties) {

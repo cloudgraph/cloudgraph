@@ -37,26 +37,29 @@ import commonj.sdo.DataGraph;
  * @see org.apache.hadoop.mapreduce.Reducer
  */
 public class GraphReducer<KEYIN, VALUEIN, KEYOUT> extends Reducer<KEYIN, VALUEIN, KEYOUT, Writable>
-    implements GraphMutator, GraphAccessor {
-  private GraphServiceDelegate serviceDelegate;
+/* implements GraphMutator, GraphAccessor */{
+  // private GraphServiceDelegate serviceDelegate;
 
   public GraphReducer() {
-    this.serviceDelegate = new GraphServiceDelegate();
+    // this.serviceDelegate = new GraphServiceDelegate();
   }
 
-  @Override
-  public DataGraph[] find(Query query, JobContext context) throws IOException {
-    return this.serviceDelegate.find(query, context);
-  }
-
-  @Override
-  public void commit(DataGraph graph, JobContext context) throws IOException {
-    this.serviceDelegate.commit(graph, context);
-  }
-
-  @Override
-  public void commit(DataGraph[] graphs, JobContext context) throws IOException {
-    this.serviceDelegate.commit(graphs, context);
-  }
+  // @Override
+  // public DataGraph[] find(Query query, JobContext context) throws IOException
+  // {
+  // return this.serviceDelegate.find(query, context);
+  // }
+  //
+  // @Override
+  // public void commit(DataGraph graph, JobContext context) throws IOException
+  // {
+  // this.serviceDelegate.commit(graph, context);
+  // }
+  //
+  // @Override
+  // public void commit(DataGraph[] graphs, JobContext context) throws
+  // IOException {
+  // this.serviceDelegate.commit(graphs, context);
+  // }
 
 }

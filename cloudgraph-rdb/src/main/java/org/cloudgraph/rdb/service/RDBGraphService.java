@@ -42,6 +42,7 @@ import org.plasma.runtime.DataStoreType;
 import org.plasma.runtime.PlasmaRuntime;
 import org.plasma.runtime.RDBMSVendorName;
 import org.plasma.runtime.annotation.PlasmaServiceProvider;
+import org.plasma.sdo.access.AccessServiceContext;
 import org.plasma.sdo.access.DataAccessException;
 import org.plasma.sdo.access.DataGraphDispatcher;
 import org.plasma.sdo.access.PlasmaDataAccessService;
@@ -56,11 +57,13 @@ import commonj.sdo.Type;
 public class RDBGraphService implements PlasmaDataAccessService, GraphService {
 
   private static Log log = LogFactory.getLog(RDBGraphService.class);
+  private AccessServiceContext context;
 
   public RDBGraphService() {
   }
 
-  public void initialize() {
+  public void initialize(AccessServiceContext context) {
+    this.context = context;
   }
 
   public void close() {

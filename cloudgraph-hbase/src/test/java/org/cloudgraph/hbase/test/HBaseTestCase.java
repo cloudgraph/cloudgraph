@@ -27,6 +27,7 @@ import javax.xml.bind.JAXBException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.cloudgraph.common.CommonTest;
+import org.cloudgraph.hbase.service.HBaseServiceContext;
 import org.plasma.common.bind.DefaultValidationEventHandler;
 import org.plasma.query.Query;
 import org.plasma.query.bind.PlasmaQueryDataBinding;
@@ -50,7 +51,7 @@ public abstract class HBaseTestCase extends CommonTest {
   protected String targetDir = System.getProperty("target.dir");
 
   public void setUp() throws Exception {
-    service = new SDODataAccessClient(new HBasePojoDataAccessClient());
+    service = new SDODataAccessClient(new HBasePojoDataAccessClient(new HBaseServiceContext()));
   }
 
   protected String serializeGraph(DataGraph graph) throws IOException {

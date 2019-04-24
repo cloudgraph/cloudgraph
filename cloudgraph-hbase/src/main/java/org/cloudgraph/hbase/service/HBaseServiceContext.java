@@ -15,17 +15,37 @@
  */
 package org.cloudgraph.hbase.service;
 
+import java.util.Properties;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.cloudgraph.store.mapping.StoreMappingContext;
 
-public class SimpleServiceContext implements ServiceContext {
-  private static Log log = LogFactory.getLog(SimpleServiceContext.class);
+public class HBaseServiceContext implements ServiceContext {
+  private static Log log = LogFactory.getLog(HBaseServiceContext.class);
+  private Properties properties;
+  private StoreMappingContext mappingContext;
 
-  public SimpleServiceContext() {
+  public HBaseServiceContext() {
+    this.properties = new Properties();
+    this.mappingContext = new StoreMappingContext(this.properties);
+  }
 
+  public HBaseServiceContext(Properties properties) {
+    this.properties = properties;
   }
 
   @Override
   public void close() {
+  }
+
+  @Override
+  public Properties getProperties() {
+    return this.properties;
+  }
+
+  @Override
+  public StoreMappingContext getStoreMapping() {
+    return this.mappingContext;
   }
 }

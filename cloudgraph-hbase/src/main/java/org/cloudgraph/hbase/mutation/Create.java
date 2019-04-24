@@ -49,9 +49,8 @@ import commonj.sdo.Property;
 public class Create extends DefaultMutation implements Mutation {
   private static Log log = LogFactory.getLog(Create.class);
 
-  public Create(ServiceContext context, SnapshotMap snapshotMap, String username,
-      StoreMappingContext mappingContext) {
-    super(context, snapshotMap, username, mappingContext);
+  public Create(ServiceContext context, SnapshotMap snapshotMap, String username) {
+    super(context, snapshotMap, username);
   }
 
   /**
@@ -64,7 +63,7 @@ public class Create extends DefaultMutation implements Mutation {
     PlasmaType type = (PlasmaType) dataObject.getType();
     CoreNode coreNode = ((CoreNode) dataObject);
     boolean typeBound = StoreMapping.getInstance().findTable(type.getQualifiedName(),
-        this.mappingContext) != null;
+        this.context.getStoreMapping()) != null;
 
     long sequence = CloudGraphConstants.ROOT_SEQUENCE;
     // if were not creating a root in this or another graph

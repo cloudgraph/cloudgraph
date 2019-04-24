@@ -37,6 +37,7 @@ import org.plasma.query.model.QueryValidator;
 import org.plasma.runtime.DataAccessProviderName;
 import org.plasma.runtime.DataStoreType;
 import org.plasma.runtime.annotation.PlasmaServiceProvider;
+import org.plasma.sdo.access.AccessServiceContext;
 import org.plasma.sdo.access.DataAccessException;
 import org.plasma.sdo.access.DataGraphDispatcher;
 import org.plasma.sdo.access.PlasmaDataAccessService;
@@ -77,10 +78,10 @@ public class HBaseGraphService implements PlasmaDataAccessService, GraphService 
   protected ServiceContext context;
 
   public HBaseGraphService() {
-    this.context = new SimpleServiceContext();
   }
 
-  public void initialize() {
+  public void initialize(AccessServiceContext context) {
+    this.context = (ServiceContext) context;
   }
 
   public void close() {

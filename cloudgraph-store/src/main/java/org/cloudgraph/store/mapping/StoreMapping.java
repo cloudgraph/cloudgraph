@@ -476,7 +476,7 @@ public class StoreMapping implements MappingConfiguration {
   public TableMapping getTable(String tableNamespace, String tableName, StoreMappingContext context) {
     lock.readLock().lock();
     try {
-      // FIXME: called by 
+      // FIXME: called by
       String qualifiedName = TableMapping.qualifiedNameFor(null, tableName, context);
       TableMapping result = this.tableNameToTableMap.get(qualifiedName);
       if (result == null)

@@ -75,12 +75,11 @@ public class GraphMutationCollector extends DefaultMutation implements MutationC
   protected Update update;
   protected Delete delete;
 
-  public GraphMutationCollector(ServiceContext context, SnapshotMap snapshotMap, String username,
-      StoreMappingContext mappingContext) {
-    super(context, snapshotMap, username, mappingContext);
-    this.create = new Create(context, snapshotMap, username, mappingContext);
-    this.update = new Update(context, snapshotMap, username, mappingContext);
-    this.delete = new Delete(context, snapshotMap, username, mappingContext);
+  public GraphMutationCollector(ServiceContext context, SnapshotMap snapshotMap, String username) {
+    super(context, snapshotMap, username);
+    this.create = new Create(context, snapshotMap, username);
+    this.update = new Update(context, snapshotMap, username);
+    this.delete = new Delete(context, snapshotMap, username);
   }
 
   /*
@@ -119,10 +118,10 @@ public class GraphMutationCollector extends DefaultMutation implements MutationC
     DeletedObjectCollector deleted = new DeletedObjectCollector(dataGraph);
 
     TableWriterCollector collector = new TableWriterCollector(dataGraph, created, modified,
-        deleted, this.mappingContext);
+        deleted, this.context.getStoreMapping());
 
     DistributedGraphWriter graphWriter = new DistributedGraphWriter(dataGraph, collector,
-        connection, this.mappingContext);
+        connection, this.context.getStoreMapping());
 
     this.create(dataGraph, created, graphWriter);
     this.modify(dataGraph, modified, graphWriter);
@@ -180,10 +179,10 @@ public class GraphMutationCollector extends DefaultMutation implements MutationC
       DeletedObjectCollector deleted = new DeletedObjectCollector(dataGraph);
 
       TableWriterCollector collector = new TableWriterCollector(dataGraph, created, modified,
-          deleted, this.mappingContext);
+          deleted, this.context.getStoreMapping());
 
       DistributedWriter graphWriter = new DistributedGraphWriter(dataGraph, collector, connection,
-          this.mappingContext);
+          this.context.getStoreMapping());
       graphWriters.add(graphWriter);
 
       this.create(dataGraph, created, graphWriter);

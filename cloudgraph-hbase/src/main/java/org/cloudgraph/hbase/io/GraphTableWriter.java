@@ -91,14 +91,14 @@ public class GraphTableWriter extends GraphTable implements TableWriter {
       // anything and continues on.
       if (!distributedGraphWriter.getConnection().tableExists(tableName)) {
         HBaseConnectionManager.instance().createTable(distributedGraphWriter.getConnection(),
-            tableName);
+            tableName, this.mappingContext);
         this.table = distributedGraphWriter.getConnection().getTable(tableName);
       } else {
         try {
           this.table = distributedGraphWriter.getConnection().getTable(tableName);
         } catch (TableNotFoundException | NamespaceNotFoundException e) {
           HBaseConnectionManager.instance().createTable(distributedGraphWriter.getConnection(),
-              tableName);
+              tableName, this.mappingContext);
           this.table = distributedGraphWriter.getConnection().getTable(tableName);
         }
       }
@@ -120,7 +120,7 @@ public class GraphTableWriter extends GraphTable implements TableWriter {
       // anything and continues on.
       if (!distributedGraphWriter.getConnection().tableExists(tableName)) {
         HBaseConnectionManager.instance().createTable(distributedGraphWriter.getConnection(),
-            tableName);
+            tableName, this.mappingContext);
         this.bufferedMutator = distributedGraphWriter.getConnection().getBufferedMutator(tableName);
       } else {
         try {
@@ -128,7 +128,7 @@ public class GraphTableWriter extends GraphTable implements TableWriter {
               tableName);
         } catch (TableNotFoundException | NamespaceNotFoundException e) {
           HBaseConnectionManager.instance().createTable(distributedGraphWriter.getConnection(),
-              tableName);
+              tableName, this.mappingContext);
           this.bufferedMutator = distributedGraphWriter.getConnection().getBufferedMutator(
               tableName);
         }

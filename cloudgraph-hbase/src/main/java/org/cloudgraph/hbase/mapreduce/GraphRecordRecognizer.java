@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Properties;
 
 import javax.xml.bind.JAXBException;
 
@@ -158,17 +159,18 @@ public class GraphRecordRecognizer {
 
   public GraphRecordRecognizer(Configuration configuration) {
     this.configuration = configuration;
-    this.mappingContext = new StoreMappingContext();
+    Properties mappingProps = new Properties();
     String rootPath = this.configuration
         .get(ConfigurationProperty.CLOUDGRAPH___MAPRDB___TABLE___PATH___PREFIX.value());
     if (rootPath != null)
-      mappingContext.setProperty(
+      mappingProps.setProperty(
           ConfigurationProperty.CLOUDGRAPH___MAPRDB___TABLE___PATH___PREFIX.value(), rootPath);
     String volume = this.configuration
         .get(ConfigurationProperty.CLOUDGRAPH___MAPRDB___VOLUME___PATH___PREFIX.value());
     if (volume != null)
-      mappingContext.setProperty(
+      mappingProps.setProperty(
           ConfigurationProperty.CLOUDGRAPH___MAPRDB___VOLUME___PATH___PREFIX.value(), volume);
+    this.mappingContext = new StoreMappingContext(mappingProps);
   }
 
   /**

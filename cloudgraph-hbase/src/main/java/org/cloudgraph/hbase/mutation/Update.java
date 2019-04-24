@@ -54,9 +54,8 @@ import commonj.sdo.DataGraph;
 public class Update extends DefaultMutation implements Mutation {
   private static Log log = LogFactory.getLog(Update.class);
 
-  public Update(ServiceContext context, SnapshotMap snapshotMap, String username,
-      StoreMappingContext mappingContext) {
-    super(context, snapshotMap, username, mappingContext);
+  public Update(ServiceContext context, SnapshotMap snapshotMap, String username) {
+    super(context, snapshotMap, username);
   }
 
   @Override

@@ -27,6 +27,15 @@ import java.util.Properties;
  */
 public class StoreMappingContext extends Properties {
 
+  @SuppressWarnings("unused")
+  private StoreMappingContext() {
+  }
+
+  public StoreMappingContext(Properties properties) {
+    super();
+    this.putAll(properties);
+  }
+
   public boolean hasMaprdbVolumePath() {
     return this.containsKey(ConfigurationProperty.CLOUDGRAPH___MAPRDB___VOLUME___PATH___PREFIX
         .value());

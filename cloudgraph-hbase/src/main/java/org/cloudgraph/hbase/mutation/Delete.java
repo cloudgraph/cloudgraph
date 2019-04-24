@@ -44,9 +44,8 @@ import commonj.sdo.Property;
 public class Delete extends DefaultMutation implements Mutation {
   private static Log log = LogFactory.getLog(Delete.class);
 
-  public Delete(ServiceContext context, SnapshotMap snapshotMap, String username,
-      StoreMappingContext mappingContext) {
-    super(context, snapshotMap, username, mappingContext);
+  public Delete(ServiceContext context, SnapshotMap snapshotMap, String username) {
+    super(context, snapshotMap, username);
   }
 
   @Override

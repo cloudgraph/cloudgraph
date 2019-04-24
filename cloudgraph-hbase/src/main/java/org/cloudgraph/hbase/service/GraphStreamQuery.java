@@ -109,7 +109,6 @@ public class GraphStreamQuery extends GraphQuery implements
         .getNamespaceURI(), from.getEntity().getName());
 
     Where where = query.findWhereClause();
-    StoreMappingContext mappingContext = createMappingContext(query);
 
     SelectionCollector selection = null;
     if (where != null)
@@ -118,7 +117,7 @@ public class GraphStreamQuery extends GraphQuery implements
       selection = new SelectionCollector(query.getSelectClause(), type);
     selection.setOnlyDeclaredProperties(false);
     for (Type t : selection.getTypes())
-      collectRowKeyProperties(selection, (PlasmaType) t, mappingContext);
+      collectRowKeyProperties(selection, (PlasmaType) t, this.context);
     if (log.isDebugEnabled())
       log.debug(selection.dumpInheritedProperties());
 
@@ -126,7 +125,7 @@ public class GraphStreamQuery extends GraphQuery implements
     // column set based on existence of path predicates
     // in the Select.
     HBaseFilterAssembler columnFilterAssembler = createRootColumnFilterAssembler(type, selection,
-        mappingContext);
+        this.context);
     Filter columnFilter = columnFilterAssembler.getFilter();
 
     List<PartialRowKey> partialScans = new ArrayList<PartialRowKey>();
@@ -142,7 +141,7 @@ public class GraphStreamQuery extends GraphQuery implements
         whereSyntaxTree.accept(printer);
         log.debug("Graph Recognizer: " + printer.toString());
       }
-      ScanCollector scanCollector = new ScanCollector(type, mappingContext);
+      ScanCollector scanCollector = new ScanCollector(type, this.context.getStoreMapping());
       whereSyntaxTree.accept(scanCollector);
       partialScans = scanCollector.getPartialRowKeyScans();
       fuzzyScans = scanCollector.getFuzzyRowKeyScans();
@@ -155,7 +154,7 @@ public class GraphStreamQuery extends GraphQuery implements
     if (where == null
         || (partialScans.size() == 0 && fuzzyScans.size() == 0 && completeKeys.size() == 0)) {
       PartialRowKeyScanAssembler scanAssembler = new PartialRowKeyScanAssembler(type,
-          mappingContext);
+          this.context.getStoreMapping());
       scanAssembler.assemble();
       byte[] startKey = scanAssembler.getStartKey();
       if (startKey != null && startKey.length > 0) {
@@ -176,21 +175,21 @@ public class GraphStreamQuery extends GraphQuery implements
       orderingComparator = orderingCompAssem.getComparator();
     }
 
-    this.executeAsStream(query, selection, type, mappingContext, columnFilter, whereSyntaxTree,
-        orderingComparator, partialScans, fuzzyScans, completeKeys, snapshotDate);
+    this.executeAsStream(query, selection, type, columnFilter, whereSyntaxTree, orderingComparator,
+        partialScans, fuzzyScans, completeKeys, snapshotDate);
   }
 
   protected void executeAsStream(Query query, SelectionCollector selection, PlasmaType type,
-      StoreMappingContext mappingContext, Filter columnFilter, Expr whereSyntaxTree,
-      ResultsComparator orderingComparator, List<PartialRowKey> partialScans,
-      List<FuzzyRowKey> fuzzyScans, List<CompleteRowKey> completeKeys, Timestamp snapshotDate) {
+      Filter columnFilter, Expr whereSyntaxTree, ResultsComparator orderingComparator,
+      List<PartialRowKey> partialScans, List<FuzzyRowKey> fuzzyScans,
+      List<CompleteRowKey> completeKeys, Timestamp snapshotDate) {
     Connection connection = HBaseConnectionManager.instance().getConnection();
     DistributedGraphReader graphReader = null;
     try {
       graphReader = new DistributedGraphReader(type, selection.getTypes(), connection,
-          mappingContext);
+          this.context.getStoreMapping());
       GraphAssemblerFactory assemblerFactory = new GraphAssemblerFactory(query, type, graphReader,
-          selection, snapshotDate, mappingContext);
+          selection, snapshotDate, this.context.getStoreMapping());
       TableReader rootTableReader = graphReader.getRootTableReader();
       ResultsAssembler resultsCollector = this.createResultsAssembler(query, selection,
           whereSyntaxTree, orderingComparator, null, null, rootTableReader, assemblerFactory);

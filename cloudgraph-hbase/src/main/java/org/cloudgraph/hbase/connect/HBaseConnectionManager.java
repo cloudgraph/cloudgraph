@@ -315,13 +315,13 @@ public class HBaseConnectionManager {
     }
   }
 
-  public void createTable(Connection connection, TableName name) {
+  public void createTable(Connection connection, TableName name, StoreMappingContext mappingContext) {
 
     Admin admin = null;
     try {
       admin = connection.getAdmin();
       TableMapping tableConfig = StoreMapping.getInstance().getTable(name.getNamespaceAsString(),
-          name.getNameAsString(), new StoreMappingContext()); // FIXME:
+          name.getNameAsString(), mappingContext);
       HTableDescriptor tableDesc = new HTableDescriptor(name);
       HColumnDescriptor fam1 = new HColumnDescriptor(tableConfig.getDataColumnFamilyName()
           .getBytes());

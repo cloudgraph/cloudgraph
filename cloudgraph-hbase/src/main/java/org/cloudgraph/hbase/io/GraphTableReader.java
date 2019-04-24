@@ -87,14 +87,14 @@ public class GraphTableReader extends GraphTable implements TableReader {
       // showing up on CPU profiling results. Just call get table and catch :(
       if (!this.distributedOperation.getConnection().tableExists(tableName)) {
         HBaseConnectionManager.instance().createTable(this.distributedOperation.getConnection(),
-            tableName);
+            tableName, this.mappingContext);
         this.table = this.distributedOperation.getConnection().getTable(tableName);
       } else {
         try {
           this.table = this.distributedOperation.getConnection().getTable(tableName);
         } catch (TableNotFoundException | NamespaceNotFoundException e) {
           HBaseConnectionManager.instance().createTable(this.distributedOperation.getConnection(),
-              tableName);
+              tableName, this.mappingContext);
           this.table = this.distributedOperation.getConnection().getTable(tableName);
         }
       }
