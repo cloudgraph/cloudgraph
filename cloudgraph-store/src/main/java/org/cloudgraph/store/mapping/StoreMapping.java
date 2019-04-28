@@ -397,14 +397,14 @@ public class StoreMapping implements MappingConfiguration {
       if (result == null) {
         result = this.graphURIToTableMap.get(plasmaType.getQualifiedName().toString());
         if (result != null) {
-          if (!StaticTableMapping.class.isAssignableFrom(result.getClass()))
-            throw new IllegalStateException("expected static mapping for type, "
-                + plasmaType.getQualifiedName());
           lock.readLock().unlock();
           lock.writeLock().lock();
           try {
+              if (!StaticTableMapping.class.isAssignableFrom(result.getClass()))
+                  throw new IllegalStateException("expected static mapping for type, "
+                      + plasmaType.getQualifiedName());
             if (!this.graphURIToTableMap.containsKey(contextQualifiedName)) {
-              result = new DynamicTableMapping(result.getTable(), result.getMappingContext());
+              result = new DynamicTableMapping(result.getTable(), result.getMappingConfiguration(), context);
               this.graphURIToTableMap.put(contextQualifiedName, result);
             } else {
               result = this.graphURIToTableMap.get(contextQualifiedName);
@@ -472,7 +472,7 @@ public class StoreMapping implements MappingConfiguration {
     lock.readLock().lock();
     try {
       String contextQualifiedName = qualifiedLogicaltableName;
-      TableMapping result = this.graphURIToTableMap.get(contextQualifiedName);
+      TableMapping result = this.tableNameToTableMap.get(contextQualifiedName);
       if (result == null) {
         result = this.tableNameToTableMap.get(contextQualifiedName);
         if (result == null) {
@@ -488,7 +488,7 @@ public class StoreMapping implements MappingConfiguration {
                     + qualifiedLogicaltableName);
               // check again for other thread mod
               if (!this.tableNameToTableMap.containsKey(contextQualifiedName)) {
-                result = new DynamicTableMapping(result.getTable(), result.getMappingContext());
+                result = new DynamicTableMapping(result.getTable(), result.getMappingConfiguration(), context);
                 this.tableNameToTableMap.put(contextQualifiedName, result);
               } else {
                 result = this.tableNameToTableMap.get(contextQualifiedName);

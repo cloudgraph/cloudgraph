@@ -25,7 +25,7 @@ import java.util.Properties;
  * @author Scott Cinnamond
  * @since 1.1.9
  */
-public class StoreMappingContext extends Properties {
+public class StoreMappingContext  {
   private Properties properties;
 
   @SuppressWarnings("unused")
@@ -37,7 +37,7 @@ public class StoreMappingContext extends Properties {
   }
 
   public boolean hasMaprdbVolumePath() {
-    return this.containsKey(ConfigurationProperty.CLOUDGRAPH___MAPRDB___VOLUME___PATH___PREFIX
+    return this.properties.containsKey(ConfigurationProperty.CLOUDGRAPH___MAPRDB___VOLUME___PATH___PREFIX
         .value());
   }
 
@@ -47,11 +47,11 @@ public class StoreMappingContext extends Properties {
   }
 
   public Object setProperty(String key, String value) {
-    return properties.setProperty(key, value);
+    return this.properties.setProperty(key, value);
   }
 
   public String getProperty(String key) {
-    return properties.getProperty(key);
+    return this.properties.getProperty(key);
   }
 
 }
