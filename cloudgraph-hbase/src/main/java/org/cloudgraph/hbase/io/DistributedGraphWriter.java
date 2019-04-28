@@ -68,9 +68,9 @@ public class DistributedGraphWriter extends WriterSupport implements Distributed
     this.rootWriter = collector.getRootTableWriter();
     for (TableWriter tableWriter : collector.getTableWriters()) {
       if (log.isDebugEnabled())
-        log.debug("added table writer, " + tableWriter.getTableConfig().getName());
+        log.debug("added table writer, " + tableWriter.getTableConfig().getQualifiedLogicalName());
       tableWriter.setDistributedWriter(this);
-      tableWriterMap.put(tableWriter.getTableConfig().getName(), tableWriter);
+      tableWriterMap.put(tableWriter.getTableConfig().getQualifiedLogicalName(), tableWriter);
       List<Type> list = new ArrayList<Type>();
       for (RowWriter rowWriter : tableWriter.getAllRowWriters()) {
         if (!list.contains(rowWriter.getRootType())) {
@@ -106,7 +106,7 @@ public class DistributedGraphWriter extends WriterSupport implements Distributed
    */
   @Override
   public void addTableWriter(TableWriter writer) {
-    String name = writer.getTableConfig().getName();
+    String name = writer.getTableConfig().getQualifiedLogicalName();
     if (this.tableWriterMap.get(name) != null)
       throw new OperationException("table writer for '" + name + "' already exists");
     this.tableWriterMap.put(name, writer);
@@ -150,7 +150,7 @@ public class DistributedGraphWriter extends WriterSupport implements Distributed
    */
   public void setRootTableWriter(TableWriter writer) {
     this.rootWriter = writer;
-    this.tableWriterMap.put(rootWriter.getTableConfig().getName(), rootWriter);
+    this.tableWriterMap.put(rootWriter.getTableConfig().getQualifiedLogicalName(), rootWriter);
   }
 
   /**
@@ -212,23 +212,23 @@ public class DistributedGraphWriter extends WriterSupport implements Distributed
       rowWriter = getContainerRowWriter(dataObject);
       if (log.isDebugEnabled())
         log.debug("associating " + type.toString() + " with table '"
-            + rowWriter.getTableWriter().getTableConfig().getName() + "'");
+            + rowWriter.getTableWriter().getTableConfig().getQualifiedLogicalName() + "'");
       rowWriter.addDataObject(dataObject);
       this.rowWriterMap.put(dataObject, rowWriter);
     } else {
       // a table is configured with this type as root
-      TableWriter tableWriter = (TableWriter) tableWriterMap.get(table.getName());
+      TableWriter tableWriter = (TableWriter) tableWriterMap.get(table.getQualifiedLogicalName());
       if (tableWriter == null) {
         tableWriter = new GraphTableWriter(table, this, this.mappingContext);
         rowWriter = createRowWriter(tableWriter, dataObject);
         tableWriter = rowWriter.getTableWriter();
-        tableWriterMap.put(tableWriter.getTableConfig().getName(), tableWriter);
+        tableWriterMap.put(tableWriter.getTableConfig().getQualifiedLogicalName(), tableWriter);
       } else { // just add a row writer to existing table writer
         rowWriter = this.addRowWriter(dataObject, tableWriter);
       }
       if (log.isDebugEnabled())
         log.debug("associating (root) " + dataObject.getType().toString() + " with table '"
-            + rowWriter.getTableWriter().getTableConfig().getName() + "'");
+            + rowWriter.getTableWriter().getTableConfig().getQualifiedLogicalName() + "'");
 
       this.rowWriterMap.put(dataObject, rowWriter);
 

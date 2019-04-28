@@ -162,9 +162,11 @@ class ParallelSliceSubgraphTask extends DefaultSubgraphTask implements SubgraphT
         // distributedReader.getTableReader(childTable);
         TableReader externalTableReader = distributedReader.getTableReader(edgeReader.getTable());
         if (log.isDebugEnabled())
-          if (!tableConfig.getName().equals(externalTableReader.getTableConfig().getName()))
-            log.debug("switching row context from table: '" + tableConfig.getName()
-                + "' to table: '" + externalTableReader.getTableConfig().getName() + "'");
+          if (!tableConfig.getQualifiedLogicalName().equals(
+              externalTableReader.getTableConfig().getQualifiedLogicalName()))
+            log.debug("switching row context from table: '" + tableConfig.getQualifiedLogicalName()
+                + "' to table: '" + externalTableReader.getTableConfig().getQualifiedLogicalName()
+                + "'");
         List<CellValues> resultRows = null;
         if (prop.isMany() && where != null) {
           resultRows = this.sliceSupport.filter(childType, level, edgeReader, where, rowReader,

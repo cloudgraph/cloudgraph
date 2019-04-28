@@ -513,12 +513,14 @@ public class GraphQuery implements QueryDispatcher {
       log.debug(FilterUtil.printFilterTree(get.getFilter()));
     Result resultRow = rootTableReader.getTable().get(get);
     if (resultRow == null || resultRow.isEmpty()) {
-      log.debug("no results from table " + rootTableReader.getTableConfig().getName()
-          + " for row '" + new String(get.getRow()) + "' - returning zero results graphs");
+      log.debug("no results from table "
+          + rootTableReader.getTableConfig().getQualifiedPhysicalName() + " for row '"
+          + new String(get.getRow()) + "' - returning zero results graphs");
       return;
     }
     if (log.isDebugEnabled()) {
-      log.debug(rootTableReader.getTableConfig().getName() + ": " + new String(resultRow.getRow()));
+      log.debug(rootTableReader.getTableConfig().getQualifiedPhysicalName() + ": "
+          + new String(resultRow.getRow()));
       for (KeyValue keyValue : resultRow.list()) {
         log.debug("\tkey: " + new String(keyValue.getQualifier()) + "\tvalue: "
             + new String(keyValue.getValue()));
@@ -537,14 +539,15 @@ public class GraphQuery implements QueryDispatcher {
       log.debug(FilterUtil.printFilterTree(gets.get(0).getFilter()));
     Result[] resultRows = rootTableReader.getTable().get(gets);
     if (resultRows == null) {
-      log.debug("no results from table " + rootTableReader.getTableConfig().getName()
+      log.debug("no results from table "
+          + rootTableReader.getTableConfig().getQualifiedPhysicalName()
           + " for mget - returning zero results graphs");
       return;
     }
     for (Result resultRow : resultRows) {
       if (!resultRow.isEmpty()) {
         if (log.isDebugEnabled()) {
-          log.debug(rootTableReader.getTableConfig().getName() + ": "
+          log.debug(rootTableReader.getTableConfig().getQualifiedPhysicalName() + ": "
               + new String(resultRow.getRow()));
           for (KeyValue keyValue : resultRow.list()) {
             log.debug("\tkey: " + new String(keyValue.getQualifier()) + "\tvalue: "
@@ -558,8 +561,9 @@ public class GraphQuery implements QueryDispatcher {
           String rowKey = "";
           if (resultRow.getRow() != null)
             rowKey = Bytes.toString(resultRow.getRow());
-          log.debug("no results from table " + rootTableReader.getTableConfig().getName()
-              + " for row '" + rowKey + "' - returning no results graph");
+          log.debug("no results from table "
+              + rootTableReader.getTableConfig().getQualifiedPhysicalName() + " for row '" + rowKey
+              + "' - returning no results graph");
         }
       }
     }
@@ -577,7 +581,7 @@ public class GraphQuery implements QueryDispatcher {
     try {
       for (Result resultRow : scanner) {
         if (log.isDebugEnabled()) {
-          log.debug(rootTableReader.getTableConfig().getName() + ": "
+          log.debug(rootTableReader.getTableConfig().getQualifiedPhysicalName() + ": "
               + new String(resultRow.getRow()));
           for (KeyValue keyValue : resultRow.list()) {
             log.debug("\tkey: " + new String(keyValue.getQualifier()) + "\tvalue: "

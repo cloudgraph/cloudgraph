@@ -22,6 +22,8 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.plasma.sdo.core.CoreConstants;
 
 /**
@@ -32,11 +34,12 @@ import org.plasma.sdo.core.CoreConstants;
  * @since 0.5
  */
 public abstract class TableMapping {
+  private static Log log = LogFactory.getLog(TableMapping.class);
   /** Apache HBase namespace table-name delimiter */
   static final String TABLE_NAME_DELIM = ":";
   /** MAPRDB table path delimiter */
   static final String TABLE_PATH_DELIM = "/";
-  private Table table;
+  protected Table table;
   private MappingConfiguration config;
   private Charset charset;
   private Map<String, Property> propertyNameToPropertyMap = new HashMap<String, Property>();
@@ -67,39 +70,55 @@ public abstract class TableMapping {
     return table;
   }
 
+  public MappingConfiguration getMappingConfiguration() {
+    return config;
+  }
+
   /**
    * Returns the table name for this table configuration.
    * 
    * @return the table name for this table configuration.
    */
-  public String getName() {
-    String name = this.table.getName();
-    String prefix = this.maprdbTablePathPrefix();
-    if (prefix != null) {
-      if (!prefix.endsWith(TABLE_PATH_DELIM) && !name.startsWith(TABLE_PATH_DELIM))
-        prefix = prefix + TABLE_PATH_DELIM;
-      name = prefix + name;
-    }
-    return name;
-  }
+  // public String getName() {
+  // String name = this.table.getName();
+  // String prefix = this.maprdbTablePathPrefix();
+  // if (prefix != null) {
+  // if (!prefix.endsWith(TABLE_PATH_DELIM) &&
+  // !name.startsWith(TABLE_PATH_DELIM))
+  // prefix = prefix + TABLE_PATH_DELIM;
+  // name = prefix + name;
+  // }
+  // return name;
+  // }
 
   /**
    * Returns the table namespace for this table configuration.
    * 
    * @return the table namespace for this table configuration.
    */
-  public String getNamespace() {
-    return this.table.getNamespace();
-  }
+  // public String getNamespace() {
+  // return this.table.getNamespace();
+  // }
 
   public abstract StoreMappingContext getMappingContext();
 
-  public abstract String getQualifiedName();
+  protected String qualifiedPhysicalName;
 
-  public static String qualifiedNameFor(String namespace, String tableName,
+  public abstract String getQualifiedPhysicalName();
+
+  protected String relativePhysicalName;
+
+  public abstract String getRelativePhysicalName();
+
+  protected String qualifiedLogicalName;
+
+  public abstract String getQualifiedLogicalName();
+
+  public static String qualifiedLogicalNameFor(String namespace, String tableName,
       StoreMappingContext context) {
     StringBuilder name = new StringBuilder();
-    if (context != null && context.hasMaprdbVolumePath()) {
+    if (context != null && context.hasMaprdbVolumePath()
+        && !tableName.startsWith(context.getMaprdbVolumePath())) {
       name.append(context.getMaprdbVolumePath());
       name.append(TABLE_NAME_DELIM);
     }
@@ -111,13 +130,50 @@ public abstract class TableMapping {
     return name.toString();
   }
 
-  public static String qualifiedNameFor(QName typeName, StoreMappingContext context) {
+  public static String qualifiedLogicalNameFor(QName typeName, StoreMappingContext context) {
     StringBuilder name = new StringBuilder();
     if (context != null && context.hasMaprdbVolumePath()) {
       name.append(context.getMaprdbVolumePath());
       name.append(TABLE_NAME_DELIM);
     }
     name.append(typeName.toString());
+    return name.toString();
+  }
+
+  public static String qualifiedPhysicalNameFor(String namespace, String tableName,
+      StoreMappingContext context) {
+    StringBuilder name = new StringBuilder();
+    String rootPath = StoreMapping.getInstance().maprdbTablePathPrefix();
+    if (rootPath != null) {
+      name.append(rootPath);
+      name.append(TABLE_PATH_DELIM);
+    }
+    if (context != null && context.hasMaprdbVolumePath()
+        && !tableName.startsWith(context.getMaprdbVolumePath())) {
+      name.append(context.getMaprdbVolumePath());
+      name.append(TABLE_PATH_DELIM);
+    }
+    if (namespace != null) {
+      name.append(namespace);
+      name.append(TABLE_PATH_DELIM);
+    }
+    name.append(tableName);
+    return name.toString();
+  }
+
+  public static String relativePhysicalNameFor(String namespace, String tableName,
+      StoreMappingContext context) {
+    StringBuilder name = new StringBuilder();
+    if (context != null && context.hasMaprdbVolumePath()
+        && !tableName.startsWith(context.getMaprdbVolumePath())) {
+      name.append(context.getMaprdbVolumePath());
+      name.append(TABLE_PATH_DELIM);
+    }
+    if (namespace != null) {
+      name.append(namespace);
+      name.append(TABLE_PATH_DELIM);
+    }
+    name.append(tableName);
     return name.toString();
   }
 

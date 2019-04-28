@@ -200,7 +200,7 @@ public abstract class DefaultEdgeOperation implements EdgeOperation {
       table = StoreMapping.getInstance().findTable(this.collectionBaseType.getQualifiedName(),
           this.rowOperation.getMappingContext());
     }
-    return table.getName();
+    return table.getQualifiedLogicalName();
   }
 
   /*

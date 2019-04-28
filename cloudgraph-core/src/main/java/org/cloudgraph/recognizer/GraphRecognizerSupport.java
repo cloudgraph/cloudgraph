@@ -389,10 +389,25 @@ public class GraphRecognizerSupport {
 
   private boolean evaluate(Object propertyValue, RelationalOperatorName operator,
       NullLiteral literalValue) {
-    if (NullValue.class.isInstance(propertyValue))
-      return true;
-    else
-      return false;
+    switch (operator) {
+    case EQUALS:
+      if (NullValue.class.isInstance(propertyValue))
+        return true;
+      else
+        return false;
+    case NOT_EQUALS:
+      if (NullValue.class.isInstance(propertyValue))
+        return false;
+      else
+        return true;
+    case GREATER_THAN:
+    case GREATER_THAN_EQUALS:
+    case LESS_THAN:
+    case LESS_THAN_EQUALS:
+    default:
+      throw new GraphServiceException("illegal relational operator, " + operator);
+    }
+
   }
 
   private boolean evaluate(String propertyValue, PredicateOperatorName operator, String literalValue) {

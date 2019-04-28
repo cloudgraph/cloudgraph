@@ -59,11 +59,11 @@ public class GraphMutationWriter {
         if (tableWriter.hasConcurrentRows()
             && !tableWriter.getTableConfig().optimisticConcurrency()) {
           log.debug("commiting " + tableMutations.size() + " mutations to table: "
-              + tableWriter.getTableConfig().getName()
+              + tableWriter.getTableConfig().getQualifiedPhysicalName()
               + " - ignoring concurrent processing for table");
         } else {
           log.debug("commiting " + tableMutations.size() + " mutations to table: "
-              + tableWriter.getTableConfig().getName());
+              + tableWriter.getTableConfig().getQualifiedPhysicalName());
         }
       }
 
@@ -135,7 +135,7 @@ public class GraphMutationWriter {
             + row.getClass());
       if (log.isDebugEnabled()) {
         log.debug("commiting concurrent " + row.getClass().getSimpleName() + " mutation to table: "
-            + tableWriter.getTableConfig().getName());
+            + tableWriter.getTableConfig().getQualifiedPhysicalName());
         debugRowValues(row);
       }
     }
@@ -226,7 +226,7 @@ public class GraphMutationWriter {
     if (log.isDebugEnabled()) {
       for (Row row : rows) {
         log.debug("commiting " + row.getClass().getSimpleName() + " mutation to table: "
-            + tableWriter.getTableConfig().getName());
+            + tableWriter.getTableConfig().getQualifiedPhysicalName());
         debugRowValues(row);
       }
     }

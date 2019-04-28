@@ -37,11 +37,20 @@ import commonj.sdo.DataObject;
 public interface TableReader extends TableOperation {
 
   /**
-   * Returns the table name associated with this reader.
    * 
-   * @return the table name associated with this reader.
+   * Returns the qualified logical table name associated with this reader.
+   * 
+   * @return the qualified logical table name associated with this reader.
    */
-  public String getTableName();
+  public String getQualifiedLogicalTableName();
+
+  /**
+   * 
+   * Returns the qualified physical table name associated with this reader.
+   * 
+   * @return the qualified physical table name associated with this reader.
+   */
+  public String getQualifiedPhysicalTableName();
 
   /**
    * Returns the row reader context for the given UUID or null if null exists

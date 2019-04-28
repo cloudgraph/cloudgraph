@@ -71,14 +71,14 @@ public class DataGraphMapping {
       PlasmaRuntime.getInstance().getSDONamespaceByURI(graph.getUri());
     } catch (ConfigurationException e) {
       throw new StoreMappingException("invalid graph URI '" + graph.getUri()
-          + "' specified for table, '" + table.getName() + "'", e);
+          + "' specified for table, '" + table.getQualifiedPhysicalName() + "'", e);
     }
 
     // validate the type against the URI
     Type typeResult = PlasmaTypeHelper.INSTANCE.getType(graph.getUri(), graph.getType());
     if (typeResult == null)
       throw new StoreMappingException("invalid graph URI/type combination '" + graph.getUri() + "/"
-          + graph.getType() + "' specified for table, '" + table.getName()
+          + graph.getType() + "' specified for table, '" + table.getQualifiedPhysicalName()
           + "' - type does not exist");
 
     for (Property prop : graph.getProperties())
@@ -122,29 +122,29 @@ public class DataGraphMapping {
     ColumnKeyModel columnKeyModel = this.graph.getColumnKeyModel();
     if (columnKeyModel.getReferenceMetadataDelimiter() == null)
       throw new StoreMappingException("found invalid (null) column metadata delimiter "
-          + "for table, " + this.table.getName() + ", for graph " + this.graph.getUri() + "#"
-          + this.graph.getType());
+          + "for table, " + this.table.getQualifiedPhysicalName() + ", for graph "
+          + this.graph.getUri() + "#" + this.graph.getType());
     if (columnKeyModel.getFieldDelimiter() == null)
       throw new StoreMappingException("found invalid (null) column field delimiter "
-          + "for table, " + this.table.getName() + ", for graph " + this.graph.getUri() + "#"
-          + this.graph.getType());
+          + "for table, " + this.table.getQualifiedPhysicalName() + ", for graph "
+          + this.graph.getUri() + "#" + this.graph.getType());
     if (columnKeyModel.getSequenceDelimiter() == null)
       throw new StoreMappingException("found invalid (null) column sequence delimiter "
-          + "for table, " + this.table.getName() + ", for graph " + this.graph.getUri() + "#"
-          + this.graph.getType());
+          + "for table, " + this.table.getQualifiedPhysicalName() + ", for graph "
+          + this.graph.getUri() + "#" + this.graph.getType());
     if (columnKeyModel.getReferenceMetadataDelimiter().equals(columnKeyModel.getFieldDelimiter()))
       throw new StoreMappingException("found duplicate (" + columnKeyModel.getFieldDelimiter()
-          + ") column metadata delimiter " + "for table, " + this.table.getName() + ", for graph "
-          + this.graph.getUri() + "#" + this.graph.getType());
+          + ") column metadata delimiter " + "for table, " + this.table.getQualifiedPhysicalName()
+          + ", for graph " + this.graph.getUri() + "#" + this.graph.getType());
     if (columnKeyModel.getSequenceDelimiter().equals(columnKeyModel.getFieldDelimiter()))
       throw new StoreMappingException("found duplicate (" + columnKeyModel.getFieldDelimiter()
-          + ") column sequence delimiter " + "for table, " + this.table.getName() + ", for graph "
-          + this.graph.getUri() + "#" + this.graph.getType());
+          + ") column sequence delimiter " + "for table, " + this.table.getQualifiedPhysicalName()
+          + ", for graph " + this.graph.getUri() + "#" + this.graph.getType());
     if (columnKeyModel.getReferenceMetadataDelimiter()
         .equals(columnKeyModel.getSequenceDelimiter()))
       throw new StoreMappingException("found duplicate (" + columnKeyModel.getSequenceDelimiter()
-          + ") column metadata delimiter " + "for table, " + this.table.getName() + ", for graph "
-          + this.graph.getUri() + "#" + this.graph.getType());
+          + ") column metadata delimiter " + "for table, " + this.table.getQualifiedPhysicalName()
+          + ", for graph " + this.graph.getUri() + "#" + this.graph.getType());
 
     int totalColumnKeyFields = columnKeyModel.getColumnKeyFields().size();
     seqNum = 1;
@@ -157,9 +157,35 @@ public class DataGraphMapping {
     }
   }
 
-  public static String qualifiedNameFor(QName typeName, StoreMappingContext context) {
+  private QName qualifiedName;
+
+  public QName getQualifiedName() {
+    if (this.qualifiedName == null) {
+      this.qualifiedName = new QName(this.getGraph().getUri(), this.getGraph().getType());
+    }
+    return this.qualifiedName;
+  }
+
+  private String qualifiedLogicalName;
+
+  public String getQualifiedLogicalName() {
+    if (this.qualifiedLogicalName == null) {
+      QName typeName = getQualifiedName();
+      if (DynamicTableMapping.class.isAssignableFrom(this.getTable().getClass()))
+        this.qualifiedLogicalName = qualifiedLogicalNameFor(typeName, DynamicTableMapping.class
+            .cast(this.getTable()).getMappingContext());
+      else
+        this.qualifiedLogicalName = qualifiedLogicalNameFor(typeName, null);
+
+    }
+    return this.qualifiedLogicalName;
+  }
+
+  public static String qualifiedLogicalNameFor(QName typeName, StoreMappingContext context) {
     StringBuilder name = new StringBuilder();
-    if (context != null && context.hasMaprdbVolumePath()) {
+    String typeNameString = typeName.toString();
+    if (context != null && context.hasMaprdbVolumePath()
+        && !typeNameString.contains(context.getMaprdbVolumePath())) {
       name.append(context.getMaprdbVolumePath());
       name.append(GRAPH_PATH_DELIM);
     }

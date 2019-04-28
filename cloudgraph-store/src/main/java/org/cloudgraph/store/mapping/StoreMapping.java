@@ -234,10 +234,10 @@ public class StoreMapping implements MappingConfiguration {
   }
 
   private void mapTable(TableMapping tableMapping) {
-    if (this.tableNameToTableMap.get(tableMapping.getQualifiedName()) != null)
+    if (this.tableNameToTableMap.get(tableMapping.getQualifiedLogicalName()) != null)
       throw new StoreMappingException("a table definition already exists for qualified name '"
-          + tableMapping.getQualifiedName() + "'");
-    this.tableNameToTableMap.put(tableMapping.getQualifiedName(), tableMapping);
+          + tableMapping.getQualifiedLogicalName() + "'");
+    this.tableNameToTableMap.put(tableMapping.getQualifiedLogicalName(), tableMapping);
     for (DataGraph graph : tableMapping.getTable().getDataGraphs()) {
       DataGraphMapping dataGraphConfig = new DataGraphMapping(graph, tableMapping);
       mapDataGraph(dataGraphConfig, tableMapping);
@@ -245,22 +245,22 @@ public class StoreMapping implements MappingConfiguration {
   }
 
   private void unmapTable(TableMapping tableMapping) {
-    if (this.tableNameToTableMap.get(tableMapping.getQualifiedName()) == null)
+    if (this.tableNameToTableMap.get(tableMapping.getQualifiedLogicalName()) == null)
       throw new StoreMappingException("table definition does not exist exists for qualified name '"
-          + tableMapping.getQualifiedName() + "'");
+          + tableMapping.getQualifiedLogicalName() + "'");
 
     for (DataGraph graph : tableMapping.getTable().getDataGraphs()) {
       DataGraphMapping dataGraphConfig = new DataGraphMapping(graph, tableMapping);
       unmapDataGraph(dataGraphConfig);
     }
 
-    this.tableNameToTableMap.remove(tableMapping.getQualifiedName());
+    this.tableNameToTableMap.remove(tableMapping.getQualifiedLogicalName());
   }
 
   private void mapDataGraph(DataGraphMapping dataGraphMapping, TableMapping tableMapping) {
 
-    QName qname = new QName(dataGraphMapping.getGraph().getUri(), dataGraphMapping.getGraph()
-        .getType());
+    QName qname = dataGraphMapping.getQualifiedName();
+
     PlasmaType configuredType = (PlasmaType) PlasmaTypeHelper.INSTANCE.getType(
         qname.getNamespaceURI(), qname.getLocalPart());
     // if (configuredType.isAbstract())
@@ -269,10 +269,9 @@ public class StoreMapping implements MappingConfiguration {
     // + table.getName() + "' has an abstract type (uri/name), "
     // + graph.getUri() + "#" + graph.getType() +
     // " - use a non abstract type");
-    String qualifiedTableName = tableMapping.getQualifiedName();
+    String qualifiedTableName = tableMapping.getQualifiedLogicalName();
 
-    String qualifiedGraphName = DataGraphMapping.qualifiedNameFor(qname,
-        tableMapping.getMappingContext());
+    String qualifiedGraphName = dataGraphMapping.getQualifiedLogicalName();
 
     if (graphURIToTableMap.get(qualifiedGraphName) != null)
       throw new StoreMappingException("a data graph definition already exists within table '"
@@ -296,13 +295,12 @@ public class StoreMapping implements MappingConfiguration {
 
   private void unmapDataGraph(DataGraphMapping dataGraphConfig) {
 
-    String qname = (new QName(dataGraphConfig.getGraph().getUri(), dataGraphConfig.getGraph()
-        .getType())).toString();
-    if (graphURIToTableMap.get(qname) == null)
+    String qualifiedGraphName = dataGraphConfig.getQualifiedLogicalName();
+    if (graphURIToTableMap.get(qualifiedGraphName) == null)
       throw new StoreMappingException("no data graph definition already exists within table '"
-          + dataGraphConfig.getTable().getTable().getName() + "' for type (uri/name), "
-          + dataGraphConfig.getGraph().getUri() + "#" + dataGraphConfig.getGraph().getType());
-    graphURIToTableMap.remove(qname);
+          + dataGraphConfig.getTable().getQualifiedPhysicalName() + "' for type (uri/name), "
+          + qualifiedGraphName);
+    graphURIToTableMap.remove(qualifiedGraphName);
   }
 
   @SuppressWarnings("unchecked")
@@ -374,37 +372,50 @@ public class StoreMapping implements MappingConfiguration {
 
   @Override
   public TableMapping findTable(QName typeName, StoreMappingContext context) {
-    lock.readLock().lock();
-    try {
-      PlasmaType type = (PlasmaType) PlasmaTypeHelper.INSTANCE.getType(typeName.getNamespaceURI(),
-          typeName.getLocalPart());
-      String qualifiedName = TableMapping.qualifiedNameFor(type.getQualifiedName(), context);
-      return this.graphURIToTableMap.get(qualifiedName);
-    } finally {
-      lock.readLock().unlock();
-    }
+    PlasmaType type = (PlasmaType) PlasmaTypeHelper.INSTANCE.getType(typeName.getNamespaceURI(),
+        typeName.getLocalPart());
+    return findTable(type, context);
   }
 
   @Override
   public TableMapping getTable(QName typeName, StoreMappingContext context) {
-    lock.readLock().lock();
-    try {
-      TableMapping result = findTable(typeName, context);
-      if (result == null)
-        throw new StoreMappingException("no HTable configured for " + " graph URI '"
-            + typeName.toString() + "'");
-      return result;
-    } finally {
-      lock.readLock().unlock();
-    }
+    TableMapping result = findTable(typeName, context);
+    if (result == null)
+      throw new StoreMappingException("no HTable configured for " + " graph URI '"
+          + typeName.toString() + "'");
+    return result;
   }
 
   @Override
   public TableMapping findTable(Type type, StoreMappingContext context) {
     lock.readLock().lock();
     try {
-      String qualifiedName = ((PlasmaType) type).getQualifiedName().toString();
-      return this.graphURIToTableMap.get(qualifiedName);
+      PlasmaType plasmaType = (PlasmaType) type;
+      String contextQualifiedName = DataGraphMapping.qualifiedLogicalNameFor(
+          plasmaType.getQualifiedName(), context);
+      TableMapping result = this.graphURIToTableMap.get(contextQualifiedName);
+      if (result == null) {
+        result = this.graphURIToTableMap.get(plasmaType.getQualifiedName().toString());
+        if (result != null) {
+          if (!StaticTableMapping.class.isAssignableFrom(result.getClass()))
+            throw new IllegalStateException("expected static mapping for type, "
+                + plasmaType.getQualifiedName());
+          lock.readLock().unlock();
+          lock.writeLock().lock();
+          try {
+            if (!this.graphURIToTableMap.containsKey(contextQualifiedName)) {
+              result = new DynamicTableMapping(result.getTable(), result.getMappingContext());
+              this.graphURIToTableMap.put(contextQualifiedName, result);
+            } else {
+              result = this.graphURIToTableMap.get(contextQualifiedName);
+            }
+            lock.readLock().lock(); // downgrade
+          } finally {
+            lock.writeLock().unlock(); // still hold read
+          }
+        }
+      }
+      return result;
     } finally {
       lock.readLock().unlock();
     }
@@ -417,16 +428,11 @@ public class StoreMapping implements MappingConfiguration {
    */
   @Override
   public TableMapping getTable(Type type, StoreMappingContext context) {
-    lock.readLock().lock();
-    try {
-      TableMapping result = findTable(type, context);
-      if (result == null)
-        throw new StoreMappingException("no HTable configured for " + " graph URI '"
-            + ((PlasmaType) type).getQualifiedName() + "'");
-      return result;
-    } finally {
-      lock.readLock().unlock();
-    }
+    TableMapping result = findTable(type, context);
+    if (result == null)
+      throw new StoreMappingException("no HTable configured for " + " graph URI '"
+          + ((PlasmaType) type).getQualifiedName() + "'");
+    return result;
   }
 
   private void collectTypeHierarchy(PlasmaType type, Map<QName, PlasmaType> map) {
@@ -461,11 +467,39 @@ public class StoreMapping implements MappingConfiguration {
   }
 
   @Override
-  public TableMapping findTable(String tableName, StoreMappingContext context) {
+  public TableMapping findTableByQualifiedLogicalName(String qualifiedLogicaltableName,
+      StoreMappingContext context) {
     lock.readLock().lock();
     try {
-      String qualifiedName = TableMapping.qualifiedNameFor(null, tableName, context);
-      TableMapping result = this.tableNameToTableMap.get(qualifiedName);
+      String contextQualifiedName = qualifiedLogicaltableName;
+      TableMapping result = this.graphURIToTableMap.get(contextQualifiedName);
+      if (result == null) {
+        result = this.tableNameToTableMap.get(contextQualifiedName);
+        if (result == null) {
+          String unqualifiedName = logicalTableNameFromQualifiedLogialTableName(
+              contextQualifiedName, context);
+          result = this.tableNameToTableMap.get(unqualifiedName);
+          if (result != null) {
+            lock.readLock().unlock();
+            lock.writeLock().lock();
+            try {
+              if (!StaticTableMapping.class.isAssignableFrom(result.getClass()))
+                throw new IllegalStateException("expected static mapping for type, "
+                    + qualifiedLogicaltableName);
+              // check again for other thread mod
+              if (!this.tableNameToTableMap.containsKey(contextQualifiedName)) {
+                result = new DynamicTableMapping(result.getTable(), result.getMappingContext());
+                this.tableNameToTableMap.put(contextQualifiedName, result);
+              } else {
+                result = this.tableNameToTableMap.get(contextQualifiedName);
+              }
+              lock.readLock().lock(); // downgrade
+            } finally {
+              lock.writeLock().unlock(); // still hold read
+            }
+          }
+        }
+      }
       return result;
     } finally {
       lock.readLock().unlock();
@@ -473,17 +507,45 @@ public class StoreMapping implements MappingConfiguration {
   }
 
   @Override
-  public TableMapping getTable(String tableNamespace, String tableName, StoreMappingContext context) {
-    lock.readLock().lock();
-    try {
-      // FIXME: called by
-      String qualifiedName = TableMapping.qualifiedNameFor(null, tableName, context);
-      TableMapping result = this.tableNameToTableMap.get(qualifiedName);
-      if (result == null)
-        throw new StoreMappingException("no table configured for '" + qualifiedName + "'");
+  public String qualifiedLogicalTableNameFromPhysicalTablePath(String namespace, String tableName,
+      StoreMappingContext context) {
+    String result = tableName;
+    String pathPrefix = this.maprdbTablePathPrefix();
+    if (pathPrefix != null && result.startsWith(pathPrefix)) {
+      result = result.substring(pathPrefix.length());
+    }
+    if (result.startsWith(TableMapping.TABLE_PATH_DELIM))
+      result = result.substring(TableMapping.TABLE_PATH_DELIM.length());
+    if (result.startsWith(TableMapping.TABLE_NAME_DELIM))
+      result = result.substring(TableMapping.TABLE_NAME_DELIM.length());
+    return result;
+  }
+
+  private String logicalTableNameFromQualifiedLogialTableName(String tableName,
+      StoreMappingContext context) {
+    String result = tableName;
+    if (context != null && context.hasMaprdbVolumePath()) {
+      String volumePrefix = context.getMaprdbVolumePath();
+      if (result.startsWith(volumePrefix) || result.startsWith(volumePrefix.toLowerCase()))
+        result = result.substring(volumePrefix.length());
+    }
+    if (result.startsWith(TableMapping.TABLE_PATH_DELIM))
+      result = result.substring(TableMapping.TABLE_PATH_DELIM.length());
+    if (result.startsWith(TableMapping.TABLE_NAME_DELIM))
+      result = result.substring(TableMapping.TABLE_NAME_DELIM.length());
+    return result;
+  }
+
+  @Override
+  public TableMapping getTableByQualifiedLogicalName(String tableNamespace, String tableName,
+      StoreMappingContext context) {
+    // FIXME: called by
+    TableMapping result = findTableByQualifiedLogicalName(tableName, context);
+    if (result != null) {
       return result;
-    } finally {
-      lock.readLock().unlock();
+    } else {
+      String contextQualifiedName = TableMapping.qualifiedLogicalNameFor(null, tableName, context);
+      throw new StoreMappingException("no table configured for '" + contextQualifiedName + "'");
     }
   }
 
@@ -494,15 +556,18 @@ public class StoreMapping implements MappingConfiguration {
    * org.cloudgraph.config.TableMapping#getTableName(javax.xml.namespace.QName )
    */
   @Override
-  public String getTableName(QName typeName, StoreMappingContext context) {
+  public String getQualifiedPhysicalTableName(QName typeName, StoreMappingContext context) {
     lock.readLock().lock();
     try {
-      String qualifiedName = TableMapping.qualifiedNameFor(typeName, context);
-      TableMapping result = this.graphURIToTableMap.get(qualifiedName);
-      if (result == null)
-        throw new StoreMappingException("no HTable configured for" + " CloudGraph '"
-            + typeName.toString() + "'");
-      return result.getQualifiedName();
+      String contextQualifiedName = TableMapping.qualifiedLogicalNameFor(typeName, context);
+      TableMapping result = this.graphURIToTableMap.get(contextQualifiedName);
+      if (result == null) {
+        result = this.graphURIToTableMap.get(typeName.toString());
+        if (result == null)
+          throw new StoreMappingException("no table configured for" + " CloudGraph '"
+              + typeName.toString() + "'");
+      }
+      return result.getQualifiedPhysicalName();
     } finally {
       lock.readLock().unlock();
     }
@@ -522,7 +587,7 @@ public class StoreMapping implements MappingConfiguration {
   public void addTableIfNotExists(TableMapping tableConfig) {
     lock.writeLock().lock();
     try {
-      if ((this.tableNameToTableMap.get(tableConfig.getQualifiedName())) == null)
+      if ((this.tableNameToTableMap.get(tableConfig.getQualifiedLogicalName())) == null)
         this.mapTable(tableConfig);
     } finally {
       lock.writeLock().unlock();
@@ -543,7 +608,7 @@ public class StoreMapping implements MappingConfiguration {
   public void removeTableIfExists(TableMapping tableConfig) {
     lock.writeLock().lock();
     try {
-      if ((this.tableNameToTableMap.get(tableConfig.getQualifiedName())) != null)
+      if ((this.tableNameToTableMap.get(tableConfig.getQualifiedLogicalName())) != null)
         this.unmapTable(tableConfig);
     } finally {
       lock.writeLock().unlock();
@@ -560,8 +625,11 @@ public class StoreMapping implements MappingConfiguration {
   public DataGraphMapping findDataGraph(QName typeName, StoreMappingContext context) {
     lock.readLock().lock();
     try {
-      String graphQualifiedName = DataGraphMapping.qualifiedNameFor(typeName, context);
+      String graphQualifiedName = DataGraphMapping.qualifiedLogicalNameFor(typeName, context);
       DataGraphMapping result = this.graphURIToGraphMap.get(graphQualifiedName);
+      if (result == null) {
+        result = this.graphURIToGraphMap.get(typeName.toString());
+      }
       return result;
     } finally {
       lock.readLock().unlock();
@@ -576,17 +644,10 @@ public class StoreMapping implements MappingConfiguration {
    */
   @Override
   public DataGraphMapping getDataGraph(QName typeName, StoreMappingContext context) {
-    lock.readLock().lock();
-    try {
-      String graphQualifiedName = DataGraphMapping.qualifiedNameFor(typeName, context);
-
-      DataGraphMapping result = this.graphURIToGraphMap.get(graphQualifiedName);
-      if (result == null)
-        throw new StoreMappingException("no configured for" + " '" + graphQualifiedName + "'");
-      return result;
-    } finally {
-      lock.readLock().unlock();
-    }
+    DataGraphMapping result = this.findDataGraph(typeName, context);
+    if (result == null)
+      throw new StoreMappingException("no configured for" + " '" + typeName + "'");
+    return result;
   }
 
   /*

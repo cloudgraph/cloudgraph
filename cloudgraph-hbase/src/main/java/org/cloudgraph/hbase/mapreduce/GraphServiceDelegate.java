@@ -195,7 +195,7 @@ public class GraphServiceDelegate implements GraphService {
       List<Row> tableMutations = mutations.get(tableWriter);
       if (log.isDebugEnabled())
         log.debug("commiting " + tableMutations.size() + " mutations to table: "
-            + tableWriter.getTableConfig().getName());
+            + tableWriter.getTableConfig().getQualifiedPhysicalName());
       Object[] results = new Object[tableMutations.size()];
       try {
         tableWriter.getTable().batch(tableMutations, results);

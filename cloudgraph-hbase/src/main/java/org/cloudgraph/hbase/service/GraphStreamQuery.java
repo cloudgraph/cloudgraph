@@ -264,7 +264,7 @@ public class GraphStreamQuery extends GraphQuery implements
     try {
       for (Result resultRow : scanner) {
         if (log.isDebugEnabled()) {
-          log.debug(rootTableReader.getTableConfig().getName() + ": "
+          log.debug(rootTableReader.getTableConfig().getQualifiedPhysicalName() + ": "
               + new String(resultRow.getRow()));
           for (KeyValue keyValue : resultRow.list()) {
             log.debug("\tkey: " + new String(keyValue.getQualifier()) + "\tvalue: "

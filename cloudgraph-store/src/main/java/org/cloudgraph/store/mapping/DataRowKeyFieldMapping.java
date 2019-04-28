@@ -306,7 +306,7 @@ public class DataRowKeyFieldMapping extends KeyFieldMapping {
       throw new UnresolvedPathExpressionException("the configured XPath expression '"
           + this.getPathExpression() + "'" + " for graph root type '"
           + dataGraph.getRootType().getName() + "'" + " within table '"
-          + dataGraph.getTable().getName() + "'" + " resolved to a null value - "
+          + dataGraph.getTable().getQualifiedPhysicalName() + "'" + " resolved to a null value - "
           + "use an XPath expressions which terminate with a mandatory property, "
           + "and return mandatory properties for data graph root types");
 

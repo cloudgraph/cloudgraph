@@ -201,13 +201,14 @@ public class GraphMapReduceSetup extends JobSetup {
     List<Scan> scans = createScans(from, where, type, columnFilter, conf, mappingContext);
 
     conf.set(GraphInputFormat.QUERY, marshal(query));
-    conf.set(GraphInputFormat.ROOT_TABLE, graphReader.getRootTableReader().getTableName());
+    conf.set(GraphInputFormat.ROOT_TABLE, graphReader.getRootTableReader()
+        .getQualifiedPhysicalTableName());
 
     List<String> scanStrings = new ArrayList<String>();
 
     for (Scan scan : scans) {
       scan.setAttribute(Scan.SCAN_ATTRIBUTES_TABLE_NAME,
-          Bytes.toBytes(graphReader.getRootTableReader().getTableName()));
+          Bytes.toBytes(graphReader.getRootTableReader().getQualifiedPhysicalTableName()));
       scanStrings.add(convertScanToString(scan));
     }
     conf.setStrings(GraphInputFormat.SCANS, scanStrings.toArray(new String[scanStrings.size()]));

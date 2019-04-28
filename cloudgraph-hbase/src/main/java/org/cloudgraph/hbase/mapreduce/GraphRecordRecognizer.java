@@ -311,7 +311,8 @@ public class GraphRecordRecognizer {
 
   private void loadMapping(org.cloudgraph.store.mapping.Table table) {
     TableMapping tableCondig = new DynamicTableMapping(table, this.mappingContext);
-    if (StoreMapping.getInstance().findTable(tableCondig.getQualifiedName(), this.mappingContext) == null)
+    if (StoreMapping.getInstance().findTableByQualifiedLogicalName(
+        tableCondig.getQualifiedLogicalName(), this.mappingContext) == null)
       StoreMapping.getInstance().addTable(tableCondig);
   }
 

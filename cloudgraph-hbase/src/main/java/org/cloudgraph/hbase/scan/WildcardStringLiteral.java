@@ -106,7 +106,7 @@ public class WildcardStringLiteral extends StringLiteral implements WildcardPart
       throw new ScanException("cannot create fuzzy scan literal "
           + "with interviening wildcards ('" + keyValueStr
           + "') for fixed length row key field with path '" + this.fieldConfig.getPropertyPath()
-          + "' within table " + this.table.getName() + " for graph root type, "
+          + "' within table " + this.table.getQualifiedPhysicalName() + " for graph root type, "
           + this.rootType.toString());
     default:
       if (keyValueStr.contains(Wildcard.WILDCARD_CHAR)) {
@@ -121,8 +121,9 @@ public class WildcardStringLiteral extends StringLiteral implements WildcardPart
           throw new ScanException("cannot create fuzzy scan literal "
               + "with interviening wildcards ('" + keyValueStr
               + "') for fixed length row key field with path '"
-              + this.fieldConfig.getPropertyPath() + "' within table " + this.table.getName()
-              + " for graph root type, " + this.rootType.toString());
+              + this.fieldConfig.getPropertyPath() + "' within table "
+              + this.table.getQualifiedPhysicalName() + " for graph root type, "
+              + this.rootType.toString());
         }
       } else {
         keyValueStr = this.padding.pad(keyValueStr, this.fieldConfig.getMaxLength(),
@@ -165,7 +166,7 @@ public class WildcardStringLiteral extends StringLiteral implements WildcardPart
     case HASH:
       throw new ScanException("cannot create scan literal "
           + "for hashed key field - field with path '" + this.fieldConfig.getPropertyPath()
-          + "' within table " + this.table.getName() + " for graph root type, "
+          + "' within table " + this.table.getQualifiedPhysicalName() + " for graph root type, "
           + this.rootType.toString());
     default:
       startBytes = startValueStr.getBytes(this.charset);
@@ -195,7 +196,7 @@ public class WildcardStringLiteral extends StringLiteral implements WildcardPart
     case HASH:
       throw new ScanException("cannot create scan literal "
           + "for hashed key field - field with path '" + this.fieldConfig.getPropertyPath()
-          + "' within table " + this.table.getName() + " for graph root type, "
+          + "' within table " + this.table.getQualifiedPhysicalName() + " for graph root type, "
           + this.rootType.toString() + "is configured as 'hashed'");
     default:
       byte[] literalStopBytes = stopValueStr.getBytes(this.charset);

@@ -100,9 +100,9 @@ public class CompositeRowKeyReader {
       DataRowKeyFieldMapping userDefinedKeyField = (DataRowKeyFieldMapping) keyField;
       PlasmaProperty endpointProp = userDefinedKeyField.getEndpointProperty();
       if (keyField.getCodecType().ordinal() == KeyFieldCodecType.HASH.ordinal()) {
-        log.warn("cannot unmarshal hashed row key field for table, " + this.table.getName()
-            + ", with graph, " + this.graph + ", and endpoint property, " + endpointProp
-            + " - continuing");
+        log.warn("cannot unmarshal hashed row key field for table, "
+            + this.table.getQualifiedPhysicalName() + ", with graph, " + this.graph
+            + ", and endpoint property, " + endpointProp + " - continuing");
         continue;
       }
       Endpoint endpoint = this.endpointMap.get(userDefinedKeyField);
@@ -147,8 +147,8 @@ public class CompositeRowKeyReader {
       PlasmaProperty endpointProp = userDefinedKeyField.getEndpointProperty();
       if (keyField.getCodecType().ordinal() == KeyFieldCodecType.HASH.ordinal()) {
         log.warn("cannot unmarshal hashed row key field(" + i + ") for table, "
-            + this.table.getName() + ", with graph, " + this.graph + ", and endpoint property, "
-            + endpointProp + " - continuing");
+            + this.table.getQualifiedPhysicalName() + ", with graph, " + this.graph
+            + ", and endpoint property, " + endpointProp + " - continuing");
         continue;
       }
       Object value = keyField.getCodec().decode(token);

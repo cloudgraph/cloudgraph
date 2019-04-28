@@ -97,7 +97,7 @@ public class CompositeRowKeyExpressionFactory extends ByteBufferKeyFactory imple
                       + userFieldConfig.getPathExpression()
                       + "'"
                       + " for table '"
-                      + this.getTable().getName()
+                      + this.getTable().getQualifiedPhysicalName()
                       + "' - this field is defined as using an integral hash algorithm which prevents the use of wildcards");
             break;
           default:
@@ -117,7 +117,7 @@ public class CompositeRowKeyExpressionFactory extends ByteBufferKeyFactory imple
                     + userFieldConfig.getPathExpression()
                     + "'"
                     + " for table '"
-                    + this.getTable().getName()
+                    + this.getTable().getQualifiedPhysicalName()
                     + "' - this field is defined as using an integral hash algorithm which prevents the use of wildcards");
           default:
             PlasmaProperty prop = (PlasmaProperty) userFieldConfig.getEndpointProperty();
@@ -171,7 +171,7 @@ public class CompositeRowKeyExpressionFactory extends ByteBufferKeyFactory imple
                       + userFieldConfig.getPathExpression()
                       + "'"
                       + " for table '"
-                      + this.getTable().getName()
+                      + this.getTable().getQualifiedPhysicalName()
                       + "' - this field is defined as using an integral hash algorithm which prevents the use of wildcards");
             break;
           default:
@@ -192,7 +192,7 @@ public class CompositeRowKeyExpressionFactory extends ByteBufferKeyFactory imple
                     + userFieldConfig.getPathExpression()
                     + "'"
                     + " for table '"
-                    + this.getTable().getName()
+                    + this.getTable().getQualifiedPhysicalName()
                     + "' - this field is defined as using an integral hash algorithm which prevents the use of wildcards");
           default:
             PlasmaProperty prop = (PlasmaProperty) userFieldConfig.getEndpointProperty();

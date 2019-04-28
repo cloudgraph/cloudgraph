@@ -14,8 +14,33 @@ public class StaticTableMapping extends TableMapping {
   }
 
   @Override
-  public String getQualifiedName() {
-    return qualifiedNameFor(this.getNamespace(), this.getName(), null);
+  public String getQualifiedLogicalName() {
+    if (this.qualifiedLogicalName == null) {
+      this.qualifiedLogicalName = qualifiedLogicalNameFor(this.table.getNamespace(),
+          this.table.getName(), null); // static mapping w/o context
+    }
+
+    return this.qualifiedLogicalName;
+  }
+
+  @Override
+  public String getQualifiedPhysicalName() {
+    if (this.qualifiedPhysicalName == null) {
+      this.qualifiedPhysicalName = qualifiedPhysicalNameFor(this.table.getNamespace(),
+          this.table.getName(), null); // static mapping w/o context
+    }
+
+    return this.qualifiedPhysicalName;
+  }
+
+  @Override
+  public String getRelativePhysicalName() {
+    if (this.relativePhysicalName == null) {
+      this.relativePhysicalName = relativePhysicalNameFor(this.table.getNamespace(),
+          this.table.getName(), null); // static mapping w/o context
+    }
+
+    return this.relativePhysicalName;
   }
 
   @Override

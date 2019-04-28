@@ -208,8 +208,9 @@ public class IntegralLiteral extends ScanLiteral implements PartialRowKeyLiteral
     } else
       throw new ScanException("cannot create fuzzy scan literal " + "for "
           + this.fieldConfig.getCodecType() + " encoded key field with path '"
-          + this.fieldConfig.getPropertyPath() + "' within table " + this.table.getName()
-          + " for graph root type, " + this.rootType.toString());
+          + this.fieldConfig.getPropertyPath() + "' within table "
+          + this.table.getQualifiedPhysicalName() + " for graph root type, "
+          + this.rootType.toString());
   }
 
   @Override

@@ -160,9 +160,11 @@ public class GraphSliceAssembler extends DistributedAssembler {
         TableReader externalTableReader = distributedReader.getTableReader(childTable);
 
         if (log.isDebugEnabled())
-          if (!tableConfig.getName().equals(externalTableReader.getTableConfig().getName()))
-            log.debug("switching row context from table: '" + tableConfig.getName()
-                + "' to table: '" + externalTableReader.getTableConfig().getName() + "'");
+          if (!tableConfig.getQualifiedLogicalName().equals(
+              externalTableReader.getTableConfig().getQualifiedLogicalName()))
+            log.debug("switching row context from table: '" + tableConfig.getQualifiedLogicalName()
+                + "' to table: '" + externalTableReader.getTableConfig().getQualifiedLogicalName()
+                + "'");
         List<CellValues> resultRows = null;
         if (where != null) {
           resultRows = this.slice.filter(childType, level, edgeReader, where, rowReader,

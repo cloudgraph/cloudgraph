@@ -87,7 +87,7 @@ public class DistributedGraphReader implements DistributedReader {
     this.connection = connection;
 
     TableReader tableReader = new GraphTableReader(rootTable, this, this.mappingContext);
-    this.tableReaderMap.put(tableReader.getTableConfig().getName(), tableReader);
+    this.tableReaderMap.put(tableReader.getTableConfig().getQualifiedLogicalName(), tableReader);
 
     this.rootReader = tableReader;
     this.typeTableReaderMap.put(((PlasmaType) rootType).getQualifiedName(), this.rootReader);
@@ -102,13 +102,14 @@ public class DistributedGraphReader implements DistributedReader {
       if (table == null)
         continue; // not a graph root
 
-      tableReader = this.tableReaderMap.get(table.getName());
+      tableReader = this.tableReaderMap.get(table.getQualifiedLogicalName());
       if (tableReader == null) {
         // create a new table reader if not added already, e.g.
         // as root above or from a graph root type
         // mapped to a table we have seen here
         tableReader = new GraphTableReader(table, this, this.mappingContext);
-        this.tableReaderMap.put(tableReader.getTableConfig().getName(), tableReader);
+        this.tableReaderMap
+            .put(tableReader.getTableConfig().getQualifiedLogicalName(), tableReader);
       }
 
       // always map root types
@@ -159,7 +160,7 @@ public class DistributedGraphReader implements DistributedReader {
    */
   @Override
   public void addTableReader(TableReader reader) {
-    String name = reader.getTableConfig().getName();
+    String name = reader.getTableConfig().getQualifiedLogicalName();
     if (this.tableReaderMap.get(name) != null)
       throw new OperationException("table reader for '" + name + "' already exists");
     this.tableReaderMap.put(name, reader);
@@ -203,7 +204,7 @@ public class DistributedGraphReader implements DistributedReader {
    */
   public void setRootTableReader(TableReader reader) {
     this.rootReader = reader;
-    this.tableReaderMap.put(rootReader.getTableConfig().getName(), rootReader);
+    this.tableReaderMap.put(rootReader.getTableConfig().getQualifiedLogicalName(), rootReader);
   }
 
   /**

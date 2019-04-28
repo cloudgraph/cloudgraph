@@ -126,7 +126,9 @@ public abstract class DistributedAssembler extends DefaultAssembler implements H
 
     List<String> tables = new ArrayList<String>();
     for (TableReader tableReader : this.distributedReader.getTableReaders()) {
-      tables.add(tableReader.getTableName());
+      tables.add(tableReader.getQualifiedPhysicalTableName()); // FIXME: should
+                                                               // be relative
+                                                               // name
     }
     root.getValueObject().put(CloudGraphConstants.GRAPH_TABLE_NAMES, tables);
   }

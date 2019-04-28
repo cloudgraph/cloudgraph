@@ -70,18 +70,30 @@ public class GraphTableReader extends GraphTable implements TableReader {
 
   /**
    * 
-   * Returns the qualified table name associated with this reader.
+   * Returns the qualified logical table name associated with this reader.
    * 
-   * @return the qualified table name associated with this reader.
+   * @return the qualified logical table name associated with this reader.
    */
-  public String getTableName() {
-    return this.getTableConfig().getQualifiedName();
+  @Override
+  public String getQualifiedLogicalTableName() {
+    return this.getTableConfig().getQualifiedLogicalName();
+  }
+
+  /**
+   * 
+   * Returns the qualified physical table name associated with this reader.
+   * 
+   * @return the qualified physical table name associated with this reader.
+   */
+  @Override
+  public String getQualifiedPhysicalTableName() {
+    return this.getTableConfig().getQualifiedPhysicalName();
   }
 
   @Override
   public Table getTable() {
     try {
-      TableName tableName = TableName.valueOf(tableConfig.getQualifiedName());
+      TableName tableName = TableName.valueOf(tableConfig.getQualifiedPhysicalName());
       // Note: calling tableExists() using the admin HBase API is expensive
       // and is
       // showing up on CPU profiling results. Just call get table and catch :(

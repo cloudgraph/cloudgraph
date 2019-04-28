@@ -82,7 +82,7 @@ public class GraphTableWriter extends GraphTable implements TableWriter {
   @Override
   public Table getTable() {
     try {
-      TableName tableName = TableName.valueOf(tableConfig.getQualifiedName());
+      TableName tableName = TableName.valueOf(tableConfig.getQualifiedPhysicalName());
       // Note: calling tableExists() using the admin HBase API is expensive
       // and is
       // showing up on CPU profiling results. Just call get table and catch :(
@@ -111,7 +111,7 @@ public class GraphTableWriter extends GraphTable implements TableWriter {
   @Override
   public BufferedMutator getBufferedMutator() {
     try {
-      TableName tableName = TableName.valueOf(tableConfig.getQualifiedName());
+      TableName tableName = TableName.valueOf(tableConfig.getQualifiedPhysicalName());
       // Note: calling tableExists() using the admin HBase API is expensive
       // and is
       // showing up on CPU profiling results. Just call get table and catch :(

@@ -191,7 +191,7 @@ public class TableWriterCollector extends WriterSupport {
     TableMapping table = this.mapping.findTable((PlasmaType) target.getType(), this.mappingContext);
     if (table != null)
       throw new IllegalArgumentException("expected unbound data object - given data object "
-          + target + " is bound to table, " + table.getQualifiedName());
+          + target + " is bound to table, " + table.getQualifiedPhysicalName());
 
     RowWriter rowWriter = this.rowWriterMap.get(target);
     if (rowWriter == null) {
@@ -216,13 +216,13 @@ public class TableWriterCollector extends WriterSupport {
       rowWriter = containerRowWriter;
       if (log.isDebugEnabled())
         log.debug("associating " + target + " with table '"
-            + rowWriter.getTableWriter().getTableConfig().getName() + "'");
+            + rowWriter.getTableWriter().getTableConfig().getQualifiedPhysicalName() + "'");
       rowWriter.addDataObject(target);
       this.rowWriterMap.put(target, rowWriter);
     } else {
       if (log.isDebugEnabled())
         log.debug("type " + target.getType() + " already associated with table '"
-            + rowWriter.getTableWriter().getTableConfig().getName()
+            + rowWriter.getTableWriter().getTableConfig().getQualifiedPhysicalName()
             + "' by means of another source/parent");
     }
   }
@@ -238,22 +238,22 @@ public class TableWriterCollector extends WriterSupport {
   private RowWriter associate(TableMapping table, DataObject target) throws IOException {
 
     // a table is configured with this type as root
-    TableWriter tableWriter = (TableWriter) result.get(table.getName());
+    TableWriter tableWriter = (TableWriter) result.get(table.getQualifiedLogicalName());
     RowWriter rowWriter = null;
     if (tableWriter == null) {
       tableWriter = new GraphTableWriter(table, this.mappingContext);
       rowWriter = createRowWriter(tableWriter, target);
       tableWriter = rowWriter.getTableWriter();
       if (log.isDebugEnabled())
-        log.debug("adding " + tableWriter.getTableConfig().getName());
-      result.put(tableWriter.getTableConfig().getName(), tableWriter);
+        log.debug("adding " + tableWriter.getTableConfig().getQualifiedLogicalName());
+      result.put(tableWriter.getTableConfig().getQualifiedLogicalName(), tableWriter);
     } else { // just add a row writer to existing table writer
       rowWriter = this.addRowWriter(target, tableWriter);
     }
     if (log.isDebugEnabled())
       log.debug("associating (root) " + target.getType().getURI() + "#"
           + target.getType().getName() + " with table '"
-          + rowWriter.getTableWriter().getTableConfig().getName() + "'");
+          + rowWriter.getTableWriter().getTableConfig().getQualifiedLogicalName() + "'");
 
     this.rowWriterMap.put(target, rowWriter);
 

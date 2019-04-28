@@ -26,14 +26,14 @@ import java.util.Properties;
  * @since 1.1.9
  */
 public class StoreMappingContext extends Properties {
+  private Properties properties;
 
   @SuppressWarnings("unused")
   private StoreMappingContext() {
   }
 
   public StoreMappingContext(Properties properties) {
-    super();
-    this.putAll(properties);
+    this.properties = properties;
   }
 
   public boolean hasMaprdbVolumePath() {
@@ -45,4 +45,13 @@ public class StoreMappingContext extends Properties {
     return this.getProperty(ConfigurationProperty.CLOUDGRAPH___MAPRDB___VOLUME___PATH___PREFIX
         .value());
   }
+
+  public Object setProperty(String key, String value) {
+    return properties.setProperty(key, value);
+  }
+
+  public String getProperty(String key) {
+    return properties.getProperty(key);
+  }
+
 }

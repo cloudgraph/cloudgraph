@@ -290,7 +290,8 @@ public abstract class DefaultAssembler {
         .getDataColumnFamilyNameBytes(), uuidQual);
     if (rootUuid == null)
       throw new GraphServiceException("expected column: " + Bytes.toString(uuidQual) + " for row '"
-          + childResult.getRowKey() + "' in table: " + childTableReader.getTableConfig().getName());
+          + childResult.getRowKey() + "' in table: "
+          + childTableReader.getTableConfig().getQualifiedPhysicalName());
     String uuidStr = new String(rootUuid, childTableReader.getTableConfig().getCharset());
     UUID uuid = null;
     if (uuidStr.length() == 22) {
@@ -311,7 +312,8 @@ public abstract class DefaultAssembler {
         .getDataColumnFamilyNameBytes(), typeQual);
     if (rootType == null)
       throw new GraphServiceException("expected column: " + Bytes.toString(typeQual) + " for row '"
-          + childResult.getRowKey() + "' in table: " + childTableReader.getTableConfig().getName());
+          + childResult.getRowKey() + "' in table: "
+          + childTableReader.getTableConfig().getQualifiedPhysicalName());
     String[] tokens = Bytes.toString(rootType).split(GraphRow.ROOT_TYPE_DELIM);
     PlasmaType result = (PlasmaType) PlasmaTypeHelper.INSTANCE.findTypeByPhysicalName(tokens[0],
         tokens[1]);
@@ -343,7 +345,7 @@ public abstract class DefaultAssembler {
     PlasmaType result = rowReader.decodeType(typeValue);
     if (result == null)
       throw new GraphServiceException("no type found for '" + Bytes.toString(typeValue)
-          + "' in table: " + rowReader.getTableReader().getTableConfig().getName());
+          + "' in table: " + rowReader.getTableReader().getTableConfig().getQualifiedPhysicalName());
     return result;
   }
 
@@ -644,7 +646,8 @@ public abstract class DefaultAssembler {
     Result result = tableReader.getTable().get(row);
     if (result == null || result.isEmpty())
       throw new GraphServiceException("expected result from table "
-          + tableReader.getTableConfig().getName() + " for row '" + new String(rowKey) + "'");
+          + tableReader.getTableConfig().getQualifiedPhysicalName() + " for row '"
+          + new String(rowKey) + "'");
     long after = System.currentTimeMillis();
     if (log.isDebugEnabled())
       log.debug("assembled 1 results (" + String.valueOf(after - before) + ")");

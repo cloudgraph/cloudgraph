@@ -436,8 +436,8 @@ class GraphSliceSupport {
     Result result = tableOperation.getTable().get(get);
     if (result == null) // Note: may not have any key-values
       throw new GraphServiceException("expected result from table "
-          + tableOperation.getTableConfig().getName() + " for row '" + new String(get.getRow())
-          + "'");
+          + tableOperation.getTableConfig().getQualifiedPhysicalName() + " for row '"
+          + new String(get.getRow()) + "'");
 
     long after = System.currentTimeMillis();
     if (log.isDebugEnabled())
@@ -527,7 +527,8 @@ class GraphSliceSupport {
     Result result = tableReader.getTable().get(get);
     if (result == null) // Note: may not have any key-values
       throw new GraphServiceException("expected result from table "
-          + tableReader.getTableConfig().getName() + " for row '" + new String(get.getRow()) + "'");
+          + tableReader.getTableConfig().getQualifiedPhysicalName() + " for row '"
+          + new String(get.getRow()) + "'");
 
     Map<Integer, Integer> seqMap = new HashMap<Integer, Integer>();
     if (!result.isEmpty())
@@ -718,7 +719,7 @@ class GraphSliceSupport {
     if (result == null) // do expect a result since a Get oper, but might
       // have no columns
       throw new GraphServiceException("expected result from table "
-          + rowReader.getTableReader().getTableConfig().getName() + " for row '"
+          + rowReader.getTableReader().getTableConfig().getQualifiedPhysicalName() + " for row '"
           + new String(get.getRow()) + "'");
     if (!result.isEmpty())
       for (KeyValue keyValue : result.list()) {

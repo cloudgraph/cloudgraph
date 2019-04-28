@@ -81,7 +81,7 @@ public interface MappingConfiguration {
    *          the table name or null if not found.
    * @return the table configuration or null if not found.
    */
-  public TableMapping findTable(String tableName, StoreMappingContext context);
+  public TableMapping findTableByQualifiedLogicalName(String tableName, StoreMappingContext context);
 
   /**
    * Returns a table mapping based on the given table name.
@@ -94,7 +94,8 @@ public interface MappingConfiguration {
    * @throws StoreMappingException
    *           if the given name is not found
    */
-  public TableMapping getTable(String tableNamespace, String tableName, StoreMappingContext context);
+  public TableMapping getTableByQualifiedLogicalName(String tableNamespace, String tableName,
+      StoreMappingContext context);
 
   /**
    * Returns a table name for the given qualified SDO Type name.
@@ -103,7 +104,7 @@ public interface MappingConfiguration {
    *          the qualified name of an SDO Type
    * @return the table name
    */
-  public String getTableName(QName typeName, StoreMappingContext context);
+  public String getQualifiedPhysicalTableName(QName typeName, StoreMappingContext context);
 
   /**
    * Adds the given configuration
@@ -173,5 +174,8 @@ public interface MappingConfiguration {
   public String maprdbVolumePathPrefix();
 
   public boolean optimisticConcurrency();
+
+  public String qualifiedLogicalTableNameFromPhysicalTablePath(String namespace, String tableName,
+      StoreMappingContext context);
 
 }
