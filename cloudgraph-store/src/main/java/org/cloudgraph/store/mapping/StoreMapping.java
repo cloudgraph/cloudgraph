@@ -400,11 +400,12 @@ public class StoreMapping implements MappingConfiguration {
           lock.readLock().unlock();
           lock.writeLock().lock();
           try {
-              if (!StaticTableMapping.class.isAssignableFrom(result.getClass()))
-                  throw new IllegalStateException("expected static mapping for type, "
-                      + plasmaType.getQualifiedName());
+            if (!StaticTableMapping.class.isAssignableFrom(result.getClass()))
+              throw new IllegalStateException("expected static mapping for type, "
+                  + plasmaType.getQualifiedName());
             if (!this.graphURIToTableMap.containsKey(contextQualifiedName)) {
-              result = new DynamicTableMapping(result.getTable(), result.getMappingConfiguration(), context);
+              result = new DynamicTableMapping(result.getTable(), result.getMappingConfiguration(),
+                  context);
               this.graphURIToTableMap.put(contextQualifiedName, result);
             } else {
               result = this.graphURIToTableMap.get(contextQualifiedName);
@@ -488,7 +489,8 @@ public class StoreMapping implements MappingConfiguration {
                     + qualifiedLogicaltableName);
               // check again for other thread mod
               if (!this.tableNameToTableMap.containsKey(contextQualifiedName)) {
-                result = new DynamicTableMapping(result.getTable(), result.getMappingConfiguration(), context);
+                result = new DynamicTableMapping(result.getTable(),
+                    result.getMappingConfiguration(), context);
                 this.tableNameToTableMap.put(contextQualifiedName, result);
               } else {
                 result = this.tableNameToTableMap.get(contextQualifiedName);
@@ -509,15 +511,16 @@ public class StoreMapping implements MappingConfiguration {
   @Override
   public String qualifiedLogicalTableNameFromPhysicalTablePath(String namespace, String tableName,
       StoreMappingContext context) {
+    if (namespace != null && namespace.length() > 0
+        && TableMapping.TABLE_NAME_DEFAULT_NAMESPACE.equals(namespace))
+      throw new RuntimeException("not implemented");
     String result = tableName;
     String pathPrefix = this.maprdbTablePathPrefix();
     if (pathPrefix != null && result.startsWith(pathPrefix)) {
       result = result.substring(pathPrefix.length());
     }
-    if (result.startsWith(TableMapping.TABLE_PATH_DELIM))
-      result = result.substring(TableMapping.TABLE_PATH_DELIM.length());
-    if (result.startsWith(TableMapping.TABLE_NAME_DELIM))
-      result = result.substring(TableMapping.TABLE_NAME_DELIM.length());
+    if (result.startsWith(TableMapping.TABLE_PHYSICAL_NAME_DELIM))
+      result = result.substring(TableMapping.TABLE_PHYSICAL_NAME_DELIM.length());
     return result;
   }
 
@@ -529,10 +532,10 @@ public class StoreMapping implements MappingConfiguration {
       if (result.startsWith(volumePrefix) || result.startsWith(volumePrefix.toLowerCase()))
         result = result.substring(volumePrefix.length());
     }
-    if (result.startsWith(TableMapping.TABLE_PATH_DELIM))
-      result = result.substring(TableMapping.TABLE_PATH_DELIM.length());
-    if (result.startsWith(TableMapping.TABLE_NAME_DELIM))
-      result = result.substring(TableMapping.TABLE_NAME_DELIM.length());
+    if (result.startsWith(TableMapping.TABLE_PHYSICAL_NAME_DELIM)) // FIXME:
+                                                                   // should be
+                                                                   // logical?
+      result = result.substring(TableMapping.TABLE_PHYSICAL_NAME_DELIM.length());
     return result;
   }
 

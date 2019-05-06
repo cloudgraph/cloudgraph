@@ -124,7 +124,13 @@ public class GraphInputFormat extends InputFormat<ImmutableBytesWritable, GraphW
    * Internal Job parameter that specifies root the input table as derived from
    * a deserialized query
    */
-  protected static final String ROOT_TABLE = "cloudgraph.hbase.mapreduce.roottable";
+  protected static final String ROOT_TABLE_NAME = "cloudgraph.hbase.mapreduce.root.table.name";
+
+  /**
+   * Internal Job parameter that specifies root the input table namespace as
+   * derived from a deserialized query
+   */
+  protected static final String ROOT_TABLE_NAMESPACE = "cloudgraph.hbase.mapreduce.root.table.namespace";
 
   /** The timestamp used to filter columns with a specific timestamp. */
   protected static final String SCAN_TIMESTAMP = "cloudgraph.hbase.mapreduce.scan.timestamp";
@@ -177,7 +183,8 @@ public class GraphInputFormat extends InputFormat<ImmutableBytesWritable, GraphW
   public void setConf(Configuration configuration) {
     this.conf = configuration;
     // String tableName = conf.get(ROOT_TABLE);
-    TableName tableName = TableName.valueOf(conf.get(ROOT_TABLE));
+    TableName tableName = TableName.valueOf(conf.get(ROOT_TABLE_NAMESPACE),
+        conf.get(ROOT_TABLE_NAME));
     try {
       // table = new HTable(new Configuration(conf), tableName);
       Connection con = ConnectionFactory.createConnection(new Configuration(conf));

@@ -201,8 +201,10 @@ public class GraphMapReduceSetup extends JobSetup {
     List<Scan> scans = createScans(from, where, type, columnFilter, conf, mappingContext);
 
     conf.set(GraphInputFormat.QUERY, marshal(query));
-    conf.set(GraphInputFormat.ROOT_TABLE, graphReader.getRootTableReader()
+    conf.set(GraphInputFormat.ROOT_TABLE_NAME, graphReader.getRootTableReader()
         .getQualifiedPhysicalTableName());
+    conf.set(GraphInputFormat.ROOT_TABLE_NAMESPACE, graphReader.getRootTableReader()
+        .getQualifiedPhysicalTableNamespace());
 
     List<String> scanStrings = new ArrayList<String>();
 

@@ -25,7 +25,7 @@ import java.util.Properties;
  * @author Scott Cinnamond
  * @since 1.1.9
  */
-public class StoreMappingContext  {
+public class StoreMappingContext {
   private Properties properties;
 
   @SuppressWarnings("unused")
@@ -37,8 +37,8 @@ public class StoreMappingContext  {
   }
 
   public boolean hasMaprdbVolumePath() {
-    return this.properties.containsKey(ConfigurationProperty.CLOUDGRAPH___MAPRDB___VOLUME___PATH___PREFIX
-        .value());
+    return this.properties
+        .containsKey(ConfigurationProperty.CLOUDGRAPH___MAPRDB___VOLUME___PATH___PREFIX.value());
   }
 
   public String getMaprdbVolumePath() {

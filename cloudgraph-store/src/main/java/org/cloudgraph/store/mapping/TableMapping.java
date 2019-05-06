@@ -36,9 +36,12 @@ import org.plasma.sdo.core.CoreConstants;
 public abstract class TableMapping {
   private static Log log = LogFactory.getLog(TableMapping.class);
   /** Apache HBase namespace table-name delimiter */
-  static final String TABLE_NAME_DELIM = ":";
+  static final String TABLE_LOGICAL_NAME_DELIM = "/";
   /** MAPRDB table path delimiter */
-  static final String TABLE_PATH_DELIM = "/";
+  static final String TABLE_PHYSICAL_NAME_DELIM = "/";
+  static final String TABLE_PHYSICAL_NAMESPACE_DELIM = "_";
+  static final String TABLE_NAME_DEFAULT_NAMESPACE = "default";
+
   protected Table table;
   private MappingConfiguration config;
   private Charset charset;
@@ -59,6 +62,14 @@ public abstract class TableMapping {
 
   public TableMapping(Table table) {
     this(table, StoreMapping.getInstance());
+  }
+
+  private void validate() {
+    String tableName = this.table.getName();
+    if (tableName == null || tableName.trim().length() == 0)
+      throw new IllegalStateException("table name cannot be null or empty");
+    if (tableName.contains(":"))
+      throw new IllegalStateException("table name cannot contain ':' char");
   }
 
   /**
@@ -114,17 +125,21 @@ public abstract class TableMapping {
 
   public abstract String getQualifiedLogicalName();
 
+  protected String qualifiedPhysicalNamespace;
+
+  public abstract String getQualifiedPhysicalNamespace();
+
   public static String qualifiedLogicalNameFor(String namespace, String tableName,
       StoreMappingContext context) {
     StringBuilder name = new StringBuilder();
     if (context != null && context.hasMaprdbVolumePath()
         && !tableName.startsWith(context.getMaprdbVolumePath())) {
       name.append(context.getMaprdbVolumePath());
-      name.append(TABLE_NAME_DELIM);
+      name.append(TABLE_LOGICAL_NAME_DELIM);
     }
     if (namespace != null) {
       name.append(namespace);
-      name.append(TABLE_NAME_DELIM);
+      name.append(TABLE_LOGICAL_NAME_DELIM);
     }
     name.append(tableName);
     return name.toString();
@@ -134,7 +149,7 @@ public abstract class TableMapping {
     StringBuilder name = new StringBuilder();
     if (context != null && context.hasMaprdbVolumePath()) {
       name.append(context.getMaprdbVolumePath());
-      name.append(TABLE_NAME_DELIM);
+      name.append(TABLE_LOGICAL_NAME_DELIM);
     }
     name.append(typeName.toString());
     return name.toString();
@@ -146,16 +161,16 @@ public abstract class TableMapping {
     String rootPath = StoreMapping.getInstance().maprdbTablePathPrefix();
     if (rootPath != null) {
       name.append(rootPath);
-      name.append(TABLE_PATH_DELIM);
+      name.append(TABLE_PHYSICAL_NAME_DELIM);
     }
     if (context != null && context.hasMaprdbVolumePath()
         && !tableName.startsWith(context.getMaprdbVolumePath())) {
       name.append(context.getMaprdbVolumePath());
-      name.append(TABLE_PATH_DELIM);
+      name.append(TABLE_PHYSICAL_NAME_DELIM);
     }
     if (namespace != null) {
       name.append(namespace);
-      name.append(TABLE_PATH_DELIM);
+      name.append(TABLE_PHYSICAL_NAME_DELIM);
     }
     name.append(tableName);
     return name.toString();
@@ -167,13 +182,29 @@ public abstract class TableMapping {
     if (context != null && context.hasMaprdbVolumePath()
         && !tableName.startsWith(context.getMaprdbVolumePath())) {
       name.append(context.getMaprdbVolumePath());
-      name.append(TABLE_PATH_DELIM);
+      name.append(TABLE_PHYSICAL_NAME_DELIM);
     }
     if (namespace != null) {
       name.append(namespace);
-      name.append(TABLE_PATH_DELIM);
+      name.append(TABLE_PHYSICAL_NAME_DELIM);
     }
     name.append(tableName);
+    return name.toString();
+  }
+
+  public static String qualifiedPhysicalNamespaceFor(String namespace, String tableName,
+      StoreMappingContext context) {
+    StringBuilder name = new StringBuilder();
+    String rootPath = StoreMapping.getInstance().maprdbTablePathPrefix();
+    if (rootPath == null) {
+      if (context != null && context.hasMaprdbVolumePath()
+          && !namespace.startsWith(context.getMaprdbVolumePath())) {
+        name.append(context.getMaprdbVolumePath());
+        name.append(TABLE_PHYSICAL_NAME_DELIM);
+      }
+
+      name.append(namespace);
+    }
     return name.toString();
   }
 

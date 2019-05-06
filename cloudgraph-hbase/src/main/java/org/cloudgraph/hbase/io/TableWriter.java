@@ -44,6 +44,30 @@ public interface TableWriter extends TableOperation {
   public BufferedMutator getBufferedMutator();
 
   /**
+   * 
+   * Returns the qualified logical table name associated with this reader.
+   * 
+   * @return the qualified logical table name associated with this reader.
+   */
+  public String getQualifiedLogicalTableName();
+
+  /**
+   * 
+   * Returns the qualified physical table name associated with this reader.
+   * 
+   * @return the qualified physical table name associated with this reader.
+   */
+  public String getQualifiedPhysicalTableName();
+
+  /**
+   * 
+   * Returns the qualified physical table namespace associated with this reader.
+   * 
+   * @return the qualified physical table namespace associated with this reader.
+   */
+  public String getQualifiedPhysicalTableNamespace();
+
+  /**
    * Return whether any concurrent rows have been detected for the table writer.
    * Optimization to enable bypassing of concurrent processing for an entire
    * table.

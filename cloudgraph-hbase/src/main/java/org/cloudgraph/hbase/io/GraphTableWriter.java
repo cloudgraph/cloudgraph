@@ -79,10 +79,44 @@ public class GraphTableWriter extends GraphTable implements TableWriter {
     this.distributedGraphWriter = distributedGraphWriter;
   }
 
+  /**
+   * 
+   * Returns the qualified logical table name associated with this reader.
+   * 
+   * @return the qualified logical table name associated with this reader.
+   */
+  @Override
+  public String getQualifiedLogicalTableName() {
+    return this.getTableConfig().getQualifiedLogicalName();
+  }
+
+  /**
+   * 
+   * Returns the qualified physical table name associated with this reader.
+   * 
+   * @return the qualified physical table name associated with this reader.
+   */
+  @Override
+  public String getQualifiedPhysicalTableName() {
+    return this.getTableConfig().getQualifiedPhysicalName();
+  }
+
+  /**
+   * 
+   * Returns the qualified physical table namespace associated with this reader.
+   * 
+   * @return the qualified physical table namespace associated with this reader.
+   */
+  @Override
+  public String getQualifiedPhysicalTableNamespace() {
+    return this.getTableConfig().getQualifiedPhysicalNamespace();
+  }
+
   @Override
   public Table getTable() {
     try {
-      TableName tableName = TableName.valueOf(tableConfig.getQualifiedPhysicalName());
+      TableName tableName = TableName.valueOf(getQualifiedPhysicalTableNamespace(),
+          getQualifiedPhysicalTableName());
       // Note: calling tableExists() using the admin HBase API is expensive
       // and is
       // showing up on CPU profiling results. Just call get table and catch :(
@@ -111,7 +145,8 @@ public class GraphTableWriter extends GraphTable implements TableWriter {
   @Override
   public BufferedMutator getBufferedMutator() {
     try {
-      TableName tableName = TableName.valueOf(tableConfig.getQualifiedPhysicalName());
+      TableName tableName = TableName.valueOf(getQualifiedPhysicalTableNamespace(),
+          getQualifiedPhysicalTableName());
       // Note: calling tableExists() using the admin HBase API is expensive
       // and is
       // showing up on CPU profiling results. Just call get table and catch :(

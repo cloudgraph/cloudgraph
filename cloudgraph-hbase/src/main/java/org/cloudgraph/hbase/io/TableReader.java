@@ -53,6 +53,14 @@ public interface TableReader extends TableOperation {
   public String getQualifiedPhysicalTableName();
 
   /**
+   * 
+   * Returns the qualified physical table namespace associated with this reader.
+   * 
+   * @return the qualified physical table namespace associated with this reader.
+   */
+  public String getQualifiedPhysicalTableNamespace();
+
+  /**
    * Returns the row reader context for the given UUID or null if null exists
    * 
    * @param uuid

@@ -44,6 +44,16 @@ public class StaticTableMapping extends TableMapping {
   }
 
   @Override
+  public String getQualifiedPhysicalNamespace() {
+    if (this.qualifiedPhysicalNamespace == null) {
+      this.qualifiedPhysicalNamespace = qualifiedPhysicalNamespaceFor(this.table.getNamespace(),
+          this.table.getName(), null); // static mapping w/o context
+    }
+
+    return this.qualifiedPhysicalNamespace;
+  }
+
+  @Override
   public StoreMappingContext getMappingContext() {
     return null;
   }
