@@ -668,6 +668,24 @@ column field may be specified.
                     </xsd:documentation> 
                 </xsd:annotation>
             </xsd:enumeration>
+            <xsd:enumeration value="cloudgraph.hbase.connection.tablecache.size.max">
+               <xsd:annotation>
+                    <xsd:documentation>The maximum size of the table cache for each HBase connection.
+                    &lt;li&gt;Name: cloudgraph.hbase.connection.tablecache.size.max&lt;/li&gt;
+                    &lt;li&gt;Data Type: int&lt;/li&gt;
+                    &lt;li&gt;Default: 200&lt;/li&gt;
+                    </xsd:documentation> 
+                </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="cloudgraph.hbase.connection.tablecache.timeout.seconds">
+               <xsd:annotation>
+                    <xsd:documentation>The table cache timeout in seconds for each HBase connection.
+                    &lt;li&gt;Name: cloudgraph.hbase.connection.tablecache.timeout.seconds&lt;/li&gt;
+                    &lt;li&gt;Data Type: int&lt;/li&gt;
+                    &lt;li&gt;Default: 30&lt;/li&gt;
+                    </xsd:documentation> 
+                </xsd:annotation>
+            </xsd:enumeration>
             <xsd:enumeration value="cloudgraph.concurrency.optimistic.enabled">
                <xsd:annotation>
                     <xsd:documentation>Whether optimistic concurrency processing is enabled. This setting effects all entities

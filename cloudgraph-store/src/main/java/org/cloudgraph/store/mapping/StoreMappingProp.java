@@ -88,6 +88,21 @@ public class StoreMappingProp {
     return depthMax;
   }
 
+  public static int getHBaseConnectionTablecacheSizeMax() {
+    int depthMax = findIntValue(
+        ConfigurationProperty.CLOUDGRAPH___HBASE___CONNECTION___TABLECACHE___SIZE___MAX.value(),
+        200);
+    return depthMax;
+  }
+
+  public static int getHBaseConnectionTablecacheTimeoutSeconds() {
+    int depthMax = findIntValue(
+        ConfigurationProperty.CLOUDGRAPH___HBASE___CONNECTION___TABLECACHE___TIMEOUT___SECONDS
+            .value(),
+        30);
+    return depthMax;
+  }
+
   private static int findIntValue(String propertyName, int dflt) {
     int intValue = dflt;
     String value = System.getProperty(propertyName);

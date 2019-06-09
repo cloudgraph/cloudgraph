@@ -30,6 +30,7 @@ import org.apache.hadoop.hbase.client.BufferedMutator;
 import org.apache.hadoop.hbase.client.BufferedMutatorParams;
 import org.apache.hadoop.hbase.client.RegionLocator;
 import org.apache.hadoop.hbase.client.Table;
+import org.cloudgraph.store.mapping.StoreMappingProp;
 import org.cloudgraph.store.service.GraphServiceException;
 
 import com.google.common.cache.CacheBuilder;
@@ -62,8 +63,11 @@ public class Connection {
     this.pool = pool;
     this.config = config;
     // FIXME: configure table cache
-    this.tableCache = CacheBuilder.newBuilder().maximumSize(20)
-        .expireAfterAccess(30, TimeUnit.SECONDS).build(new CacheLoader<TableName, Table>() {
+    final int cacheMax = StoreMappingProp.getHBaseConnectionTablecacheSizeMax();
+    final int cacheTimeout = StoreMappingProp.getHBaseConnectionTablecacheTimeoutSeconds();
+    
+    this.tableCache = CacheBuilder.newBuilder().maximumSize(cacheMax)
+        .expireAfterAccess(cacheTimeout, TimeUnit.SECONDS).build(new CacheLoader<TableName, Table>() {
           @Override
           public Table load(TableName tableName) throws Exception {
             if (log.isDebugEnabled())
