@@ -15,6 +15,10 @@
  */
 package org.cloudgraph.store.mapping;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.plasma.query.Query;
 
 public class StoreMappingProp {
@@ -101,6 +105,30 @@ public class StoreMappingProp {
             .value(),
         30);
     return depthMax;
+  }
+
+  public static Map<String, String> getHBaseConnectionTableConfigProperties() {
+    String fetchPropsValue = System
+        .getProperty(ConfigurationProperty.CLOUDGRAPH___HBASE___CONNECTION___TABLE___CONFIG___PROPERTIES
+            .value());
+    if (fetchPropsValue != null) {
+      Map<String, String> result = new HashMap<>();
+      String[] nameValues = fetchPropsValue.split(",");
+      for (String nameValue : nameValues) {
+        if (nameValue == null || nameValue.contains(","))
+          throw new StoreMappingException("invalid system configuration value '" + fetchPropsValue
+              + "' for property, "
+              + ConfigurationProperty.CLOUDGRAPH___HBASE___CONNECTION___TABLE___CONFIG___PROPERTIES);
+        String[] tokens = nameValue.split("=");
+        if (tokens[0] == null || tokens[1] == null)
+          throw new StoreMappingException("invalid system configuration value '" + fetchPropsValue
+              + "' for property, "
+              + ConfigurationProperty.CLOUDGRAPH___HBASE___CONNECTION___TABLE___CONFIG___PROPERTIES);
+        result.put(tokens[0].trim(), tokens[1].trim());
+      }
+      return result;
+    } else
+      return Collections.emptyMap();
   }
 
   private static int findIntValue(String propertyName, int dflt) {

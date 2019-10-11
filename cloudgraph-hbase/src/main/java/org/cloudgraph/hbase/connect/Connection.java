@@ -16,6 +16,8 @@
 package org.cloudgraph.hbase.connect;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -65,9 +67,17 @@ public class Connection {
     // FIXME: configure table cache
     final int cacheMax = StoreMappingProp.getHBaseConnectionTablecacheSizeMax();
     final int cacheTimeout = StoreMappingProp.getHBaseConnectionTablecacheTimeoutSeconds();
-    
+    Map<String, String> propsMap = StoreMappingProp.getHBaseConnectionTableConfigProperties();
+    Iterator<String> keys = propsMap.keySet().iterator();
+    while (keys.hasNext()) {
+      String key = keys.next();
+      String value = propsMap.get(key);
+      this.config.set(key, value);
+    }
+
     this.tableCache = CacheBuilder.newBuilder().maximumSize(cacheMax)
-        .expireAfterAccess(cacheTimeout, TimeUnit.SECONDS).build(new CacheLoader<TableName, Table>() {
+        .expireAfterAccess(cacheTimeout, TimeUnit.SECONDS)
+        .build(new CacheLoader<TableName, Table>() {
           @Override
           public Table load(TableName tableName) throws Exception {
             if (log.isDebugEnabled())

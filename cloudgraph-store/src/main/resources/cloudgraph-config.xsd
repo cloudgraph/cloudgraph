@@ -686,6 +686,14 @@ column field may be specified.
                     </xsd:documentation> 
                 </xsd:annotation>
             </xsd:enumeration>
+            <xsd:enumeration value="cloudgraph.hbase.connection.table.config.properties">
+               <xsd:annotation>
+                    <xsd:documentation>Comma seperated name-value pairs to add to the configuration for every connection. E.g. name1=value1,name2=value2
+                    &lt;li&gt;Name: cloudgraph.hbase.connection.table.config.properties&lt;/li&gt;
+                    &lt;li&gt;Data Type: string&lt;/li&gt;
+                    </xsd:documentation> 
+                </xsd:annotation>
+            </xsd:enumeration>
             <xsd:enumeration value="cloudgraph.concurrency.optimistic.enabled">
                <xsd:annotation>
                     <xsd:documentation>Whether optimistic concurrency processing is enabled. This setting effects all entities
