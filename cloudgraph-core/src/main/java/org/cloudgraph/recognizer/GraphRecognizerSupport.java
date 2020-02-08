@@ -35,6 +35,7 @@ import org.plasma.query.model.PredicateOperatorName;
 import org.plasma.query.model.Property;
 import org.plasma.query.model.RelationalOperatorName;
 import org.plasma.query.model.WildcardPathElement;
+import org.plasma.sdo.DataFlavor;
 import org.plasma.sdo.DataType;
 import org.plasma.sdo.PlasmaDataObject;
 import org.plasma.sdo.PlasmaProperty;
@@ -167,23 +168,47 @@ public class GraphRecognizerSupport {
    */
   public boolean evaluate(Endpoint endpoint, Object propertyValue, RelationalOperatorName operator,
       Literal literal) {
+    PlasmaType propertyType = (PlasmaType) endpoint.getProperty().getType();
+    Function func = null;
+    if (endpoint.hasFunctions())
+      func = endpoint.getSingleFunction();
+    return this.evaluate(propertyType, func, propertyValue, operator, literal);
+  }
+
+  /**
+   * Determines the property datatype and evaluates the given property value
+   * against the given literal and relational operator.
+   * 
+   * @param propertyType
+   *          the property Type
+   * @param propertyValue
+   *          the property data value
+   * @param operator
+   *          the relational operator
+   * @param literal
+   *          the query literal
+   * @return whether the data property value evaluates true against given
+   *         literal and relational operator
+   */
+  public boolean evaluate(PlasmaType propertyType, Function func, Object propertyValue,
+      RelationalOperatorName operator, Literal literal) {
     if (propertyValue == null)
       throw new IllegalArgumentException("expected non-null value");
-    DataType dataType = DataType.valueOf(endpoint.getProperty().getType().getName());
+    DataType dataType = DataType.valueOf(propertyType.getName());
+    DataFlavor dataFlavor = DataFlavor.fromDataType(dataType);
     boolean result = true;
 
-    switch (endpoint.getProperty().getDataFlavor()) {
+    switch (dataFlavor) {
     case integral:
     case real:
       if (Number.class.isAssignableFrom(propertyValue.getClass())) {
         if (!literal.isNullLiteral()) {
           Number propertyNumberValue = (Number) propertyValue;
           Number literalNumberValue = null;
-          if (!endpoint.hasFunctions()) {
-            literalNumberValue = (Number) this.dataConverter.convert(endpoint.getProperty()
-                .getType(), literal.getValue());
+          if (func == null) {
+            literalNumberValue = (Number) this.dataConverter.convert(propertyType,
+                literal.getValue());
           } else {
-            Function func = endpoint.getSingleFunction();
             FunctionName funcName = func.getName();
             DataType scalarDataType = funcName.getScalarDatatype(dataType);
             literalNumberValue = (Number) this.dataConverter.fromString(scalarDataType,
@@ -196,8 +221,8 @@ public class GraphRecognizerSupport {
       } else if (Boolean.class.isAssignableFrom(propertyValue.getClass())) {
         if (!literal.isNullLiteral()) {
           Boolean propertyBooleanValue = (Boolean) propertyValue;
-          Boolean literalBooleanValue = (Boolean) this.dataConverter.convert(endpoint.getProperty()
-              .getType(), literal.getValue());
+          Boolean literalBooleanValue = (Boolean) this.dataConverter.convert(propertyType,
+              literal.getValue());
           result = evaluate(propertyBooleanValue, operator, literalBooleanValue);
         } else {
           result = evaluate(propertyValue, operator, NullLiteral.class.cast(literal));
@@ -210,15 +235,14 @@ public class GraphRecognizerSupport {
         }
       } else
         throw new GraphServiceException("unexpected instanceof "
-            + propertyValue.getClass().getName() + " for property, " + endpoint.getProperty()
-            + " with data flavor " + endpoint.getProperty().getDataFlavor());
+            + propertyValue.getClass().getName() + " for property with data flavor " + dataFlavor);
       break;
     case string:
       if (!literal.isNullLiteral()) {
         if (!NullValue.class.isInstance(propertyValue)) {
           String propertyStringValue = (String) propertyValue;
-          String literalStringValue = (String) this.dataConverter.convert(endpoint.getProperty()
-              .getType(), literal.getValue());
+          String literalStringValue = (String) this.dataConverter.convert(propertyType,
+              literal.getValue());
           result = evaluate(propertyStringValue, operator, literalStringValue);
         } else {
           result = false;
@@ -233,8 +257,8 @@ public class GraphRecognizerSupport {
         if (!literal.isNullLiteral()) {
           if (!NullValue.class.isInstance(propertyValue)) {
             Date propertyDateValue = (Date) propertyValue;
-            Date literalDateValue = (Date) this.dataConverter.convert(endpoint.getProperty()
-                .getType(), literal.getValue());
+            Date literalDateValue = (Date) this.dataConverter.convert(propertyType,
+                literal.getValue());
             result = evaluate(propertyDateValue, operator, literalDateValue);
           } else {
             result = false;
@@ -247,8 +271,8 @@ public class GraphRecognizerSupport {
         if (!literal.isNullLiteral()) {
           if (!NullValue.class.isInstance(propertyValue)) {
             String propertyStringValue = (String) propertyValue;
-            String literalStringValue = (String) this.dataConverter.convert(endpoint.getProperty()
-                .getType(), literal.getValue());
+            String literalStringValue = (String) this.dataConverter.convert(propertyType,
+                literal.getValue());
             result = evaluate(propertyStringValue, operator, literalStringValue);
           } else {
             result = false;
@@ -260,7 +284,7 @@ public class GraphRecognizerSupport {
       }
       break;
     case other:
-      throw new GraphServiceException("data flavor '" + endpoint.getProperty().getDataFlavor()
+      throw new GraphServiceException("data flavor '" + dataFlavor
           + "' not supported for relational operator '" + operator + "'");
     }
     return result;
@@ -283,20 +307,43 @@ public class GraphRecognizerSupport {
    */
   public boolean evaluate(Endpoint endpoint, Object propertyValue, PredicateOperatorName operator,
       Literal literal) {
+    PlasmaType propertyType = (PlasmaType) endpoint.getProperty().getType();
+    return this.evaluate(propertyType, propertyValue, operator, literal);
+  }
+
+  /**
+   * Determines the property datatype and evaluates the given property value
+   * against the given literal and wildcard operator.
+   * 
+   * @param endpoint
+   *          the endpoint
+   * @param propertyValue
+   *          the property data value
+   * @param operator
+   *          the wildcard operator
+   * @param literal
+   *          the query literal
+   * @return whether the data property value evaluates true against given
+   *         literal and wildcard operator
+   */
+  public boolean evaluate(PlasmaType propertyType, Object propertyValue,
+      PredicateOperatorName operator, Literal literal) {
     if (propertyValue == null)
       throw new IllegalArgumentException("expected non-null value");
+    DataType dataType = DataType.valueOf(propertyType.getName());
+    DataFlavor dataFlavor = DataFlavor.fromDataType(dataType);
     boolean result = true;
 
     switch (operator) {
     case LIKE:
-      switch (endpoint.getProperty().getDataFlavor()) {
+      switch (dataFlavor) {
       case string:
         if (!NullValue.class.isInstance(propertyValue)) {
           String propertyStringValue = (String) propertyValue;
           // as trailing newlines confuse regexp greatly
           propertyStringValue = propertyStringValue.trim();
-          String literalStringValue = (String) this.dataConverter.convert(endpoint.getProperty()
-              .getType(), literal.getValue());
+          String literalStringValue = (String) this.dataConverter.convert(propertyType,
+              literal.getValue());
           result = evaluate(propertyStringValue, operator, literalStringValue);
         } else {
           result = false;
@@ -306,7 +353,7 @@ public class GraphRecognizerSupport {
       case real:
       case temporal:
       case other:
-        throw new GraphServiceException("data flavor '" + endpoint.getProperty().getDataFlavor()
+        throw new GraphServiceException("data flavor '" + dataFlavor
             + "' not supported for wildcard operator '" + operator + "'");
       }
       break;
@@ -318,7 +365,7 @@ public class GraphRecognizerSupport {
           literals = literal.getValue().split(" ");
         boolean anySuccess = false;
         for (String lit : literals) {
-          if (evaluate(endpoint.getProperty(), propertyValue, lit)) {
+          if (evaluate(propertyType, propertyValue, lit)) {
             anySuccess = true;
             break;
           }
@@ -334,26 +381,27 @@ public class GraphRecognizerSupport {
     return result;
   }
 
-  private boolean evaluate(PlasmaProperty property, Object propertyValue, String literal) {
+  private boolean evaluate(PlasmaType propertyType, Object propertyValue, String literal) {
     boolean result = true;
-    switch (property.getDataFlavor()) {
+    DataType dataType = DataType.valueOf(propertyType.getName());
+    DataFlavor dataFlavor = DataFlavor.fromDataType(dataType);
+    switch (dataFlavor) {
     case string:
       String propertyStringValue = (String) propertyValue;
       propertyStringValue = propertyStringValue.trim();
-      String literalStringValue = (String) this.dataConverter.convert(property.getType(), literal);
+      String literalStringValue = (String) this.dataConverter.convert(propertyType, literal);
       result = evaluate(propertyStringValue, RelationalOperatorName.EQUALS, literalStringValue);
       break;
     case integral:
     case real:
       Number propertyNumberValue = (Number) propertyValue;
-      Number literalNumberValue = (Number) this.dataConverter.convert(property.getType(), literal);
+      Number literalNumberValue = (Number) this.dataConverter.convert(propertyType, literal);
       result = evaluate(propertyNumberValue, RelationalOperatorName.EQUALS, literalNumberValue);
       break;
     case temporal:
     case other:
     default:
-      throw new GraphServiceException("data flavor '" + property.getDataFlavor()
-          + "' not supported for context");
+      throw new GraphServiceException("data flavor '" + dataFlavor + "' not supported for context");
     }
     return result;
   }

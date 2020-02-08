@@ -1,8 +1,8 @@
 Release Notes
 
-CloudGraph 1.0.8 Release Notes
+CloudGraph 1.2.1 Release Notes
 
-CloudGraph 1.0.8 is a production release of CloudGraph.
+CloudGraph 1.2.1 is a production release of CloudGraph.
 
 The full list of changes can be found in our issue management system github, and is reproduced below.
 See https://github.com/cloudgraph/cloudgraph/issues. 
@@ -12,15 +12,18 @@ See https://github.com/cloudgraph/cloudgraph/issues.
 
 
 Major Changes
-[Issue #10] -  Upgrade to Plasma 2.0.1
-[Issue #11] -  Add Annotations for Auto Discovery of Store Mappings 
+N/A
 
 Bugs
-
-Improvements
+N/A
  
+Improvements
+  
 New Features
+N/A
 
 Tasks
+N/A
 
 Wish
+N/A
