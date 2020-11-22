@@ -15,6 +15,7 @@
  */
 package org.cloudgraph.store.mapping;
 
+import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
@@ -63,6 +64,7 @@ public class StoreMapping implements MappingConfiguration {
   private static volatile StoreMapping instance = null;
   private static final String PROPERTY_NAME_CLOUDGRAPH_CONFIG = "cloudgraph.configuration";
   private static final String DEFAULT_CONFIG_FILE_NAME = "cloudgraph-config.xml";
+  private static final String PROPERTY_NAME_CLOUDGRAPH_PROPERTIES = "cloudgraph.properties";
   private static final String DEFAULT_PROPERTIES_FILE_NAME = "cloudgraph.properties";
 
   private CloudGraphStoreMapping config;
@@ -87,15 +89,30 @@ public class StoreMapping implements MappingConfiguration {
       configProperties = new ConfigProperties();
       configProperties.addConfiguration(new SystemConfiguration());
 
+      String propertiesFileName = EnvProperties.instance().getProperty(
+          PROPERTY_NAME_CLOUDGRAPH_PROPERTIES);
+      if (propertiesFileName == null)
+        propertiesFileName = DEFAULT_PROPERTIES_FILE_NAME;
+
       InputStream propertiesStream = CloudGraphStoreMapping.class
-          .getResourceAsStream(DEFAULT_PROPERTIES_FILE_NAME);
+          .getResourceAsStream(propertiesFileName);
       if (propertiesStream == null)
         propertiesStream = StoreMapping.class.getClassLoader().getResourceAsStream(
-            DEFAULT_PROPERTIES_FILE_NAME);
+            propertiesFileName);
       if (propertiesStream != null) {
-        configProperties
-            .addConfiguration(new PropertiesConfiguration(DEFAULT_PROPERTIES_FILE_NAME));
+        log.info("loading properties from bundled resource: " + propertiesFileName);
+        configProperties.addConfiguration(new PropertiesConfiguration(propertiesFileName));
+      } else {
+        File propsConfigFile = new File(propertiesFileName);
+        if (propsConfigFile.exists()) {
+          log.info("loading properties from distributed cache or local file: " + propertiesFileName);
+          configProperties.addConfiguration(new PropertiesConfiguration(propsConfigFile));
+        } else {
+          log.warn("could not properties from bundled resource, distributed cache or local file: "
+              + propertiesFileName);
+        }
       }
+
     } catch (ConfigurationException e) {
       throw new StoreMappingException(e);
     }
