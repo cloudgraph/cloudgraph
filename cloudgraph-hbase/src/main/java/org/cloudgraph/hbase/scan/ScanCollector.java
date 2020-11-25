@@ -183,7 +183,16 @@ public class ScanCollector implements ExprVisitor {
     PlasmaProperty property = (PlasmaProperty) fieldConfig.getEndpointProperty();
     switch (target.getOperator().getValue()) {
     case IN:
-      String[] literals = target.getLiteral().getValue().split(" ");
+      String[] literals = new String[0];
+      if (target.getLiteral() != null) {
+        if (target.getLiteral().getDelimiter() != null) {
+          literals = target.getLiteral().getValue().split(target.getLiteral().getDelimiter());
+        } else {
+          log.warn("no delimiter found for literal value '" + target.getLiteral().getValue()
+              + "' - using space char");
+          literals = target.getLiteral().getValue().split(" ");
+        }
+      }
       for (String literal : literals) {
         ScanLiteral scanLiteral = factory.createLiteral(literal, property,
             (PlasmaType) graph.getRootType(), target.getOperator(), fieldConfig,

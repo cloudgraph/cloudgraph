@@ -360,9 +360,16 @@ public class GraphRecognizerSupport {
     case IN:
       if (!NullValue.class.isInstance(propertyValue)) {
         // evals true if property value equals any or given literals
-        String[] literals = null;
-        if (literal != null)
-          literals = literal.getValue().split(" ");
+        String[] literals = new String[0];
+        if (literal != null) {
+          if (literal.getDelimiter() != null) {
+            literals = literal.getValue().split(literal.getDelimiter());
+          } else {
+            log.warn("no delimiter found for literal value '" + literal.getValue()
+                + "' - using space char");
+            literals = literal.getValue().split(" ");
+          }
+        }
         boolean anySuccess = false;
         for (String lit : literals) {
           if (evaluate(propertyType, propertyValue, lit)) {
@@ -371,6 +378,31 @@ public class GraphRecognizerSupport {
           }
         }
         result = anySuccess;
+      } else {
+        result = false;
+      }
+      break;
+    case NOT_IN:
+      if (!NullValue.class.isInstance(propertyValue)) {
+        // evals true if property value equals any or given literals
+        String[] literals = new String[0];
+        if (literal != null) {
+          if (literal.getDelimiter() != null) {
+            literals = literal.getValue().split(literal.getDelimiter());
+          } else {
+            log.warn("no delimiter found for literal value '" + literal.getValue()
+                + "' - using space char");
+            literals = literal.getValue().split(" ");
+          }
+        }
+        boolean anySuccess = false;
+        for (String lit : literals) {
+          if (evaluate(propertyType, propertyValue, lit)) {
+            anySuccess = true;
+            break;
+          }
+        }
+        result = !anySuccess;
       } else {
         result = false;
       }
