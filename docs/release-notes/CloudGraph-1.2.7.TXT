@@ -1,0 +1,30 @@
+Release Notes
+
+CloudGraph 1.2.7 Release Notes
+
+CloudGraph 1.2.7 is a production release of CloudGraph.
+
+The full list of changes can be found in our issue management system github, and is reproduced below.
+See https://github.com/cloudgraph/cloudgraph/issues. 
+
+For issues created during beta testing see:
+See https://github.com/cloudgraph/cloudgraph/issues. 
+
+
+Major Changes
+N/A
+
+Bugs
+N/A
+ 
+Improvements
+[Issue #36] - Upgrade to Latest Plasma Version 
+  
+New Features
+N/A
+
+Tasks
+N/A
+
+Wish
+N/A
