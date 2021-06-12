@@ -38,15 +38,27 @@ import org.cloudgraph.store.service.GraphServiceException;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.cache.RemovalListener;
+import com.google.common.cache.RemovalNotification;
 
 /**
- * Connection wrapper.
+ * Pooled HBase connection wrapper which complies with Apache pool semantics and maintains
+ * a cache or table handles for each connection. Depending in the complexity of a particular
+ * application, there may be many tables needed, for example some tables for actual data and
+ * some for metadata or other application data. Caching table API handles greatly reduces round trips
+ * and resource costs for some HBase implementations.  
  * <p>
- * </p>
- * The new HBase Client API changes removed the existing connection pool
+ * The new HBase 1.x Client API changes removed the existing connection pool
  * implementation and placed the responsibility of managing the lifecycle of
  * connections on the caller. A pool is necessary as creating connections to the
  * cluster via. zookeeper is fairly expensive.
+ * </p>
+ * 
+ * <p>
+ * For some HBase implementations, e.g. MAPR, the management of connections and table handles
+ * is super critical, as the API is extremely performance and memory costly at scale and 
+ * prone to memory leaks over long term use. 
+ * </p>
  * 
  * @author Scott Cinnamond
  * @since 0.6.3
@@ -64,7 +76,6 @@ public class Connection {
     this.con = conection;
     this.pool = pool;
     this.config = config;
-    // FIXME: configure table cache
     final int cacheMax = StoreMappingProp.getHBaseConnectionTablecacheSizeMax();
     final int cacheTimeout = StoreMappingProp.getHBaseConnectionTablecacheTimeoutSeconds();
     Map<String, String> propsMap = StoreMappingProp.getHBaseConnectionTableConfigProperties();
@@ -74,9 +85,19 @@ public class Connection {
       String value = propsMap.get(key);
       this.config.set(key, value);
     }
-
+ 
     this.tableCache = CacheBuilder.newBuilder().maximumSize(cacheMax)
         .expireAfterAccess(cacheTimeout, TimeUnit.SECONDS)
+        .removalListener(new RemovalListener<TableName, Table>(){
+          @Override
+          public void onRemoval(RemovalNotification<TableName, Table> event) {
+            try {
+              event.getValue().close();
+              if (log.isDebugEnabled())
+                log.debug("closed evicted table " + this + " " + event.getKey());
+            } catch (IOException e) {
+            }
+          }})
         .build(new CacheLoader<TableName, Table>() {
           @Override
           public Table load(TableName tableName) throws Exception {
@@ -101,6 +122,9 @@ public class Connection {
   }
 
   public void destroy() throws IOException {
+    this.tableCache.invalidateAll();
+    this.tableCache.cleanUp();
+    // above should evict and close any tables but just to be sure
     for (Table table : this.tableCache.asMap().values())
       table.close();
     if (log.isDebugEnabled())

@@ -1,0 +1,30 @@
+Release Notes
+
+CloudGraph 1.2.9 Release Notes
+
+CloudGraph 1.2.9 is a production release of CloudGraph.
+
+The full list of changes can be found in our issue management system github, and is reproduced below.
+See https://github.com/cloudgraph/cloudgraph/issues. 
+
+For issues created during beta testing see:
+See https://github.com/cloudgraph/cloudgraph/issues. 
+
+
+Major Changes
+N/A
+
+Bugs
+N/A
+ 
+Improvements
+[Issue #43] - Add Explicit Close to Pooled Conn 
+  
+New Features
+N/A
+
+Tasks
+N/A
+
+Wish
+N/A
