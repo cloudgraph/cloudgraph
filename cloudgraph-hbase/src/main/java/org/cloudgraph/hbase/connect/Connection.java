@@ -42,11 +42,12 @@ import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
 
 /**
- * Pooled HBase connection wrapper which complies with Apache pool semantics and maintains
- * a cache or table handles for each connection. Depending in the complexity of a particular
- * application, there may be many tables needed, for example some tables for actual data and
- * some for metadata or other application data. Caching table API handles greatly reduces round trips
- * and resource costs for some HBase implementations.  
+ * Pooled HBase connection wrapper which complies with Apache pool semantics and
+ * maintains a cache or table handles for each connection. Depending in the
+ * complexity of a particular application, there may be many tables needed, for
+ * example some tables for actual data and some for metadata or other
+ * application data. Caching table API handles greatly reduces round trips and
+ * resource costs for some HBase implementations.
  * <p>
  * The new HBase 1.x Client API changes removed the existing connection pool
  * implementation and placed the responsibility of managing the lifecycle of
@@ -55,9 +56,9 @@ import com.google.common.cache.RemovalNotification;
  * </p>
  * 
  * <p>
- * For some HBase implementations, e.g. MAPR, the management of connections and table handles
- * is super critical, as the API is extremely performance and memory costly at scale and 
- * prone to memory leaks over long term use. 
+ * For some HBase implementations, e.g. MAPR, the management of connections and
+ * table handles is super critical, as the API is extremely performance and
+ * resource costly at scale.
  * </p>
  * 
  * @author Scott Cinnamond
@@ -85,10 +86,10 @@ public class Connection {
       String value = propsMap.get(key);
       this.config.set(key, value);
     }
- 
+
     this.tableCache = CacheBuilder.newBuilder().maximumSize(cacheMax)
         .expireAfterAccess(cacheTimeout, TimeUnit.SECONDS)
-        .removalListener(new RemovalListener<TableName, Table>(){
+        .removalListener(new RemovalListener<TableName, Table>() {
           @Override
           public void onRemoval(RemovalNotification<TableName, Table> event) {
             try {
@@ -96,9 +97,10 @@ public class Connection {
               if (log.isDebugEnabled())
                 log.debug("closed evicted table " + this + " " + event.getKey());
             } catch (IOException e) {
+              log.warn(e.getMessage(), e);
             }
-          }})
-        .build(new CacheLoader<TableName, Table>() {
+          }
+        }).build(new CacheLoader<TableName, Table>() {
           @Override
           public Table load(TableName tableName) throws Exception {
             if (log.isDebugEnabled())
