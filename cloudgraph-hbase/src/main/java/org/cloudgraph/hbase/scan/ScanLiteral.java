@@ -26,6 +26,7 @@ import org.cloudgraph.store.mapping.StoreMapping;
 import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.mapping.TableMapping;
 import org.cloudgraph.store.service.GraphServiceException;
+import org.plasma.query.model.LogicalOperatorName;
 import org.plasma.query.model.RelationalOperatorName;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
@@ -49,36 +50,41 @@ public abstract class ScanLiteral {
   protected String literal;
   @Deprecated
   protected RelationalOperatorName relationalOperator;
-  protected DataRowKeyFieldMapping fieldConfig;
+  protected DataRowKeyFieldMapping fieldMapping;
   protected DataConverter dataConverter = DataConverter.INSTANCE;
   protected PlasmaType rootType;
   protected Charset charset;
   protected TableMapping table;
   protected KeySupport keySupport = new KeySupport();
   protected PlasmaProperty property;
-
-  // protected Padding padding;
+  protected LogicalOperatorName logicalOperatorContext;
 
   @SuppressWarnings("unused")
   private ScanLiteral() {
   }
 
   public ScanLiteral(String literal, PlasmaType rootType,
-      RelationalOperatorName relationalOperator, DataRowKeyFieldMapping fieldConfig,
-      StoreMappingContext mappingContext) {
+      RelationalOperatorName relationalOperator, LogicalOperatorName logicalOperatorContext,
+      DataRowKeyFieldMapping fieldMapping, StoreMappingContext mappingContext) {
     super();
     this.rootType = rootType;
     this.relationalOperator = relationalOperator;
-    this.fieldConfig = fieldConfig;
-    this.property = (PlasmaProperty) this.fieldConfig.getEndpointProperty();
+    this.fieldMapping = fieldMapping;
+    this.logicalOperatorContext = logicalOperatorContext;
+    this.property = (PlasmaProperty) this.fieldMapping.getEndpointProperty();
     this.literal = literal;
 
     QName rootTypeQname = this.rootType.getQualifiedName();
     this.table = StoreMapping.getInstance().getTable(rootTypeQname, mappingContext);
-    // Hash hash = this.keySupport.getHashAlgorithm(this.table);
     this.charset = StoreMapping.getInstance().getCharset();
-    // this.hashing = new Hashing(hash, this.charset);
-    // this.padding = new Padding(this.charset);
+  }
+
+  public boolean hastLogicalOperatorContext() {
+    return logicalOperatorContext != null;
+  }
+
+  public LogicalOperatorName getLogicalOperatorContext() {
+    return logicalOperatorContext;
   }
 
   /**
@@ -105,7 +111,7 @@ public abstract class ScanLiteral {
    * @return the composite row-key field configuration.
    */
   public final DataRowKeyFieldMapping getFieldConfig() {
-    return fieldConfig;
+    return fieldMapping;
   }
 
   /**

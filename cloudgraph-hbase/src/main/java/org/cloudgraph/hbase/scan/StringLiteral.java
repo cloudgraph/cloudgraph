@@ -19,6 +19,7 @@ import java.util.Arrays;
 
 import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.cloudgraph.store.mapping.StoreMappingContext;
+import org.plasma.query.model.LogicalOperatorName;
 import org.plasma.query.model.RelationalOperatorName;
 import org.plasma.sdo.PlasmaType;
 
@@ -45,9 +46,10 @@ public class StringLiteral extends ScanLiteral implements PartialRowKeyLiteral, 
   public static final byte INCREMENT = Byte.MIN_VALUE;
 
   public StringLiteral(String literal, PlasmaType rootType,
-      RelationalOperatorName relationalOperator, DataRowKeyFieldMapping fieldConfig,
-      StoreMappingContext mappingContext) {
-    super(literal, rootType, relationalOperator, fieldConfig, mappingContext);
+      RelationalOperatorName relationalOperator, LogicalOperatorName logicalOperatorContext,
+      DataRowKeyFieldMapping fieldConfig, StoreMappingContext mappingContext) {
+    super(literal, rootType, relationalOperator, logicalOperatorContext, fieldConfig,
+        mappingContext);
   }
 
   /**
@@ -63,7 +65,7 @@ public class StringLiteral extends ScanLiteral implements PartialRowKeyLiteral, 
    */
   @Override
   public byte[] getEqualsStartBytes() {
-    return this.fieldConfig.getCodec().encode(this.literal);
+    return this.fieldMapping.getCodec().encode(this.literal);
   }
 
   /**
@@ -79,7 +81,7 @@ public class StringLiteral extends ScanLiteral implements PartialRowKeyLiteral, 
    */
   @Override
   public byte[] getEqualsStopBytes() {
-    return this.fieldConfig.getCodec().encodeNext(this.literal);
+    return this.fieldMapping.getCodec().encodeNext(this.literal);
   }
 
   /**
@@ -95,7 +97,7 @@ public class StringLiteral extends ScanLiteral implements PartialRowKeyLiteral, 
    */
   @Override
   public byte[] getGreaterThanStartBytes() {
-    return this.fieldConfig.getCodec().encodeNext(this.literal);
+    return this.fieldMapping.getCodec().encodeNext(this.literal);
   }
 
   /**
@@ -165,7 +167,7 @@ public class StringLiteral extends ScanLiteral implements PartialRowKeyLiteral, 
   public byte[] getLessThanStopBytes() {
     // Note: in HBase the stop row is exclusive, so just use
     // the literal value, no need to decrement it
-    return this.fieldConfig.getCodec().encode(this.literal);
+    return this.fieldMapping.getCodec().encode(this.literal);
   }
 
   /**
@@ -196,25 +198,25 @@ public class StringLiteral extends ScanLiteral implements PartialRowKeyLiteral, 
 
     // Note: in HBase the stop row is exclusive, so increment
     // stop value to get this row for this field/literal
-    return this.fieldConfig.getCodec().encodeNext(this.literal);
+    return this.fieldMapping.getCodec().encodeNext(this.literal);
   }
 
   @Override
   public byte[] getFuzzyKeyBytes() {
-    if (this.fieldConfig.getCodec().isLexicographic()
-        && !this.fieldConfig.getCodec().isTransforming()) {
-      return this.fieldConfig.getCodec().encode(this.literal);
+    if (this.fieldMapping.getCodec().isLexicographic()
+        && !this.fieldMapping.getCodec().isTransforming()) {
+      return this.fieldMapping.getCodec().encode(this.literal);
     } else
       throw new ScanException("cannot create fuzzy scan literal " + "for "
-          + this.fieldConfig.getCodecType() + " encoded key field with path '"
-          + this.fieldConfig.getPropertyPath() + "' within table "
+          + this.fieldMapping.getCodecType() + " encoded key field with path '"
+          + this.fieldMapping.getPropertyPath() + "' within table "
           + this.table.getQualifiedPhysicalName() + " for graph root type, "
           + this.rootType.toString());
   }
 
   @Override
   public byte[] getFuzzyInfoBytes() {
-    byte[] infoBytes = new byte[this.fieldConfig.getMaxLength()];
+    byte[] infoBytes = new byte[this.fieldMapping.getMaxLength()];
     Arrays.fill(infoBytes, (byte) 0); // fixed char
     return infoBytes;
   }

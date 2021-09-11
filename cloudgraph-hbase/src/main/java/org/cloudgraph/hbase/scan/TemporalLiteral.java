@@ -20,6 +20,7 @@ import java.util.Date;
 
 import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.cloudgraph.store.mapping.StoreMappingContext;
+import org.plasma.query.model.LogicalOperatorName;
 import org.plasma.query.model.RelationalOperatorName;
 import org.plasma.sdo.DataType;
 import org.plasma.sdo.PlasmaType;
@@ -50,9 +51,10 @@ public class TemporalLiteral extends ScanLiteral implements PartialRowKeyLiteral
   // resolution is seconds
 
   public TemporalLiteral(String literal, PlasmaType rootType,
-      RelationalOperatorName relationalOperator, DataRowKeyFieldMapping fieldConfig,
-      StoreMappingContext mappingContext) {
-    super(literal, rootType, relationalOperator, fieldConfig, mappingContext);
+      RelationalOperatorName relationalOperator, LogicalOperatorName logicalOperatorContext,
+      DataRowKeyFieldMapping fieldConfig, StoreMappingContext mappingContext) {
+    super(literal, rootType, relationalOperator, logicalOperatorContext, fieldConfig,
+        mappingContext);
   }
 
   protected int getIncrement(DataType dataType) {
@@ -219,32 +221,32 @@ public class TemporalLiteral extends ScanLiteral implements PartialRowKeyLiteral
 
   @Override
   public byte[] getFuzzyKeyBytes() {
-    if (this.fieldConfig.getCodec().isLexicographic()
-        && !this.fieldConfig.getCodec().isTransforming())
+    if (this.fieldMapping.getCodec().isLexicographic()
+        && !this.fieldMapping.getCodec().isTransforming())
       return getEqualsStartBytes();
     else
       throw new ScanException("cannot create fuzzy scan literal " + "for "
-          + this.fieldConfig.getCodecType() + " encoded key field with path '"
-          + this.fieldConfig.getPropertyPath() + "' within table "
+          + this.fieldMapping.getCodecType() + " encoded key field with path '"
+          + this.fieldMapping.getPropertyPath() + "' within table "
           + this.table.getQualifiedPhysicalName() + " for graph root type, "
           + this.rootType.toString());
   }
 
   @Override
   public byte[] getFuzzyInfoBytes() {
-    byte[] infoBytes = new byte[this.fieldConfig.getMaxLength()];
+    byte[] infoBytes = new byte[this.fieldMapping.getMaxLength()];
     Arrays.fill(infoBytes, (byte) 0); // fixed char
     return infoBytes;
   }
 
   private byte[] literalToBytes() {
     Object value = this.dataConverter.convert(property.getType(), this.literal);
-    return this.fieldConfig.getCodec().encode(value);
+    return this.fieldMapping.getCodec().encode(value);
   }
 
   private byte[] nextLiteralToBytes() {
     Object value = this.dataConverter.convert(property.getType(), this.literal);
-    return this.fieldConfig.getCodec().encodeNext(value);
+    return this.fieldMapping.getCodec().encodeNext(value);
   }
 
   /**

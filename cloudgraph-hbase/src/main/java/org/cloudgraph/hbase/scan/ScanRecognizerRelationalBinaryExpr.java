@@ -90,7 +90,7 @@ public class ScanRecognizerRelationalBinaryExpr extends DefaultRelationalBinaryE
       ScanLiteralFactory factory = new ScanLiteralFactory();
 
       ScanLiteral scanLiteral = factory.createLiteral(this.literal.getValue(), property,
-          (PlasmaType) graph.getRootType(), this.operator, fieldConfig, this.mappingContext);
+          (PlasmaType) graph.getRootType(), this.operator, null, fieldConfig, this.mappingContext);
       return scanLiteral;
     } else
       log.warn("no user defined row-key field for query path '" + this.propertyPath

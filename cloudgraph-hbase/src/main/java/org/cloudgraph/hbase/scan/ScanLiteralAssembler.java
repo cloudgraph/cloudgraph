@@ -29,6 +29,7 @@ import org.plasma.query.model.AbstractPathElement;
 import org.plasma.query.model.GroupOperator;
 import org.plasma.query.model.Literal;
 import org.plasma.query.model.LogicalOperator;
+import org.plasma.query.model.LogicalOperatorName;
 import org.plasma.query.model.NullLiteral;
 import org.plasma.query.model.Path;
 import org.plasma.query.model.PathElement;
@@ -59,7 +60,7 @@ public class ScanLiteralAssembler extends DefaultQueryVisitor {
   protected PlasmaProperty contextProperty;
   protected String contextPropertyPath;
   protected RelationalOperator contextRelationalOperator;
-  protected LogicalOperator contextLogicalOperator;
+  protected LogicalOperatorName contextLogicalOperator;
   protected PredicateOperator contextWildcardOperator;
   protected DataGraphMapping graph;
   protected TableMapping table;
@@ -173,7 +174,8 @@ public class ScanLiteralAssembler extends DefaultQueryVisitor {
       ScanLiteral scanLiteral = null;
       if (this.contextRelationalOperator != null) {
         scanLiteral = this.scanLiteralFactory.createLiteral(content, property, this.rootType,
-            this.contextRelationalOperator, fieldConfig, this.mappingContext);
+            this.contextRelationalOperator, this.contextLogicalOperator, fieldConfig,
+            this.mappingContext);
         // partial scan does not accommodate 'not equals' as it scans
         // for
         // contiguous set of row keys
@@ -186,7 +188,8 @@ public class ScanLiteralAssembler extends DefaultQueryVisitor {
           this.fuzzyKeyScanLiterals.addLiteral(scanLiteral);
       } else if (this.contextWildcardOperator != null) {
         scanLiteral = this.scanLiteralFactory.createLiteral(content, property, this.rootType,
-            this.contextWildcardOperator, fieldConfig, this.mappingContext);
+            this.contextWildcardOperator, this.contextLogicalOperator, fieldConfig,
+            this.mappingContext);
         this.fuzzyKeyScanLiterals.addLiteral(scanLiteral);
       } else
         throw new GraphServiceException("expected relational or wildcard operator for query path '"
@@ -217,7 +220,7 @@ public class ScanLiteralAssembler extends DefaultQueryVisitor {
     switch (operator.getValue()) {
     case AND:
     case OR:
-      this.contextLogicalOperator = operator;
+      this.contextLogicalOperator = operator.getValue();
     }
     super.start(operator);
   }

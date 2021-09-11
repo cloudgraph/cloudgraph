@@ -47,6 +47,7 @@ public class ScanLiterals {
   private boolean hasMultipleWildcardLiterals = false;
   private boolean hasOtherThanSingleTrailingWildcards = false;
   private boolean hasOnlyEqualityRelationalOperators = true;
+  private boolean hasOnlyConjunctiveLogicalOperators = true;
   private Map<DataGraphMapping, Boolean> hasContiguousPartialKeyScanFieldValuesMap;
   private Map<DataGraphMapping, Boolean> hasContiguousKeyFieldValuesMap;
 
@@ -90,6 +91,15 @@ public class ScanLiterals {
         break;
       default:
         this.hasOnlyEqualityRelationalOperators = false;
+      }
+    }
+    
+    if (scanLiteral.hastLogicalOperatorContext()) {
+      switch (scanLiteral.getLogicalOperatorContext()) {
+      case AND:
+        break;
+       default:
+        this.hasOnlyConjunctiveLogicalOperators = false;
       }
     }
 
@@ -155,6 +165,33 @@ public class ScanLiterals {
 
     return this.hasContiguousPartialKeyScanFieldValuesMap.get(graph).booleanValue();
   }
+  
+  /**
+   * Returns true if this set of literals can support a fuzzy row key scan for
+   * the given graph
+   * 
+   * @param graph
+   *          the graph
+   * @return true if this set of literals can support a fuzzy row key scan for
+   *         the given graph
+   */
+  public boolean supportFuzzyRowKeyScan(DataGraphMapping graph) {
+    if (!hasOnlyEqualityRelationalOperators)
+      return false;
+    // Can't have a fuzzy scan within the context of a disjunction unless both
+    // sides of the disjunction are represented as fuzzy or other scans
+    // For example is only one side of the disjunction is part of the row 
+    // key and the other is not, the row key field will
+    // be represented as a scan literal, the other will not. Yet
+    // the disjunction should still succeed. 
+    if (!this.hasOnlyConjunctiveLogicalOperators) {
+      if (this.literalList.size() == 1) {
+        return false;
+      }
+    }
+    return true;
+   }
+  
 
   /**
    * Returns true if this set of literals can support a partial row key scan for
