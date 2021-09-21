@@ -89,6 +89,10 @@ public class ScanCollector implements ExprVisitor {
     this.graph = StoreMapping.getInstance().getDataGraph(rootTypeQname, this.mappingContext);
   }
 
+  public DataGraphMapping getGraph() {
+    return graph;
+  }
+
   private void init() {
     if (this.partialKeyScans == null) {
       this.partialKeyScans = new ArrayList<PartialRowKey>(this.literals.size());
@@ -105,17 +109,17 @@ public class ScanCollector implements ExprVisitor {
         // partial
         // keys over fuzzy keys
 
-        if (scanLiterals.supportCompleteRowKey(this.graph)) {
+        if (scanLiterals.supportCompleteRowKey(this)) {
           CompleteRowKeyAssembler assembler = new CompleteRowKeyAssembler(this.rootType,
               this.mappingContext);
           assembler.assemble(scanLiterals);
           this.completeKeys.add(assembler);
-        } else if (scanLiterals.supportPartialRowKeyScan(this.graph)) {
+        } else if (scanLiterals.supportPartialRowKeyScan(this)) {
           PartialRowKeyScanAssembler assembler = new PartialRowKeyScanAssembler(this.rootType,
               this.mappingContext);
           assembler.assemble(scanLiterals);
           this.partialKeyScans.add(assembler);
-        } else {
+        } else if (scanLiterals.supportFuzzyRowKeyScan(this)) {
           FuzzyRowKeyScanAssembler assembler = new FuzzyRowKeyScanAssembler(this.rootType,
               this.mappingContext);
           assembler.assemble(scanLiterals);

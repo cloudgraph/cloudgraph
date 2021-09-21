@@ -218,6 +218,7 @@ public class FuzzyRowKeyScanAssembler implements RowKeyScanAssembler, FuzzyRowKe
           if (WildcardStringLiteral.class.isAssignableFrom(fuzzyLiteral.getClass())) {
             WildcardStringLiteral wc = (WildcardStringLiteral) fuzzyLiteral;
             String literal = wc.getContent();
+            if (!literal.equals(Wildcard.WILDCARD_CHAR)) {
             if (literal.length() != wc.getFieldConfig().getMaxLength()) {
               if (literal.startsWith(Wildcard.WILDCARD_CHAR)
                   && literal.endsWith(Wildcard.WILDCARD_CHAR)) {
@@ -230,6 +231,7 @@ public class FuzzyRowKeyScanAssembler implements RowKeyScanAssembler, FuzzyRowKe
                         + " and ending with a wildcard character, must exactly match (typically by padding with wildcards) the length of the target (composite)"
                         + " row key field, as HBase fuzzy row key filters use fixed length masking.");
               }
+            }
             }
           }
 
