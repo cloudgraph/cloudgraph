@@ -77,8 +77,7 @@ public class ScanLiterals {
       String content = wildcardStringLiteral.getContent().trim();
       if (!content.equals(Wildcard.WILDCARD_CHAR)) {
         this.hasJustSingleWildcardLiteral = true;
-      }  
-      else if (!content.endsWith(Wildcard.WILDCARD_CHAR)) {
+      } else if (!content.endsWith(Wildcard.WILDCARD_CHAR)) {
         this.hasOtherThanSingleTrailingWildcards = true;
       } else {
         // it has another wildcard preceding the trailing one
@@ -97,12 +96,12 @@ public class ScanLiterals {
         this.hasOnlyEqualityRelationalOperators = false;
       }
     }
-    
+
     if (scanLiteral.hastLogicalOperatorContext()) {
       switch (scanLiteral.getLogicalOperatorContext()) {
       case AND:
         break;
-       default:
+      default:
         this.hasOnlyConjunctiveLogicalOperators = false;
         if (this.literalList.size() > 0)
           log.warn("expected only single literal for disjunctive context - continuing");
@@ -135,13 +134,13 @@ public class ScanLiterals {
     // ensure if there is a wildcard literal that its the last literal
     // in terms of sequence within the row key definition
     if (this.hasWildcardLiterals) {
-      
+
       // ensure if just a single wildcard literal to just exit as
       // just a table scan anyway
       if (this.hasJustSingleWildcardLiteral && this.literalList.size() == 1) {
         return false;
       }
-      
+
       int maxLiteralSeq = 0;
       int wildcardLiteralSeq = 0;
       for (ScanLiteral literal : literalList) {
@@ -175,25 +174,27 @@ public class ScanLiterals {
       this.hasContiguousPartialKeyScanFieldValuesMap.put(collector.getGraph(),
           hasContiguousPartialKeyScanFieldValues);
     }
-    
-    boolean hasContiguousPartialKeyScanFieldValues = this.hasContiguousPartialKeyScanFieldValuesMap.get(collector.getGraph()).booleanValue();
+
+    boolean hasContiguousPartialKeyScanFieldValues = this.hasContiguousPartialKeyScanFieldValuesMap
+        .get(collector.getGraph()).booleanValue();
     if (!hasContiguousPartialKeyScanFieldValues)
       return false;
 
     // Cannot have any partial scans within the context of
-    // a disjunction where predicates external to the scan(s) are present
-    // as all scans could return no results...yet the disjunction may mean
-    // the graph recognizer will succeed. So often will
-    // result in a full table scan. 
+    // a disjunction. 
     if (!this.hasOnlyConjunctiveLogicalOperators) {
-      if (collector.isQueryRequiresGraphRecognizer()) {
-        return false;    
-      }
+      // FIXME: where multiple disjunctive predicates exist, all targeting
+      // row key fields, the first field could form a partial key scan
+      // and the remainder could form fuzzy scans. This means that this set of
+      // literals associated with a row-key definition could result in a heterogeneous
+      // set of multiple partial and fuzzy scans, rather than the existing model
+      // which supports a single scan type. 
+      return false;
     }
-    
+
     return true;
   }
-  
+
   /**
    * Returns true if this set of literals can support a fuzzy row key scan for
    * the given graph
@@ -208,30 +209,30 @@ public class ScanLiterals {
       return false;
     // Can't have a fuzzy scan within the context of a disjunction unless both
     // sides of the disjunction are represented as fuzzy or other scans
-    // For example is only one side of the disjunction is part of the row 
+    // For example is only one side of the disjunction is part of the row
     // key and the other is not, the row key field will
     // be represented as a scan literal, the other will not. Yet
-    // the disjunction should still succeed. 
+    // the disjunction should still succeed.
     if (!this.hasOnlyConjunctiveLogicalOperators) {
       if (this.literalList.size() == 1) {
         return false;
       }
     }
-    
-    // Cannot have any partial scans within the context of
-    // a disjunction where predicates external to the scan(s) are present
-    // as all scans could return no results...yet the disjunction may mean
-    // the graph recognizer will succeed. So often will
-    // result in a full table scan. 
+
+    // Cannot have any fuzzy scans within the context of
+    // a disjunction. 
     if (!this.hasOnlyConjunctiveLogicalOperators) {
-      if (collector.isQueryRequiresGraphRecognizer()) {
-        return false;    
-      }
+      // FIXME: where multiple disjunctive predicates exist, all targeting
+      // row key fields, the first field could form a partial key scan
+      // and the remainder could form fuzzy scans. This means that this set of
+      // literals associated with a row-key definition could result in a heterogeneous
+      // set of multiple partial and fuzzy scans, rather than the existing model
+      // which supports a single scan type. 
+      return false;
     }
-    
+
     return true;
-   }
-  
+  }
 
   /**
    * Returns true if this set of literals can support a partial row key scan for
@@ -273,15 +274,15 @@ public class ScanLiterals {
 
       this.hasContiguousKeyFieldValuesMap.put(collector.getGraph(), hasContiguousFieldValues);
     }
-    boolean hasContiguousKeyScanFieldValues = this.hasContiguousKeyFieldValuesMap.get(collector.getGraph()).booleanValue();
+    boolean hasContiguousKeyScanFieldValues = this.hasContiguousKeyFieldValuesMap.get(
+        collector.getGraph()).booleanValue();
     if (!hasContiguousKeyScanFieldValues)
       return false;
-    
-    
+
     // Cannot have any scans within the context of
-    // a disjunction. 
+    // a disjunction.
     if (!this.hasOnlyConjunctiveLogicalOperators) {
-      return false;    
+      return false;
     }
 
     return true;
