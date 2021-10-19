@@ -181,14 +181,15 @@ public class ScanLiterals {
       return false;
 
     // Cannot have any partial scans within the context of
-    // a disjunction. 
+    // a disjunction.
     if (!this.hasOnlyConjunctiveLogicalOperators) {
       // FIXME: where multiple disjunctive predicates exist, all targeting
       // row key fields, the first field could form a partial key scan
       // and the remainder could form fuzzy scans. This means that this set of
-      // literals associated with a row-key definition could result in a heterogeneous
+      // literals associated with a row-key definition could result in a
+      // heterogeneous
       // set of multiple partial and fuzzy scans, rather than the existing model
-      // which supports a single scan type. 
+      // which supports a single scan type.
       return false;
     }
 
@@ -207,27 +208,17 @@ public class ScanLiterals {
   public boolean supportFuzzyRowKeyScan(ScanCollector collector) {
     if (!hasOnlyEqualityRelationalOperators)
       return false;
-    // Can't have a fuzzy scan within the context of a disjunction unless both
-    // sides of the disjunction are represented as fuzzy or other scans
-    // For example is only one side of the disjunction is part of the row
-    // key and the other is not, the row key field will
-    // be represented as a scan literal, the other will not. Yet
-    // the disjunction should still succeed.
-    if (!this.hasOnlyConjunctiveLogicalOperators) {
-      if (this.literalList.size() == 1) {
-        return false;
-      }
-    }
-
+ 
     // Cannot have any fuzzy scans within the context of
-    // a disjunction. 
+    // a disjunction.
     if (!this.hasOnlyConjunctiveLogicalOperators) {
       // FIXME: where multiple disjunctive predicates exist, all targeting
       // row key fields, the first field could form a partial key scan
       // and the remainder could form fuzzy scans. This means that this set of
-      // literals associated with a row-key definition could result in a heterogeneous
+      // literals associated with a row-key definition could result in a
+      // heterogeneous
       // set of multiple partial and fuzzy scans, rather than the existing model
-      // which supports a single scan type. 
+      // which supports a single scan type.
       return false;
     }
 
