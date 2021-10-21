@@ -208,7 +208,7 @@ public class ScanLiterals {
   public boolean supportFuzzyRowKeyScan(ScanCollector collector) {
     if (!hasOnlyEqualityRelationalOperators)
       return false;
- 
+
     // Cannot have any fuzzy scans within the context of
     // a disjunction.
     if (!this.hasOnlyConjunctiveLogicalOperators) {
@@ -254,15 +254,6 @@ public class ScanLiterals {
         if (scanLiteralCount[i] == 0)
           hasContiguousFieldValues = false;
 
-      for (MetaKeyFieldMapping field : collector.getGraph().getPreDefinedRowKeyFields()) {
-        switch (field.getName()) {
-        case URI:
-        case TYPE:
-          break;
-        default:
-        }
-      }
-
       this.hasContiguousKeyFieldValuesMap.put(collector.getGraph(), hasContiguousFieldValues);
     }
     boolean hasContiguousKeyScanFieldValues = this.hasContiguousKeyFieldValuesMap.get(
@@ -270,10 +261,16 @@ public class ScanLiterals {
     if (!hasContiguousKeyScanFieldValues)
       return false;
 
-    // Cannot have any scans within the context of
+    // Cannot have any complete keys within the context of
     // a disjunction.
     if (!this.hasOnlyConjunctiveLogicalOperators) {
-      return false;
+      // But since we determined (above) this set of literals covers the
+      // entire row key (has contiguous field values), if
+      // there is a single literal, can allow it as a complete
+      // row key.
+      if (this.literalList.size() > 1) {
+        return false;
+      }
     }
 
     return true;

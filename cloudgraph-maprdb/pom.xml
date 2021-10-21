@@ -4,11 +4,11 @@
 	<parent>
 		<groupId>org.cloudgraph</groupId>
 		<artifactId>cloudgraph</artifactId>
-		<version>1.3.2</version>
+		<version>1.3.3</version>
 	</parent>
 	<groupId>org.cloudgraph</groupId>
 	<artifactId>cloudgraph-maprdb</artifactId>
-	<version>1.3.2</version>
+	<version>1.3.3</version>
 	<name>CloudGraph MAPR-DB (M7) Service</name>
 	<description>CloudGraph(tm) is a suite of Service Data Object (SDO) 2.1 services designed for relational and big-table style "cloud" databases, such as HBase and others.</description>
 	<repositories>
@@ -24,7 +24,7 @@
 		</repository>
 	</repositories>
 	<properties>
-		<cloudgraph.version>1.3.2</cloudgraph.version>
+		<cloudgraph.version>1.3.3</cloudgraph.version>
 		<plasma.version>2.1.6</plasma.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<slf4j.version>1.6.1</slf4j.version>
@@ -35,7 +35,7 @@
 		<dependency>
 			<groupId>org.cloudgraph</groupId>
 			<artifactId>cloudgraph-hbase</artifactId>
-			<version>1.3.2</version>
+			<version>1.3.3</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>hbase-client</artifactId>
