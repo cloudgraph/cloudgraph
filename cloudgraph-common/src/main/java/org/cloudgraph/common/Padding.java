@@ -159,7 +159,7 @@ public class Padding {
       }
     }
     byte[] result = new byte[lastNonPad + 1];
-    System.arraycopy(src, 0, result, 0, lastNonPad);
+    System.arraycopy(src, 0, result, 0, result.length);
     return result;
   }
 

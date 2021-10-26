@@ -1,0 +1,30 @@
+Release Notes
+
+CloudGraph 1.3.4 Release Notes
+
+CloudGraph 1.3.4 is a production release of CloudGraph.
+
+The full list of changes can be found in our issue management system github, and is reproduced below.
+See https://github.com/cloudgraph/cloudgraph/issues. 
+
+For issues created during beta testing see:
+See https://github.com/cloudgraph/cloudgraph/issues. 
+
+
+Major Changes
+N/A
+
+Bugs
+[Issue #48] - Error in Padding Strip Trailing Spaces     
+ 
+Improvements
+N/A
+  
+New Features
+N/A
+
+Tasks
+N/A
+
+Wish
+N/A
