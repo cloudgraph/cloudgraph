@@ -209,8 +209,9 @@ public class ScanCollector implements ExprVisitor {
         }
       }
       for (String literal : literals) {
+        // create a derived literal with no logical operator context
         ScanLiteral scanLiteral = factory.createLiteral(literal, property,
-            (PlasmaType) graph.getRootType(), target.getOperator(), LogicalOperatorName.OR,
+            (PlasmaType) graph.getRootType(), target.getOperator(), null/*important*/,
             fieldConfig, this.mappingContext);
         this.collect(fieldConfig, LogicalOperatorName.OR, scanLiteral);
       }

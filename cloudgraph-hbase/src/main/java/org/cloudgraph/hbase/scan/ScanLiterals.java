@@ -190,7 +190,14 @@ public class ScanLiterals {
       // heterogeneous
       // set of multiple partial and fuzzy scans, rather than the existing model
       // which supports a single scan type.
-      return false;
+
+      // But since we determined (above) this set of literals covers the
+      // row key (has contiguous field values), if
+      // there is a single literal, can allow it as a partial
+      // row key.
+      if  (this.literalList.size() > 1) {
+        return false;
+      }
     }
 
     return true;
