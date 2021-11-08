@@ -191,13 +191,7 @@ public class ScanLiterals {
       // set of multiple partial and fuzzy scans, rather than the existing model
       // which supports a single scan type.
 
-      // But since we determined (above) this set of literals covers the
-      // row key (has contiguous field values), if
-      // there is a single literal, can allow it as a partial
-      // row key.
-      if  (this.literalList.size() > 1) {
-        return false;
-      }
+      return false;
     }
 
     return true;
@@ -271,13 +265,7 @@ public class ScanLiterals {
     // Cannot have any complete keys within the context of
     // a disjunction.
     if (!this.hasOnlyConjunctiveLogicalOperators) {
-      // But since we determined (above) this set of literals covers the
-      // entire row key (has contiguous field values), if
-      // there is a single literal, can allow it as a complete
-      // row key.
-      if (this.literalList.size() > 1) {
-        return false;
-      }
+      return false;
     }
 
     return true;
