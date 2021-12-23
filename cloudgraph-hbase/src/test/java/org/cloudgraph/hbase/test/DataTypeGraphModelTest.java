@@ -48,7 +48,7 @@ public abstract class DataTypeGraphModelTest extends HBaseTestCase {
 
   // keep at least 3 rows
 
-  protected void fillGraph(Node root, long id, Date now, String namePrefix) {
+  protected void fillGraph(Node root, int id, Date now, String namePrefix) {
     Node parent = root;
     for (int i = 0; i < maxRows; i++) {
       Node child = parent.createChild();
@@ -65,7 +65,7 @@ public abstract class DataTypeGraphModelTest extends HBaseTestCase {
     // maxRows);
   }
 
-  protected void addNodes(Node parent, long id, Date now, String namePrefix, long maxLevels,
+  protected void addNodes(Node parent, int id, Date now, String namePrefix, long maxLevels,
       long level, long maxRows) {
 
     for (int i = 0; i < maxRows; i++) {
@@ -76,17 +76,17 @@ public abstract class DataTypeGraphModelTest extends HBaseTestCase {
     }
   }
 
-  protected Node fillNode(Node node, long id, Date now, String namePrefix, long level, long sequence) {
+  protected Node fillNode(Node node, int id, Date now, String namePrefix, long level, long sequence) {
     return fillNode(node, id, id, now, namePrefix, level, sequence);
   }
 
-  protected Node fillNode(Node node, long rootId, long id, Date now, String namePrefix, long level,
+  protected Node fillNode(Node node, int rootId, int id, Date now, String namePrefix, long level,
       long sequence) {
     String name = namePrefix + "_" + level + "_" + sequence;
     return this.fillNodeSimple(node, rootId, id, now, name, level, sequence);
   }
 
-  protected Node fillNodeSimple(Node node, long rootId, long id, Date now, String name, long level,
+  protected Node fillNodeSimple(Node node, int rootId, int id, Date now, String name, long level,
       long sequence) {
     long temp = id - (long) 1357000000000L;
     // log.info("id: " + id);

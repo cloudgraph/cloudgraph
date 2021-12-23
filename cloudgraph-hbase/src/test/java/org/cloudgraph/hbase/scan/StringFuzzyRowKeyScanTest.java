@@ -47,19 +47,19 @@ public class StringFuzzyRowKeyScanTest extends StringScanTest {
   }
 
   public void testWildcard() throws IOException {
-    long rootId = System.currentTimeMillis();
-    long id = rootId + WAIT_TIME;
-    Date now = new Date(id);
+    int rootId = Integer.valueOf(String.valueOf(System.nanoTime()).substring(7));
+    int id = WAIT_TIME;
+    Date now = new Date(rootId);
     Node root = this.createGraph(rootId, id, now, "XYZ_A");
     service.commit(root.getDataGraph(), USERNAME);
 
     // create 2 more w/same id but new date
-    long id2 = id + WAIT_TIME;
+    int id2 = id + WAIT_TIME;
     Date now2 = new Date(id2);
     Node root2 = this.createGraph(rootId, id2, now2, "XYZ_B");
     service.commit(root2.getDataGraph(), USERNAME);
 
-    long id3 = id2 + WAIT_TIME;
+    int id3 = id2 + WAIT_TIME;
     Date now3 = new Date(id3);
     Node root3 = this.createGraph(rootId, id3, now3, "XYZ_C");
     service.commit(root3.getDataGraph(), USERNAME);

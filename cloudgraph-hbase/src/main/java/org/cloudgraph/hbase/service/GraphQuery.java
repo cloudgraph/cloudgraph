@@ -61,6 +61,7 @@ import org.cloudgraph.hbase.util.FilterUtil;
 import org.cloudgraph.query.expr.Expr;
 import org.cloudgraph.query.expr.ExprPrinter;
 import org.cloudgraph.recognizer.GraphRecognizerSyntaxTreeAssembler;
+import org.cloudgraph.store.ServiceContext;
 import org.cloudgraph.store.mapping.MappingConfiguration;
 import org.cloudgraph.store.mapping.DataGraph;
 import org.cloudgraph.store.mapping.DataGraphMapping;

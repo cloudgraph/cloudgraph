@@ -29,7 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.cloudgraph.hbase.io.DistributedWriter;
 import org.cloudgraph.hbase.io.RowWriter;
 import org.cloudgraph.hbase.service.HBaseDataConverter;
-import org.cloudgraph.hbase.service.ServiceContext;
+import org.cloudgraph.store.ServiceContext;
 import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.cloudgraph.store.mapping.StoreMapping;

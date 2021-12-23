@@ -47,19 +47,19 @@ public class StringRowKeyGetTest extends StringScanTest {
   }
 
   public void testEqual() throws IOException {
-    long rootId = System.currentTimeMillis();
-    long id = rootId + WAIT_TIME;
+    int rootId = Integer.valueOf(String.valueOf(System.nanoTime()).substring(7));
+    int id = rootId + WAIT_TIME;
     Date now = new Date(id);
     Node root = this.createGraph(rootId, id, now, "AAA");
     service.commit(root.getDataGraph(), USERNAME);
 
     // create 2 more w/same id but new date
-    long id2 = id + WAIT_TIME;
+    int id2 = id + WAIT_TIME;
     Date now2 = new Date(id2);
     Node root2 = this.createGraph(rootId, id2, now2, "BBB");
     service.commit(new DataGraph[] { root2.getDataGraph() }, USERNAME);
 
-    long id3 = id2 + WAIT_TIME;
+    int id3 = id2 + WAIT_TIME;
     Date now3 = new Date(id3);
     Node root3 = this.createGraph(rootId, id3, now3, "CCC");
     service.commit(root3.getDataGraph(), USERNAME);

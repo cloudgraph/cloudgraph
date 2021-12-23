@@ -49,14 +49,14 @@ public class StringPartialRowKeyScanTest extends StringScanTest {
 
   @Test
   public void testEqualSimple() throws IOException {
-    long rootId = System.currentTimeMillis();
+    int rootId = Integer.valueOf(String.valueOf(System.nanoTime()).substring(7));
 
-    long id1 = rootId + WAIT_TIME;
+    int id1 = rootId + WAIT_TIME;
     Date now1 = new Date(id1);
     Node root1 = this.createSimpleGraph(rootId, id1, now1, "AAA");
     service.commit(root1.getDataGraph(), USERNAME);
 
-    long id2 = id1 + WAIT_TIME;
+    int id2 = id1 + WAIT_TIME;
     Date now2 = new Date(id2);
     Node root2 = this.createSimpleGraph(rootId, id2, now2, "BBB");
     Node root2a = this.createSimpleGraph(rootId, id2, now2, "BBB.1");
@@ -65,7 +65,7 @@ public class StringPartialRowKeyScanTest extends StringScanTest {
         new DataGraph[] { root2.getDataGraph(), root2a.getDataGraph(), root2b.getDataGraph() },
         USERNAME);
 
-    long id3 = id2 + WAIT_TIME;
+    int id3 = id2 + WAIT_TIME;
     Date now3 = new Date(id3);
     Node root3 = this.createSimpleGraph(rootId, id3, now3, "CCC");
     service.commit(root3.getDataGraph(), USERNAME);
@@ -78,19 +78,19 @@ public class StringPartialRowKeyScanTest extends StringScanTest {
   }
 
   public void testEqual() throws IOException {
-    long rootId = System.currentTimeMillis();
+    int rootId = Integer.valueOf(String.valueOf(System.nanoTime()).substring(7));
 
-    long id1 = rootId + WAIT_TIME;
+    int id1 = rootId + WAIT_TIME;
     Date now1 = new Date(id1);
     Node root1 = this.createGraph(rootId, id1, now1, "AAA");
     service.commit(root1.getDataGraph(), USERNAME);
 
-    long id2 = id1 + WAIT_TIME;
+    int id2 = id1 + WAIT_TIME;
     Date now2 = new Date(id2);
     Node root2 = this.createGraph(rootId, id2, now2, "BBB");
     service.commit(root2.getDataGraph(), USERNAME);
 
-    long id3 = id2 + WAIT_TIME;
+    int id3 = id2 + WAIT_TIME;
     Date now3 = new Date(id3);
     Node root3 = this.createGraph(rootId, id3, now3, "CCC");
     service.commit(root3.getDataGraph(), USERNAME);
@@ -103,19 +103,19 @@ public class StringPartialRowKeyScanTest extends StringScanTest {
   }
 
   public void testEqual2() throws IOException {
-    long rootId = System.currentTimeMillis();
+    int rootId = Integer.valueOf(String.valueOf(System.nanoTime()).substring(7));
 
-    long id1 = rootId + WAIT_TIME;
+    int id1 = rootId + WAIT_TIME;
     Date now1 = new Date(id1);
     Node root1 = this.createGraph(rootId, id1, now1, "AAA");
     service.commit(root1.getDataGraph(), USERNAME);
 
-    long id2 = id1 + WAIT_TIME;
+    int id2 = id1 + WAIT_TIME;
     Date now2 = new Date(id2);
     Node root2 = this.createGraph(rootId, id2, now2, "AAA 222");
     service.commit(root2.getDataGraph(), USERNAME);
 
-    long id3 = id2 + WAIT_TIME;
+    int id3 = id2 + WAIT_TIME;
     Date now3 = new Date(id3);
     Node root3 = this.createGraph(rootId, id3, now3, "AAA 333");
     service.commit(root3.getDataGraph(), USERNAME);
@@ -134,19 +134,19 @@ public class StringPartialRowKeyScanTest extends StringScanTest {
   }
 
   public void testPartialKeyWildcard() throws IOException {
-    long rootId = System.currentTimeMillis();
+    int rootId = Integer.valueOf(String.valueOf(System.nanoTime()).substring(7));
 
-    long id1 = rootId + WAIT_TIME;
+    int id1 = rootId + WAIT_TIME;
     Date now1 = new Date(id1);
     Node root1 = this.createGraph(rootId, id1, now1, "AAA 111");
     service.commit(root1.getDataGraph(), USERNAME);
 
-    long id2 = id1 + WAIT_TIME;
+    int id2 = id1 + WAIT_TIME;
     Date now2 = new Date(id2);
     Node root2 = this.createGraph(rootId, id2, now2, "AzB 112");
     service.commit(root2.getDataGraph(), USERNAME);
 
-    long id3 = id2 + WAIT_TIME;
+    int id3 = id2 + WAIT_TIME;
     Date now3 = new Date(id3);
     Node root3 = this.createGraph(rootId, id3, now3, "A_zC 113");
     service.commit(root3.getDataGraph(), USERNAME);
@@ -159,19 +159,19 @@ public class StringPartialRowKeyScanTest extends StringScanTest {
   }
 
   public void testBetween() throws IOException {
-    long rootId = System.currentTimeMillis();
+    int rootId = Integer.valueOf(String.valueOf(System.nanoTime()).substring(7));
 
-    long id1 = rootId + WAIT_TIME;
+    int id1 = rootId + WAIT_TIME;
     Date now = new Date(id1);
     Node root1 = this.createGraph(rootId, id1, now, "AAA");
     service.commit(root1.getDataGraph(), USERNAME);
 
-    long id2 = id1 + WAIT_TIME;
+    int id2 = id1 + WAIT_TIME;
     Date now2 = new Date(id2);
     Node root2 = this.createGraph(rootId, id2, now2, "BBB");
     service.commit(root2.getDataGraph(), USERNAME);
 
-    long id3 = id2 + WAIT_TIME;
+    int id3 = id2 + WAIT_TIME;
     Date now3 = new Date(id3);
     Node root3 = this.createGraph(rootId, id3, now3, "CCC");
     service.commit(root3.getDataGraph(), USERNAME);
@@ -186,19 +186,19 @@ public class StringPartialRowKeyScanTest extends StringScanTest {
   }
 
   public void testInclusive() throws IOException {
-    long rootId = System.currentTimeMillis();
+    int rootId = Integer.valueOf(String.valueOf(System.nanoTime()).substring(7));
 
-    long id1 = rootId + WAIT_TIME;
+    int id1 = rootId + WAIT_TIME;
     Date now = new Date(id1);
     Node root1 = this.createGraph(rootId, id1, now, "AAA");
     service.commit(root1.getDataGraph(), USERNAME);
 
-    long id2 = id1 + WAIT_TIME;
+    int id2 = id1 + WAIT_TIME;
     Date now2 = new Date(id2);
     Node root2 = this.createGraph(rootId, id2, now2, "BBB");
     service.commit(root2.getDataGraph(), USERNAME);
 
-    long id3 = id2 + WAIT_TIME;
+    int id3 = id2 + WAIT_TIME;
     Date now3 = new Date(id3);
     Node root3 = this.createGraph(rootId, id3, now3, "CCC");
     service.commit(root3.getDataGraph(), USERNAME);
@@ -212,19 +212,19 @@ public class StringPartialRowKeyScanTest extends StringScanTest {
   }
 
   public void testExclusive() throws IOException {
-    long rootId = System.currentTimeMillis();
+    int rootId = Integer.valueOf(String.valueOf(System.nanoTime()).substring(7));
 
-    long id1 = rootId + WAIT_TIME;
+    int id1 = rootId + WAIT_TIME;
     Date now = new Date(id1);
     Node root1 = this.createGraph(rootId, id1, now, "AAA");
     service.commit(root1.getDataGraph(), USERNAME);
 
-    long id2 = id1 + WAIT_TIME;
+    int id2 = id1 + WAIT_TIME;
     Date now2 = new Date(id2);
     Node root2 = this.createGraph(rootId, id2, now2, "BBB");
     service.commit(root2.getDataGraph(), USERNAME);
 
-    long id3 = id2 + WAIT_TIME;
+    int id3 = id2 + WAIT_TIME;
     Date now3 = new Date(id3);
     Node root3 = this.createGraph(rootId, id3, now3, "CCC");
     service.commit(root3.getDataGraph(), USERNAME);
@@ -237,29 +237,29 @@ public class StringPartialRowKeyScanTest extends StringScanTest {
   }
 
   public void testRange() throws IOException {
-    long rootId = System.currentTimeMillis();
+    int rootId = Integer.valueOf(String.valueOf(System.nanoTime()).substring(7));
 
-    long id1 = rootId + WAIT_TIME;
+    int id1 = rootId + WAIT_TIME;
     Date now = new Date(id1);
     Node root1 = this.createGraph(rootId, id1, now, "AAA");
     service.commit(root1.getDataGraph(), USERNAME);
 
-    long id2 = id1 + WAIT_TIME;
+    int id2 = id1 + WAIT_TIME;
     Date now2 = new Date(id2);
     Node root2 = this.createGraph(rootId, id2, now2, "BBB");
     service.commit(root2.getDataGraph(), USERNAME);
 
-    long id3 = id2 + WAIT_TIME;
+    int id3 = id2 + WAIT_TIME;
     Date now3 = new Date(id3);
     Node root3 = this.createGraph(rootId, id3, now3, "CCC");
     service.commit(root3.getDataGraph(), USERNAME);
 
-    long id4 = id3 + WAIT_TIME;
+    int id4 = id3 + WAIT_TIME;
     Date now4 = new Date(id4);
     Node root4 = this.createGraph(rootId, id4, now4, "DDD");
     service.commit(root4.getDataGraph(), USERNAME);
 
-    long id5 = id4 + WAIT_TIME;
+    int id5 = id4 + WAIT_TIME;
     Date now5 = new Date(id5);
     Node root5 = this.createGraph(rootId, id5, now5, "EEE");
     service.commit(root5.getDataGraph(), USERNAME);

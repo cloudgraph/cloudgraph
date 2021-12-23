@@ -39,7 +39,7 @@ import commonj.sdo.Property;
  * @author Scott Cinnamond
  * @since 0.5
  */
-public class HBaseDataConverter {
+public class HBaseDataConverter implements org.cloudgraph.store.DataConverter {
   private static Log log = LogFactory.getFactory().getInstance(HBaseDataConverter.class);
 
   static public volatile HBaseDataConverter INSTANCE = initializeInstance();

@@ -44,7 +44,7 @@ import commonj.sdo.Type;
 public class DatePredicateSliceTest extends DataTypeGraphModelTest {
   private static Log log = LogFactory.getLog(DatePredicateSliceTest.class);
   private String USERNAME = "slice_test";
-  private long WAIT_TIME = 1050;
+  private int WAIT_TIME = 1050;
 
   public static Test suite() {
     return PlasmaTestSetup.newTestSetup(DatePredicateSliceTest.class);
@@ -55,7 +55,10 @@ public class DatePredicateSliceTest extends DataTypeGraphModelTest {
   }
 
   public void testEqual() throws IOException {
-    long id = System.currentTimeMillis() + 10000; // space tests out more
+    int id = Integer.valueOf(String.valueOf(System.nanoTime()).substring(7)) + 10000; // space
+                                                                                      // tests
+                                                                                      // out
+                                                                                      // more;
     // than 1 second
     Calendar now = Calendar.getInstance();
     now.setTime(new Date(id));
@@ -73,7 +76,10 @@ public class DatePredicateSliceTest extends DataTypeGraphModelTest {
   }
 
   public void testGreaterThan() throws IOException {
-    long id = System.currentTimeMillis() + 20000; // space tests out more
+    int id = Integer.valueOf(String.valueOf(System.nanoTime()).substring(7)) + 20000; // space
+                                                                                      // tests
+                                                                                      // out
+                                                                                      // more;
     // than 1 second
     Calendar now = Calendar.getInstance();
     now.setTime(new Date(id));
@@ -91,7 +97,10 @@ public class DatePredicateSliceTest extends DataTypeGraphModelTest {
   }
 
   public void testBetween() throws IOException {
-    long id = System.currentTimeMillis() + 30000; // space tests out more
+    int id = Integer.valueOf(String.valueOf(System.nanoTime()).substring(7)) + 30000; // space
+                                                                                      // tests
+                                                                                      // out
+                                                                                      // more;
     // than 1 second
     Calendar now = Calendar.getInstance();
     now.setTime(new Date(id));
@@ -126,7 +135,10 @@ public class DatePredicateSliceTest extends DataTypeGraphModelTest {
   }
 
   public void testLike() throws IOException {
-    long id = System.currentTimeMillis() + 40000; // space tests out more
+    int id = Integer.valueOf(String.valueOf(System.nanoTime()).substring(7)) + 40000; // space
+                                                                                      // tests
+                                                                                      // out
+                                                                                      // more;
     // than 1 second
     Calendar now = Calendar.getInstance();
     now.setTime(new Date(id));
@@ -144,7 +156,7 @@ public class DatePredicateSliceTest extends DataTypeGraphModelTest {
     assertTrue(fetched.getChild(0).getStringField().contains("3"));
   }
 
-  protected DateNode createGraph(long id, Date now) {
+  protected DateNode createGraph(int id, Date now) {
     DataGraph dataGraph = PlasmaDataFactory.INSTANCE.createDataGraph();
     dataGraph.getChangeSummary().beginLogging(); // log changes from this
     // point

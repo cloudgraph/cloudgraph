@@ -30,7 +30,7 @@ import org.cloudgraph.hbase.io.EdgeWriter;
 import org.cloudgraph.hbase.io.RowWriter;
 import org.cloudgraph.hbase.io.TableWriter;
 import org.cloudgraph.hbase.service.HBaseDataConverter;
-import org.cloudgraph.hbase.service.ServiceContext;
+import org.cloudgraph.store.ServiceContext;
 import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.sdo.Concurrent;

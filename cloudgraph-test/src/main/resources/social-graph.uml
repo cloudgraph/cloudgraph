@@ -202,45 +202,47 @@
   </uml:Model>
   <PlasmaSDOProfile:SDONamespace xmi:id="_LS3wUNoAEeeZWtyNPsNl6g" base_Package="689057e0-c830-4326-9482-79b72e7eea9b" uri="http://cloudgraph.org/test/socialgraph/story"/>
   <PlasmaSDOProfile:SDONamespace xmi:id="_LS4XYNoAEeeZWtyNPsNl6g" base_Package="0f31ae17-34c3-4dba-b7f1-f6867697940b" uri="http://cloudgraph.org/test/socialgraph/actor"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="_LS5lgNoAEeeZWtyNPsNl6g" base_NamedElement="964f2464-ae77-43bb-babd-7581e7eeef3d" physicalName="EG"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="_LS6MkNoAEeeZWtyNPsNl6g" base_NamedElement="c6e91dc7-3796-4e62-8f83-d871f67d1a33" physicalName="ND"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="_LS6zoNoAEeeZWtyNPsNl6g" base_NamedElement="d5f878de-1d81-4866-94c0-a3830ee2cdcc" physicalName="NM"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_LS5lgNoAEeeZWtyNPsNl6g" base_NamedElement="964f2464-ae77-43bb-babd-7581e7eeef3d" physicalName="E"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_LS6MkNoAEeeZWtyNPsNl6g" base_NamedElement="c6e91dc7-3796-4e62-8f83-d871f67d1a33" physicalName="N"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_LS6zoNoAEeeZWtyNPsNl6g" base_NamedElement="d5f878de-1d81-4866-94c0-a3830ee2cdcc" physicalName="N"/>
   <PlasmaSDOProfile:SDOValueConstraint xmi:id="_LS7asNoAEeeZWtyNPsNl6g" base_Property="d5f878de-1d81-4866-94c0-a3830ee2cdcc" maxLength="32"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="_LS8BwNoAEeeZWtyNPsNl6g" base_NamedElement="3c904d90-a778-45fe-a910-ecbb5ee2db02" physicalName="DR"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="_LS8o0NoAEeeZWtyNPsNl6g" base_NamedElement="ac8c8fce-dad5-4033-9d53-1c9bf211b7e7" physicalName="CD"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="_LS9P4NoAEeeZWtyNPsNl6g" base_NamedElement="9e81d497-065a-4594-98c2-e398e166ed0e" physicalName="MD"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="_LS9P4doAEeeZWtyNPsNl6g" base_NamedElement="b0f49838-cd47-4e4d-9b16-ea0a2dc85171" physicalName="SF"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="_LS928NoAEeeZWtyNPsNl6g" base_NamedElement="559d9b05-de30-4e18-a930-811b53292dcb" physicalName="ML"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="_LS-eANoAEeeZWtyNPsNl6g" base_NamedElement="d26f6e3e-ffe6-48fa-9115-8b96f14a48c1" physicalName="TP"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="_LS-eAdoAEeeZWtyNPsNl6g" base_NamedElement="dab35ad8-0d5b-4fd6-8061-55b60bf1b9af" physicalName="LD"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="_LS_FENoAEeeZWtyNPsNl6g" base_NamedElement="d0a3a771-908e-451b-aacd-59e55474387c" physicalName="FW"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="_LS_sINoAEeeZWtyNPsNl6g" base_NamedElement="e83b5939-135d-4dc6-a354-b4d94862a233" physicalName="FP"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="_LS_sIdoAEeeZWtyNPsNl6g" base_NamedElement="01f94c7c-8d77-4e8c-ab46-a03124daeff3" physicalName="BL"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="_LTATMNoAEeeZWtyNPsNl6g" base_NamedElement="d1afa756-6605-46a0-9040-71fac8fef52c" physicalName="PT"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="_LTATMdoAEeeZWtyNPsNl6g" base_NamedElement="e0def27c-3dc2-4886-a493-11b7ad39ed3c" physicalName="AC"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="_LTA6QNoAEeeZWtyNPsNl6g" base_NamedElement="e176bbb6-62bd-4c99-8257-9169dc514246" physicalName="SY"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="_LTA6QdoAEeeZWtyNPsNl6g" base_NamedElement="f097b61b-1112-4fdc-a038-e6f9e57d684a" physicalName="MD"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_LS8BwNoAEeeZWtyNPsNl6g" base_NamedElement="3c904d90-a778-45fe-a910-ecbb5ee2db02" physicalName="D"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_LS8o0NoAEeeZWtyNPsNl6g" base_NamedElement="ac8c8fce-dad5-4033-9d53-1c9bf211b7e7" physicalName="C"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_LS9P4NoAEeeZWtyNPsNl6g" base_NamedElement="9e81d497-065a-4594-98c2-e398e166ed0e" physicalName="M"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_LS9P4doAEeeZWtyNPsNl6g" base_NamedElement="b0f49838-cd47-4e4d-9b16-ea0a2dc85171" physicalName="F"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_LS928NoAEeeZWtyNPsNl6g" base_NamedElement="559d9b05-de30-4e18-a930-811b53292dcb" physicalName="M"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_LS-eANoAEeeZWtyNPsNl6g" base_NamedElement="d26f6e3e-ffe6-48fa-9115-8b96f14a48c1" physicalName="T"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_LS-eAdoAEeeZWtyNPsNl6g" base_NamedElement="dab35ad8-0d5b-4fd6-8061-55b60bf1b9af" physicalName="L"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_LS_FENoAEeeZWtyNPsNl6g" base_NamedElement="d0a3a771-908e-451b-aacd-59e55474387c" physicalName="W"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_LS_sINoAEeeZWtyNPsNl6g" base_NamedElement="e83b5939-135d-4dc6-a354-b4d94862a233" physicalName="F"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_LS_sIdoAEeeZWtyNPsNl6g" base_NamedElement="01f94c7c-8d77-4e8c-ab46-a03124daeff3" physicalName="B"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_LTATMNoAEeeZWtyNPsNl6g" base_NamedElement="d1afa756-6605-46a0-9040-71fac8fef52c" physicalName="P"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_LTATMdoAEeeZWtyNPsNl6g" base_NamedElement="e0def27c-3dc2-4886-a493-11b7ad39ed3c" physicalName="A"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_LTA6QNoAEeeZWtyNPsNl6g" base_NamedElement="e176bbb6-62bd-4c99-8257-9169dc514246" physicalName="S"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_LTA6QdoAEeeZWtyNPsNl6g" base_NamedElement="f097b61b-1112-4fdc-a038-e6f9e57d684a" physicalName="D"/>
   <PlasmaSDOProfile:SDOAlias xmi:id="_LTA6QtoAEeeZWtyNPsNl6g" base_NamedElement="689057e0-c830-4326-9482-79b72e7eea9b" physicalName="Y" businessName="Story"/>
   <PlasmaSDOProfile:SDOAlias xmi:id="_LTBhUNoAEeeZWtyNPsNl6g" base_NamedElement="0f31ae17-34c3-4dba-b7f1-f6867697940b" physicalName="S" businessName="Social"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="_LTBhUdoAEeeZWtyNPsNl6g" base_NamedElement="051b2e3f-801e-44ed-b646-2109c843b63b" physicalName="ACT"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="_LTCIYNoAEeeZWtyNPsNl6g" base_NamedElement="d0d84b7a-5eb5-4275-b64a-19e26db80035" physicalName="TPC"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="_LTCIYdoAEeeZWtyNPsNl6g" base_NamedElement="527d46f3-55c9-470d-b18e-5dbea0c368e6" physicalName="SF"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="_LTCvcNoAEeeZWtyNPsNl6g" base_NamedElement="5b84aa9a-0fc4-426c-ad94-4450e8938b69" physicalName="TPC"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="_LTD9kNoAEeeZWtyNPsNl6g" base_NamedElement="4367e0e8-0ddf-40ad-b275-4b279f1ff41d" physicalName="SRC"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="_LTFLsNoAEeeZWtyNPsNl6g" base_NamedElement="18b69427-862f-4164-9ae5-bf47daedba22" physicalName="TGT"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="_LTFLsdoAEeeZWtyNPsNl6g" base_NamedElement="07abc283-c44e-48a8-8473-1da61536bf0f" physicalName="SE"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="_LTFywNoAEeeZWtyNPsNl6g" base_NamedElement="8e944c9e-5188-4ace-87e1-e2d6f990866f" physicalName="TE"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="_LTGZ0NoAEeeZWtyNPsNl6g" base_NamedElement="8da40af7-9af6-44f3-b673-be00ff732831" physicalName="PNT"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="_LTGZ0doAEeeZWtyNPsNl6g" base_NamedElement="e68f5e3a-9221-4113-8901-869811251159" physicalName="CHD"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="_LTHA4NoAEeeZWtyNPsNl6g" base_NamedElement="2ea2670f-3a9c-4967-a1bf-45346c8f51cb" physicalName="STY"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="_LTHA4doAEeeZWtyNPsNl6g" base_NamedElement="d15ec4b3-319a-4abe-8554-fb9047699007" physicalName="CNT"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_LTBhUdoAEeeZWtyNPsNl6g" base_NamedElement="051b2e3f-801e-44ed-b646-2109c843b63b" physicalName="A"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_LTCIYNoAEeeZWtyNPsNl6g" base_NamedElement="d0d84b7a-5eb5-4275-b64a-19e26db80035" physicalName="TC"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_LTCIYdoAEeeZWtyNPsNl6g" base_NamedElement="527d46f3-55c9-470d-b18e-5dbea0c368e6" physicalName="F"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_LTCvcNoAEeeZWtyNPsNl6g" base_NamedElement="5b84aa9a-0fc4-426c-ad94-4450e8938b69" physicalName="TC"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_LTD9kNoAEeeZWtyNPsNl6g" base_NamedElement="4367e0e8-0ddf-40ad-b275-4b279f1ff41d" physicalName="S"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_LTFLsNoAEeeZWtyNPsNl6g" base_NamedElement="18b69427-862f-4164-9ae5-bf47daedba22" physicalName="T"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_LTFLsdoAEeeZWtyNPsNl6g" base_NamedElement="07abc283-c44e-48a8-8473-1da61536bf0f" physicalName="S"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_LTFywNoAEeeZWtyNPsNl6g" base_NamedElement="8e944c9e-5188-4ace-87e1-e2d6f990866f" physicalName="T"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_LTGZ0NoAEeeZWtyNPsNl6g" base_NamedElement="8da40af7-9af6-44f3-b673-be00ff732831" physicalName="P"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_LTGZ0doAEeeZWtyNPsNl6g" base_NamedElement="e68f5e3a-9221-4113-8901-869811251159" physicalName="CT"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_LTHA4NoAEeeZWtyNPsNl6g" base_NamedElement="2ea2670f-3a9c-4967-a1bf-45346c8f51cb" physicalName="Y"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_LTHA4doAEeeZWtyNPsNl6g" base_NamedElement="d15ec4b3-319a-4abe-8554-fb9047699007" physicalName="B"/>
   <PlasmaSDOProfile:SDOAlias xmi:id="_LTHn8NoAEeeZWtyNPsNl6g" base_NamedElement="610b2f68-4605-4065-b168-fda957caa1af" physicalName="A"/>
   <PlasmaSDOProfile:SDOAlias xmi:id="_LTIPANoAEeeZWtyNPsNl6g" base_NamedElement="b92399d7-673a-4950-9649-941602b58d5d" physicalName="BLG"/>
   <PlasmaSDOProfile:SDOAlias xmi:id="_LTIPAdoAEeeZWtyNPsNl6g" base_NamedElement="2ed87a59-d755-4625-9129-3a420c81a3b4" physicalName="PHT"/>
   <PlasmaSDOProfile:SDOIncrement xmi:id="_LTI2ENoAEeeZWtyNPsNl6g" base_Property="_BzCjUNhUEeektI89mmneVg"/>
   <PlasmaSDOProfile:SDOAlias xmi:id="_LTJdINoAEeeZWtyNPsNl6g" base_NamedElement="_BzCjUNhUEeektI89mmneVg" physicalName="L"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="_1bsh4CiREeirAetiHFkJpA" base_NamedElement="_xukv4CiREeirAetiHFkJpA" physicalName="ID"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_1bsh4CiREeirAetiHFkJpA" base_NamedElement="_xukv4CiREeirAetiHFkJpA" physicalName="I"/>
   <PlasmaSDOProfile:SDOValueConstraint xmi:id="_1ccIwCiREeirAetiHFkJpA" base_Property="_xukv4CiREeirAetiHFkJpA" maxLength="36"/>
   <PlasmaSDOProfile:SDOKey xmi:id="_EiyfACihEeirAetiHFkJpA" base_Property="_xukv4CiREeirAetiHFkJpA" type="primary"/>
-  <PlasmaSDOProfile:SDOAlias xmi:id="_90wPMNZDEeioCO29qEYzvA" base_NamedElement="_6F4wwNZDEeioCO29qEYzvA" physicalName="MV"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_90wPMNZDEeioCO29qEYzvA" base_NamedElement="_6F4wwNZDEeioCO29qEYzvA" physicalName="V"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_PtBSYPV5EeuaDL-d_d5bgw" base_NamedElement="_QO1kEFxiEeijr5fnkfHPtg" physicalName="AG"/>
+  <PlasmaSDOProfile:SDOAlias xmi:id="_R_bZ4PV5EeuaDL-d_d5bgw" base_NamedElement="_I10zAGUREeiHg6cm20C6MA" physicalName="IQ"/>
 </xmi:XMI>

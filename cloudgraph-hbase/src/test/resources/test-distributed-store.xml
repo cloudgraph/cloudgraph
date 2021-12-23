@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cloudgraph:CloudGraphStoreMapping  
     xmlns:cloudgraph="http://www.cloudgraph.org/config">
-    <Property name="hbase.zookeeper.quorum">192.168.1.27:2181</Property>
+    
+    <Property name="hbase.zookeeper.quorum">192.168.1.131:2181</Property>
     <Property name="hbase.zookeeper.property.clientPort">2181</Property>     
      
 

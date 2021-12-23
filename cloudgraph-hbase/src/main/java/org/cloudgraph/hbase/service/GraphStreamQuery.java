@@ -53,6 +53,7 @@ import org.cloudgraph.hbase.util.FilterUtil;
 import org.cloudgraph.query.expr.Expr;
 import org.cloudgraph.query.expr.ExprPrinter;
 import org.cloudgraph.recognizer.GraphRecognizerSyntaxTreeAssembler;
+import org.cloudgraph.store.ServiceContext;
 import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.query.OrderBy;

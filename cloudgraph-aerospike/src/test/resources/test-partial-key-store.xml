@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cloudgraph:CloudGraphStoreMapping  
+    xmlns:cloudgraph="http://www.cloudgraph.org/config">
+    
+    <Property name="hbase.zookeeper.quorum">192.168.1.27:2181</Property>
+    <Property name="hbase.zookeeper.property.clientPort">2181</Property>     
+
+    <Property name="org.plasma.sdo.access.provider.hbase.ConnectionPoolMinSize">1</Property>    
+    <Property name="org.plasma.sdo.access.provider.hbase.ConnectionPoolMaxSize">80</Property>    
+
+    <Table name="TEST_PARTIAL_KEY_TEMPORAL" namespace="datatypes" dataColumnFamilyName="f1">
+        <HashAlgorithm name="murmur32"/>
+         
+        <DataGraph uri="http://cloudgraph.org/test/datatypes" type="DateTimeNode">
+            <RowKeyModel>
+                <RowKeyField>
+                    <MetaField name="uri" />
+                </RowKeyField>
+                <RowKeyField>
+                    <MetaField name="type" />
+                </RowKeyField>
+                <RowKeyField>
+                    <DataField path="rootId"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <DataField path="dateTimeField"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <DataField path="id" />
+                </RowKeyField>
+            </RowKeyModel>
+            
+            <ColumnKeyModel>
+                <ColumnKeyField name="pkg"/>
+                <ColumnKeyField name="type"/>
+                <ColumnKeyField name="property"/>
+            </ColumnKeyModel>
+        </DataGraph>
+        
+        <DataGraph uri="http://cloudgraph.org/test/datatypes" type="DateNode">
+            <RowKeyModel>
+                <RowKeyField>
+                    <MetaField name="uri" />
+                </RowKeyField>
+                <RowKeyField>
+                    <MetaField name="type" />
+                </RowKeyField>
+                <RowKeyField>
+                    <DataField path="rootId"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <DataField path="dateField"/>
+                </RowKeyField>                    
+                <RowKeyField>
+                    <DataField path="id" />
+                </RowKeyField>
+                  
+            </RowKeyModel>
+            
+            <ColumnKeyModel>
+                <ColumnKeyField name="pkg"/>
+                <ColumnKeyField name="type"/>
+                <ColumnKeyField name="property"/>
+            </ColumnKeyModel>
+        </DataGraph>
+    </Table>  
+
+    <Table name="TEST_PARTIAL_KEY_INTEGRAL" namespace="datatypes" dataColumnFamilyName="f1">
+        <HashAlgorithm name="murmur32"/>
+        
+         <DataGraph uri="http://cloudgraph.org/test/datatypes" type="IntNode">
+            <RowKeyModel>
+                <RowKeyField>
+                    <MetaField name="uri" />
+                </RowKeyField>
+                <RowKeyField>
+                    <MetaField name="type" />
+                </RowKeyField>
+                <RowKeyField>
+                    <DataField path="rootId"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <DataField path="intField"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <DataField path="id" />
+                </RowKeyField>
+            </RowKeyModel>
+            
+            <ColumnKeyModel>
+                <ColumnKeyField name="pkg"/>
+                <ColumnKeyField name="type"/>
+                <ColumnKeyField name="property"/>
+            </ColumnKeyModel>
+        </DataGraph>
+ 
+        <DataGraph uri="http://cloudgraph.org/test/datatypes" type="LongNode">
+            <RowKeyModel>
+                <RowKeyField>
+                    <MetaField name="uri" />
+                </RowKeyField>
+                <RowKeyField>
+                    <MetaField name="type" />
+                </RowKeyField>
+                <RowKeyField>
+                    <DataField path="rootId"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <DataField path="longField"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <DataField path="id" />
+                </RowKeyField>
+            </RowKeyModel>
+            
+            <ColumnKeyModel>
+                <ColumnKeyField name="pkg"/>
+                <ColumnKeyField name="type"/>
+                <ColumnKeyField name="property"/>
+            </ColumnKeyModel>
+        </DataGraph>
+    </Table>  
+
+    <Table name="TEST_PARTIAL_KEY_REAL" namespace="datatypes" dataColumnFamilyName="f1">
+        <HashAlgorithm name="murmur32"/>
+        
+        <DataGraph uri="http://cloudgraph.org/test/datatypes" type="FloatNode">
+            <RowKeyModel>
+                <RowKeyField>
+                    <MetaField name="uri" />
+                </RowKeyField>
+                <RowKeyField>
+                    <MetaField name="type" />
+                </RowKeyField>
+                <RowKeyField>
+                    <DataField path="rootId"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <DataField path="floatField"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <DataField path="id" />
+                </RowKeyField>
+                
+            </RowKeyModel>
+            
+            <ColumnKeyModel>
+                <ColumnKeyField name="pkg"/>
+                <ColumnKeyField name="type"/>
+                <ColumnKeyField name="property"/>
+            </ColumnKeyModel>
+        </DataGraph>
+    </Table>  
+
+    <Table name="TEST_PARTIAL_KEY_STRING" namespace="datatypes" dataColumnFamilyName="f1">
+        <HashAlgorithm name="murmur32"/>
+        <DataGraph uri="http://cloudgraph.org/test/datatypes" type="StringNode">
+            <RowKeyModel>
+                <RowKeyField>
+                    <MetaField name="uri" />
+                </RowKeyField>
+                <RowKeyField>
+                    <MetaField name="type" />
+                </RowKeyField>
+                <RowKeyField>
+                    <DataField path="rootId"/>
+                </RowKeyField>
+                <RowKeyField>    
+                    <DataField path="stringField"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <DataField path="id" />
+                </RowKeyField>
+            </RowKeyModel>
+            
+            <ColumnKeyModel>
+                <ColumnKeyField name="pkg"/>
+                <ColumnKeyField name="type"/>
+                <ColumnKeyField name="property"/>
+            </ColumnKeyModel>
+        </DataGraph>
+
+    </Table>  
+         
+    
+</cloudgraph:CloudGraphStoreMapping>

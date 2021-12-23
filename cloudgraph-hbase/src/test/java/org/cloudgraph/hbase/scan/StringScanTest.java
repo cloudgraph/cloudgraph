@@ -38,7 +38,7 @@ import commonj.sdo.Type;
 
 public abstract class StringScanTest extends DataTypeGraphModelTest {
   private static Log log = LogFactory.getLog(StringScanTest.class);
-  protected long WAIT_TIME = 1;
+  protected int WAIT_TIME = 1;
   protected String USERNAME = "string_test";
 
   protected QStringNode createSelect(String name) {
@@ -62,7 +62,7 @@ public abstract class StringScanTest extends DataTypeGraphModelTest {
     return root;
   }
 
-  protected StringNode createGraph(long rootId, long id, Date now, String prefix) {
+  protected StringNode createGraph(int rootId, int id, Date now, String prefix) {
     DataGraph dataGraph = PlasmaDataFactory.INSTANCE.createDataGraph();
     dataGraph.getChangeSummary().beginLogging(); // log changes from this
     // point
@@ -73,7 +73,7 @@ public abstract class StringScanTest extends DataTypeGraphModelTest {
     return root;
   }
 
-  protected StringNode createSimpleGraph(long rootId, long id, Date now, String name) {
+  protected StringNode createSimpleGraph(int rootId, int id, Date now, String name) {
     DataGraph dataGraph = PlasmaDataFactory.INSTANCE.createDataGraph();
     dataGraph.getChangeSummary().beginLogging(); // log changes from this
     // point

@@ -42,7 +42,7 @@ import commonj.sdo.Type;
  */
 public class DatePartialRowKeyScanTest extends DataTypeGraphModelTest {
   private static Log log = LogFactory.getLog(DatePartialRowKeyScanTest.class);
-  private long WAIT_TIME = 1050;
+  private int WAIT_TIME = 1050;
   private String USERNAME = "date_test";
 
   public static Test suite() {
@@ -54,19 +54,19 @@ public class DatePartialRowKeyScanTest extends DataTypeGraphModelTest {
   }
 
   public void testEqual() throws IOException {
-    long rootId = System.currentTimeMillis();
+    int rootId = Integer.valueOf(String.valueOf(System.nanoTime()).substring(7));
 
-    long id1 = rootId + WAIT_TIME;
+    int id1 = rootId + WAIT_TIME;
     Date now = new Date(id1);
     Node root = this.createGraph(rootId, id1, now);
     service.commit(root.getDataGraph(), USERNAME);
 
-    long id2 = id1 + WAIT_TIME;
+    int id2 = id1 + WAIT_TIME;
     Date now2 = new Date(id2);
     Node root2 = this.createGraph(rootId, id2, now2);
     service.commit(root2.getDataGraph(), USERNAME);
 
-    long id3 = id2 + WAIT_TIME;
+    int id3 = id2 + WAIT_TIME;
     Date now3 = new Date(id3);
     Node root3 = this.createGraph(rootId, id3, now3);
     service.commit(root3.getDataGraph(), USERNAME);
@@ -79,19 +79,19 @@ public class DatePartialRowKeyScanTest extends DataTypeGraphModelTest {
   }
 
   public void testBetween() throws IOException {
-    long rootId = System.currentTimeMillis();
+    int rootId = Integer.valueOf(String.valueOf(System.nanoTime()).substring(7));
 
-    long id1 = rootId + WAIT_TIME;
+    int id1 = rootId + WAIT_TIME;
     Date now = new Date(id1);
     Node root1 = this.createGraph(rootId, id1, now);
     service.commit(root1.getDataGraph(), USERNAME);
 
-    long id2 = id1 + WAIT_TIME;
+    int id2 = id1 + WAIT_TIME;
     Date now2 = new Date(id2);
     Node root2 = this.createGraph(rootId, id2, now2);
     service.commit(root2.getDataGraph(), USERNAME);
 
-    long id3 = id2 + WAIT_TIME;
+    int id3 = id2 + WAIT_TIME;
     Date now3 = new Date(id3);
     Node root3 = this.createGraph(rootId, id3, now3);
     service.commit(root3.getDataGraph(), USERNAME);
@@ -112,19 +112,19 @@ public class DatePartialRowKeyScanTest extends DataTypeGraphModelTest {
   }
 
   public void testInclusive() throws IOException {
-    long rootId = System.currentTimeMillis();
+    int rootId = Integer.valueOf(String.valueOf(System.nanoTime()).substring(7));
 
-    long id1 = rootId + WAIT_TIME;
+    int id1 = rootId + WAIT_TIME;
     Date now = new Date(id1);
     Node root1 = this.createGraph(rootId, id1, now);
     service.commit(root1.getDataGraph(), USERNAME);
 
-    long id2 = id1 + WAIT_TIME;
+    int id2 = id1 + WAIT_TIME;
     Date now2 = new Date(id2);
     Node root2 = this.createGraph(rootId, id2, now2);
     service.commit(root2.getDataGraph(), USERNAME);
 
-    long id3 = id2 + WAIT_TIME;
+    int id3 = id2 + WAIT_TIME;
     Date now3 = new Date(id3);
     Node root3 = this.createGraph(rootId, id3, now3);
     service.commit(root3.getDataGraph(), USERNAME);
@@ -140,19 +140,19 @@ public class DatePartialRowKeyScanTest extends DataTypeGraphModelTest {
   }
 
   public void testExclusive() throws IOException {
-    long rootId = System.currentTimeMillis();
+    int rootId = Integer.valueOf(String.valueOf(System.nanoTime()).substring(7));
 
-    long id1 = rootId + WAIT_TIME;
+    int id1 = rootId + WAIT_TIME;
     Date now = new Date(id1);
     Node root1 = this.createGraph(rootId, id1, now);
     service.commit(root1.getDataGraph(), USERNAME);
 
-    long id2 = id1 + WAIT_TIME;
+    int id2 = id1 + WAIT_TIME;
     Date now2 = new Date(id2);
     Node root2 = this.createGraph(rootId, id2, now2);
     service.commit(root2.getDataGraph(), USERNAME);
 
-    long id3 = id2 + WAIT_TIME;
+    int id3 = id2 + WAIT_TIME;
     Date now3 = new Date(id3);
     Node root3 = this.createGraph(rootId, id3, now3);
     service.commit(root3.getDataGraph(), USERNAME);
@@ -242,7 +242,7 @@ public class DatePartialRowKeyScanTest extends DataTypeGraphModelTest {
     return root;
   }
 
-  protected DateNode createGraph(long rootId, long id, Date now) {
+  protected DateNode createGraph(int rootId, int id, Date now) {
     DataGraph dataGraph = PlasmaDataFactory.INSTANCE.createDataGraph();
     dataGraph.getChangeSummary().beginLogging(); // log changes from this
     // point

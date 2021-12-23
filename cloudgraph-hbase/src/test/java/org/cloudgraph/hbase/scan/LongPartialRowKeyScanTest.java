@@ -42,7 +42,7 @@ import commonj.sdo.Type;
  */
 public class LongPartialRowKeyScanTest extends DataTypeGraphModelTest {
   private static Log log = LogFactory.getLog(LongPartialRowKeyScanTest.class);
-  private long WAIT_TIME = 4;
+  private int WAIT_TIME = 4;
   private String USERNAME = "long_test";
 
   public static Test suite() {
@@ -54,21 +54,21 @@ public class LongPartialRowKeyScanTest extends DataTypeGraphModelTest {
   }
 
   public void testEqual() throws IOException {
-    long rootId = System.currentTimeMillis();
+    int rootId = Integer.valueOf(String.valueOf(System.nanoTime()).substring(7));
 
-    long id1 = rootId + WAIT_TIME;
+    int id1 = rootId + WAIT_TIME;
     Date now1 = new Date(id1);
     Node root1 = this.createGraph(rootId, id1, now1, "g1");
     service.commit(root1.getDataGraph(), USERNAME);
     log.debug("BEFORE: " + serializeGraph(root1.getDataGraph()));
 
-    long id2 = id1 + WAIT_TIME;
+    int id2 = id1 + WAIT_TIME;
     ;
     Date now2 = new Date(id2);
     Node root2 = this.createGraph(rootId, id2, now2, "g2");
     service.commit(root2.getDataGraph(), USERNAME);
 
-    long id3 = id2 + WAIT_TIME;
+    int id3 = id2 + WAIT_TIME;
     ;
     Date now3 = new Date(id3);
     Node root3 = this.createGraph(rootId, id3, now3, "g3");
@@ -89,21 +89,21 @@ public class LongPartialRowKeyScanTest extends DataTypeGraphModelTest {
   }
 
   public void testBetween() throws IOException {
-    long rootId = System.currentTimeMillis();
+    int rootId = Integer.valueOf(String.valueOf(System.nanoTime()).substring(7));
 
-    long id1 = rootId + WAIT_TIME;
+    int id1 = rootId + WAIT_TIME;
     Date now1 = new Date(id1);
     Node root1 = this.createGraph(rootId, id1, now1, "g1");
     service.commit(root1.getDataGraph(), USERNAME);
     log.debug("BEFORE: " + serializeGraph(root1.getDataGraph()));
 
-    long id2 = id1 + WAIT_TIME;
+    int id2 = id1 + WAIT_TIME;
     ;
     Date now2 = new Date(id2);
     Node root2 = this.createGraph(rootId, id2, now2, "g2");
     service.commit(root2.getDataGraph(), USERNAME);
 
-    long id3 = id2 + WAIT_TIME;
+    int id3 = id2 + WAIT_TIME;
     ;
     Date now3 = new Date(id3);
     Node root3 = this.createGraph(rootId, id3, now3, "g3");
@@ -119,21 +119,21 @@ public class LongPartialRowKeyScanTest extends DataTypeGraphModelTest {
   }
 
   public void testInclusive() throws IOException {
-    long rootId = System.currentTimeMillis();
+    int rootId = Integer.valueOf(String.valueOf(System.nanoTime()).substring(7));
 
-    long id1 = rootId + WAIT_TIME;
+    int id1 = rootId + WAIT_TIME;
     Date now1 = new Date(id1);
     Node root1 = this.createGraph(rootId, id1, now1, "g1");
     service.commit(root1.getDataGraph(), USERNAME);
     log.debug("BEFORE: " + serializeGraph(root1.getDataGraph()));
 
-    long id2 = id1 + WAIT_TIME;
+    int id2 = id1 + WAIT_TIME;
     ;
     Date now2 = new Date(id2);
     Node root2 = this.createGraph(rootId, id2, now2, "g2");
     service.commit(root2.getDataGraph(), USERNAME);
 
-    long id3 = id2 + WAIT_TIME;
+    int id3 = id2 + WAIT_TIME;
     ;
     Date now3 = new Date(id3);
     Node root3 = this.createGraph(rootId, id3, now3, "g3");
@@ -147,21 +147,21 @@ public class LongPartialRowKeyScanTest extends DataTypeGraphModelTest {
   }
 
   public void testExclusive() throws IOException {
-    long rootId = System.currentTimeMillis();
+    int rootId = Integer.valueOf(String.valueOf(System.nanoTime()).substring(7));
 
-    long id1 = rootId + WAIT_TIME;
+    int id1 = rootId + WAIT_TIME;
     Date now1 = new Date(id1);
     Node root1 = this.createGraph(rootId, id1, now1, "g1");
     service.commit(root1.getDataGraph(), USERNAME);
     log.debug("BEFORE: " + serializeGraph(root1.getDataGraph()));
 
-    long id2 = id1 + WAIT_TIME;
+    int id2 = id1 + WAIT_TIME;
     ;
     Date now2 = new Date(id2);
     Node root2 = this.createGraph(rootId, id2, now2, "g2");
     service.commit(root2.getDataGraph(), USERNAME);
 
-    long id3 = id2 + WAIT_TIME;
+    int id3 = id2 + WAIT_TIME;
     ;
     Date now3 = new Date(id3);
     Node root3 = this.createGraph(rootId, id3, now3, "g3");
@@ -242,7 +242,7 @@ public class LongPartialRowKeyScanTest extends DataTypeGraphModelTest {
     return root;
   }
 
-  protected LongNode createGraph(long rootId, long id, Date now, String namePrefix) {
+  protected LongNode createGraph(int rootId, int id, Date now, String namePrefix) {
     DataGraph dataGraph = PlasmaDataFactory.INSTANCE.createDataGraph();
     dataGraph.getChangeSummary().beginLogging(); // log changes from this
     // point

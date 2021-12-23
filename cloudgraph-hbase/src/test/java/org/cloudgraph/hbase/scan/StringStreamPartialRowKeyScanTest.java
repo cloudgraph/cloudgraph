@@ -26,6 +26,7 @@ import org.cloudgraph.test.datatypes.Node;
 import org.cloudgraph.test.datatypes.query.QStringNode;
 
 import commonj.sdo.DataGraph;
+
 //import junit.framework.Test;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,19 +46,19 @@ public class StringStreamPartialRowKeyScanTest extends StringScanTest {
   }
 
   public void testStream() throws IOException {
-    long rootId = System.currentTimeMillis();
+    int rootId = Integer.valueOf(String.valueOf(System.nanoTime()).substring(7));
 
-    long id1 = rootId + WAIT_TIME;
+    int id1 = rootId + WAIT_TIME;
     Date now1 = new Date(id1);
     Node root1 = this.createGraph(rootId, id1, now1, "AAA");
     service.commit(root1.getDataGraph(), USERNAME);
 
-    long id2 = id1 + WAIT_TIME;
+    int id2 = id1 + WAIT_TIME;
     Date now2 = new Date(id2);
     Node root2 = this.createGraph(rootId, id2, now2, "BBB");
     service.commit(root2.getDataGraph(), USERNAME);
 
-    long id3 = id2 + WAIT_TIME;
+    int id3 = id2 + WAIT_TIME;
     Date now3 = new Date(id3);
     Node root3 = this.createGraph(rootId, id3, now3, "CCC");
     service.commit(root3.getDataGraph(), USERNAME);

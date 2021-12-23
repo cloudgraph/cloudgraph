@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cloudgraph:CloudGraphStoreMapping  
+    xmlns:cloudgraph="http://www.cloudgraph.org/config">
+    
+    <Property name="hbase.zookeeper.quorum">192.168.1.27:2181</Property>
+    <Property name="hbase.zookeeper.property.clientPort">2181</Property>     
+
+    <Property name="org.plasma.sdo.access.provider.hbase.ConnectionPoolMinSize">1</Property>    
+    <Property name="org.plasma.sdo.access.provider.hbase.ConnectionPoolMaxSize">80</Property>    
+
+    <Table name="TEST_LEXICOHASH_CODEC_TEMPORAL" dataColumnFamilyName="f1">
+        <HashAlgorithm name="murmur32"/>
+         
+        <DataGraph uri="http://cloudgraph.org/test/datatypes" type="DateTimeNode">
+            <RowKeyModel>
+                <RowKeyField>
+                    <MetaField name="uri" codecType="lexicohash"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <MetaField name="type" codecType="lexicohash"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <DataField path="id" codecType="lexicohash"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <DataField path="dateTimeField" codecType="lexicohash"/>
+                </RowKeyField>
+            </RowKeyModel>
+            
+            <ColumnKeyModel>
+                <ColumnKeyField name="uri" />
+                <ColumnKeyField name="type"/>
+                <ColumnKeyField name="property"/>
+            </ColumnKeyModel>
+        </DataGraph>
+        
+        <DataGraph uri="http://cloudgraph.org/test/datatypes" type="DateNode">
+            <RowKeyModel>
+                <RowKeyField>
+                    <MetaField name="uri" codecType="lexicohash"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <MetaField name="type" codecType="lexicohash"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <DataField path="id" codecType="lexicohash"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <DataField path="dateField" codecType="lexicohash"/>
+                </RowKeyField>
+            </RowKeyModel>
+            
+            <ColumnKeyModel>
+                <ColumnKeyField name="uri" />
+                <ColumnKeyField name="type"/>
+                <ColumnKeyField name="property"/>
+            </ColumnKeyModel>
+        </DataGraph>
+    </Table>  
+
+    <Table name="TEST_LEXICOHASH_CODEC_INTEGRAL" dataColumnFamilyName="f1">
+        <HashAlgorithm name="murmur32"/>
+        
+         <DataGraph uri="http://cloudgraph.org/test/datatypes" type="IntNode">
+            <RowKeyModel>
+                <RowKeyField>
+                    <MetaField name="uri" codecType="lexicohash"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <MetaField name="type" codecType="lexicohash"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <DataField path="id" codecType="lexicohash"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <DataField path="intField" codecType="lexicohash"/>
+                </RowKeyField>
+            </RowKeyModel>
+            
+            <ColumnKeyModel>
+                <ColumnKeyField name="uri" />
+                <ColumnKeyField name="type"/>
+                <ColumnKeyField name="property"/>
+            </ColumnKeyModel>
+        </DataGraph>
+ 
+        <DataGraph uri="http://cloudgraph.org/test/datatypes" type="LongNode">
+            <RowKeyModel>
+                <RowKeyField>
+                    <MetaField name="uri" codecType="lexicohash"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <MetaField name="type" codecType="lexicohash"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <DataField path="id" codecType="lexicohash"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <DataField path="longField" codecType="lexicohash"/>
+                </RowKeyField>
+            </RowKeyModel>
+            
+            <ColumnKeyModel>
+                <ColumnKeyField name="uri" />
+                <ColumnKeyField name="type"/>
+                <ColumnKeyField name="property"/>
+            </ColumnKeyModel>
+        </DataGraph>
+    </Table>  
+
+    <Table name="TEST_LEXICOHASH_CODEC_REAL" dataColumnFamilyName="f1">
+        <HashAlgorithm name="murmur32"/>
+        
+        <DataGraph uri="http://cloudgraph.org/test/datatypes" type="FloatNode">
+            <RowKeyModel>
+                <!--  
+                <RowKeyField>
+                    <MetaField name="uri" />
+                </RowKeyField>
+                <RowKeyField>
+                    <MetaField name="type" />
+                </RowKeyField>
+                -->
+                <RowKeyField>
+                    <DataField path="id" codecType="lexicohash"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <DataField path="floatField" codecType="lexicohash"/>
+                </RowKeyField>
+                
+            </RowKeyModel>
+            
+            <ColumnKeyModel>
+                <ColumnKeyField name="uri" />
+                <ColumnKeyField name="type"/>
+                <ColumnKeyField name="property"/>
+            </ColumnKeyModel>
+        </DataGraph>
+    </Table>  
+
+    <Table name="TEST_LEXICOHASH_CODEC_STRING" dataColumnFamilyName="f1">
+        <HashAlgorithm name="murmur32"/>
+        <DataGraph uri="http://cloudgraph.org/test/datatypes" type="StringNode">
+            <RowKeyModel>
+                <RowKeyField>
+                    <MetaField name="uri" codecType="lexicohash"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <MetaField name="type" codecType="lexicohash"/>
+                </RowKeyField>
+                <RowKeyField>
+                    <DataField path="id" codecType="lexicohash"/>
+                </RowKeyField>
+                <RowKeyField>    
+                    <DataField path="stringField" codecType="lexicohash"/>
+                </RowKeyField>
+            </RowKeyModel>
+            
+            <ColumnKeyModel>
+                <ColumnKeyField name="uri" />
+                <ColumnKeyField name="type"/>
+                <ColumnKeyField name="property"/>
+            </ColumnKeyModel>
+        </DataGraph>
+
+    </Table>  
+         
+            
+    
+</cloudgraph:CloudGraphStoreMapping>

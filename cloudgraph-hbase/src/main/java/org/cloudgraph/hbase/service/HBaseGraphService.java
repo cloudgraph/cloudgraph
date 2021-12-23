@@ -29,6 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.mapreduce.JobContext;
 import org.cloudgraph.mapreduce.GraphService;
+import org.cloudgraph.store.ServiceContext;
 import org.plasma.common.bind.DefaultValidationEventHandler;
 import org.plasma.query.bind.PlasmaQueryDataBinding;
 import org.plasma.query.model.From;
