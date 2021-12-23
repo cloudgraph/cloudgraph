@@ -6,18 +6,17 @@
         <artifactId>cloudgraph</artifactId>
         <version>2.0.0</version>
     </parent>
+	<properties>
+ 		<cloudgraph.version>2.0.0</cloudgraph.version>
+ 		<plasma.version>2.1.6</plasma.version>
+        <slf4j.version>1.6.1</slf4j.version>
+ 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 	<artifactId>cloudgraph-store</artifactId>
 	<packaging>jar</packaging>
-	<version>2.0.0</version>
-	<name>CloudGraph Store</name>
+ 	<name>CloudGraph Store</name>
     <description>CloudGraph(tm) is a suite of Service Data Object (SDO) 2.1 services designed for relational and big-table style "cloud" databases, such as HBase and others.</description>
-	<properties>
-		<cloudgraph.version>2.0.0</cloudgraph.version>
-		<plasma.version>2.1.5</plasma.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <slf4j.version>1.6.1</slf4j.version>
- 	</properties>
-    <url>http://cloudgraph.org</url>
+      <url>http://cloudgraph.org</url>
 	<dependencies>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -37,13 +36,13 @@
 		<dependency>
 			<groupId>org.cloudgraph</groupId>
 			<artifactId>cloudgraph-common</artifactId>
-			<version>2.0.0</version>
-		</dependency>
+ 			<version>2.0.0</version>
+ 		</dependency>
         <dependency>
             <groupId>org.cloudgraph</groupId>
             <artifactId>cloudgraph-test</artifactId>
-            <version>2.0.0</version>
-            <scope>test</scope>
+             <version>2.0.0</version>
+             <scope>test</scope>
         </dependency>
 	</dependencies>
 	<build>

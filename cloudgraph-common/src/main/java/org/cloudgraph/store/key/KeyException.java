@@ -22,11 +22,11 @@ import org.cloudgraph.common.CloudGraphRuntimeException;
  * @since 0.5
  */
 public class KeyException extends CloudGraphRuntimeException {
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
   public KeyException(String message, Throwable cause) {
-		super(message, cause);
- 	}
+    super(message, cause);
+  }
 
   public KeyException() {
     super();

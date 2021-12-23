@@ -19,6 +19,7 @@ import java.util.Arrays;
 
 import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.cloudgraph.store.mapping.StoreMappingContext;
+import org.plasma.query.model.LogicalOperatorName;
 import org.plasma.query.model.RelationalOperatorName;
 import org.plasma.sdo.PlasmaType;
 
@@ -43,9 +44,10 @@ public class IntegralLiteral extends ScanLiteral implements PartialRowKeyLiteral
   public static final int INCREMENT = 1;
 
   public IntegralLiteral(String literal, PlasmaType rootType,
-      RelationalOperatorName relationalOperator, DataRowKeyFieldMapping fieldConfig,
-      StoreMappingContext mappingContext) {
-    super(literal, rootType, relationalOperator, fieldConfig, mappingContext);
+      RelationalOperatorName relationalOperator, LogicalOperatorName logicalOperatorContext,
+      DataRowKeyFieldMapping fieldConfig, StoreMappingContext mappingContext) {
+    super(literal, rootType, relationalOperator, logicalOperatorContext, fieldConfig,
+        mappingContext);
   }
 
   /**
@@ -201,21 +203,21 @@ public class IntegralLiteral extends ScanLiteral implements PartialRowKeyLiteral
 
   @Override
   public byte[] getFuzzyKeyBytes() {
-    if (this.fieldConfig.getCodec().isLexicographic()
-        && !this.fieldConfig.getCodec().isTransforming()) {
+    if (this.fieldMapping.getCodec().isLexicographic()
+        && !this.fieldMapping.getCodec().isTransforming()) {
       Object value = this.dataConverter.convert(property.getType(), this.literal);
-      return this.fieldConfig.getCodec().encode(value);
+      return this.fieldMapping.getCodec().encode(value);
     } else
       throw new ScanException("cannot create fuzzy scan literal " + "for "
-          + this.fieldConfig.getCodecType() + " encoded key field with path '"
-          + this.fieldConfig.getPropertyPath() + "' within table "
+          + this.fieldMapping.getCodecType() + " encoded key field with path '"
+          + this.fieldMapping.getPropertyPath() + "' within table "
           + this.table.getQualifiedPhysicalName() + " for graph root type, "
           + this.rootType.toString());
   }
 
   @Override
   public byte[] getFuzzyInfoBytes() {
-    byte[] infoBytes = new byte[this.fieldConfig.getMaxLength()];
+    byte[] infoBytes = new byte[this.fieldMapping.getMaxLength()];
     Arrays.fill(infoBytes, (byte) 0); // fuzzy filter fixed char
     return infoBytes;
   }
@@ -237,11 +239,11 @@ public class IntegralLiteral extends ScanLiteral implements PartialRowKeyLiteral
 
   private byte[] literalToBytes() {
     Object value = this.dataConverter.convert(property.getType(), this.literal);
-    return this.fieldConfig.getCodec().encode(value);
+    return this.fieldMapping.getCodec().encode(value);
   }
 
   private byte[] nextLiteralToBytes() {
     Object value = this.dataConverter.convert(property.getType(), this.literal);
-    return this.fieldConfig.getCodec().encodeNext(value);
+    return this.fieldMapping.getCodec().encodeNext(value);
   }
 }

@@ -5,37 +5,35 @@
         <groupId>org.cloudgraph</groupId>
         <artifactId>cloudgraph</artifactId>
         <version>2.0.0</version>
-    </parent>    
-    <groupId>org.cloudgraph</groupId>
-    <artifactId>cloudgraph-mapreduce</artifactId>
-    <packaging>jar</packaging>
-    <version>2.0.0</version>
-    <name>CloudGraph MapReduce</name>
-    <description>CloudGraph(tm) is a suite of Service Data Object (SDO) 2.1 services designed for relational and big-table style "cloud" databases, such as HBase and others.</description>
+    </parent>
 	<properties>
-		<cloudgraph.version>2.0.0</cloudgraph.version>
-		<plasma.version>2.1.5</plasma.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+ 		<cloudgraph.version>2.0.0</cloudgraph.version>
+ 		<plasma.version>2.1.6</plasma.version>
         <slf4j.version>1.6.1</slf4j.version>
 		<hadoop.version>2.7.3</hadoop.version>
- 	</properties>
-    <url>http://cloudgraph.org</url>
+ 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+    <artifactId>cloudgraph-mapreduce</artifactId>
+    <packaging>jar</packaging>
+    <name>CloudGraph MapReduce</name>
+    <description>CloudGraph(tm) is a suite of Service Data Object (SDO) 2.1 services designed for relational and big-table style "cloud" databases, such as HBase and others.</description>
+     <url>http://cloudgraph.org</url>
     <dependencies>
         <dependency>
             <groupId>org.cloudgraph</groupId>
             <artifactId>cloudgraph-common</artifactId>
-            <version>2.0.0</version>
-        </dependency>
+             <version>2.0.0</version>
+         </dependency>
         <dependency>
             <groupId>org.cloudgraph</groupId>
             <artifactId>cloudgraph-store</artifactId>
-            <version>2.0.0</version>
-        </dependency>
+             <version>2.0.0</version>
+         </dependency>
         <dependency>
             <groupId>org.cloudgraph</groupId>
             <artifactId>cloudgraph-test</artifactId>
-            <version>2.0.0</version>
-            <scope>test</scope>
+             <version>2.0.0</version>
+             <scope>test</scope>
         </dependency>
         <!-- 
              sl4j (note: slf4j must be present or causes Zookeeper 

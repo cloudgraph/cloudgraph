@@ -218,17 +218,19 @@ public class FuzzyRowKeyScanAssembler implements RowKeyScanAssembler, FuzzyRowKe
           if (WildcardStringLiteral.class.isAssignableFrom(fuzzyLiteral.getClass())) {
             WildcardStringLiteral wc = (WildcardStringLiteral) fuzzyLiteral;
             String literal = wc.getContent();
-            if (literal.length() != wc.getFieldConfig().getMaxLength()) {
-              if (literal.startsWith(Wildcard.WILDCARD_CHAR)
-                  && literal.endsWith(Wildcard.WILDCARD_CHAR)) {
-                throw new InvalidFuzzyRowKeyWildcardException(
-                    "wildcard expression length does not equal field max length ("
-                        + wc.getFieldConfig().getMaxLength()
-                        + ") for field '"
-                        + wc.getFieldConfig().getEndpointProperty().getName()
-                        + "' - fuzzy row key scan wildcard expressions, starting"
-                        + " and ending with a wildcard character, must exactly match (typically by padding with wildcards) the length of the target (composite)"
-                        + " row key field, as HBase fuzzy row key filters use fixed length masking.");
+            if (!literal.equals(Wildcard.WILDCARD_CHAR)) {
+              if (literal.length() != wc.getFieldConfig().getMaxLength()) {
+                if (literal.startsWith(Wildcard.WILDCARD_CHAR)
+                    && literal.endsWith(Wildcard.WILDCARD_CHAR)) {
+                  throw new InvalidFuzzyRowKeyWildcardException(
+                      "wildcard expression length does not equal field max length ("
+                          + wc.getFieldConfig().getMaxLength()
+                          + ") for field '"
+                          + wc.getFieldConfig().getEndpointProperty().getName()
+                          + "' - fuzzy row key scan wildcard expressions, starting"
+                          + " and ending with a wildcard character, must exactly match (typically by padding with wildcards) the length of the target (composite)"
+                          + " row key field, as HBase fuzzy row key filters use fixed length masking.");
+                }
               }
             }
           }

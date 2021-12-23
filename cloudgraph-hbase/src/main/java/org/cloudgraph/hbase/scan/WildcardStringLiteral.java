@@ -20,6 +20,7 @@ import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.query.Wildcard;
+import org.plasma.query.model.LogicalOperatorName;
 import org.plasma.query.model.PredicateOperator;
 import org.plasma.sdo.DataFlavor;
 import org.plasma.sdo.PlasmaType;
@@ -44,9 +45,9 @@ public class WildcardStringLiteral extends StringLiteral implements WildcardPart
   protected Padding padding;
 
   public WildcardStringLiteral(String literal, PlasmaType rootType,
-      PredicateOperator wildcardOperator, DataRowKeyFieldMapping fieldConfig,
-      StoreMappingContext mappingContext) {
-    super(literal, rootType, null, fieldConfig, mappingContext);
+      PredicateOperator wildcardOperator, LogicalOperatorName logicalOperatorContext,
+      DataRowKeyFieldMapping fieldConfig, StoreMappingContext mappingContext) {
+    super(literal, rootType, null, logicalOperatorContext, fieldConfig, mappingContext);
     this.wildcardOperator = wildcardOperator;
     this.padding = new Padding(this.charset);
   }
@@ -101,32 +102,32 @@ public class WildcardStringLiteral extends StringLiteral implements WildcardPart
   public byte[] getFuzzyKeyBytes() {
     byte[] keyBytes = null;
     String keyValueStr = this.literal.trim();
-    switch (fieldConfig.getCodecType()) {
+    switch (fieldMapping.getCodecType()) {
     case HASH:
       throw new ScanException("cannot create fuzzy scan literal "
           + "with interviening wildcards ('" + keyValueStr
-          + "') for fixed length row key field with path '" + this.fieldConfig.getPropertyPath()
+          + "') for fixed length row key field with path '" + this.fieldMapping.getPropertyPath()
           + "' within table " + this.table.getQualifiedPhysicalName() + " for graph root type, "
           + this.rootType.toString());
     default:
       if (keyValueStr.contains(Wildcard.WILDCARD_CHAR)) {
         if (keyValueStr.endsWith(Wildcard.WILDCARD_CHAR)) {
-          keyValueStr = this.padding.back(keyValueStr, this.fieldConfig.getMaxLength(),
+          keyValueStr = this.padding.back(keyValueStr, this.fieldMapping.getMaxLength(),
               Wildcard.WILDCARD_CHAR.charAt(0));
         } else if (keyValueStr.startsWith(Wildcard.WILDCARD_CHAR)) {
-          keyValueStr = this.padding.front(keyValueStr, this.fieldConfig.getMaxLength(),
+          keyValueStr = this.padding.front(keyValueStr, this.fieldMapping.getMaxLength(),
               Wildcard.WILDCARD_CHAR.charAt(0));
         } else { // key fields are fixed length - intervening wildcard
           // cannot work
           throw new ScanException("cannot create fuzzy scan literal "
               + "with interviening wildcards ('" + keyValueStr
               + "') for fixed length row key field with path '"
-              + this.fieldConfig.getPropertyPath() + "' within table "
+              + this.fieldMapping.getPropertyPath() + "' within table "
               + this.table.getQualifiedPhysicalName() + " for graph root type, "
               + this.rootType.toString());
         }
       } else {
-        keyValueStr = this.padding.pad(keyValueStr, this.fieldConfig.getMaxLength(),
+        keyValueStr = this.padding.pad(keyValueStr, this.fieldMapping.getMaxLength(),
             DataFlavor.string);
       }
       keyBytes = keyValueStr.getBytes(this.charset);
@@ -137,7 +138,7 @@ public class WildcardStringLiteral extends StringLiteral implements WildcardPart
 
   @Override
   public byte[] getFuzzyInfoBytes() {
-    byte[] infoBytes = new byte[this.fieldConfig.getMaxLength()];
+    byte[] infoBytes = new byte[this.fieldMapping.getMaxLength()];
     byte[] literalChars = getFuzzyKeyBytes();
     char wildcard = Wildcard.WILDCARD_CHAR.toCharArray()[0];
     for (int i = 0; i < infoBytes.length; i++)
@@ -162,16 +163,16 @@ public class WildcardStringLiteral extends StringLiteral implements WildcardPart
   public byte[] getBetweenStartBytes() {
     byte[] startBytes = null;
     String startValueStr = this.literal.substring(0, this.literal.length() - 1);
-    switch (fieldConfig.getCodecType()) {
+    switch (fieldMapping.getCodecType()) {
     case HASH:
       throw new ScanException("cannot create scan literal "
-          + "for hashed key field - field with path '" + this.fieldConfig.getPropertyPath()
+          + "for hashed key field - field with path '" + this.fieldMapping.getPropertyPath()
           + "' within table " + this.table.getQualifiedPhysicalName() + " for graph root type, "
           + this.rootType.toString());
     default:
       startBytes = startValueStr.getBytes(this.charset);
-      startBytes = this.padding.pad(startBytes, this.fieldConfig.getMaxLength(),
-          this.fieldConfig.getDataFlavor());
+      startBytes = this.padding.pad(startBytes, this.fieldMapping.getMaxLength(),
+          this.fieldMapping.getDataFlavor());
       break;
     }
     return startBytes;
@@ -192,10 +193,10 @@ public class WildcardStringLiteral extends StringLiteral implements WildcardPart
     byte[] stopBytes = null;
     String stopValueStr = this.literal.substring(0, this.literal.length() - 1);
 
-    switch (fieldConfig.getCodecType()) {
+    switch (fieldMapping.getCodecType()) {
     case HASH:
       throw new ScanException("cannot create scan literal "
-          + "for hashed key field - field with path '" + this.fieldConfig.getPropertyPath()
+          + "for hashed key field - field with path '" + this.fieldMapping.getPropertyPath()
           + "' within table " + this.table.getQualifiedPhysicalName() + " for graph root type, "
           + this.rootType.toString() + "is configured as 'hashed'");
     default:
@@ -203,8 +204,8 @@ public class WildcardStringLiteral extends StringLiteral implements WildcardPart
       stopBytes = new byte[literalStopBytes.length + 1];
       System.arraycopy(literalStopBytes, 0, stopBytes, 0, literalStopBytes.length);
       stopBytes[stopBytes.length - 1] = INCREMENT;
-      stopBytes = this.padding.pad(stopBytes, this.fieldConfig.getMaxLength(),
-          this.fieldConfig.getDataFlavor());
+      stopBytes = this.padding.pad(stopBytes, this.fieldMapping.getMaxLength(),
+          this.fieldMapping.getDataFlavor());
       break;
     }
     return stopBytes;

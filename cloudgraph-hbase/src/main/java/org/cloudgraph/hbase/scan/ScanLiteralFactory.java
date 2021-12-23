@@ -17,6 +17,7 @@ package org.cloudgraph.hbase.scan;
 
 import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.cloudgraph.store.mapping.StoreMappingContext;
+import org.plasma.query.model.LogicalOperatorName;
 import org.plasma.query.model.PredicateOperator;
 import org.plasma.query.model.RelationalOperator;
 import org.plasma.query.model.RelationalOperatorName;
@@ -55,32 +56,32 @@ public class ScanLiteralFactory {
    *         relational and logical operators.
    */
   public ScanLiteral createLiteral(String content, PlasmaProperty property, PlasmaType rootType,
-      RelationalOperator relationalOperator, DataRowKeyFieldMapping fieldConfig,
-      StoreMappingContext mappingContext) {
+      RelationalOperator relationalOperator, LogicalOperatorName logicalOperatorContext,
+      DataRowKeyFieldMapping fieldConfig, StoreMappingContext mappingContext) {
 
     ScanLiteral result = null;
     DataType dataType = DataType.valueOf(property.getType().getName());
 
     switch (property.getDataFlavor()) {
     case integral:
-      result = new IntegralLiteral(content, rootType, relationalOperator.getValue(), fieldConfig,
-          mappingContext);
+      result = new IntegralLiteral(content, rootType, relationalOperator.getValue(),
+          logicalOperatorContext, fieldConfig, mappingContext);
       break;
     case string:
-      result = new StringLiteral(content, rootType, relationalOperator.getValue(), fieldConfig,
-          mappingContext);
+      result = new StringLiteral(content, rootType, relationalOperator.getValue(),
+          logicalOperatorContext, fieldConfig, mappingContext);
       break;
     case real:
-      result = new RealLiteral(content, rootType, relationalOperator.getValue(), fieldConfig,
-          mappingContext);
+      result = new RealLiteral(content, rootType, relationalOperator.getValue(),
+          logicalOperatorContext, fieldConfig, mappingContext);
       break;
     case temporal:
       switch (dataType) {
       case Date:
       case DateTime:
       default:
-        result = new TemporalLiteral(content, rootType, relationalOperator.getValue(), fieldConfig,
-            mappingContext);
+        result = new TemporalLiteral(content, rootType, relationalOperator.getValue(),
+            logicalOperatorContext, fieldConfig, mappingContext);
       }
       break;
     case other:
@@ -110,8 +111,8 @@ public class ScanLiteralFactory {
    *         relational and logical operators.
    */
   public ScanLiteral createLiteral(String content, PlasmaProperty property, PlasmaType rootType,
-      PredicateOperator predicateOperator, DataRowKeyFieldMapping fieldConfig,
-      StoreMappingContext mappingContext) {
+      PredicateOperator predicateOperator, LogicalOperatorName logicalOperatorContext,
+      DataRowKeyFieldMapping fieldConfig, StoreMappingContext mappingContext) {
 
     ScanLiteral result = null;
     DataType dataType = DataType.valueOf(property.getType().getName());
@@ -119,8 +120,8 @@ public class ScanLiteralFactory {
     case LIKE:
       switch (property.getDataFlavor()) {
       case string:
-        result = new WildcardStringLiteral(content, rootType, predicateOperator, fieldConfig,
-            mappingContext);
+        result = new WildcardStringLiteral(content, rootType, predicateOperator,
+            logicalOperatorContext, fieldConfig, mappingContext);
         break;
       case integral:
       case real:
@@ -133,16 +134,16 @@ public class ScanLiteralFactory {
     case IN:
       switch (property.getDataFlavor()) {
       case integral:
-        result = new IntegralLiteral(content, rootType, RelationalOperatorName.EQUALS, fieldConfig,
-            mappingContext);
+        result = new IntegralLiteral(content, rootType, RelationalOperatorName.EQUALS,
+            logicalOperatorContext, fieldConfig, mappingContext);
         break;
       case string:
-        result = new StringLiteral(content, rootType, RelationalOperatorName.EQUALS, fieldConfig,
-            mappingContext);
+        result = new StringLiteral(content, rootType, RelationalOperatorName.EQUALS,
+            logicalOperatorContext, fieldConfig, mappingContext);
         break;
       case real:
-        result = new RealLiteral(content, rootType, RelationalOperatorName.EQUALS, fieldConfig,
-            mappingContext);
+        result = new RealLiteral(content, rootType, RelationalOperatorName.EQUALS,
+            logicalOperatorContext, fieldConfig, mappingContext);
         break;
       case temporal:
         switch (dataType) {
@@ -150,7 +151,7 @@ public class ScanLiteralFactory {
         case DateTime:
         default:
           result = new TemporalLiteral(content, rootType, RelationalOperatorName.EQUALS,
-              fieldConfig, mappingContext);
+              logicalOperatorContext, fieldConfig, mappingContext);
         }
         break;
       default:

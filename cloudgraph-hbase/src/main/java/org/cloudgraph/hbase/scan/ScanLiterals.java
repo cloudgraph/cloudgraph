@@ -44,9 +44,11 @@ public class ScanLiterals {
   private Map<Integer, List<ScanLiteral>> literalMap = new HashMap<Integer, List<ScanLiteral>>();
   private List<ScanLiteral> literalList = new ArrayList<ScanLiteral>();
   private boolean hasWildcardLiterals = false;
+  private boolean hasJustSingleWildcardLiteral = false;
   private boolean hasMultipleWildcardLiterals = false;
   private boolean hasOtherThanSingleTrailingWildcards = false;
   private boolean hasOnlyEqualityRelationalOperators = true;
+  private boolean hasOnlyConjunctiveLogicalOperators = true;
   private Map<DataGraphMapping, Boolean> hasContiguousPartialKeyScanFieldValuesMap;
   private Map<DataGraphMapping, Boolean> hasContiguousKeyFieldValuesMap;
 
@@ -66,14 +68,16 @@ public class ScanLiterals {
   }
 
   public void addLiteral(ScanLiteral scanLiteral) {
-    if (scanLiteral instanceof WildcardStringLiteral) {
+    if (WildcardStringLiteral.class.isInstance(scanLiteral)) {
       if (this.hasWildcardLiterals)
         this.hasMultipleWildcardLiterals = true;
       this.hasWildcardLiterals = true;
 
-      WildcardStringLiteral wildcardStringLiteral = (WildcardStringLiteral) scanLiteral;
+      WildcardStringLiteral wildcardStringLiteral = WildcardStringLiteral.class.cast(scanLiteral);
       String content = wildcardStringLiteral.getContent().trim();
-      if (!content.endsWith(Wildcard.WILDCARD_CHAR)) {
+      if (!content.equals(Wildcard.WILDCARD_CHAR)) {
+        this.hasJustSingleWildcardLiteral = true;
+      } else if (!content.endsWith(Wildcard.WILDCARD_CHAR)) {
         this.hasOtherThanSingleTrailingWildcards = true;
       } else {
         // it has another wildcard preceding the trailing one
@@ -90,6 +94,17 @@ public class ScanLiterals {
         break;
       default:
         this.hasOnlyEqualityRelationalOperators = false;
+      }
+    }
+
+    if (scanLiteral.hastLogicalOperatorContext()) {
+      switch (scanLiteral.getLogicalOperatorContext()) {
+      case AND:
+        break;
+      default:
+        this.hasOnlyConjunctiveLogicalOperators = false;
+        if (this.literalList.size() > 0)
+          log.warn("expected only single literal for disjunctive context - continuing");
       }
     }
 
@@ -112,13 +127,20 @@ public class ScanLiterals {
    * @return true if this set of literals can support a partial row key scan for
    *         the given graph
    */
-  public boolean supportPartialRowKeyScan(DataGraphMapping graph) {
+  public boolean supportPartialRowKeyScan(ScanCollector collector) {
     if (this.hasMultipleWildcardLiterals || this.hasOtherThanSingleTrailingWildcards)
       return false;
 
     // ensure if there is a wildcard literal that its the last literal
     // in terms of sequence within the row key definition
     if (this.hasWildcardLiterals) {
+
+      // ensure if just a single wildcard literal to just exit as
+      // just a table scan anyway
+      if (this.hasJustSingleWildcardLiteral && this.literalList.size() == 1) {
+        return false;
+      }
+
       int maxLiteralSeq = 0;
       int wildcardLiteralSeq = 0;
       for (ScanLiteral literal : literalList) {
@@ -137,11 +159,11 @@ public class ScanLiterals {
     if (hasContiguousPartialKeyScanFieldValuesMap == null)
       hasContiguousPartialKeyScanFieldValuesMap = new HashMap<DataGraphMapping, Boolean>();
 
-    if (this.hasContiguousPartialKeyScanFieldValuesMap.get(graph) == null) {
+    if (this.hasContiguousPartialKeyScanFieldValuesMap.get(collector.getGraph()) == null) {
       boolean hasContiguousPartialKeyScanFieldValues = true;
 
-      int size = graph.getUserDefinedRowKeyFields().size();
-      int[] scanLiteralCount = initScanLiteralCount(graph);
+      int size = collector.getGraph().getUserDefinedRowKeyFields().size();
+      int[] scanLiteralCount = initScanLiteralCount(collector.getGraph());
 
       // If any field literal 'gap' found, i.e. if no literals found
       // for a field and where the next field DOES have literals
@@ -149,11 +171,59 @@ public class ScanLiterals {
         if (scanLiteralCount[i] == 0 && scanLiteralCount[i + 1] > 0)
           hasContiguousPartialKeyScanFieldValues = false;
 
-      this.hasContiguousPartialKeyScanFieldValuesMap.put(graph,
+      this.hasContiguousPartialKeyScanFieldValuesMap.put(collector.getGraph(),
           hasContiguousPartialKeyScanFieldValues);
     }
 
-    return this.hasContiguousPartialKeyScanFieldValuesMap.get(graph).booleanValue();
+    boolean hasContiguousPartialKeyScanFieldValues = this.hasContiguousPartialKeyScanFieldValuesMap
+        .get(collector.getGraph()).booleanValue();
+    if (!hasContiguousPartialKeyScanFieldValues)
+      return false;
+
+    // Cannot have any partial scans within the context of
+    // a disjunction.
+    if (!this.hasOnlyConjunctiveLogicalOperators) {
+      // FIXME: where multiple disjunctive predicates exist, all targeting
+      // row key fields, the first field could form a partial key scan
+      // and the remainder could form fuzzy scans. This means that this set of
+      // literals associated with a row-key definition could result in a
+      // heterogeneous
+      // set of multiple partial and fuzzy scans, rather than the existing model
+      // which supports a single scan type.
+
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Returns true if this set of literals can support a fuzzy row key scan for
+   * the given graph
+   * 
+   * @param graph
+   *          the graph
+   * @return true if this set of literals can support a fuzzy row key scan for
+   *         the given graph
+   */
+  public boolean supportFuzzyRowKeyScan(ScanCollector collector) {
+    if (!hasOnlyEqualityRelationalOperators)
+      return false;
+
+    // Cannot have any fuzzy scans within the context of
+    // a disjunction.
+    if (!this.hasOnlyConjunctiveLogicalOperators) {
+      // FIXME: where multiple disjunctive predicates exist, all targeting
+      // row key fields, the first field could form a partial key scan
+      // and the remainder could form fuzzy scans. This means that this set of
+      // literals associated with a row-key definition could result in a
+      // heterogeneous
+      // set of multiple partial and fuzzy scans, rather than the existing model
+      // which supports a single scan type.
+      return false;
+    }
+
+    return true;
   }
 
   /**
@@ -165,7 +235,7 @@ public class ScanLiterals {
    * @return true if this set of literals can support a partial row key scan for
    *         the given graph
    */
-  public boolean supportCompleteRowKey(DataGraphMapping graph) {
+  public boolean supportCompleteRowKey(ScanCollector collector) {
     if (this.hasWildcardLiterals)
       return false;
 
@@ -174,30 +244,31 @@ public class ScanLiterals {
 
     if (hasContiguousKeyFieldValuesMap == null)
       hasContiguousKeyFieldValuesMap = new HashMap<DataGraphMapping, Boolean>();
-    if (this.hasContiguousKeyFieldValuesMap.get(graph) == null) {
+    if (this.hasContiguousKeyFieldValuesMap.get(collector.getGraph()) == null) {
       boolean hasContiguousFieldValues = true;
 
-      int size = graph.getUserDefinedRowKeyFields().size();
-      int[] scanLiteralCount = initScanLiteralCount(graph);
+      int size = collector.getGraph().getUserDefinedRowKeyFields().size();
+      int[] scanLiteralCount = initScanLiteralCount(collector.getGraph());
 
       // If any field literal 'gap' found
       for (int i = 0; i < size; i++)
         if (scanLiteralCount[i] == 0)
           hasContiguousFieldValues = false;
 
-      for (MetaKeyFieldMapping field : graph.getPreDefinedRowKeyFields()) {
-        switch (field.getName()) {
-        case URI:
-        case TYPE:
-          break;
-        default:
-        }
-      }
+      this.hasContiguousKeyFieldValuesMap.put(collector.getGraph(), hasContiguousFieldValues);
+    }
+    boolean hasContiguousKeyScanFieldValues = this.hasContiguousKeyFieldValuesMap.get(
+        collector.getGraph()).booleanValue();
+    if (!hasContiguousKeyScanFieldValues)
+      return false;
 
-      this.hasContiguousKeyFieldValuesMap.put(graph, hasContiguousFieldValues);
+    // Cannot have any complete keys within the context of
+    // a disjunction.
+    if (!this.hasOnlyConjunctiveLogicalOperators) {
+      return false;
     }
 
-    return this.hasContiguousKeyFieldValuesMap.get(graph).booleanValue();
+    return true;
   }
 
   private int[] initScanLiteralCount(DataGraphMapping graph) {

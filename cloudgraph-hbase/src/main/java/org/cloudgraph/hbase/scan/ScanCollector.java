@@ -89,6 +89,10 @@ public class ScanCollector implements ExprVisitor {
     this.graph = StoreMapping.getInstance().getDataGraph(rootTypeQname, this.mappingContext);
   }
 
+  public DataGraphMapping getGraph() {
+    return graph;
+  }
+
   private void init() {
     if (this.partialKeyScans == null) {
       this.partialKeyScans = new ArrayList<PartialRowKey>(this.literals.size());
@@ -105,17 +109,17 @@ public class ScanCollector implements ExprVisitor {
         // partial
         // keys over fuzzy keys
 
-        if (scanLiterals.supportCompleteRowKey(this.graph)) {
+        if (scanLiterals.supportCompleteRowKey(this)) {
           CompleteRowKeyAssembler assembler = new CompleteRowKeyAssembler(this.rootType,
               this.mappingContext);
           assembler.assemble(scanLiterals);
           this.completeKeys.add(assembler);
-        } else if (scanLiterals.supportPartialRowKeyScan(this.graph)) {
+        } else if (scanLiterals.supportPartialRowKeyScan(this)) {
           PartialRowKeyScanAssembler assembler = new PartialRowKeyScanAssembler(this.rootType,
               this.mappingContext);
           assembler.assemble(scanLiterals);
           this.partialKeyScans.add(assembler);
-        } else {
+        } else if (scanLiterals.supportFuzzyRowKeyScan(this)) {
           FuzzyRowKeyScanAssembler assembler = new FuzzyRowKeyScanAssembler(this.rootType,
               this.mappingContext);
           assembler.assemble(scanLiterals);
@@ -156,6 +160,11 @@ public class ScanCollector implements ExprVisitor {
   }
 
   private void collect(RelationalBinaryExpr target, Expr source) {
+    LogicalOperatorName logicalOperContext = null;
+    if (source != null && LogicalBinaryExpr.class.isInstance(source)) {
+      LogicalBinaryExpr lbe = LogicalBinaryExpr.class.cast(source);
+      logicalOperContext = lbe.getOperator().getValue();
+    }
     DataRowKeyFieldMapping fieldConfig = graph.getUserDefinedRowKeyField(target.getPropertyPath());
     if (fieldConfig == null) {
       log.warn("no user defined row-key field for query path '" + target.getPropertyPath()
@@ -166,13 +175,19 @@ public class ScanCollector implements ExprVisitor {
     PlasmaProperty property = (PlasmaProperty) fieldConfig.getEndpointProperty();
 
     ScanLiteral scanLiteral = factory.createLiteral(target.getLiteral().getValue(), property,
-        (PlasmaType) graph.getRootType(), target.getOperator(), fieldConfig, this.mappingContext);
+        (PlasmaType) graph.getRootType(), target.getOperator(), logicalOperContext, fieldConfig,
+        this.mappingContext);
     if (log.isDebugEnabled())
       log.debug("collecting path: " + target.getPropertyPath());
     collect(scanLiteral, fieldConfig, source);
   }
 
   private void collect(PredicateBinaryExpr target, Expr source) {
+    LogicalOperatorName logicalOperContext = null;
+    if (source != null && LogicalBinaryExpr.class.isInstance(source)) {
+      LogicalBinaryExpr lbe = LogicalBinaryExpr.class.cast(source);
+      logicalOperContext = lbe.getOperator().getValue();
+    }
     DataRowKeyFieldMapping fieldConfig = graph.getUserDefinedRowKeyField(target.getPropertyPath());
     if (fieldConfig == null) {
       log.warn("no user defined row-key field for query path '" + target.getPropertyPath()
@@ -194,15 +209,17 @@ public class ScanCollector implements ExprVisitor {
         }
       }
       for (String literal : literals) {
+        // create a derived literal with no logical operator context
         ScanLiteral scanLiteral = factory.createLiteral(literal, property,
-            (PlasmaType) graph.getRootType(), target.getOperator(), fieldConfig,
-            this.mappingContext);
+            (PlasmaType) graph.getRootType(), target.getOperator(), null/* important */,
+            fieldConfig, this.mappingContext);
         this.collect(fieldConfig, LogicalOperatorName.OR, scanLiteral);
       }
       break;
     default:
       ScanLiteral scanLiteral = factory.createLiteral(target.getLiteral().getValue(), property,
-          (PlasmaType) graph.getRootType(), target.getOperator(), fieldConfig, this.mappingContext);
+          (PlasmaType) graph.getRootType(), target.getOperator(), logicalOperContext, fieldConfig,
+          this.mappingContext);
       if (log.isDebugEnabled())
         log.debug("collecting path: " + target.getPropertyPath());
       collect(scanLiteral, fieldConfig, source);

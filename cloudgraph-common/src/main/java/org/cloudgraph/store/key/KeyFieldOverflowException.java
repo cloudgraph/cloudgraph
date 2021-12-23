@@ -28,9 +28,10 @@ public class KeyFieldOverflowException extends KeyException {
   public KeyFieldOverflowException() {
     super();
   }
+
   public KeyFieldOverflowException(String message, Throwable cause) {
-		super(message, cause);
- 	}
+    super(message, cause);
+  }
 
   public KeyFieldOverflowException(String msg) {
     super(msg);

@@ -277,6 +277,15 @@ public abstract class SocialGraphModelTest extends HBaseTestCase {
     return result;
   }
 
+  protected QActor createSimpleActorQuery(String name) {
+    QActor root = QActor.newQuery();
+    root.select(root.wildcard());
+
+    root.where(root.name().eq(name));
+
+    return root;
+  }
+
   protected QActor createActorBlogGraphQuery(String name, String id) {
     QActor root = QActor.newQuery();
     root.select(root.wildcard()).select(root.blog().wildcard())
