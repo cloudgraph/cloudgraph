@@ -15,10 +15,13 @@
  */
 package org.cloudgraph.aerospike.filter;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.hbase.util.Bytes;
 //import org.apache.hadoop.hbase.filter.BinaryComparator;
 //import org.apache.hadoop.hbase.filter.BinaryPrefixComparator;
 //import org.apache.hadoop.hbase.filter.CompareFilter;
@@ -26,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 //import org.apache.hadoop.hbase.filter.QualifierFilter;
 import org.cloudgraph.aerospike.io.EdgeReader;
 import org.cloudgraph.aerospike.key.StatefullColumnKeyFactory;
+import org.cloudgraph.store.key.EdgeMetaKey;
 import org.cloudgraph.store.key.EntityMetaKey;
 import org.cloudgraph.store.key.GraphStatefullColumnKeyFactory;
 import org.plasma.sdo.PlasmaProperty;
@@ -34,23 +38,7 @@ import org.plasma.sdo.PlasmaType;
 import commonj.sdo.Property;
 
 /**
- * Creates an HBase column filter list using <a target="#" href=
- * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/filter/QualifierFilter.html"
- * >QualifierFilter</a> and <a target="#" href=
- * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/filter/BinaryPrefixComparator.html"
- * >BinaryPrefixComparator</a> and recreating composite column qualifier
- * prefixes for comparison using {@link StatefullColumnKeyFactory}.
- * <p>
- * HBase filters may be collected into lists using <a href=
- * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/filter/FilterList.html"
- * target="#">FilterList</a> each with a <a href=
- * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/filter/FilterList.Operator.html#MUST_PASS_ALL"
- * target="#">MUST_PASS_ALL</a> or <a href=
- * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/filter/FilterList.Operator.html#MUST_PASS_ONE"
- * target="#">MUST_PASS_ONE</a> (logical) operator. Lists may then be assembled
- * into hierarchies used to represent complex expression trees filtering either
- * rows or columns in HBase.
- * </p>
+ * Creates an column filter.
  * 
  * @see org.cloudgraph.store.key.GraphStatefullColumnKeyFactory
  * @see org.cloudgraph.aerospike.key.StatefullColumnKeyFactory
@@ -81,34 +69,37 @@ public class StatefullBinaryPrefixColumnFilterAssembler extends FilterListAssemb
       subType = edgeReader.getBaseType();
 
     for (Long seq : sequences) {
-      // Adds entity level meta data qualifier prefixes for ALL sequences
-      // in the selection. Entity meta keys are exact qualifier filters, not
-      // prefixes
-      // for (EntityMetaKey metaField : EntityMetaKey.values()) {
-      // colKey = this.columnKeyFac.createColumnKey(subType, seq, metaField);
-      // qualFilter = new QualifierFilter(CompareFilter.CompareOp.EQUAL,
-      // new BinaryComparator(colKey));
-      // this.rootFilter.addFilter(qualFilter);
-      // }
+      for (EntityMetaKey metaField : EntityMetaKey.values()) {
+        colKey = this.columnKeyFac.createColumnKey(subType, seq, metaField);
+        String colKeyStr = Bytes.toString(colKey);
+        ColumnInfo ci = new ColumnInfo(colKeyStr, colKey, subType, metaField.getStorageType());
+        this.prefixMap.put(colKeyStr, ci);
+        if (log.isDebugEnabled())
+          log.debug("collected " + ci);
+      }
 
-      // for (Property p : properies) {
-      // PlasmaProperty prop = (PlasmaProperty) p;
-      // if (prop.getType().isDataType()) {
-      // colKey = this.columnKeyFac.createColumnKey(subType, seq, prop);
-      // qualFilter = new QualifierFilter(CompareFilter.CompareOp.EQUAL, new
-      // BinaryComparator(
-      // colKey));
-      // this.rootFilter.addFilter(qualFilter);
-      //
-      // } else {
-      // // reference props have several meta keys so are
-      // // only property type requiring a prefix filter.
-      // colKey = this.columnKeyFac.createColumnKey(subType, seq, prop);
-      // qualFilter = new QualifierFilter(CompareFilter.CompareOp.EQUAL,
-      // new BinaryPrefixComparator(colKey));
-      // this.rootFilter.addFilter(qualFilter);
-      // }
-      // }
+      for (Property p : properies) {
+        PlasmaProperty prop = (PlasmaProperty) p;
+        if (prop.getType().isDataType()) {
+          colKey = this.columnKeyFac.createColumnKey(subType, seq, prop);
+          String colKeyStr = Bytes.toString(colKey);
+          ColumnInfo ci = new ColumnInfo(colKeyStr, colKey, subType, prop);
+          this.prefixMap.put(colKeyStr, ci);
+          if (log.isDebugEnabled())
+            log.debug("collected " + ci);
+
+        } else {
+          colKey = this.columnKeyFac.createColumnKey(subType, seq, prop);
+          for (EdgeMetaKey metaField : EdgeMetaKey.values()) {
+            colKey = this.columnKeyFac.createColumnKey(subType, prop, metaField);
+            String colKeyStr = Bytes.toString(colKey);
+            ColumnInfo ci = new ColumnInfo(colKeyStr, colKey, subType, prop);
+            this.prefixMap.put(colKeyStr, ci);
+            if (log.isDebugEnabled())
+              log.debug("collected " + ci);
+          }
+        }
+      }
     }
   }
 }

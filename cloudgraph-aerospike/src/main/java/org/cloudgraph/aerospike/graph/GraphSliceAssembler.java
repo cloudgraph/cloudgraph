@@ -113,10 +113,13 @@ public class GraphSliceAssembler extends DistributedAssembler {
         continue;
 
       EdgeReader edgeReader = null;
-      if (rowReader.edgeExists((PlasmaType) target.getType(), prop, targetSequence)) {
+      boolean edgeExists = rowReader
+          .edgeExists((PlasmaType) target.getType(), prop, targetSequence);
+      if (edgeExists) {
         edgeReader = rowReader.getEdgeReader((PlasmaType) target.getType(), prop, targetSequence);
-      } else
+      } else {
         continue; // edge not found in data
+      }
 
       PlasmaType childType = (PlasmaType) prop.getType();
 

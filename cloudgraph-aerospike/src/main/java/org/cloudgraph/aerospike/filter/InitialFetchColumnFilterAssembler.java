@@ -15,6 +15,7 @@
  */
 package org.cloudgraph.aerospike.filter;
 
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -29,15 +30,20 @@ import org.apache.commons.logging.LogFactory;
 //import org.apache.hadoop.hbase.filter.QualifierFilter;
 //import org.apache.hadoop.hbase.filter.SubstringComparator;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.cloudgraph.aerospike.AerospikeConstants;
 import org.cloudgraph.aerospike.key.CompositeColumnKeyFactory;
+import org.cloudgraph.aerospike.key.StatefullColumnKeyFactory;
+import org.cloudgraph.store.key.EdgeMetaKey;
 import org.cloudgraph.store.key.EntityMetaKey;
 import org.cloudgraph.store.key.GraphColumnKeyFactory;
 import org.cloudgraph.store.key.GraphMetaKey;
+import org.cloudgraph.store.mapping.StoreMapping;
 import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.plasma.common.bind.DefaultValidationEventHandler;
 import org.plasma.query.bind.PlasmaQueryDataBinding;
 import org.plasma.query.collector.Selection;
 import org.plasma.query.model.Select;
+import org.plasma.sdo.DataType;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
 import org.xml.sax.SAXException;
@@ -59,43 +65,31 @@ import commonj.sdo.Type;
  * @author Scott Cinnamond
  * @since 0.5
  */
-public class InitialFetchColumnFilterAssembler extends FilterListAssembler {
+public class InitialFetchColumnFilterAssembler extends FilterListAssembler implements
+    AerospikeConstants {
   private static Log log = LogFactory.getLog(InitialFetchColumnFilterAssembler.class);
 
-  private GraphColumnKeyFactory columnKeyFac;
+  private StatefullColumnKeyFactory columnKeyFac;
   private Map<String, ColumnInfo> prefixMap = new HashMap<String, ColumnInfo>();
   private Selection selection;
+  private Charset charset;
 
   public InitialFetchColumnFilterAssembler(Selection collector, PlasmaType rootType,
       StoreMappingContext mappingContext) {
     super(rootType);
     this.selection = collector;
-    this.columnKeyFac = new CompositeColumnKeyFactory(rootType, mappingContext);
+    this.columnKeyFac = new StatefullColumnKeyFactory(rootType, mappingContext);
+    this.charset = StoreMapping.getInstance().getCharset();
 
-    // this.rootFilter = new FilterList(FilterList.Operator.MUST_PASS_ONE);
-    //
-    // // add default filters for graph state info needed for all queries
-    // QualifierFilter filter = null;
-    // for (GraphMetaKey field : GraphMetaKey.values()) {
-    // filter = new QualifierFilter(CompareFilter.CompareOp.EQUAL, new
-    // SubstringComparator(
-    // field.code()));
-    // this.rootFilter.addFilter(filter);
-    // }
+    // add default filters for graph state info needed for all queries
+    for (GraphMetaKey field : GraphMetaKey.values()) {
+      String colKeyStr = field.code();
+      ColumnInfo ci = new ColumnInfo(field.code(), field.codeAsBytes(), rootType,
+          field.getStorageType());
+      this.prefixMap.put(colKeyStr, ci);
+    }
 
     collect();
-
-    // byte[][] prefixes = new byte[prefixMap.size()][];
-    // int i = 0;
-    // for (byte[] prefix : prefixMap.values()) {
-    // prefixes[i] = prefix;
-    // i++;
-    // }
-
-    // MultipleColumnPrefixFilter multiPrefixfilter = new
-    // MultipleColumnPrefixFilter(prefixes);
-    //
-    // this.rootFilter.addFilter(multiPrefixfilter);
   }
 
   @Override
@@ -118,15 +112,34 @@ public class InitialFetchColumnFilterAssembler extends FilterListAssembler {
       if (!rootType.equals(type))
         continue; // interested in only root for "initial" fetch
 
-      // adds entity level meta data qualifier prefixes for ALL types
-      // in the selection
+      // adds entity level meta data qualifier prefixes root type
       for (EntityMetaKey metaField : EntityMetaKey.values()) {
         colKey = this.columnKeyFac.createColumnKey(type, metaField);
         colKeyStr = Bytes.toString(colKey);
-        ColumnInfo ci = new ColumnInfo(colKeyStr, colKey, type);
+        ColumnInfo ci = new ColumnInfo(colKeyStr, colKey, type, metaField.getStorageType());
         this.prefixMap.put(colKeyStr, ci);
         if (log.isDebugEnabled())
           log.debug("collected: " + ci);
+
+        // FIXME: hack to accommodate aerospike not have prefix 'bin' filters
+        // where we have potentially many columns with sequence state-based
+        // column keys
+        for (int i = 1; i < FETCH_HACK; i++) {
+          byte[] edgecolKey = this.columnKeyFac.createColumnKey(type, i, metaField);
+          String edgeColumnKeyStr = Bytes.toString(edgecolKey);
+          ci = new ColumnInfo(edgeColumnKeyStr, edgecolKey, type, DataType.Bytes);
+          this.prefixMap.put(edgeColumnKeyStr, ci);
+          if (log.isDebugEnabled())
+            log.debug("collected: " + ci);
+          for (EdgeMetaKey edgeMetaKey : EdgeMetaKey.values()) {
+            String edgeColMetaKey = edgeColumnKeyStr + "#" + edgeMetaKey.code();
+            ci = new ColumnInfo(edgeColMetaKey, edgeColMetaKey.getBytes(this.charset), type,
+                edgeMetaKey.getStorageType());
+            this.prefixMap.put(edgeColMetaKey, ci);
+            if (log.isDebugEnabled())
+              log.debug("collected: " + ci);
+          }
+        }
       }
 
       Set<Property> props = this.selection.getInheritedProperties(type);
@@ -134,12 +147,32 @@ public class InitialFetchColumnFilterAssembler extends FilterListAssembler {
         PlasmaProperty prop = (PlasmaProperty) p;
         colKey = this.columnKeyFac.createColumnKey(type, prop);
         colKeyStr = Bytes.toString(colKey);
-        ColumnInfo ci = new ColumnInfo(colKeyStr, colKey, type);
-        ci.setProperty(prop);
+        ColumnInfo ci = new ColumnInfo(colKeyStr, colKey, type, prop);
         this.prefixMap.put(colKeyStr, ci);
-
         if (log.isDebugEnabled())
           log.debug("collected " + ci);
+
+        // add entity and edge fetch for reference props
+        if (!prop.getType().isDataType()) {
+          for (EdgeMetaKey metaField : EdgeMetaKey.values()) {
+            colKey = this.columnKeyFac.createColumnKey(type, prop, metaField);
+            colKeyStr = Bytes.toString(colKey);
+            ci = new ColumnInfo(colKeyStr, colKey, type, prop);
+            this.prefixMap.put(colKeyStr, ci);
+            if (log.isDebugEnabled())
+              log.debug("collected " + ci);
+            for (int i = 1; i < FETCH_HACK; i++) {
+              byte[] edgecolKey = this.columnKeyFac.createColumnKey(type, i, (PlasmaProperty) prop,
+                  metaField);
+              String edgeColumnKeyStr = Bytes.toString(edgecolKey);
+              ci = new ColumnInfo(edgeColumnKeyStr, edgecolKey, type, prop);
+              this.prefixMap.put(edgeColumnKeyStr, ci);
+              if (log.isDebugEnabled())
+                log.debug("collected " + ci);
+            }
+          }
+        }
+
       }
     }
   }

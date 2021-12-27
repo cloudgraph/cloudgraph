@@ -20,6 +20,7 @@ import javax.xml.bind.JAXBException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.cloudgraph.aerospike.key.CompositeColumnKeyFactory;
+import org.cloudgraph.aerospike.key.StatefullColumnKeyFactory;
 import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.plasma.common.bind.DefaultValidationEventHandler;
 import org.plasma.query.bind.PlasmaQueryDataBinding;
@@ -28,33 +29,12 @@ import org.plasma.sdo.PlasmaType;
 import org.xml.sax.SAXException;
 
 /**
- * Creates an HBase column filter hierarchy to return HBase scan results
- * representing part of a graph "slice" from the set of columns making up a
- * collection or collection property within the graph. Uses <a target="#" href=
- * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/filter/QualifierFilter.html"
- * >QualifierFilter</a> /<a target="#" href=
- * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/filter/ValueFilter.html"
- * >ValueFilter</a> pairs recreating composite column qualifier prefixes using
- * {@link CompositeColumnKeyFactory}. Processes visitor events for query model
- * elements specific to assembly of HBase column filters, such as properties,
- * wildcards, literals, logical operators, relational operators, within the
- * context of HBase filter hierarchy assembly. Maintains various context
- * information useful to subclasses.
- * <p>
- * HBase filters may be collected into lists using <a href=
- * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/filter/FilterList.html"
- * target="#">FilterList</a> each with a <a href=
- * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/filter/FilterList.Operator.html#MUST_PASS_ALL"
- * target="#">MUST_PASS_ALL</a> or <a href=
- * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/filter/FilterList.Operator.html#MUST_PASS_ONE"
- * target="#">MUST_PASS_ONE</a> (logical) operator. Lists may then be assembled
- * into hierarchies used to represent complex expression trees filtering either
- * rows or columns in HBase.
- * </p>
+ * Creates an Aerospike value and qualifier filter hierarchy to return Aerospike
+ * scan results representing part of a graph "slice".
  * 
  * @see org.cloudgraph.common.key.CompositeColumnKeyFactory
  * @author Scott Cinnamond
- * @since 0.5
+ * @since 2.0.0
  */
 public class PredicateColumnFilterAssembler extends ColumnPredicateVisitor implements
     PredicateFilterAssembler {
@@ -78,7 +58,7 @@ public class PredicateColumnFilterAssembler extends ColumnPredicateVisitor imple
   public PredicateColumnFilterAssembler(PlasmaType rootType, StoreMappingContext mappingContext) {
     super(rootType);
 
-    this.columnKeyFac = new CompositeColumnKeyFactory(rootType, mappingContext);
+    this.columnKeyFac = new StatefullColumnKeyFactory(rootType, mappingContext);
   }
 
   @Override

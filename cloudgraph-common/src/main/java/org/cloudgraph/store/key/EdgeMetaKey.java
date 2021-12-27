@@ -17,6 +17,7 @@ package org.cloudgraph.store.key;
 
 import java.nio.charset.Charset;
 
+import org.plasma.sdo.DataType;
 import org.plasma.sdo.core.CoreConstants;
 
 /**
@@ -39,7 +40,8 @@ public enum EdgeMetaKey implements MetaKey {
    * the edge, the value being a string representation of a long integer.
    */
   TIMESTAMP("_TS_",
-      "timestamp for an edge/collection indicating the last modified date for the edge"),
+      "timestamp for an edge/collection indicating the last modified date for the edge",
+      DataType.String),
 
   /**
    * This field specifies the base entity type for the (abstract) base class for
@@ -47,7 +49,8 @@ public enum EdgeMetaKey implements MetaKey {
    * qualified type identifier.
    */
   BASETYPE("_BT_",
-      "specifies the base entity type for the (abstract) base class for the reference collection"),
+      "specifies the base entity type for the (abstract) base class for the reference collection",
+      DataType.String),
 
   /**
    * The default entity subtype for elements within an edge or reference
@@ -55,7 +58,8 @@ public enum EdgeMetaKey implements MetaKey {
    * differs from the base entity type. If valued it does not require all future
    * entities within the collection to be instances of the sybtype.
    */
-  SUBTYPE("_ST_", "default entity subtype for elements within an edge or reference collection"),
+  SUBTYPE("_ST_", "default entity subtype for elements within an edge or reference collection",
+      DataType.String),
 
   /**
    * This field specifies the path to the collection within a remote graph. This
@@ -64,12 +68,12 @@ public enum EdgeMetaKey implements MetaKey {
    * value associated with this field is a path composed of physical property
    * names from the graph root to the target collection.
    */
-  PATH("_PH_", "specifies the path to the collection within a remote graph"),
+  PATH("_PH_", "specifies the path to the collection within a remote graph", DataType.String),
 
   /**
    * This field specifies the count of entities associated with the collection.
    */
-  COUNT("_CT_", "specifies the count of entities associated with the collection"),
+  COUNT("_CT_", "specifies the count of entities associated with the collection", DataType.String),
 
   /**
    * This field specifies the entity sequence numbers for the target entities
@@ -79,23 +83,27 @@ public enum EdgeMetaKey implements MetaKey {
    * kept in sync with mutations on the actual target entities.
    */
   SEQUENCES("_SQ_",
-      "entity sequence numbers for the target entities contained in the target collection"),
+      "entity sequence numbers for the target entities contained in the target collection",
+      DataType.String),
 
   /**
    * This field specifies the row keys associated with the target entities for
    * the reference collection, where the targets are not part of the local
    * graph, but are found in another row or table.
    */
-  ROWKEYS("_RK_", "row keys associated with the target entities for the reference collection");
+  ROWKEYS("_RK_", "row keys associated with the target entities for the reference collection",
+      DataType.Bytes);
 
   private String code;
   private String description;
   byte[] codeBytes;
+  DataType storageType;
 
-  private EdgeMetaKey(String code, String description) {
+  private EdgeMetaKey(String code, String description, DataType storageType) {
     this.code = code;
     this.description = description;
     this.codeBytes = this.code.getBytes(Charset.forName(CoreConstants.UTF8_ENCODING));
+    this.storageType = storageType;
   }
 
   public byte[] codeAsBytes() {
@@ -110,6 +118,11 @@ public enum EdgeMetaKey implements MetaKey {
   @Override
   public String description() {
     return this.description;
+  }
+
+  @Override
+  public DataType getStorageType() {
+    return this.storageType;
   }
 
   @Override

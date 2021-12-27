@@ -489,25 +489,30 @@ public class GraphEdgeWriter extends DefaultEdgeOperation implements EdgeWriter 
       return;
     }
     byte[] typeBytes = this.encodeCollectionBaseType();
-    rowWriter.writeRowData(this.family, this.baseTypeQual, DataType.String, typeBytes);
+    rowWriter.writeRowData(this.family, this.baseTypeQual, EdgeMetaKey.BASETYPE.getStorageType(),
+        typeBytes);
 
     if (this.sequences != null && this.sequences.size() > 0) {
       byte[] sequenceBytes = this.encodeSequences();
-      rowWriter.writeRowData(family, this.sequencesQual, DataType.String, sequenceBytes);
+      rowWriter.writeRowData(family, this.sequencesQual, EdgeMetaKey.SEQUENCES.getStorageType(),
+          sequenceBytes);
     }
 
     if (this.rowKeys != null && this.rowKeys.size() > 0) {
       byte[] rowKeysBytes = this.encodeRowKeys();
-      rowWriter.writeRowData(this.family, this.keysQual, DataType.String, rowKeysBytes);
+      rowWriter.writeRowData(this.family, this.keysQual, EdgeMetaKey.ROWKEYS.getStorageType(),
+          rowKeysBytes);
     }
 
     if (this.collectionDefaultSubType != null) {
       byte[] subTypesBytes = this.encodeDefaultSubType();
-      rowWriter.writeRowData(family, this.subTypeQual, DataType.String, subTypesBytes);
+      rowWriter.writeRowData(family, this.subTypeQual, EdgeMetaKey.SUBTYPE.getStorageType(),
+          subTypesBytes);
     }
 
     byte[] countBytes = String.valueOf(this.getCount()).getBytes(charset);
-    rowWriter.writeRowData(this.family, this.countQual, DataType.String, countBytes);
+    rowWriter.writeRowData(this.family, this.countQual, EdgeMetaKey.COUNT.getStorageType(),
+        countBytes);
   }
 
   // Flag it deleted and write the data on exit

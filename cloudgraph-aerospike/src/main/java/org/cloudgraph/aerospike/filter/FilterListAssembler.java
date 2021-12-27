@@ -15,6 +15,7 @@
  */
 package org.cloudgraph.aerospike.filter;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +50,7 @@ public abstract class FilterListAssembler implements AerospikeFilterAssembler {
   protected List<Object> params;
   // protected FilterList rootFilter;
   protected PlasmaType rootType;
+  protected Map<String, ColumnInfo> prefixMap = new HashMap<String, ColumnInfo>();
 
   @SuppressWarnings("unused")
   private FilterListAssembler() {
@@ -66,7 +68,7 @@ public abstract class FilterListAssembler implements AerospikeFilterAssembler {
    * @return the assembled filter or filter list root.
    */
   public Filter getFilter() {
-    return null;
+    return new Filter(this.prefixMap);
     // return rootFilter;
   }
 

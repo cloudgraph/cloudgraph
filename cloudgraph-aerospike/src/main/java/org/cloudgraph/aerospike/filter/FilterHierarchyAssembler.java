@@ -16,6 +16,7 @@
 package org.cloudgraph.aerospike.filter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,8 @@ import org.plasma.query.model.NullLiteral;
 import org.plasma.query.model.Where;
 import org.plasma.sdo.PlasmaType;
 import org.xml.sax.SAXException;
+
+import com.aerospike.client.query.PredExp;
 
 /**
  * Supports assembly of complex HBase filter hierarchies representing query
@@ -58,9 +61,10 @@ public abstract class FilterHierarchyAssembler extends ExpresionVisitorSupport i
   private static Log log = LogFactory.getLog(FilterHierarchyAssembler.class);
 
   protected List<Object> params = new ArrayList<Object>();
-  // protected FilterList rootFilter;
-  // protected Stack<FilterList> filterStack = new Stack<FilterList>();
+  protected PredExp[] rootFilter;
+  protected Stack<PredExp[]> filterStack = new Stack<PredExp[]>();
   protected PlasmaType rootType;
+  protected Map<String, ColumnInfo> columnMap = new HashMap<>();
 
   @SuppressWarnings("unused")
   private FilterHierarchyAssembler() {
@@ -73,7 +77,7 @@ public abstract class FilterHierarchyAssembler extends ExpresionVisitorSupport i
   public void clear() {
     if (this.params != null)
       params.clear();
-    // this.filterStack.clear();
+    this.filterStack.clear();
   }
 
   /**
@@ -82,7 +86,7 @@ public abstract class FilterHierarchyAssembler extends ExpresionVisitorSupport i
    * @return the assembled filter, filter list or or filter hierarchy root.
    */
   public Filter getFilter() {
-    return null;// this.rootFilter;
+    return new Filter(columnMap);
   }
 
   public Object[] getParams() {
@@ -99,22 +103,22 @@ public abstract class FilterHierarchyAssembler extends ExpresionVisitorSupport i
   }
 
   protected void pushFilter() {
-    // pushFilter(FilterList.Operator.MUST_PASS_ALL);
+    pushFilter(PredExp.integerLess());
   }
 
-  // protected void pushFilter(FilterList.Operator oper) {
-  // FilterList filter = new FilterList(oper);
-  // FilterList top = null;
-  // if (this.filterStack.size() > 0) {
-  // top = this.filterStack.peek();
-  // top.addFilter(filter);
-  // } else
-  // this.rootFilter = filter;
-  // this.filterStack.push(filter);
-  // }
+  protected void pushFilter(PredExp oper) {
+    PredExp[] filter = null;
+    PredExp[] top = null;
+    if (this.filterStack.size() > 0) {
+      top = this.filterStack.peek();
+      // top.addFilter(filter);
+    } else
+      this.rootFilter = filter;
+    this.filterStack.push(filter);
+  }
 
   protected void popFilter() {
-    // this.filterStack.pop();
+    this.filterStack.pop();
   }
 
   // String.split() can cause empty tokens under some circumstances

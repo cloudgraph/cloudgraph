@@ -15,6 +15,7 @@
  */
 package org.cloudgraph.aerospike.io;
 
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -145,6 +146,7 @@ public class CellValues {
       this.familyMap.put(fam, map);
     }
     byte[] qual = keyValue.getQualifier();
+    // FIXME: debugging remove
     if (keyValue.getValue() != null && keyValue.getValue().length == 8) {
       int foo = 0;
       foo++;
@@ -159,6 +161,7 @@ public class CellValues {
       map = new HashMap<>();
       this.familyMap.put(fam, map);
     }
+    // FIXME: debugging remove
     if (value != null && value.length == 8) {
       int foo = 0;
       foo++;
@@ -169,7 +172,10 @@ public class CellValues {
   public boolean containsColumn(byte[] family, byte[] qual) {
     int fam = Arrays.hashCode(family);
     Map<Integer, byte[]> map = this.familyMap.get(fam);
-    return map != null && map.containsKey(Arrays.hashCode(qual));
+    // FIXME: debugging remove
+    String qualStr = new String(qual, Charset.forName("UTF-8"));
+    Integer qualHashCode = Arrays.hashCode(qual);
+    return map != null && map.containsKey(qualHashCode);
   }
 
   public byte[] getColumnValue(byte[] family, byte[] qual) {
@@ -177,6 +183,7 @@ public class CellValues {
     Map<Integer, byte[]> map = this.familyMap.get(fam);
     if (map != null) {
       byte[] result = map.get(Arrays.hashCode(qual));
+      // FIXME: debugging remove
       if (result != null && result.length == 8) {
         int foo = 0;
         foo++;

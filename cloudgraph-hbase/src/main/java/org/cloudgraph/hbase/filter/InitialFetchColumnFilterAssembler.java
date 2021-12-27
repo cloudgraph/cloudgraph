@@ -50,7 +50,7 @@ import commonj.sdo.Type;
  * leverages the HBase <a target="#" href=
  * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/filter/MultipleColumnPrefixFilter.html"
  * >MultipleColumnPrefixFilter</a> to return only columns for the graph root as
- * well as any columns associated with type nodes linked through one of more
+ * well as any columns associated with type nodes linked through one or more
  * singular relations.
  * 
  * @see GraphColumnKeyFactory

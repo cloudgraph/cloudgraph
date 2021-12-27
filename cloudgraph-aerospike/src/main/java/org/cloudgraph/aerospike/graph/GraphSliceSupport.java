@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NavigableSet;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.xml.bind.JAXBException;
 
@@ -42,10 +43,12 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.cloudgraph.aerospike.connect.Connection;
 import org.cloudgraph.aerospike.ext.Get;
+import org.cloudgraph.aerospike.ext.KeyInfo;
 import org.cloudgraph.aerospike.ext.Result;
 import org.cloudgraph.aerospike.ext.Scan;
 import org.cloudgraph.aerospike.filter.BinaryPrefixColumnFilterAssembler;
 import org.cloudgraph.aerospike.filter.ColumnPredicateFilterAssembler;
+import org.cloudgraph.aerospike.filter.Filter;
 import org.cloudgraph.aerospike.filter.GraphFetchColumnFilterAssembler;
 import org.cloudgraph.aerospike.filter.AerospikeFilterAssembler;
 import org.cloudgraph.aerospike.filter.PredicateFilterAssembler;
@@ -55,6 +58,7 @@ import org.cloudgraph.aerospike.io.CellValues;
 import org.cloudgraph.aerospike.io.DistributedGraphReader;
 import org.cloudgraph.aerospike.io.DistributedReader;
 import org.cloudgraph.aerospike.io.EdgeReader;
+import org.cloudgraph.aerospike.io.GraphEdgeReader;
 import org.cloudgraph.aerospike.io.KeyValue;
 import org.cloudgraph.aerospike.io.RowReader;
 import org.cloudgraph.aerospike.io.TableOperation;
@@ -77,7 +81,7 @@ import org.plasma.query.bind.PlasmaQueryDataBinding;
 import org.plasma.query.collector.Selection;
 import org.plasma.query.collector.SelectionCollector;
 import org.plasma.query.model.Where;
-import org.plasma.sdo.Key;
+//import org.plasma.sdo.Key;
 import org.plasma.sdo.PlasmaDataGraph;
 import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
@@ -86,6 +90,10 @@ import org.plasma.sdo.helper.PlasmaXMLHelper;
 import org.plasma.sdo.profile.KeyStructure;
 import org.plasma.sdo.xml.DefaultOptions;
 import org.xml.sax.SAXException;
+
+import com.aerospike.client.Key;
+import com.aerospike.client.Record;
+import com.aerospike.client.query.RecordSet;
 
 import commonj.sdo.Property;
 import commonj.sdo.helper.XMLDocument;
@@ -143,106 +151,133 @@ class GraphSliceSupport {
    */
   public List<CellValues> filter(PlasmaType contextType, int level, EdgeReader edgeReader,
       Where where, RowReader rowReader, TableReader tableReader) throws IOException {
-    throw new RuntimeException("not implemented");
-    /*
-     * List<CellValues> results = new ArrayList<>((int) edgeReader.getCount());
-     * 
-     * if (!edgeReader.isExternal()) throw new
-     * IllegalStateException("expected external edge collection not, " +
-     * edgeReader);
-     * 
-     * if (log.isDebugEnabled()) log(where); List<byte[]> graphEvalRowKeys = new
-     * ArrayList<>(); ExternalEdgeRecognizerSyntaxTreeAssembler
-     * edgeSyntaxAssembler = new ExternalEdgeRecognizerSyntaxTreeAssembler(
-     * where, rowReader.getDataGraph(), contextType, rowReader.getRootType());
-     * Expr edgeRecognizerRootExpr = edgeSyntaxAssembler.getResult(); if
-     * (log.isDebugEnabled()) { ExprPrinter printer = new ExprPrinter();
-     * edgeRecognizerRootExpr.accept(printer); log.debug("Edge Recognizer: " +
-     * printer.toString()); } CellConverter cellConverter = new
-     * CellConverter(contextType, tableReader.getTableConfig(),
-     * this.mappingContext); ExternalEdgeRecognizerContext edgeRecogniserContext
-     * = new ExternalEdgeRecognizerContext( contextType, this.mappingContext);
-     * boolean complete = rowKeyModelCompleteSelection(contextType, level,
-     * edgeRecogniserContext.getEndpoints()); for (KeyBytes rowKeyBytes :
-     * edgeReader.getRowKeys()) {
-     * edgeRecogniserContext.read(rowKeyBytes.getKey()); if
-     * (edgeRecognizerRootExpr.evaluate(edgeRecogniserContext)) { if
-     * (!edgeRecogniserContext.isRowEvaluatedCompletely()) {
-     * graphEvalRowKeys.add(rowKeyBytes.getKey()); } else { CellValues
-     * cellValues = cellConverter.convert(rowKeyBytes.getKey(),
-     * edgeRecogniserContext.getValues());
-     * cellValues.setCompleteSelection(complete); results.add(cellValues); } } }
-     * if (log.isDebugEnabled()) log.debug("recognized " +
-     * String.valueOf(graphEvalRowKeys.size() + results.size()) + " out of " +
-     * edgeReader.getRowKeys().size() + " external edges"); if
-     * (graphEvalRowKeys.size() == 0) return results; // no edges recognized or
-     * all recognized by row key alone
-     * 
-     * SelectionCollector predicateSelection = new SelectionCollector(where,
-     * contextType);
-     * 
-     * // create a new reader as the existing one may have cached data objects
-     * // already // linked to the parent graph. Cannot link to sub-graph as
-     * well. DistributedReader existingReader = (DistributedReader)
-     * tableReader.getDistributedOperation(); DistributedGraphReader
-     * sliceGraphReader = new DistributedGraphReader(contextType,
-     * predicateSelection.getTypes(), existingReader.getConnection(),
-     * this.mappingContext); // Note: don't need to close this distributed
-     * reader because the slice graph // must // always have a parent graph,
-     * which will close the resources
-     * 
-     * HBaseGraphAssembler graphAssembler = new GraphAssembler(contextType,
-     * predicateSelection, sliceGraphReader, snapshotDate);
-     * 
-     * GraphRecognizerSyntaxTreeAssembler recognizerAssembler = new
-     * GraphRecognizerSyntaxTreeAssembler( where, contextType); Expr
-     * graphRecognizerRootExpr = recognizerAssembler.getResult(); if
-     * (log.isDebugEnabled()) { ExprPrinter printer = new ExprPrinter();
-     * graphRecognizerRootExpr.accept(printer); log.debug("Graph Recognizer: " +
-     * printer.toString()); }
-     * 
-     * // column filter AerospikeFilterAssembler columnFilterAssembler = new
-     * GraphFetchColumnFilterAssembler( predicateSelection, contextType,
-     * this.mappingContext); // use predicate // selection not // entire //
-     * graph selection Filter columnFilter = columnFilterAssembler.getFilter();
-     * 
-     * List<Get> gets = new ArrayList<Get>(); for (byte[] rowKey :
-     * graphEvalRowKeys) { // byte[] childRowKey = //
-     * rowReader.getGraphState().getRowKey(edge.getUuid()); // use local // edge
-     * UUID Get get = new Get(rowKey); get.setFilter(columnFilter);
-     * gets.add(get); } DataGraphMapping graphConfig =
-     * StoreMapping.getInstance().getDataGraph( contextType.getQualifiedName(),
-     * this.mappingContext); Result[] rows = this.fetchResult(gets, tableReader,
-     * graphConfig);
-     * 
-     * GraphRecognizerContext recognizerContext = new GraphRecognizerContext();
-     * int rowIndex = 0; for (Result resultRow : rows) { if (resultRow == null
-     * || resultRow.isEmpty()) { Get get = gets.get(rowIndex); String rowStr =
-     * new String(get.getRow(), charset); if (resultRow == null) throw new
-     * IllegalStateException("got null result row for '" + rowStr +
-     * "' for mulit-get operation - indicates failure with retries"); else throw
-     * new IllegalStateException("got no result for row for '" + rowStr +
-     * "' for mulit-get operation - indicates row noes not exist"); } //
-     * Assemble a predicate slice graph where the edge is root // Can be any
-     * size and have both local and external edges graphAssembler.assemble(new
-     * CellValues(resultRow)); PlasmaDataGraph assembledGraph =
-     * graphAssembler.getDataGraph(); graphAssembler.clear();
-     * 
-     * recognizerContext.setGraph(assembledGraph); if
-     * (!graphRecognizerRootExpr.evaluate(recognizerContext)) { if
-     * (log.isDebugEnabled()) log.debug("recognizer excluded: " +
-     * Bytes.toString(resultRow.getRow())); if (log.isDebugEnabled())
-     * log.debug(serializeGraph(assembledGraph));
-     * 
-     * continue; } else { if (log.isDebugEnabled())
-     * log.debug("recognizer passed: " + Bytes.toString(resultRow.getRow())); if
-     * (log.isDebugEnabled()) log.debug(serializeGraph(assembledGraph)); }
-     * 
-     * CellValues values = new CellValues(resultRow.getRow());
-     * values.setCompleteSelection(false); results.add(values); rowIndex++; }
-     * 
-     * return results;
-     */
+    List<CellValues> results = new ArrayList<>((int) edgeReader.getCount());
+
+    if (!edgeReader.isExternal())
+      throw new IllegalStateException("expected external edge collection not, " + edgeReader);
+
+    if (log.isDebugEnabled())
+      log(where);
+    List<byte[]> graphEvalRowKeys = new ArrayList<>();
+    ExternalEdgeRecognizerSyntaxTreeAssembler edgeSyntaxAssembler = new ExternalEdgeRecognizerSyntaxTreeAssembler(
+        where, rowReader.getDataGraph(), contextType, rowReader.getRootType());
+    Expr edgeRecognizerRootExpr = edgeSyntaxAssembler.getResult();
+    if (log.isDebugEnabled()) {
+      ExprPrinter printer = new ExprPrinter();
+      edgeRecognizerRootExpr.accept(printer);
+      log.debug("Edge Recognizer: " + printer.toString());
+    }
+    CellConverter cellConverter = new CellConverter(contextType, tableReader.getTableConfig(),
+        this.mappingContext);
+    ExternalEdgeRecognizerContext edgeRecogniserContext = new ExternalEdgeRecognizerContext(
+        contextType, this.mappingContext);
+    boolean complete = rowKeyModelCompleteSelection(contextType, level,
+        edgeRecogniserContext.getEndpoints());
+    for (KeyBytes rowKeyBytes : edgeReader.getRowKeys()) {
+      edgeRecogniserContext.read(rowKeyBytes.getKey());
+      if (edgeRecognizerRootExpr.evaluate(edgeRecogniserContext)) {
+        if (!edgeRecogniserContext.isRowEvaluatedCompletely()) {
+          graphEvalRowKeys.add(rowKeyBytes.getKey());
+        } else {
+          CellValues cellValues = cellConverter.convert(rowKeyBytes.getKey(),
+              edgeRecogniserContext.getValues());
+          cellValues.setCompleteSelection(complete);
+          results.add(cellValues);
+        }
+      }
+    }
+    if (log.isDebugEnabled())
+      log.debug("recognized " + String.valueOf(graphEvalRowKeys.size() + results.size())
+          + " out of " + edgeReader.getRowKeys().size() + " external edges");
+    if (graphEvalRowKeys.size() == 0)
+      return results; // no edges recognized or all recognized by row key alone
+
+    SelectionCollector predicateSelection = new SelectionCollector(where, contextType);
+
+    // create a new reader as the existing one may have cached data objects
+    // already
+    // linked to the parent graph. Cannot link to sub-graph as well.
+    DistributedReader existingReader = (DistributedReader) tableReader.getDistributedOperation();
+    DistributedGraphReader sliceGraphReader = new DistributedGraphReader(contextType,
+        predicateSelection.getTypes(), existingReader.getConnection(), this.mappingContext);
+    // Note: don't need to close this distributed reader because the slice graph
+    // must
+    // always have a parent graph, which will close the resources
+
+    HBaseGraphAssembler graphAssembler = new GraphAssembler(contextType, predicateSelection,
+        sliceGraphReader, snapshotDate);
+
+    GraphRecognizerSyntaxTreeAssembler recognizerAssembler = new GraphRecognizerSyntaxTreeAssembler(
+        where, contextType);
+    Expr graphRecognizerRootExpr = recognizerAssembler.getResult();
+    if (log.isDebugEnabled()) {
+      ExprPrinter printer = new ExprPrinter();
+      graphRecognizerRootExpr.accept(printer);
+      log.debug("Graph Recognizer: " + printer.toString());
+    }
+
+    // column filter
+    AerospikeFilterAssembler columnFilterAssembler = new GraphFetchColumnFilterAssembler(
+        predicateSelection, contextType, this.mappingContext); // use predicate
+                                                               // selection not
+                                                               // entire
+    // graph selection
+    Filter columnFilter = columnFilterAssembler.getFilter();
+
+    List<Get> gets = new ArrayList<Get>();
+    for (byte[] rowKey : graphEvalRowKeys) {
+      // byte[] childRowKey =
+      // rowReader.getGraphState().getRowKey(edge.getUuid()); // use local
+      // edge UUID
+      Get get = new Get(rowKey);
+      get.setColumnFilter(columnFilter);
+      gets.add(get);
+    }
+    DataGraphMapping graphConfig = StoreMapping.getInstance().getDataGraph(
+        contextType.getQualifiedName(), this.mappingContext);
+    Result[] rows = this.fetchResult(gets, tableReader, graphConfig);
+
+    GraphRecognizerContext recognizerContext = new GraphRecognizerContext();
+    int rowIndex = 0;
+    for (Result resultRow : rows) {
+      if (resultRow == null || resultRow.isEmpty()) {
+        Get get = gets.get(rowIndex);
+        String rowStr = new String(get.getRow(), charset);
+        if (resultRow == null)
+          throw new IllegalStateException("got null result row for '" + rowStr
+              + "' for mulit-get operation - indicates failure with retries");
+        else
+          throw new IllegalStateException("got no result for row for '" + rowStr
+              + "' for mulit-get operation - indicates row noes not exist");
+      }
+      // Assemble a predicate slice graph where the edge is root
+      // Can be any size and have both local and external edges
+      graphAssembler.assemble(new CellValues(resultRow));
+      PlasmaDataGraph assembledGraph = graphAssembler.getDataGraph();
+      graphAssembler.clear();
+
+      recognizerContext.setGraph(assembledGraph);
+      if (!graphRecognizerRootExpr.evaluate(recognizerContext)) {
+        if (log.isDebugEnabled())
+          log.debug("recognizer excluded: " + Bytes.toString(resultRow.getRow()));
+        if (log.isDebugEnabled())
+          log.debug(serializeGraph(assembledGraph));
+
+        continue;
+      } else {
+        if (log.isDebugEnabled())
+          log.debug("recognizer passed: " + Bytes.toString(resultRow.getRow()));
+        if (log.isDebugEnabled())
+          log.debug(serializeGraph(assembledGraph));
+      }
+
+      CellValues values = new CellValues(resultRow.getRow());
+      values.setCompleteSelection(false);
+      results.add(values);
+      rowIndex++;
+    }
+
+    return results;
   }
 
   /**
@@ -266,17 +301,24 @@ class GraphSliceSupport {
    */
   private boolean rowKeyModelCompleteSelection(PlasmaType contextType, int level,
       Collection<Endpoint> endpoints) {
-    throw new RuntimeException("not implemented");
-    /*
-     * 
-     * if (!hasRootUuid(endpoints, contextType)) return false;
-     * 
-     * Set<Property> selectionProps = this.selection.getProperties(contextType,
-     * level + 1); for (Property prop : selectionProps) { PlasmaProperty
-     * plasmaProp = (PlasmaProperty) prop; boolean found = false; for (Endpoint
-     * endpoint : endpoints) { if (endpoint.getProperty().equals(plasmaProp)) {
-     * found = true; break; } } if (!found) return false; } return true;
-     */
+
+    if (!hasRootUuid(endpoints, contextType))
+      return false;
+
+    Set<Property> selectionProps = this.selection.getProperties(contextType, level + 1);
+    for (Property prop : selectionProps) {
+      PlasmaProperty plasmaProp = (PlasmaProperty) prop;
+      boolean found = false;
+      for (Endpoint endpoint : endpoints) {
+        if (endpoint.getProperty().equals(plasmaProp)) {
+          found = true;
+          break;
+        }
+      }
+      if (!found)
+        return false;
+    }
+    return true;
   }
 
   /**
@@ -295,7 +337,7 @@ class GraphSliceSupport {
     for (Endpoint endpoint : endpoints) {
       if (endpoint.getLevel() > 0)
         continue; // can't be a root UUID if EP not at level 0
-      Key key = endpoint.getProperty().getKey();
+      org.plasma.sdo.Key key = endpoint.getProperty().getKey();
       if (key != null && key.getStructure() != null) {
         KeyStructure keyStruct = KeyStructure.valueOf(key.getStructure().name());
         if (keyStruct.ordinal() == KeyStructure.uuid.ordinal()) {
@@ -328,47 +370,62 @@ class GraphSliceSupport {
    */
   public Set<Long> fetchSequences(PlasmaType contextType, Where where, RowReader rowReader,
       EdgeReader edgeReader) throws IOException {
-    throw new RuntimeException("not implemented");
-    /*
-     * 
-     * if (log.isDebugEnabled()) { log.debug("root type: " +
-     * rowReader.getRootType()); log.debug("context type: " + contextType);
-     * log.debug("fetch sequences: " + this.marshal(where)); } PlasmaType
-     * rootType = (PlasmaType) rowReader.getRootType(); DataGraphMapping
-     * graphConfig = StoreMapping.getInstance().getDataGraph(
-     * rootType.getQualifiedName(), this.mappingContext); Get get = new
-     * Get(rowReader.getRowKey());
-     * 
-     * PredicateUtil predicateUtil = new PredicateUtil();
-     * PredicateFilterAssembler filterAssembler = null; boolean
-     * multiDescendantProperties =
-     * predicateUtil.hasHeterogeneousDescendantProperties(where); // if
-     * (!multiDescendantProperties) { filterAssembler = new
-     * ColumnPredicateFilterAssembler(rootType, this.mappingContext); // } //
-     * else { // filterAssembler = new //
-     * MultiColumnPredicateFilterAssembler(rowReader.getGraphState(), //
-     * rootType); // } filterAssembler.assemble(where, contextType); Filter
-     * filter = filterAssembler.getFilter(); get.setFilter(filter);
-     * 
-     * Result result = fetchResult(get, rowReader.getTableReader(),
-     * graphConfig); Map<Long, Map<String, KeyValue>> buckets =
-     * buketizeResult(result, graphConfig); if (log.isDebugEnabled())
-     * log.debug("found " + buckets.size() + " sequence buckets");
-     * 
-     * Set<Long> sequences = new HashSet<Long>(); // filter sequence results
-     * using edge recognizer // if (!multiDescendantProperties) { // assemble a
-     * recognizer once for // all results. Then only evaluate each result.
-     * LocalEdgeRecognizerSyntaxTreeAssembler assembler = new
-     * LocalEdgeRecognizerSyntaxTreeAssembler( where, graphConfig, contextType,
-     * rootType, this.mappingContext); Expr recogniser = assembler.getResult();
-     * LocalEdgeRecognizerContext context = new LocalEdgeRecognizerContext();
-     * for (Long seq : buckets.keySet()) { // possible for returned sequence no
-     * NOT be part of edge if (edgeReader.hasSequence(seq)) { Map<String,
-     * KeyValue> seqMap = buckets.get(seq); context.setSequence(seq);
-     * context.setKeyMap(seqMap); if (recogniser.evaluate(context))
-     * sequences.add(seq); } } if (log.isDebugEnabled()) log.debug("returning "
-     * + sequences.size() + " sequences"); return sequences;
-     */
+
+    if (log.isDebugEnabled()) {
+      log.debug("root type: " + rowReader.getRootType());
+      log.debug("context type: " + contextType);
+      log.debug("fetch sequences: " + this.marshal(where));
+    }
+    PlasmaType rootType = (PlasmaType) rowReader.getRootType();
+    DataGraphMapping graphConfig = StoreMapping.getInstance().getDataGraph(
+        rootType.getQualifiedName(), this.mappingContext);
+    Get get = new Get(rowReader.getRowKey());
+
+    PredicateUtil predicateUtil = new PredicateUtil();
+    PredicateFilterAssembler filterAssembler = null;
+    boolean multiDescendantProperties = predicateUtil.hasHeterogeneousDescendantProperties(where);
+    // if (!multiDescendantProperties) {
+    filterAssembler = new ColumnPredicateFilterAssembler(rootType, this.mappingContext);
+    // }
+    // else {
+    // filterAssembler = new
+    // MultiColumnPredicateFilterAssembler(rowReader.getGraphState(),
+    // rootType);
+    // }
+    filterAssembler.assemble(where, contextType);
+    Filter filter = filterAssembler.getFilter();
+    get.setColumnFilter(filter);
+
+    Result result = fetchResult(get, rowReader.getTableReader(), graphConfig);
+    Map<Long, Map<String, KeyValue>> buckets = buketizeResult(result, graphConfig);
+    if (log.isDebugEnabled())
+      log.debug("found " + buckets.size() + " sequence buckets");
+
+    Set<Long> sequences = new HashSet<Long>();
+    // filter sequence results using edge recognizer
+    // if (!multiDescendantProperties) {
+    // assemble a recognizer once for
+    // all results. Then only evaluate each result.
+    LocalEdgeRecognizerSyntaxTreeAssembler assembler = new LocalEdgeRecognizerSyntaxTreeAssembler(
+        where, graphConfig, contextType, rootType, this.mappingContext);
+    Expr recogniser = assembler.getResult();
+    GraphEdgeReader ger = (GraphEdgeReader) edgeReader;
+
+    LocalEdgeRecognizerContext context = new LocalEdgeRecognizerContext(contextType,
+        ger.getSourceProp());
+    for (Long seq : buckets.keySet()) {
+      // possible for returned sequence no NOT be part of edge
+      if (edgeReader.hasSequence(seq)) {
+        Map<String, KeyValue> seqMap = buckets.get(seq);
+        context.setSequence(seq);
+        context.setKeyMap(seqMap);
+        if (recogniser.evaluate(context))
+          sequences.add(seq);
+      }
+    }
+    if (log.isDebugEnabled())
+      log.debug("returning " + sequences.size() + " sequences");
+    return sequences;
   }
 
   /**
@@ -381,26 +438,22 @@ class GraphSliceSupport {
    */
   public Result fetchResult(Get get, TableOperation tableOperation, DataGraphMapping graphConfig)
       throws IOException {
-    throw new RuntimeException("not implemented");
-    /*
-     * if (log.isDebugEnabled()) try { log.debug("get filter: " +
-     * FilterUtil.printFilterTree(get.getFilter())); } catch (IOException e1) {
-     * }
-     * 
-     * long before = System.currentTimeMillis(); if (log.isDebugEnabled())
-     * log.debug("executing get...");
-     * 
-     * Result result = tableOperation.getTable().get(get); if (result == null)
-     * // Note: may not have any key-values throw new
-     * GraphServiceException("expected result from table " +
-     * tableOperation.getTableConfig().getQualifiedPhysicalName() + " for row '"
-     * + new String(get.getRow()) + "'");
-     * 
-     * long after = System.currentTimeMillis(); if (log.isDebugEnabled())
-     * log.debug("returned 1 results (" + String.valueOf(after - before) + ")");
-     * 
-     * return result;
-     */
+
+    long before = System.currentTimeMillis();
+    if (log.isDebugEnabled())
+      log.debug("executing get...");
+
+    Result result = tableOperation.getTable().get(get);
+    if (result == null) // Note: may not have any key-values
+      throw new GraphServiceException("expected result from table "
+          + tableOperation.getTableConfig().getQualifiedPhysicalName() + " for row '"
+          + new String(get.getRow()) + "'");
+
+    long after = System.currentTimeMillis();
+    if (log.isDebugEnabled())
+      log.debug("returned 1 results (" + String.valueOf(after - before) + ")");
+
+    return result;
   }
 
   /**
@@ -413,23 +466,18 @@ class GraphSliceSupport {
    */
   public Result[] fetchResult(List<Get> gets, TableOperation tableOperation,
       DataGraphMapping graphConfig) throws IOException {
-    throw new RuntimeException("not implemented");
-    /*
-     * if (log.isDebugEnabled()) try { log.debug("get filter: " +
-     * FilterUtil.printFilterTree(gets.get(0).getFilter())); } catch
-     * (IOException e1) { }
-     * 
-     * long before = System.currentTimeMillis(); if (log.isDebugEnabled())
-     * log.debug("executing " + gets.size() + " gets...");
-     * 
-     * Result[] result = tableOperation.getTable().get(gets);
-     * 
-     * long after = System.currentTimeMillis(); if (log.isDebugEnabled())
-     * log.debug("returned " + result.length + " results (" +
-     * String.valueOf(after - before) + ")");
-     * 
-     * return result;
-     */
+
+    long before = System.currentTimeMillis();
+    if (log.isDebugEnabled())
+      log.debug("executing " + gets.size() + " gets...");
+
+    Result[] result = tableOperation.getTable().get(gets);
+
+    long after = System.currentTimeMillis();
+    if (log.isDebugEnabled())
+      log.debug("returned " + result.length + " results (" + String.valueOf(after - before) + ")");
+
+    return result;
   }
 
   public Map<Long, Map<String, KeyValue>> buketizeResult(Result result, DataGraphMapping graphConfig) {
@@ -440,7 +488,7 @@ class GraphSliceSupport {
         // FIXME: no parsing here !!
         String qual = Bytes.toString(keyValue.getQualifier());
         if (log.isDebugEnabled())
-          log.debug("\tkey: " + qual + "\tvalue: " + String.valueOf(keyValue.getValue()));
+          log.debug("\tkey: " + qual + "\tvalue: " + Bytes.toString(keyValue.getValue()));
         String[] sections = qual.split(graphConfig.getColumnKeySequenceDelimiter());
         if (sections.length < 2) {
           log.warn("ignoring non statefull qualifier '"
@@ -471,33 +519,32 @@ class GraphSliceSupport {
    */
   public Map<Integer, Integer> fetchSequences(Get get, TableReader tableReader,
       DataGraphMapping graphConfig) throws IOException {
-    throw new RuntimeException("not implemented");
-    /*
-     * if (log.isDebugEnabled()) try { log.debug("get filter: " +
-     * FilterUtil.printFilterTree(get.getFilter())); } catch (IOException e1) {
-     * }
-     * 
-     * long before = System.currentTimeMillis(); if (log.isDebugEnabled())
-     * log.debug("executing get...");
-     * 
-     * Result result = tableReader.getTable().get(get); if (result == null) //
-     * Note: may not have any key-values throw new
-     * GraphServiceException("expected result from table " +
-     * tableReader.getTableConfig().getQualifiedPhysicalName() + " for row '" +
-     * new String(get.getRow()) + "'");
-     * 
-     * Map<Integer, Integer> seqMap = new HashMap<Integer, Integer>(); if
-     * (!result.isEmpty()) for (KeyValue keyValue : result.list()) { // FIXME:
-     * no parsing here !! String qual = Bytes.toString(keyValue.getQualifier());
-     * if (log.isDebugEnabled()) log.debug("\tkey: " + qual + "\tvalue: " +
-     * Bytes.toString(keyValue.getValue())); String[] sections =
-     * qual.split(graphConfig.getColumnKeySequenceDelimiter()); Integer seq =
-     * Integer.valueOf(sections[1]); seqMap.put(seq, seq); }
-     * 
-     * long after = System.currentTimeMillis(); if (log.isDebugEnabled())
-     * log.debug("returned " + seqMap.size() + " results (" +
-     * String.valueOf(after - before) + ")"); return seqMap;
-     */
+    long before = System.currentTimeMillis();
+    if (log.isDebugEnabled())
+      log.debug("executing get...");
+
+    Result result = tableReader.getTable().get(get);
+    if (result == null) // Note: may not have any key-values
+      throw new GraphServiceException("expected result from table "
+          + tableReader.getTableConfig().getQualifiedPhysicalName() + " for row '"
+          + new String(get.getRow()) + "'");
+
+    Map<Integer, Integer> seqMap = new HashMap<Integer, Integer>();
+    if (!result.isEmpty())
+      for (KeyValue keyValue : result.list()) {
+        // FIXME: no parsing here !!
+        String qual = Bytes.toString(keyValue.getQualifier());
+        if (log.isDebugEnabled())
+          log.debug("\tkey: " + qual + "\tvalue: " + Bytes.toString(keyValue.getValue()));
+        String[] sections = qual.split(graphConfig.getColumnKeySequenceDelimiter());
+        Integer seq = Integer.valueOf(sections[1]);
+        seqMap.put(seq, seq);
+      }
+
+    long after = System.currentTimeMillis();
+    if (log.isDebugEnabled())
+      log.debug("returned " + seqMap.size() + " results (" + String.valueOf(after - before) + ")");
+    return seqMap;
   }
 
   /**
@@ -508,29 +555,38 @@ class GraphSliceSupport {
    *          the row scan
    * @return the sequence numbers.
    */
-  public Map<Long, Long> fetchSequences(Scan scan, TableReader tableReader,
+  public Map<Long, Long> fetchSequences(Scan scan, TableReader tableReader, RowReader rowReader,
       DataGraphMapping graphConfig) {
-    throw new RuntimeException("not implemented");
-    /*
-     * if (log.isDebugEnabled()) try { log.debug("scan filter: " +
-     * FilterUtil.printFilterTree(scan.getFilter())); } catch (IOException e1) {
-     * }
-     * 
-     * if (log.isDebugEnabled()) log.debug("executing scan..."); ResultScanner
-     * scanner = null; try { scanner = tableReader.getTable().getScanner(scan);
-     * } catch (IOException e) { throw new GraphServiceException(e); }
-     * 
-     * Map<Long, Long> result = new HashMap<Long, Long>(); for (Result row :
-     * scanner) { if (log.isDebugEnabled()) log.debug("row: " + new
-     * String(row.getRow())); for (KeyValue keyValue : row.list()) { if
-     * (log.isDebugEnabled()) log.debug("returned " + row.size() + " columns");
-     * // FIXME: no parsing here !! String qual =
-     * Bytes.toString(keyValue.getQualifier()); if (log.isDebugEnabled())
-     * log.debug("\tkey: " + qual + "\tvalue: " +
-     * Bytes.toString(keyValue.getValue())); String[] sections =
-     * qual.split(graphConfig.getColumnKeySequenceDelimiter()); Long seq =
-     * Long.valueOf(sections[1]); result.put(seq, seq); } } return result;
-     */
+
+    Map<Long, Long> result = new HashMap<Long, Long>();
+    if (log.isDebugEnabled())
+      log.debug("executing scan...");
+
+    RecordSet recordSet = tableReader.getTable().scan(scan);
+    while (recordSet.next()) {
+      Record row = recordSet.getRecord();
+      if (log.isDebugEnabled())
+        log.debug("row: " + row.toString());
+      Key key = new Key(tableReader.getTable().getNamespace(), tableReader.getTable().getSetName(),
+          rowReader.getRowKey());
+      KeyInfo ki = new KeyInfo(key, tableReader.getTableConfig().getDataColumnFamilyName());
+      Result resultRow = new Result(ki, row, scan.getColumnFilter());
+
+      for (KeyValue keyValue : resultRow.list()) {
+        if (log.isDebugEnabled())
+          log.debug("returned " + resultRow.size() + " columns");
+        // FIXME: no parsing here !!
+        String qual = Bytes.toString(keyValue.getQualifier());
+        if (log.isDebugEnabled())
+          log.debug("\tkey: " + qual + "\tvalue: " + Bytes.toString(keyValue.getValue()));
+        String[] sections = qual.split(graphConfig.getColumnKeySequenceDelimiter());
+        Long seq = Long.valueOf(sections[1]);
+        result.put(seq, seq);
+
+      }
+    }
+
+    return result;
   }
 
   /**
@@ -549,18 +605,16 @@ class GraphSliceSupport {
    */
   public void load(Set<Property> properties, PlasmaType contextType, RowReader rowReader)
       throws IOException {
-    throw new RuntimeException("not implemented");
-    /*
-     * Get get = new Get(rowReader.getRowKey());
-     * 
-     * PlasmaType rootType = (PlasmaType) rowReader.getRootType();
-     * BinaryPrefixColumnFilterAssembler columnFilterAssembler = new
-     * BinaryPrefixColumnFilterAssembler( rootType, this.mappingContext);
-     * columnFilterAssembler.assemble(properties, contextType); Filter filter =
-     * columnFilterAssembler.getFilter(); get.setFilter(filter);
-     * 
-     * load(get, rowReader);
-     */
+    Get get = new Get(rowReader.getRowKey());
+
+    PlasmaType rootType = (PlasmaType) rowReader.getRootType();
+    BinaryPrefixColumnFilterAssembler columnFilterAssembler = new BinaryPrefixColumnFilterAssembler(
+        rootType, this.mappingContext);
+    columnFilterAssembler.assemble(properties, contextType);
+    Filter filter = columnFilterAssembler.getFilter();
+    get.setColumnFilter(filter);
+
+    load(get, rowReader);
   }
 
   /**
@@ -580,28 +634,35 @@ class GraphSliceSupport {
    */
   public void loadBySequenceList(Set<Long> sequences, Set<Property> properties,
       PlasmaType contextType, RowReader rowReader, EdgeReader edgeReader) throws IOException {
-    throw new RuntimeException("not implemented");
-    /*
-     * Get get = new Get(rowReader.getRowKey()); PlasmaType rootType =
-     * (PlasmaType) rowReader.getRootType(); if
-     * (anyReferenceProperties(properties)) {
-     * StatefullBinaryPrefixColumnFilterAssembler columnFilterAssembler = new
-     * StatefullBinaryPrefixColumnFilterAssembler( rootType, edgeReader);
-     * columnFilterAssembler.assemble(properties, sequences, contextType);
-     * Filter filter = columnFilterAssembler.getFilter(); get.setFilter(filter);
-     * } else { StatefullColumnKeyFactory columnKeyFac = new
-     * StatefullColumnKeyFactory(rootType, this.mappingContext); PlasmaType
-     * subType = edgeReader.getSubType(); if (subType == null) subType =
-     * edgeReader.getBaseType(); byte[] colFam =
-     * columnKeyFac.getGraph().getTable().getDataColumnFamilyNameBytes(); byte[]
-     * colKey = null; for (Long seq : sequences) { for (EntityMetaKey metaField
-     * : EntityMetaKey.values()) { colKey =
-     * columnKeyFac.createColumnKey(subType, seq, metaField);
-     * get.addColumn(colFam, colKey); } for (Property p : properties) {
-     * PlasmaProperty prop = (PlasmaProperty) p; colKey =
-     * columnKeyFac.createColumnKey(subType, seq, prop); get.addColumn(colFam,
-     * colKey); } } } load(get, rowReader);
-     */
+    Get get = new Get(rowReader.getRowKey());
+    PlasmaType rootType = (PlasmaType) rowReader.getRootType();
+    if (anyReferenceProperties(properties)) {
+      StatefullBinaryPrefixColumnFilterAssembler columnFilterAssembler = new StatefullBinaryPrefixColumnFilterAssembler(
+          rootType, edgeReader);
+      columnFilterAssembler.assemble(properties, sequences, contextType);
+      Filter filter = columnFilterAssembler.getFilter();
+      get.setColumnFilter(filter);
+    } else {
+      StatefullColumnKeyFactory columnKeyFac = new StatefullColumnKeyFactory(rootType,
+          this.mappingContext);
+      PlasmaType subType = edgeReader.getSubType();
+      if (subType == null)
+        subType = edgeReader.getBaseType();
+      byte[] colFam = columnKeyFac.getGraph().getTable().getDataColumnFamilyNameBytes();
+      byte[] colKey = null;
+      for (Long seq : sequences) {
+        for (EntityMetaKey metaField : EntityMetaKey.values()) {
+          colKey = columnKeyFac.createColumnKey(subType, seq, metaField);
+          get.addColumn(colFam, colKey);
+        }
+        for (Property p : properties) {
+          PlasmaProperty prop = (PlasmaProperty) p;
+          colKey = columnKeyFac.createColumnKey(subType, seq, prop);
+          get.addColumn(colFam, colKey);
+        }
+      }
+    }
+    load(get, rowReader);
   }
 
   private boolean anyReferenceProperties(Set<Property> properties) {
@@ -623,59 +684,76 @@ class GraphSliceSupport {
    * @throws IOException
    */
   public void load(Get get, RowReader rowReader) throws IOException {
-    throw new RuntimeException("not implemented");
-    /*
-     * if (log.isDebugEnabled()) try { if (get.getFilter() != null) {
-     * log.debug("executing get: " +
-     * FilterUtil.printFilterTree(get.getFilter())); } else { StringBuilder buf
-     * = new StringBuilder(); buf.append("coluimns: ["); Map<byte[],
-     * NavigableSet<byte[]>> fm = get.getFamilyMap(); int i = 0; for
-     * (Map.Entry<byte[], NavigableSet<byte[]>> entry : fm.entrySet()) { for
-     * (byte[] column : entry.getValue()) { if (i > 0) buf.append(" ");
-     * buf.append(Bytes.toString(entry.getKey())); buf.append(":");
-     * buf.append(Bytes.toString(column)); } i++; } buf.append("] count: " + i);
-     * log.debug("executing get: " + buf.toString()); } } catch (IOException e1)
-     * { }
-     * 
-     * long before = System.currentTimeMillis(); Result result =
-     * rowReader.getTableReader().getTable().get(get); long after =
-     * System.currentTimeMillis();
-     * 
-     * if (result == null) // do expect a result since a Get oper, but might //
-     * have no columns throw new
-     * GraphServiceException("expected result from table " +
-     * rowReader.getTableReader().getTableConfig().getQualifiedPhysicalName() +
-     * " for row '" + new String(get.getRow()) + "'"); if (!result.isEmpty())
-     * for (KeyValue keyValue : result.list()) {
-     * rowReader.getRow().addColumn(keyValue); if (log.isDebugEnabled()) {
-     * String qual = Bytes.toString(keyValue.getQualifier());
-     * log.debug("\tkey: " + qual + "\tvalue: " +
-     * Bytes.toString(keyValue.getValue())); } }
-     * 
-     * if (log.isDebugEnabled()) log.debug("returned 1 results (" +
-     * String.valueOf(after - before) + ")");
-     */
+    if (log.isDebugEnabled())
+      try {
+        if (get.getColumnFilter() != null) {
+          log.debug("executing get: " + get.getColumnFilter());
+        } else {
+          StringBuilder buf = new StringBuilder();
+          buf.append("columns: [");
+          Map<byte[], NavigableSet<byte[]>> fm = null; // FIXME:
+                                                       // get.getFamilyMap();
+          int i = 0;
+          for (Map.Entry<byte[], NavigableSet<byte[]>> entry : fm.entrySet()) {
+            for (byte[] column : entry.getValue()) {
+              if (i > 0)
+                buf.append(" ");
+              buf.append(Bytes.toString(entry.getKey()));
+              buf.append(":");
+              buf.append(Bytes.toString(column));
+            }
+            i++;
+          }
+          buf.append("] count: " + i);
+          log.debug("executing get: " + buf.toString());
+        }
+      } catch (Exception e1) {
+      }
+
+    long before = System.currentTimeMillis();
+    Result result = rowReader.getTableReader().getTable().get(get);
+    long after = System.currentTimeMillis();
+
+    if (result == null) // do expect a result since a Get oper, but might
+      // have no columns
+      throw new GraphServiceException("expected result from table "
+          + rowReader.getTableReader().getTableConfig().getQualifiedPhysicalName() + " for row '"
+          + new String(get.getRow()) + "'");
+    if (!result.isEmpty())
+      for (KeyValue keyValue : result.list()) {
+        rowReader.getRow().addColumn(keyValue);
+        if (log.isDebugEnabled()) {
+          String qual = Bytes.toString(keyValue.getQualifier());
+          log.debug("\tkey: " + qual + "\tvalue: " + Bytes.toString(keyValue.getValue()));
+        }
+      }
+
+    if (log.isDebugEnabled())
+      log.debug("returned 1 results (" + String.valueOf(after - before) + ")");
   }
 
   public void load(Scan scan, RowReader rowReader) {
-    throw new RuntimeException("not implemented");
-    /*
-     * if (log.isDebugEnabled()) try { if (scan.getFilter() != null)
-     * log.debug("executing scan: " +
-     * FilterUtil.printFilterTree(scan.getFilter())); else
-     * log.debug("executing scan... "); } catch (IOException e1) { }
-     * 
-     * ResultScanner scanner = null; try { scanner =
-     * rowReader.getTableReader().getTable().getScanner(scan); } catch
-     * (IOException e) { throw new GraphServiceException(e); } for (Result row :
-     * scanner) { if (log.isDebugEnabled()) log.debug("row: " + new
-     * String(row.getRow())); if (log.isDebugEnabled()) log.debug("returned " +
-     * row.size() + " columns"); for (KeyValue keyValue : row.list()) {
-     * rowReader.getRow().addColumn(keyValue); if (log.isDebugEnabled()) {
-     * String qual = Bytes.toString(keyValue.getQualifier());
-     * log.debug("\tkey: " + qual + "\tvalue: " +
-     * Bytes.toString(keyValue.getValue())); } } }
-     */
+
+    RecordSet recordSet = rowReader.getTableReader().getTable().scan(scan);
+    while (recordSet.next()) {
+      Record row = recordSet.getRecord();
+      if (log.isDebugEnabled())
+        log.debug("row: " + row.toString());
+      Key key = new Key(rowReader.getTableReader().getTable().getNamespace(), rowReader
+          .getTableReader().getTable().getSetName(), rowReader.getRowKey());
+      KeyInfo ki = new KeyInfo(key, rowReader.getTableReader().getTableConfig()
+          .getDataColumnFamilyName());
+      Result resultRow = new Result(ki, row, scan.getColumnFilter());
+      if (log.isDebugEnabled())
+        log.debug("returned " + resultRow.size() + " columns");
+      for (KeyValue keyValue : resultRow.list()) {
+        rowReader.getRow().addColumn(keyValue);
+        if (log.isDebugEnabled()) {
+          String qual = Bytes.toString(keyValue.getQualifier());
+          log.debug("\tkey: " + qual + "\tvalue: " + Bytes.toString(keyValue.getValue()));
+        }
+      }
+    }
   }
 
   private String serializeGraph(commonj.sdo.DataGraph graph) throws IOException {

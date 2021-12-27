@@ -17,13 +17,18 @@ package org.cloudgraph.aerospike.graph;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.hbase.KeyValue;
+import org.cloudgraph.aerospike.io.KeyValue;
+import org.cloudgraph.common.Bytes;
 import org.cloudgraph.query.expr.DefaultRelationalBinaryExpr;
 import org.cloudgraph.query.expr.EvaluationContext;
 import org.cloudgraph.query.expr.RelationalBinaryExpr;
+import org.cloudgraph.recognizer.GraphRecognizerSupport;
+import org.plasma.query.model.Function;
 import org.plasma.query.model.Literal;
 import org.plasma.query.model.Property;
 import org.plasma.query.model.RelationalOperator;
+import org.plasma.sdo.PlasmaProperty;
+import org.plasma.sdo.PlasmaType;
 
 /**
  * An {@link RelationalBinaryExpr} implementation which uses a specific
@@ -89,8 +94,16 @@ public class LocalEdgeRecognizerRelationalBinaryExpr extends DefaultRelationalBi
         seqChars.length);
     KeyValue value = ctx.getKeyMap().get(new String(qualifier));
     boolean found = value != null;
+    if (found) {
+      GraphRecognizerSupport recognizer = new GraphRecognizerSupport();
+      PlasmaProperty prop = (PlasmaProperty) ctx.getContextType().getProperty(
+          this.getProperty().getName());
+      found = recognizer.evaluate((PlasmaType) prop.getType(), (Function) null,
+          Bytes.toString(value.getValue()), this.operator.getValue(), this.getLiteral());
+    }
     if (log.isDebugEnabled())
-      log.debug("evaluate: " + found + " '" + qualifier + "' in map " + ctx.getKeyMap().keySet());
+      log.debug("evaluate: " + found + " '" + new String(qualifier) + "' in map "
+          + ctx.getKeyMap().keySet());
     return found;
   }
 

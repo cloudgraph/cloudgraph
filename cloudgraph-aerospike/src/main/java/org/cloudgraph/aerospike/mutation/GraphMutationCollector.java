@@ -285,7 +285,8 @@ public class GraphMutationCollector extends DefaultMutation implements MutationC
       // rowWriter.getRow().addColumn(tableWriter.getTableConfig().getDataColumnFamilyNameBytes(),
       // GraphMetaField.__RT__.asBytes(),
       // rowWriter.encodeRootType());
-      rowWriter.writeRowData(fam, GraphMetaKey.TIMESTAMP.codeAsBytes(), DataType.String,
+      rowWriter.writeRowData(fam, GraphMetaKey.TIMESTAMP.codeAsBytes(),
+          GraphMetaKey.TIMESTAMP.getStorageType(),
           Bytes.toBytes(String.valueOf(this.snapshotMap.getSnapshotNannoTime())));
 
       if (tableWriter.getTableConfig().tombstoneRowsOverwriteable()) {
@@ -298,8 +299,8 @@ public class GraphMutationCollector extends DefaultMutation implements MutationC
       // String xml = rowWriter.getSequenceMapping().marshalAsString();
       byte[] bytes = rowWriter.getSequenceMapping().marshal();
       if (rowWriter.getSequenceMapping().isUpdated()) {
-        rowWriter.writeRowData(fam, GraphMetaKey.SEQUENCE_MAPPING.codeAsBytes(), DataType.String,
-            bytes);
+        rowWriter.writeRowData(fam, GraphMetaKey.SEQUENCE_MAPPING.codeAsBytes(),
+            GraphMetaKey.SEQUENCE_MAPPING.getStorageType(), bytes);
       }
     } else { // root is deleted
       if (log.isDebugEnabled())
@@ -309,7 +310,8 @@ public class GraphMutationCollector extends DefaultMutation implements MutationC
         // add a tombstone column
         if (log.isDebugEnabled())
           log.debug("adding toumbstone for root " + rowWriter.getRootDataObject().toString());
-        rowWriter.writeRowData(fam, GraphMetaKey.TOMBSTONE.codeAsBytes(), DataType.String,
+        rowWriter.writeRowData(fam, GraphMetaKey.TOMBSTONE.codeAsBytes(),
+            GraphMetaKey.TOMBSTONE.getStorageType(),
             Bytes.toBytes(this.snapshotMap.getSnapshotDate().getTime()));
         rowWriter.deleteRowData( // deletes all version
             fam, GraphMetaKey.SEQUENCE_MAPPING.codeAsBytes());

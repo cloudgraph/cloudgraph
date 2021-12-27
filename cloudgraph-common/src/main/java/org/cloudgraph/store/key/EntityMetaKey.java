@@ -17,6 +17,7 @@ package org.cloudgraph.store.key;
 
 import java.nio.charset.Charset;
 
+import org.plasma.sdo.DataType;
 import org.plasma.sdo.core.CoreConstants;
 
 /**
@@ -38,21 +39,23 @@ public enum EntityMetaKey implements MetaKey {
    * The value associated with this field is a uuid which allows all assembled
    * data object to be universally unique across sessions and clients
    */
-  UUID("_UU", "the UUID for an entity"),
+  UUID("_UU", "the UUID for an entity", DataType.String),
   /**
    * The qualified type name for the entity. Used to dynamically determine the
    * type/subtype of the entity e.g. when unmarshalled or de-referenced as part
    * of an edge (collection).
    */
-  TYPE("_TP", "qualified type name for an entity");
+  TYPE("_TP", "qualified type name for an entity", DataType.String);
 
   private String code;
   private String description;
   byte[] codeBytes;
+  DataType storageType;
 
-  private EntityMetaKey(String code, String description) {
+  private EntityMetaKey(String code, String description, DataType storageType) {
     this.code = code;
     this.description = description;
+    this.storageType = storageType;
     this.codeBytes = this.code.getBytes(Charset.forName(CoreConstants.UTF8_ENCODING));
   }
 
@@ -74,5 +77,10 @@ public enum EntityMetaKey implements MetaKey {
   @Override
   public String description() {
     return this.description;
+  }
+
+  @Override
+  public DataType getStorageType() {
+    return this.storageType;
   }
 }

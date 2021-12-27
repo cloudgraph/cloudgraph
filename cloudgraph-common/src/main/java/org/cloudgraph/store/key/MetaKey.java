@@ -15,6 +15,8 @@
  */
 package org.cloudgraph.store.key;
 
+import org.plasma.sdo.DataType;
+
 /**
  * Qualifier or code-set used to describe a graph/row.
  * <p>
@@ -36,4 +38,7 @@ public interface MetaKey {
   public String name();
 
   public String description();
+
+  public DataType getStorageType();
+
 }

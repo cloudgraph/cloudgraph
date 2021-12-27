@@ -44,21 +44,26 @@ public abstract class DataTypeGraphModelTest extends HBaseTestCase {
   private static Log log = LogFactory.getLog(DataTypeGraphModelTest.class);
 
   protected int maxLevels = 1;
-  protected int maxRows = 6; // Some tests slice for name on third child, so
+  protected static int LEVEL_ONE_ROWS = 4; // Some tests slice for name on third
+  // child, so
+  protected static int LEVEL_TWO_ROWS = 1;
 
   // keep at least 3 rows
 
   protected void fillGraph(Node root, int id, Date now, String namePrefix) {
     Node parent = root;
-    for (int i = 0; i < maxRows; i++) {
+    for (int i = 0; i < LEVEL_ONE_ROWS; i++) {
       Node child = parent.createChild();
       fillNode(child, id, now, namePrefix, 1, i);
-      /*
-       * for (int j = 0; j < maxRows; j++) { Node child2 = child.createChild();
-       * fillNode(child2, id, now, namePrefix, 2, j); for (int k = 0; k <
-       * maxRows; k++) { Node child3 = child2.createChild(); fillNode(child3,
-       * id, now, namePrefix, 3, k); } }
-       */
+
+      for (int j = 0; j < LEVEL_TWO_ROWS; j++) {
+        Node child2 = child.createChild();
+        fillNode(child2, id, now, namePrefix, 2, j);
+        // for (int k = 0; k <maxRows; k++) {
+        // Node child3 = child2.createChild();
+        // fillNode(child3, id, now, namePrefix, 3, k);
+        // }
+      }
     }
     // addNodes(root, id, now,
     // maxLevels, 1,

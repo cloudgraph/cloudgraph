@@ -516,7 +516,7 @@ public class GraphQuery implements QueryDispatcher {
 
     // if (log.isDebugEnabled())
     // log.debug(FilterUtil.printFilterTree(gets.get(0).getFilter()));
-    Result[] resultRows = rootTableReader.getTable().get(gets, rootTableReader.getTable());
+    Result[] resultRows = rootTableReader.getTable().get(gets);
     if (resultRows == null) {
       log.debug("no results from table "
           + rootTableReader.getTableConfig().getQualifiedPhysicalName()
@@ -557,14 +557,13 @@ public class GraphQuery implements QueryDispatcher {
     RecordSet recordSet = rootTableReader.getTable().scan(scan);
     while (recordSet.next()) {
       Record record = recordSet.getRecord();
-      log.info("REC: " + record.toString());
-      Key key = new Key(rootTableReader.getTable().getNamespace(), rootTableReader.getTable()
-          .getSetName(), "unknown");
-      KeyInfo ki = new KeyInfo(key, rootTableReader.getTableConfig().getDataColumnFamilyName());
+      // log.info("REC: " + record.toString());
+      Key recSetKey = recordSet.getKey();
+      KeyInfo ki = new KeyInfo(recSetKey, rootTableReader.getTableConfig()
+          .getDataColumnFamilyName());
       Result result = new Result(ki, record, scan.getColumnFilter());
       collector.collect(result);
     }
-
   }
 
   /**

@@ -17,8 +17,10 @@ package org.cloudgraph.aerospike.graph;
 
 import java.util.Map;
 
-import org.apache.hadoop.hbase.KeyValue;
+import org.cloudgraph.aerospike.io.KeyValue;
 import org.cloudgraph.query.expr.EvaluationContext;
+import org.plasma.sdo.PlasmaProperty;
+import org.plasma.sdo.PlasmaType;
 
 /**
  * Context which supports the evaluation and "recognition" of a given data graph
@@ -40,13 +42,21 @@ import org.cloudgraph.query.expr.EvaluationContext;
  */
 public class LocalEdgeRecognizerContext implements EvaluationContext {
 
+  private PlasmaType contextType;
+  private PlasmaProperty contextProperty;
   private Map<String, KeyValue> keyMap;
   private Long sequence;
 
   /**
    * Constructs an empty context.
    */
-  public LocalEdgeRecognizerContext() {
+  public LocalEdgeRecognizerContext(PlasmaType contextType, PlasmaProperty contextProperty) {
+    this.contextType = contextType;
+    this.contextProperty = contextProperty;
+  }
+
+  public PlasmaType getContextType() {
+    return contextType;
   }
 
   /**

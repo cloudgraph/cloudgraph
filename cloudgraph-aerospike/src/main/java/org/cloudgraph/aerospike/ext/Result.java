@@ -29,6 +29,10 @@ public class Result {
     this.columnMap = columnMap;
   }
 
+  public int size() {
+    return this.record.bins.size();
+  }
+
   public byte[] getValue(byte[] family, byte[] qualifier) {
     byte[] value = (byte[]) record.getValue(Bytes.toString(qualifier));
     return value;
@@ -115,4 +119,5 @@ public class Result {
     }
     return result;
   }
+
 }

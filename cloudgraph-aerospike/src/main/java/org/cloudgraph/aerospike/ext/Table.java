@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.cloudgraph.aerospike.expr.ExprUtil;
 import org.cloudgraph.aerospike.filter.ColumnInfo;
 import org.cloudgraph.aerospike.key.CompositeColumnKeyFactory;
 import org.cloudgraph.aerospike.scan.ScanLiteral;
@@ -71,6 +72,7 @@ public class Table implements TableName {
 
   public void batch(List<Row> rows, Object[] results) throws AerospikeException {
     WritePolicy writePolicy = new WritePolicy();
+    writePolicy.sendKey = true;
     // writePolicy.expiration = 20;
     // no put() for multiple keys like there is for get()
     for (Row row : rows) {
@@ -89,6 +91,7 @@ public class Table implements TableName {
 
   public Result get(Get get) {
     Policy policy = new Policy();
+    policy.sendKey = true;
     String[] names = get.getColumnNames();
     Key key = get.getKey(this);
     if (log.isDebugEnabled())
@@ -98,8 +101,9 @@ public class Table implements TableName {
     return new Result(ki, rec, get.getColumnFilter());
   }
 
-  public Result[] get(List<Get> gets, Table table) {
+  public Result[] get(List<Get> gets) {
     BatchPolicy policy = new BatchPolicy();
+    policy.sendKey = true;
     Key[] keys = new Key[gets.size()];
     for (int i = 0; i < gets.size(); i++) {
       keys[i] = gets.get(i).getKey(this);
@@ -120,6 +124,7 @@ public class Table implements TableName {
 
   public RecordSet scan(Scan scan) {
     QueryPolicy queryPolicy = new QueryPolicy();
+    queryPolicy.sendKey = true;
     Statement stmt = new Statement();
     stmt.setSetName(this.getSetName());
     stmt.setNamespace(this.getNamespace());
@@ -135,10 +140,11 @@ public class Table implements TableName {
           DataType colDataType = DataType.valueOf(col.getProperty().getType().getName());
           binDataType = colDataType;
         } else {
+          // throw new IllegalStateException("no idea");
           binDataType = DataType.String;
         }
       } else {
-        binDataType = DataType.String;
+        binDataType = col.getDataType();
       }
       if (log.isDebugEnabled())
         log.debug("scan added bin: " + binName + " (" + binDataType + ")");
@@ -158,8 +164,8 @@ public class Table implements TableName {
         String binName = Bytes.toString(binBytes);
         DataType dataType = DataType.valueOf(scanLit.getProperty().getType().getName());
         if (scanLit.getRelationalOperator() != null) {
-          PredExp[] exprs = this.createPredExp(binName, scanLit.getRelationalOperator(), dataType,
-              scanLit.getLiteral());
+          PredExp[] exprs = ExprUtil.createPredExp(binName, scanLit.getRelationalOperator(),
+              dataType, scanLit.getLiteral());
           for (PredExp ex : exprs)
             predicatesExprs.add(ex);
 
@@ -167,7 +173,7 @@ public class Table implements TableName {
         } else {
           if (WildcardStringLiteral.class.isInstance(scanLit)) {
             WildcardStringLiteral wildcardLit = WildcardStringLiteral.class.cast(scanLit);
-            PredExp[] exprs = this.createPredExp(binName, wildcardLit.getWildcardOperator()
+            PredExp[] exprs = ExprUtil.createPredExp(binName, wildcardLit.getWildcardOperator()
                 .getValue(), dataType, scanLit.getLiteral());
             for (PredExp ex : exprs)
               predicatesExprs.add(ex);
@@ -192,207 +198,6 @@ public class Table implements TableName {
 
     RecordSet recordSet = this.client.query(queryPolicy, stmt);
     return recordSet;
-  }
-
-  private PredExp[] createPredExp(String binName, PredicateOperatorName oper,
-      DataType literalDatType, String literal) {
-    PredExp[] result = null;
-    switch (oper) {
-    case LIKE:
-      result = this.createRegExpPredicate(binName, oper, literalDatType, literal);
-      break;
-    case APP_OTHER_NAME:
-    case BETWEEN:
-    case CONTAINS:
-    case DISTINCT:
-    case EXISTS:
-    case IN:
-    case MATCH:
-    case NOT_EXISTS:
-    case NOT_IN:
-    case NULL:
-    case SIMILAR:
-    case UNIQUE:
-    default:
-      throw new IllegalArgumentException("unknown oper, " + oper);
-    }
-    return result;
-  }
-
-  private PredExp[] createPredExp(String binName, RelationalOperatorName oper,
-      DataType literalDatType, String literal) {
-    PredExp[] result = null;
-    switch (oper) {
-    case EQUALS:
-      result = this.createEqualsPredicate(binName, oper, literalDatType, literal);
-      break;
-    case GREATER_THAN:
-      result = this.createGreaterThanPredicate(binName, oper, literalDatType, literal);
-      break;
-    case GREATER_THAN_EQUALS:
-      result = this.createGreaterThanEqualsPredicate(binName, oper, literalDatType, literal);
-      break;
-    case LESS_THAN:
-      result = this.createLessThanPredicate(binName, oper, literalDatType, literal);
-      break;
-    case LESS_THAN_EQUALS:
-      result = this.createLessThanEqualsPredicate(binName, oper, literalDatType, literal);
-      break;
-    case NOT_EQUALS:
-      result = this.createNotEqualsPredicate(binName, oper, literalDatType, literal);
-      break;
-    default:
-      throw new IllegalArgumentException("unknown oper, " + oper);
-    }
-    return result;
-  }
-
-  private PredExp[] createEqualsPredicate(String binName, RelationalOperatorName oper,
-      DataType literalDatType, String literal) {
-    DataFlavor flavor = DataFlavor.fromDataType(literalDatType);
-    switch (flavor) {
-    case integral:
-      switch (literalDatType) {
-      case Boolean:
-      case Int:
-      case Integer:
-      case Short:
-        PredExp[] integExprs = { PredExp.integerBin(binName),
-            PredExp.integerValue(Integer.valueOf(literal)), PredExp.integerEqual() };
-        return integExprs;
-      case UnsignedInt:
-      case Long:
-      case UnsignedLong:
-      default:
-        throw new IllegalArgumentException("unknown datatype, " + literalDatType);
-      }
-    case string:
-      PredExp[] strExprs = { PredExp.stringBin(binName), PredExp.stringValue(literal),
-          PredExp.stringEqual() };
-      return strExprs;
-    case temporal:
-    case real:
-    case other:
-    default:
-      throw new IllegalArgumentException("unknown flavor, " + flavor);
-    }
-  }
-
-  private PredExp[] createNotEqualsPredicate(String binName, RelationalOperatorName oper,
-      DataType literalDatType, String literal) {
-    DataFlavor flavor = DataFlavor.fromDataType(literalDatType);
-    switch (flavor) {
-    case integral:
-      switch (literalDatType) {
-      case Boolean:
-      case Int:
-      case Integer:
-      case Short:
-        PredExp[] integExprs = { PredExp.integerBin(binName),
-            PredExp.integerValue(Integer.valueOf(literal)), PredExp.integerUnequal() };
-        return integExprs;
-      case UnsignedInt:
-      case Long:
-      case UnsignedLong:
-      default:
-        throw new IllegalArgumentException("unknown datatype, " + literalDatType);
-      }
-    case string:
-      PredExp[] strExprs = { PredExp.stringBin(binName), PredExp.stringValue(literal),
-          PredExp.stringUnequal() };
-      return strExprs;
-    case temporal:
-    case real:
-    case other:
-    default:
-      throw new IllegalArgumentException("unknown flavor, " + flavor);
-    }
-  }
-
-  private PredExp[] createGreaterThanPredicate(String binName, RelationalOperatorName oper,
-      DataType literalDatType, String literal) {
-    DataFlavor flavor = DataFlavor.fromDataType(literalDatType);
-    switch (flavor) {
-    case integral:
-      PredExp[] integExprs = { PredExp.integerBin(binName),
-          PredExp.integerValue(Integer.valueOf(literal)), PredExp.integerGreater() };
-      return integExprs;
-    case string:
-    case temporal:
-    case real:
-    case other:
-    default:
-      throw new IllegalArgumentException("unknown flavor, " + flavor);
-    }
-  }
-
-  private PredExp[] createGreaterThanEqualsPredicate(String binName, RelationalOperatorName oper,
-      DataType literalDatType, String literal) {
-    DataFlavor flavor = DataFlavor.fromDataType(literalDatType);
-    switch (flavor) {
-    case integral:
-      PredExp[] integExprs = { PredExp.integerBin(binName),
-          PredExp.integerValue(Integer.valueOf(literal)), PredExp.integerGreaterEq() };
-      return integExprs;
-    case string:
-    case temporal:
-    case real:
-    case other:
-    default:
-      throw new IllegalArgumentException("unknown flavor, " + flavor);
-    }
-  }
-
-  private PredExp[] createLessThanPredicate(String binName, RelationalOperatorName oper,
-      DataType literalDatType, String literal) {
-    DataFlavor flavor = DataFlavor.fromDataType(literalDatType);
-    switch (flavor) {
-    case integral:
-      PredExp[] integExprs = { PredExp.integerBin(binName),
-          PredExp.integerValue(Integer.valueOf(literal)), PredExp.integerLess() };
-      return integExprs;
-    case string:
-    case temporal:
-    case real:
-    case other:
-    default:
-      throw new IllegalArgumentException("unknown flavor, " + flavor);
-    }
-  }
-
-  private PredExp[] createLessThanEqualsPredicate(String binName, RelationalOperatorName oper,
-      DataType literalDatType, String literal) {
-    DataFlavor flavor = DataFlavor.fromDataType(literalDatType);
-    switch (flavor) {
-    case integral:
-      PredExp[] integExprs = { PredExp.integerBin(binName),
-          PredExp.integerValue(Integer.valueOf(literal)), PredExp.integerLessEq() };
-      return integExprs;
-    case string:
-    case temporal:
-    case real:
-    case other:
-    default:
-      throw new IllegalArgumentException("unknown flavor, " + flavor);
-    }
-  }
-
-  private PredExp[] createRegExpPredicate(String binName, PredicateOperatorName oper,
-      DataType literalDatType, String literal) {
-    DataFlavor flavor = DataFlavor.fromDataType(literalDatType);
-    switch (flavor) {
-    case string:
-      String regexp = literal.replace("*", ".*");
-      PredExp[] strExprs = { PredExp.stringBin(binName), PredExp.stringValue(regexp),
-          PredExp.stringRegex(RegexFlag.ICASE | RegexFlag.NEWLINE) };
-      return strExprs;
-    case integral:
-    case temporal:
-    case real:
-    case other:
-    default:
-      throw new IllegalArgumentException("unknown flavor, " + flavor);
-    }
   }
 
   @Override

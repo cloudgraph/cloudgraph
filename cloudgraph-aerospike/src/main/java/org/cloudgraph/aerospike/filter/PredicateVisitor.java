@@ -26,31 +26,22 @@ import org.plasma.sdo.PlasmaProperty;
 import org.plasma.sdo.PlasmaType;
 import org.plasma.sdo.access.DataAccessException;
 
+import com.aerospike.client.query.PredExp;
+
 /**
  * Processes visitor events for query model elements common to both row and
  * column filters, such as relational and group operators, within the context of
- * HBase filter hierarchy assembly and maintains various context information
+ * Aerospike filter hierarchy assembly and maintains various context information
  * useful to subclasses.
- * <p>
- * HBase filters may be collected into lists using <a href=
- * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/filter/FilterList.html"
- * target="#">FilterList</a> each with a <a href=
- * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/filter/FilterList.Operator.html#MUST_PASS_ALL"
- * target="#">MUST_PASS_ALL</a> or <a href=
- * "http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/filter/FilterList.Operator.html#MUST_PASS_ONE"
- * target="#">MUST_PASS_ONE</a> (logical) operator. Lists may then be assembled
- * into hierarchies used to represent complex expression trees filtering either
- * rows or columns in HBase.
- * </p>
  * 
  * @author Scott Cinnamond
- * @since 0.5
+ * @since 2.0.0
  */
 public abstract class PredicateVisitor extends FilterHierarchyAssembler {
   private static Log log = LogFactory.getLog(PredicateVisitor.class);
   protected PlasmaType contextType;
   protected PlasmaProperty contextProperty;
-  // protected CompareFilter.CompareOp contextHBaseCompareOp;
+  protected PredExp contextHBaseCompareOp;
   protected boolean contextOpWildcard;
   protected PredicateOperator contextWildcardOperator;
 
@@ -62,7 +53,7 @@ public abstract class PredicateVisitor extends FilterHierarchyAssembler {
     super.clear();
     this.contextType = null;
     this.contextProperty = null;
-    // this.contextHBaseCompareOp = null;
+    this.contextHBaseCompareOp = null;
     this.contextOpWildcard = false;
     this.contextWildcardOperator = null;
   }
@@ -74,22 +65,22 @@ public abstract class PredicateVisitor extends FilterHierarchyAssembler {
 
     switch (operator.getValue()) {
     case EQUALS:
-      // this.contextHBaseCompareOp = CompareFilter.CompareOp.EQUAL;
+      this.contextHBaseCompareOp = PredExp.integerEqual();
       break;
     case NOT_EQUALS:
-      // this.contextHBaseCompareOp = CompareFilter.CompareOp.NOT_EQUAL;
+      this.contextHBaseCompareOp = PredExp.integerEqual();
       break;
     case GREATER_THAN:
-      // this.contextHBaseCompareOp = CompareFilter.CompareOp.GREATER;
+      this.contextHBaseCompareOp = PredExp.integerGreater();
       break;
     case GREATER_THAN_EQUALS:
-      // this.contextHBaseCompareOp = CompareFilter.CompareOp.GREATER_OR_EQUAL;
+      this.contextHBaseCompareOp = PredExp.integerGreaterEq();
       break;
     case LESS_THAN:
-      // this.contextHBaseCompareOp = CompareFilter.CompareOp.LESS;
+      this.contextHBaseCompareOp = PredExp.integerLess();
       break;
     case LESS_THAN_EQUALS:
-      // this.contextHBaseCompareOp = CompareFilter.CompareOp.LESS_OR_EQUAL;
+      this.contextHBaseCompareOp = PredExp.integerLessEq();
       break;
     default:
       throw new DataAccessException("unknown operator '" + operator.getValue().toString() + "'");

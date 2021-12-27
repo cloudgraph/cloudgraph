@@ -190,11 +190,12 @@ public class ProtoSequenceGenerator implements SequenceGenerator {
     }
 
     StateModelProto.StateModel result = this.model.build();
-    if (log.isDebugEnabled())
-      log.debug("marshal: " + result);
 
+    byte[] bytes = toBytes(result);
+    if (log.isDebugEnabled())
+      log.debug("marshal (" + bytes.length + "): " + result);
     this.marshaled = true;
-    return toBytes(result);
+    return bytes;
   }
 
   private byte[] toBytes(StateModelProto.StateModel model) {
