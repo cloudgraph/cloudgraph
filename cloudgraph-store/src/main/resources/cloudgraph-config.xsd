@@ -442,6 +442,16 @@ column field may be specified.
                 <xsd:documentation>The delimiter used to seperate metadata fields within composite column keys</xsd:documentation>
             </xsd:annotation>
         </xsd:attribute>
+        <xsd:attribute name="fieldsFixedLength" type="xsd:boolean" use="optional" default="false">
+            <xsd:annotation>
+                <xsd:documentation>Whether column key fields within the column key model are fixed length</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="fieldLength" type="xsd:int" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>If column key fields are fixed length, specifies the field length</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
         <xsd:attribute name="sequenceDelimiter" type="xsd:string" use="optional" default="@">
             <xsd:annotation>
                 <xsd:documentation>The delimiter used to seperate metadata fields from fields qualifed by (or following) the sequence number within a composite column key</xsd:documentation>

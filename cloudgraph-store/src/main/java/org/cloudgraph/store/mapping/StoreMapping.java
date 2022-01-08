@@ -367,24 +367,36 @@ public class StoreMapping implements MappingConfiguration {
     return configProperties;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.cloudgraph.config.TableMapping#getProperties()
-   */
   @Override
   public List<Property> getProperties() {
     return config.properties;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.cloudgraph.config.TableMapping#findProperty(java.lang.String)
-   */
   @Override
   public Property findProperty(String name) {
     return this.propertyNameToPropertyMap.get(name);
+  }
+
+  @Override
+  public List<TableMapping> getStaticTables(StoreMappingContext context) {
+    List<TableMapping> result = new ArrayList<>();
+    for (TableMapping mapping : this.tableNameToTableMap.values()) {
+      if (StaticTableMapping.class.isInstance(mapping))
+        result.add(mapping);
+    }
+
+    return result;
+  }
+
+  @Override
+  public List<TableMapping> getDynamicTables(StoreMappingContext context) {
+    List<TableMapping> result = new ArrayList<>();
+    for (TableMapping mapping : this.tableNameToTableMap.values()) {
+      if (DynamicTableMapping.class.isInstance(mapping))
+        result.add(mapping);
+    }
+
+    return result;
   }
 
   @Override
@@ -819,4 +831,5 @@ public class StoreMapping implements MappingConfiguration {
     }
     return result;
   }
+
 }

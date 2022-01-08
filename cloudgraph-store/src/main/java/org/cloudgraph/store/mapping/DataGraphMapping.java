@@ -56,6 +56,7 @@ public class DataGraphMapping {
   private byte[] columnKeyFieldDelimiterBytes;
   private byte[] columnKeySequenceDelimiterBytes;
   private byte[] columnKeyReferenceMetadataDelimiterBytes;
+  private static Charset charset = Charset.forName(CoreConstants.UTF8_ENCODING);
 
   @SuppressWarnings("unused")
   private DataGraphMapping() {
@@ -124,10 +125,19 @@ public class DataGraphMapping {
       throw new StoreMappingException("found invalid (null) column metadata delimiter "
           + "for table, " + this.table.getQualifiedPhysicalName() + ", for graph "
           + this.graph.getUri() + "#" + this.graph.getType());
-    if (columnKeyModel.getFieldDelimiter() == null)
-      throw new StoreMappingException("found invalid (null) column field delimiter "
-          + "for table, " + this.table.getQualifiedPhysicalName() + ", for graph "
-          + this.graph.getUri() + "#" + this.graph.getType());
+    if (!columnKeyModel.isFieldsFixedLength()) {
+      if (columnKeyModel.getFieldDelimiter() == null)
+        throw new StoreMappingException("found invalid (null) column field delimiter "
+            + "for fixed length column model " + "for table, "
+            + this.table.getQualifiedPhysicalName() + ", for graph " + this.graph.getUri() + "#"
+            + this.graph.getType());
+    } else {
+      if (columnKeyModel.getFieldLength() == null)
+        throw new StoreMappingException(
+            "found invalid (null) column field lengh for fixed length column model "
+                + "for table, " + this.table.getQualifiedPhysicalName() + ", for graph "
+                + this.graph.getUri() + "#" + this.graph.getType());
+    }
     if (columnKeyModel.getSequenceDelimiter() == null)
       throw new StoreMappingException("found invalid (null) column sequence delimiter "
           + "for table, " + this.table.getQualifiedPhysicalName() + ", for graph "
@@ -228,7 +238,7 @@ public class DataGraphMapping {
   public byte[] getRowKeyFieldDelimiterBytes() {
     if (rowKeyFieldDelimiterBytes == null) {
       this.rowKeyFieldDelimiterBytes = this.graph.getRowKeyModel().getFieldDelimiter()
-          .getBytes(Charset.forName(CoreConstants.UTF8_ENCODING));
+          .getBytes(charset);
     }
     return rowKeyFieldDelimiterBytes;
   }
@@ -282,7 +292,7 @@ public class DataGraphMapping {
   public byte[] getColumnKeyFieldDelimiterBytes() {
     if (columnKeyFieldDelimiterBytes == null) {
       this.columnKeyFieldDelimiterBytes = this.graph.getColumnKeyModel().getFieldDelimiter()
-          .getBytes(Charset.forName(CoreConstants.UTF8_ENCODING));
+          .getBytes(charset);
     }
     return columnKeyFieldDelimiterBytes;
   }
@@ -290,7 +300,7 @@ public class DataGraphMapping {
   public byte[] getColumnKeySequenceDelimiterBytes() {
     if (columnKeySequenceDelimiterBytes == null) {
       this.columnKeySequenceDelimiterBytes = this.graph.getColumnKeyModel().getSequenceDelimiter()
-          .getBytes(Charset.forName(CoreConstants.UTF8_ENCODING));
+          .getBytes(charset);
     }
     return columnKeySequenceDelimiterBytes;
   }
@@ -298,7 +308,7 @@ public class DataGraphMapping {
   public byte[] getColumnKeyReferenceMetadataDelimiterBytes() {
     if (columnKeyReferenceMetadataDelimiterBytes == null) {
       this.columnKeyReferenceMetadataDelimiterBytes = this.graph.getColumnKeyModel()
-          .getReferenceMetadataDelimiter().getBytes(Charset.forName(CoreConstants.UTF8_ENCODING));
+          .getReferenceMetadataDelimiter().getBytes(charset);
     }
     return columnKeyReferenceMetadataDelimiterBytes;
   }

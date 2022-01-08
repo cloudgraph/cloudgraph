@@ -62,7 +62,7 @@ public class GraphRow implements RowState {
   public GraphRow(byte[] rowKey, DataObject rootDataObject, StoreMappingContext mappingContext) {
     this.rowKey = rowKey;
     if ("unknown".equalsIgnoreCase(Bytes.toString(rowKey)))
-    	throw new IllegalArgumentException("illegal row key: " + Bytes.toString(rowKey));
+      throw new IllegalArgumentException("illegal row key: " + Bytes.toString(rowKey));
     this.rootDataObject = rootDataObject;
     int hashCode = getHashCode((PlasmaDataObject) this.rootDataObject);
     this.dataObjectMap.put(hashCode, rootDataObject);

@@ -34,6 +34,28 @@ public interface MappingConfiguration {
   public ConfigProperties getConfigProperties();
 
   /**
+   * Returns all tables not dynamically defined, that is those tables defined
+   * within a static mapping resource / file.
+   * 
+   * @param context
+   *          the mapping context
+   * @return all tables not dynamically defined, that is those tables defined
+   *         within a static mapping resource / file.
+   */
+  public List<TableMapping> getStaticTables(StoreMappingContext context);
+
+  /**
+   * Returns all tables dynamically defined, that is those tables defined
+   * dynamically at runtime
+   * 
+   * @param context
+   *          the mapping context
+   * @return all tables dynamically defined, that is those tables defined
+   *         dynamically at runtime
+   */
+  public List<TableMapping> getDynamicTables(StoreMappingContext context);
+
+  /**
    * Returns a table configuration for the given qualified SDO Type name or null
    * if not found.
    * 
