@@ -17,7 +17,7 @@ package org.cloudgraph.hbase.graph;
 
 import java.util.Collection;
 
-import org.cloudgraph.hbase.key.CompositeRowKeyReader;
+import org.cloudgraph.core.key.CompositeRowKeyReader;
 import org.cloudgraph.query.expr.EvaluationContext;
 import org.cloudgraph.recognizer.Endpoint;
 import org.cloudgraph.store.key.KeyValue;
