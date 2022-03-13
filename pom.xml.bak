@@ -38,6 +38,7 @@
         <module>cloudgraph-test</module>
         <module>cloudgraph-mapreduce</module>
         <module>cloudgraph-hbase</module>
+        <module>cloudgraph-aerospike</module>
         <module>cloudgraph-rdb</module>
         <!--  
         <module>cloudgraph-docs</module>
