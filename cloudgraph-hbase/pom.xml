@@ -4,10 +4,10 @@
     <parent>
         <groupId>org.cloudgraph</groupId>
         <artifactId>cloudgraph</artifactId>
-        <version>1.3.8</version>
+        <version>1.3.9</version>
     </parent>
 	<properties>
- 		<cloudgraph.version>1.3.8</cloudgraph.version>
+ 		<cloudgraph.version>1.3.9</cloudgraph.version>
  		<plasma.version>2.1.8</plasma.version>
         <slf4j.version>1.6.1</slf4j.version>
 		<hadoop.version>2.7.3</hadoop.version>
@@ -33,17 +33,17 @@
         <dependency>
             <groupId>org.cloudgraph</groupId>
             <artifactId>cloudgraph-common</artifactId>
-             <version>1.3.8</version>
+             <version>1.3.9</version>
          </dependency>
         <dependency>
             <groupId>org.cloudgraph</groupId>
             <artifactId>cloudgraph-store</artifactId>
-             <version>1.3.8</version>
+             <version>1.3.9</version>
          </dependency>
         <dependency>
             <groupId>org.cloudgraph</groupId>
             <artifactId>cloudgraph-core</artifactId>
-             <version>1.3.8</version>
+             <version>1.3.9</version>
          </dependency>
  	<dependency>
 		<groupId>io.reactivex.rxjava2</groupId>
@@ -53,7 +53,7 @@
         <dependency>
             <groupId>org.cloudgraph</groupId>
             <artifactId>cloudgraph-mapreduce</artifactId>
-             <version>1.3.8</version>
+             <version>1.3.9</version>
              <exclusions>
             	<exclusion>
             		<artifactId>commons-httpclient</artifactId>
@@ -128,7 +128,7 @@
         <dependency>
             <groupId>org.cloudgraph</groupId>
             <artifactId>cloudgraph-test</artifactId>
-             <version>1.3.8</version>
+             <version>1.3.9</version>
              <scope>test</scope>
         </dependency>
         <!-- 

@@ -1,0 +1,16 @@
+package org.cloudgraph.rocksdb.proto;
+
+option optimize_for = SPEED;
+option java_outer_classname="TupleProto";
+
+message Tuple {
+  repeated Cell cell = 1;
+}
+
+message Cell {
+  required bytes name = 1;
+  required bytes value = 2;
+}
+
+
+
