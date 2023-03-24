@@ -320,10 +320,14 @@ public class HBaseConnectionManager {
     Admin admin = null;
     try {
       admin = connection.getAdmin();
-      String qualifiedLogicalName = StoreMapping.getInstance()
-          .qualifiedLogicalTableNameFromPhysicalTablePath(null, // FIXME: Apache
-                                                                // HBase
-              name.getNameAsString(), mappingContext);
+      String logicalTableNameKey = name.getNameAsString();
+      logicalTableNameKey = logicalTableNameKey.replace(':', '/');
+
+      // FIXME: Apache HBase
+      String qualifiedLogicalName = StoreMapping
+          .getInstance()
+          .qualifiedLogicalTableNameFromPhysicalTablePath(null, logicalTableNameKey, mappingContext);
+
       TableMapping tableConfig = StoreMapping.getInstance().getTableByQualifiedLogicalName(
           name.getNamespaceAsString(), qualifiedLogicalName, mappingContext);
       HTableDescriptor tableDesc = new HTableDescriptor(name);

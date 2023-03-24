@@ -168,7 +168,10 @@ public abstract class TableMapping {
       name.append(context.getMaprdbVolumePath());
       name.append(TABLE_PHYSICAL_NAME_DELIM);
     }
-    if (namespace != null) {
+    // if has a MAPRDB root path, and the table definition has a namespace,
+    // MAPRDB will need the namespace as part of the physical
+    // table path
+    if (rootPath != null && namespace != null) {
       name.append(namespace);
       name.append(TABLE_PHYSICAL_NAME_DELIM);
     }

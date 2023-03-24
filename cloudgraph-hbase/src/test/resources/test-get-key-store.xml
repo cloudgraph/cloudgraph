@@ -2,13 +2,13 @@
 <cloudgraph:CloudGraphStoreMapping  
     xmlns:cloudgraph="http://www.cloudgraph.org/config">
     
-    <Property name="hbase.zookeeper.quorum">192.168.1.131:2181</Property>
+    <Property name="hbase.zookeeper.quorum">192.168.0.65:2181</Property>
     <Property name="hbase.zookeeper.property.clientPort">2181</Property>     
 
     <Property name="org.plasma.sdo.access.provider.hbase.ConnectionPoolMinSize">1</Property>    
     <Property name="org.plasma.sdo.access.provider.hbase.ConnectionPoolMaxSize">80</Property>    
 
-    <Table name="TEST_COMPLETE_KEY_TEMPORAL" dataColumnFamilyName="f1">
+    <Table name="TEST_COMPLETE_KEY_TEMPORAL" namespace="test" dataColumnFamilyName="f1">
         <HashAlgorithm name="murmur32"/>
          
         <DataGraph uri="http://cloudgraph.org/test/datatypes" type="DateTimeNode">
@@ -58,7 +58,7 @@
         </DataGraph>
     </Table>  
 
-    <Table name="TEST_COMPLETE_KEY_INTEGRAL" dataColumnFamilyName="f1">
+    <Table name="TEST_COMPLETE_KEY_INTEGRAL" namespace="test" dataColumnFamilyName="f1">
         <HashAlgorithm name="murmur32"/>
         
          <DataGraph uri="http://cloudgraph.org/test/datatypes" type="IntNode">
@@ -108,7 +108,7 @@
         </DataGraph>
     </Table>  
 
-    <Table name="TEST_COMPLETE_KEY_REAL" dataColumnFamilyName="f1">
+    <Table name="TEST_COMPLETE_KEY_REAL" namespace="test" dataColumnFamilyName="f1">
         <HashAlgorithm name="murmur32"/>
         
         <DataGraph uri="http://cloudgraph.org/test/datatypes" type="FloatNode">
@@ -138,7 +138,7 @@
         </DataGraph>
     </Table>  
 
-    <Table name="TEST_COMPLETE_KEY_STRING" dataColumnFamilyName="f1">
+    <Table name="TEST_COMPLETE_KEY_STRING" namespace="test" dataColumnFamilyName="f1">
         <HashAlgorithm name="murmur32"/>
         <DataGraph uri="http://cloudgraph.org/test/datatypes" type="StringNode">
             <RowKeyModel>

@@ -43,8 +43,7 @@
         <module>cloudgraph-docs</module>
         -->
         <module>cloudgraph-maprdb</module>
-        <module>cloudgraph-rocksdb</module>
-        <module>cloudgraph-bigtable</module>
+         <module>cloudgraph-bigtable</module>
     </modules>
 	<repositories>
 		<repository>
@@ -107,7 +106,7 @@
             </configuration>
               
 		  </plugin>	  
-                               
+             <!--                  
           <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-javadoc-plugin</artifactId>
@@ -124,9 +123,9 @@
                 </execution>
               </executions>
           </plugin>
-                                  	         
+              -->                    	         
           <!-- Sign Artifacts -->     
-                           
+           <!--                
 	      <plugin>
 	        <groupId>org.apache.maven.plugins</groupId>
 	        <artifactId>maven-gpg-plugin</artifactId>
@@ -141,7 +140,7 @@
 	          </execution>
 	        </executions>
 	      </plugin>	              
-	             
+	           -->  
 	      <!--
 	          Release Plugin (Update version in POM before/after release, create
 	          tag, deploy) to try: mvn release:prepare -DdryRun=true && mvn

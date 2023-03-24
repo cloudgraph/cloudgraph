@@ -66,13 +66,13 @@ public abstract class SocialGraphModelTest extends HBaseTestCase {
   protected GraphInfo createGraph(String usernamePrefix) throws IOException {
     GraphInfo info = new GraphInfo();
 
-    String name = usernamePrefix + String.valueOf(System.nanoTime()).substring(10) + "test.com";
+    String name = usernamePrefix + String.valueOf(System.nanoTime()).substring(4) + "test.com";
     info.actor = createRootActor(name);
     info.actor.setName(name);
     info.actor.setId(UUID.randomUUID().toString());
     info.actor.setDescription("I'm a guy who likes storms...");
 
-    String followerName = "fol" + String.valueOf(System.nanoTime()).substring(10) + "test.com";
+    String followerName = "fol" + String.valueOf(System.nanoTime()).substring(4) + "test.com";
 
     info.friendship = (Friendship) info.actor.createTargetEdge(Friendship.class);
 

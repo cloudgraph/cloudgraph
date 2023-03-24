@@ -152,7 +152,7 @@ public class DateTimePartialRowKeyScanTest extends DataTypeGraphModelTest {
 
     Node[] fetched = this.fetchGraphsExclusive(id1, id3, root1.getDateTimeField(),
         root3.getDateTimeField());
-    assertTrue(fetched.length == 1);
+    assertTrue("unexpected count, " + fetched.length, fetched.length == 1);
 
     debugGraph(fetched[0].getDataGraph());
   }
