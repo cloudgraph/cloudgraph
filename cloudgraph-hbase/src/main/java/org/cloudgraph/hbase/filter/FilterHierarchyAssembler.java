@@ -20,7 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

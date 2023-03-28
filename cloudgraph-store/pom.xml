@@ -8,9 +8,14 @@
     </parent>
 	<properties>
  		<cloudgraph.version>1.3.9</cloudgraph.version>
- 		<plasma.version>2.1.8</plasma.version>
+ 		<plasma.version>2.1.9</plasma.version>
         <slf4j.version>1.6.1</slf4j.version>
  		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	    <version.maven.jakartaee>9.0.0</version.maven.jakartaee>
+		<version.maven.jakarta.xml.bind-api>3.0.0</version.maven.jakarta.xml.bind-api>
+		<version.maven.jakarta.activation.api>2.0.0</version.maven.jakarta.activation.api>
+		<version.maven.jaxb.impl>3.0.0</version.maven.jaxb.impl>
+		<version.maven.jaxb.xjc>3.0.0</version.maven.jaxb.xjc>
 	</properties>
 	<artifactId>cloudgraph-store</artifactId>
 	<packaging>jar</packaging>
@@ -34,6 +39,16 @@
 			<version>2.5.0</version>
 		</dependency>
 		<dependency>
+			<groupId>jakarta.xml.bind</groupId>
+			<artifactId>jakarta.xml.bind-api</artifactId>
+			<version>${version.maven.jakarta.xml.bind-api}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId>
+			<version>${version.maven.jaxb.impl}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.cloudgraph</groupId>
 			<artifactId>cloudgraph-common</artifactId>
  			<version>1.3.9</version>
@@ -49,34 +64,50 @@
         <finalName>${project.artifactId}-${project.version}</finalName>
 		<plugins>
 			<plugin>
-				<groupId>org.jvnet.jaxb2.maven2</groupId>
-				<artifactId>maven-jaxb2-plugin</artifactId>
-				<version>0.12.3</version>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jaxb2-maven-plugin</artifactId>
+				<version>2.5.0</version>
+				<dependencies>
+					<dependency>
+						<groupId>org.glassfish.jaxb</groupId>
+						<artifactId>jaxb-xjc</artifactId>
+						<version>${version.maven.jaxb.xjc}</version>
+					</dependency>
+					<dependency>
+						<groupId>jakarta.activation</groupId>
+						<artifactId>jakarta.activation-api</artifactId>
+						<version>${version.maven.jakarta.activation.api}</version>
+					</dependency>
+					<dependency>
+						<groupId>jakarta.xml.bind</groupId>
+						<artifactId>jakarta.xml.bind-api</artifactId>
+						<version>${version.maven.jakarta.xml.bind-api}</version>
+					</dependency>
+					<dependency>
+						<groupId>com.sun.xml.bind</groupId>
+						<artifactId>jaxb-impl</artifactId>
+						<version>${version.maven.jaxb.impl}</version>
+					</dependency>
+				</dependencies>
 				<executions>
 					<execution>
-					    <id>generate-config</id>
-						<phase>generate-sources</phase>
+						<id>plasma-metamodel</id>
 						<goals>
-							<goal>generate</goal>
+							<goal>xjc</goal>
 						</goals>
-				        <configuration>
-				            <generateDirectory>${basedir}/target/generated-sources/java</generateDirectory>
-							<clearOutputDir>false</clearOutputDir>
-							<extensions>true</extensions>
-							<bindingDirectory>${basedir}/src/main/resources</bindingDirectory>
-							<target>2.0</target>
-							<encoding>cp1252</encoding>
-				        </configuration>
+						<configuration>
+							<xjbSources>
+								<xjbSource>${basedir}/src/main/resources/cloudgraph-config-jaxb-bindings.xjb</xjbSource>
+							</xjbSources>
+							<sources>
+								<source>${basedir}/src/main/resources/cloudgraph-config.xsd</source>
+  							</sources>
+							<outputDirectory>${basedir}/target/generated-sources/java</outputDirectory>
+						</configuration>
 					</execution>
 				</executions>
-				<configuration>
-					<outputDirectory>${basedir}/target/generated-sources/java</outputDirectory>
-					<clearOutputDir>false</clearOutputDir>
-					<extension>true</extension>
-					<target>2.0</target>
-					<encoding>Cp1252</encoding>
-				</configuration>
 			</plugin>
+			
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<version>1.7</version>
@@ -89,7 +120,7 @@
 						<systemPath>${java.home}/../lib/tools.jar</systemPath>
 					</dependency>
 				</dependencies>
-				  
+
 				<executions>
  					<execution>
 						<id>gen_protobuf_classes</id>
@@ -109,7 +140,7 @@
 						</configuration>
 					</execution>
 				</executions>
-				  
+
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

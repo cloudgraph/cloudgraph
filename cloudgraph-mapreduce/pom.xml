@@ -8,7 +8,7 @@
     </parent>
 	<properties>
  		<cloudgraph.version>1.3.9</cloudgraph.version>
- 		<plasma.version>2.1.8</plasma.version>
+ 		<plasma.version>2.1.9</plasma.version>
         <slf4j.version>1.6.1</slf4j.version>
 		<hadoop.version>2.7.3</hadoop.version>
  		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
