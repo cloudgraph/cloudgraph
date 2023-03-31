@@ -48,7 +48,13 @@ import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.filter.Filter;
 import org.apache.hadoop.hbase.filter.FilterList;
+import org.apache.hadoop.hbase.filter.FuzzyRowFilter;
 import org.apache.hadoop.hbase.filter.RandomRowFilter;
+
+//import org.cloudgraph.core.Connection;
+//import org.cloudgraph.core.client.Scan;
+//import org.cloudgraph.core.client.Filter;
+
 import org.apache.hadoop.hbase.mapreduce.JarFinder;
 import org.apache.hadoop.hbase.mapreduce.TableOutputFormat;
 //import org.apache.hadoop.hbase.mapreduce.TableOutputFormat;
@@ -60,28 +66,31 @@ import org.apache.hadoop.hbase.security.UserProvider;
 import org.apache.hadoop.hbase.security.token.TokenUtil;
 import org.apache.hadoop.hbase.util.Base64;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.hbase.util.Pair;
 import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.io.WritableComparable;
 import org.apache.hadoop.mapreduce.InputFormat;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.util.StringUtils;
+import org.cloudgraph.core.ServiceContext;
+import org.cloudgraph.core.io.DistributedGraphReader;
+import org.cloudgraph.core.scan.CompleteRowKey;
+import org.cloudgraph.core.scan.FuzzyRowKey;
+import org.cloudgraph.core.scan.PartialRowKey;
+import org.cloudgraph.core.scan.PartialRowKeyAssembler;
+import org.cloudgraph.core.scan.ScanCollector;
+import org.cloudgraph.core.scan.ScanRecognizerSyntaxTreeAssembler;
 import org.cloudgraph.hbase.filter.GraphFetchColumnFilterAssembler;
 import org.cloudgraph.hbase.filter.HBaseFilterAssembler;
-import org.cloudgraph.hbase.io.DistributedGraphReader;
-import org.cloudgraph.hbase.scan.CompleteRowKey;
-import org.cloudgraph.hbase.scan.FuzzyRowKey;
-import org.cloudgraph.hbase.scan.PartialRowKey;
-import org.cloudgraph.hbase.scan.PartialRowKeyScanAssembler;
-import org.cloudgraph.hbase.scan.ScanCollector;
-import org.cloudgraph.hbase.scan.ScanRecognizerSyntaxTreeAssembler;
+import org.cloudgraph.hbase.service.HBaseServiceContext;
 import org.cloudgraph.hbase.util.FilterUtil;
 import org.cloudgraph.job.JobSetup;
 import org.cloudgraph.query.expr.Expr;
 import org.cloudgraph.query.expr.ExprPrinter;
 import org.cloudgraph.store.mapping.ConfigurationProperty;
-import org.cloudgraph.store.mapping.MappingConfiguration;
 import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
+import org.cloudgraph.store.mapping.MappingConfiguration;
 import org.cloudgraph.store.mapping.StoreMapping;
 import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.service.GraphServiceException;
@@ -95,7 +104,6 @@ import org.plasma.sdo.PlasmaType;
 import org.xml.sax.SAXException;
 
 import com.google.protobuf.InvalidProtocolBufferException;
-
 import commonj.sdo.Type;
 
 /**
@@ -174,7 +182,9 @@ public class GraphMapReduceSetup extends JobSetup {
     if (volume != null)
       mappingProps.setProperty(
           ConfigurationProperty.CLOUDGRAPH___MAPRDB___VOLUME___PATH___PREFIX.value(), volume);
-    StoreMappingContext mappingContext = new StoreMappingContext(mappingProps);
+
+    ServiceContext serviceContext = new HBaseServiceContext(mappingProps);
+    StoreMappingContext mappingContext = serviceContext.getStoreMapping();
 
     PlasmaType type = getRootType(query);
 
@@ -191,14 +201,14 @@ public class GraphMapReduceSetup extends JobSetup {
 
     // FIXME: just need the root table reader - remove
     DistributedGraphReader graphReader = new DistributedGraphReader(type,
-        selectionCollector.getTypes(), null, mappingContext);
+        selectionCollector.getTypes(), null, serviceContext);
 
     HBaseFilterAssembler columnFilterAssembler = new GraphFetchColumnFilterAssembler(
         selectionCollector, type, mappingContext);
     Filter columnFilter = columnFilterAssembler.getFilter();
 
     From from = query.getModel().getFromClause();
-    List<Scan> scans = createScans(from, where, type, columnFilter, conf, mappingContext);
+    List<Scan> scans = createScans(from, where, type, columnFilter, conf, serviceContext);
 
     conf.set(GraphInputFormat.QUERY, marshal(query));
     conf.set(GraphInputFormat.ROOT_TABLE_NAME, graphReader.getRootTableReader()
@@ -222,26 +232,25 @@ public class GraphMapReduceSetup extends JobSetup {
   }
 
   private static List<Scan> createScans(From from, Where where, PlasmaType type,
-      Filter columnFilter, Configuration conf, StoreMappingContext mappingContext)
-      throws IOException {
+      Filter columnFilter, Configuration conf, ServiceContext serviceContext) throws IOException {
 
     List<Scan> result = new ArrayList<Scan>();
     if (where == null) {
       conf.setBoolean(GraphInputFormat.RECOGNIZER, false);
-      Scan scan = createDefaultScan(from, type, columnFilter, mappingContext);
+      Scan scan = createDefaultScan(from, type, columnFilter, serviceContext);
       result.add(scan);
       return result;
     }
 
     ScanRecognizerSyntaxTreeAssembler recognizerAssembler = new ScanRecognizerSyntaxTreeAssembler(
-        where, type, mappingContext);
+        where, type, serviceContext.getStoreMapping());
     Expr scanRecognizerRootExpr = recognizerAssembler.getResult();
     if (LOG.isDebugEnabled()) {
       ExprPrinter printer = new ExprPrinter();
       scanRecognizerRootExpr.accept(printer);
       LOG.debug("Scan Recognizer: " + printer.toString());
     }
-    ScanCollector scanCollector = new ScanCollector(type, mappingContext);
+    ScanCollector scanCollector = new ScanCollector(type, serviceContext);
     scanRecognizerRootExpr.accept(scanCollector);
     List<PartialRowKey> partialScans = scanCollector.getPartialRowKeyScans();
     List<FuzzyRowKey> fuzzyScans = scanCollector.getFuzzyRowKeyScans();
@@ -267,7 +276,7 @@ public class GraphMapReduceSetup extends JobSetup {
     }
 
     if (result.size() == 0) {
-      Scan scan = createDefaultScan(from, type, columnFilter, mappingContext);
+      Scan scan = createDefaultScan(from, type, columnFilter, serviceContext);
       result.add(scan);
     }
 
@@ -275,10 +284,11 @@ public class GraphMapReduceSetup extends JobSetup {
   }
 
   private static Scan createDefaultScan(From from, PlasmaType type, Filter columnFilter,
-      StoreMappingContext mappingContext) {
+      ServiceContext serviceContext) {
     Scan scan;
 
-    PartialRowKeyScanAssembler scanAssembler = new PartialRowKeyScanAssembler(type, mappingContext);
+    PartialRowKeyAssembler scanAssembler = new PartialRowKeyAssembler(type,
+        serviceContext.getStoreMapping());
     scanAssembler.assemble();
     byte[] startKey = scanAssembler.getStartKey();
     if (startKey != null && startKey.length > 0) {
@@ -845,7 +855,11 @@ public class GraphMapReduceSetup extends JobSetup {
     rootFilter.addFilter(columnFilter);
     Scan scan = new Scan();
     scan.setFilter(rootFilter);
-    Filter fuzzyFilter = fuzzyScan.getFilter();
+    Pair<byte[], byte[]> pair = new Pair<byte[], byte[]>(fuzzyScan.getFuzzyKeyBytes(),
+        fuzzyScan.getFuzzyInfoBytes());
+    List<Pair<byte[], byte[]>> list = new ArrayList<Pair<byte[], byte[]>>();
+    list.add(pair);
+    Filter fuzzyFilter = new FuzzyRowFilter(list);
     rootFilter.addFilter(fuzzyFilter);
     LOG.info("using fuzzy scan: " + FilterUtil.printFilterTree(fuzzyFilter));
 

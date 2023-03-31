@@ -15,16 +15,8 @@
  */
 package org.cloudgraph.hbase.mapreduce;
 
-import java.io.IOException;
-
 import org.apache.hadoop.io.Writable;
-import org.apache.hadoop.mapreduce.JobContext;
 import org.apache.hadoop.mapreduce.Reducer;
-import org.cloudgraph.mapreduce.GraphAccessor;
-import org.cloudgraph.mapreduce.GraphMutator;
-import org.plasma.query.Query;
-
-import commonj.sdo.DataGraph;
 
 /**
  *

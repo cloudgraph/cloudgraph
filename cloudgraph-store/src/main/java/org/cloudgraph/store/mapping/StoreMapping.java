@@ -569,14 +569,14 @@ public class StoreMapping implements MappingConfiguration {
   }
 
   @Override
-  public TableMapping getTableByQualifiedLogicalName(String tableNamespace, String tableName,
+  public TableMapping getTableByQualifiedLogicalName(String qualifiedLogicalTableName,
       StoreMappingContext context) {
-    // FIXME: called by
-    TableMapping result = findTableByQualifiedLogicalName(tableName, context);
+    TableMapping result = findTableByQualifiedLogicalName(qualifiedLogicalTableName, context);
     if (result != null) {
       return result;
     } else {
-      String contextQualifiedName = TableMapping.qualifiedLogicalNameFor(null, tableName, context);
+      String contextQualifiedName = TableMapping.qualifiedLogicalNameFor(null,
+          qualifiedLogicalTableName, context);
       throw new StoreMappingException("no table configured for '" + contextQualifiedName + "'");
     }
   }

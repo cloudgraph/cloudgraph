@@ -24,6 +24,8 @@ import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
+//import org.cloudgraph.core.client.Scan;
+//import org.cloudgraph.core.client.Table;
 import org.cloudgraph.mapreduce.GraphWritable;
 
 /**

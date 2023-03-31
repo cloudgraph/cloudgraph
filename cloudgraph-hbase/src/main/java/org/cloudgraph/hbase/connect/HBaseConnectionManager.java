@@ -30,7 +30,11 @@ import org.apache.hadoop.hbase.NamespaceDescriptor;
 import org.apache.hadoop.hbase.NamespaceNotFoundException;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.ZooKeeperConnectionException;
-import org.apache.hadoop.hbase.client.Admin;
+//import org.apache.hadoop.hbase.client.Admin;
+import org.cloudgraph.core.Connection;
+import org.cloudgraph.core.ConnectionManager;
+import org.cloudgraph.core.client.Admin;
+import org.cloudgraph.hbase.client.HBaseAdmin;
 import org.cloudgraph.hbase.service.CloudGraphContext;
 import org.cloudgraph.store.mapping.StoreMapping;
 import org.cloudgraph.store.mapping.StoreMappingContext;
@@ -45,20 +49,24 @@ import org.cloudgraph.store.service.GraphServiceException;
  * @author Scott Cinnamond
  * @since 0.5
  */
-public class HBaseConnectionManager {
+public class HBaseConnectionManager implements ConnectionManager {
 
+  private GenericObjectPool<Connection> pool;
+
+  private static final Log log = LogFactory.getLog(HBaseConnectionManager.class);
+
+  private static volatile ConnectionManager instance;
+  private Configuration config;
   /**
    * Synonym for min idle. The property name for the {@code minIdle}
    * configuration attribute for connection pools.
    */
   public static final String CONNECTION_POOL_MIN_SIZE = "org.plasma.sdo.access.provider.hbase.ConnectionPoolMinSize";
-
   /**
    * Synonym for max total. The property name for the {@code maxTotal}
    * configuration attribute for connection pools.
    */
   public static final String CONNECTION_POOL_MAX_SIZE = "org.plasma.sdo.access.provider.hbase.ConnectionPoolMaxSize";
-
   /**
    * The property name for the {@code maxTotal} configuration attribute for
    * connection pools.
@@ -67,7 +75,6 @@ public class HBaseConnectionManager {
    * @see GenericObjectPool#setMaxTotal(int)
    */
   public static final String CONNECTION_POOL_MAX_TOTAL = "org.plasma.sdo.access.provider.hbase.ConnectionPoolMaxTotal";
-
   /**
    * The property name for the {@code maxIdle} configuration attribute for
    * connection pools.
@@ -75,7 +82,6 @@ public class HBaseConnectionManager {
    * @see GenericObjectPool#setMaxIdle(int)
    */
   public static final String CONNECTION_POOL_MAX_IDLE = "org.plasma.sdo.access.provider.hbase.ConnectionPoolMaxIdle";
-
   /**
    * The property name for the {@code minIdle} configuration attribute for
    * connection pools.
@@ -84,7 +90,6 @@ public class HBaseConnectionManager {
    * @see GenericObjectPool#setMinIdle(int)
    */
   public static final String CONNECTION_POOL_MIN_IDLE = "org.plasma.sdo.access.provider.hbase.ConnectionPoolMinIdle";
-
   /**
    * The property name for the {@code lifo} configuration attribute for pools
    * created with this configuration instance.
@@ -93,7 +98,6 @@ public class HBaseConnectionManager {
    * @see GenericKeyedObjectPool#getLifo()
    */
   public static final String CONNECTION_POOL_LIFO = "org.plasma.sdo.access.provider.hbase.ConnectionPoolLifo";
-
   /**
    * The property name for the {@code maxWait} configuration attribute for pools
    * created with this configuration instance.
@@ -102,7 +106,6 @@ public class HBaseConnectionManager {
    * @see GenericKeyedObjectPool#getMaxWaitMillis()
    */
   public static final String CONNECTION_POOL_MAX_WAIT_MILLIS = "org.plasma.sdo.access.provider.hbase.ConnectionPoolMaxWaitMillis";
-
   /**
    * The property name for the {@code minEvictableIdleTimeMillis} configuration
    * attribute for connection pools.
@@ -111,7 +114,6 @@ public class HBaseConnectionManager {
    * @see GenericKeyedObjectPool#getMinEvictableIdleTimeMillis()
    */
   public static final String CONNECTION_POOL_MIN_EVICTABLE_IDLE_TIME_MILLIS = "org.plasma.sdo.access.provider.hbase.ConnectionPoolMinEvictableIdleTimeMillis";
-
   /**
    * The property name for the {@code softMinEvictableIdleTimeMillis}
    * configuration attribute for pools created with this configuration instance.
@@ -120,7 +122,6 @@ public class HBaseConnectionManager {
    * @see GenericKeyedObjectPool#getSoftMinEvictableIdleTimeMillis()
    */
   public static final String CONNECTION_POOL_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS = "org.plasma.sdo.access.provider.hbase.ConnectionPoolSoftMinEvictableIdleTimeMillis";
-
   /**
    * The property name for the {@code numTestsPerEvictionRun} configuration
    * attribute for connection pools.
@@ -130,7 +131,6 @@ public class HBaseConnectionManager {
    * @see GenericKeyedObjectPool#getNumTestsPerEvictionRun()
    */
   public static final String CONNECTION_POOL_NUM_TESTS_PER_EVICTION_RUN = "org.plasma.sdo.access.provider.hbase.ConnectionPoolNumTestsPerEvictionRun";
-
   /**
    * The property name for the {@code testOnCreate} configuration attribute for
    * connection pools.
@@ -140,7 +140,6 @@ public class HBaseConnectionManager {
    * @see GenericKeyedObjectPool#getTestOnCreate()
    */
   public static final String CONNECTION_POOL_TEST_ON_CREATE = "org.plasma.sdo.access.provider.hbase.ConnectionPoolTestOnCreate";
-
   /**
    * The property name for the {@code testOnBorrow} configuration attribute for
    * connection pools.
@@ -149,7 +148,6 @@ public class HBaseConnectionManager {
    * @see GenericKeyedObjectPool#getTestOnBorrow()
    */
   public static final String CONNECTION_POOL_TEST_ON_BORROW = "org.plasma.sdo.access.provider.hbase.ConnectionPoolTestOnBorrow";
-
   /**
    * The property name for the {@code testOnReturn} configuration attribute for
    * connection pools.
@@ -158,38 +156,32 @@ public class HBaseConnectionManager {
    * @see GenericKeyedObjectPool#getTestOnReturn()
    */
   public static final String CONNECTION_POOL_TEST_ON_RETURN = "org.plasma.sdo.access.provider.hbase.ConnectionPoolTestOnReturn";
-
   /**
    * The property name for the {@code testWhileIdle} configuration attribute for
    * connection pools.
    */
   public static final String CONNECTION_POOL_TEST_WHILE_IDLE = "org.plasma.sdo.access.provider.hbase.ConnectionPoolTestWhileIdle";
-
   /**
    * The property name for the {@code timeBetweenEvictionRunsMillis}
    * configuration attribute for connection pools.
    */
   public static final String CONNECTION_POOL_TIME_BETWEEN_EVICTION_RUNS_MILLIS = "org.plasma.sdo.access.provider.hbase.ConnectionPoolTimeBetweenEvictionRunsMillis";
-
   /**
    * The property name for the {@code evictionPolicyClassName} configuration
    * attribute for connection pools.
    */
   public static final String CONNECTION_POOL_EVICTION_POLICY_CLASS_NAME = "org.plasma.sdo.access.provider.hbase.ConnectionPoolEvictionPolicyClassName";
-
   /**
    * The property name for the {@code blockWhenExhausted} configuration
    * attribute for connection pools.
    */
   public static final String CONNECTION_POOL_BLOCK_WHEN_EXHAUSTED = "org.plasma.sdo.access.provider.hbase.ConnectionPoolBlockWhenExhausted";
-
   /**
    * The property name of the flag that determines if JMX will be enabled for
    * connection pools.
    *
    */
   public static final String CONNECTION_POOL_JMX_ENABLED = "org.plasma.sdo.access.provider.hbase.ConnectionPoolJmxEnabled";
-
   /**
    * The property name of the JMX name base that will be used as part of the
    * name assigned to JMX enabled pools created with this configuration
@@ -197,20 +189,12 @@ public class HBaseConnectionManager {
    * JMX name base.
    */
   public static final String CONNECTION_POOL_JMX_NAME_BASE = "org.plasma.sdo.access.provider.hbase.ConnectionPoolJmxNameBase";
-
   /**
    * The property name of the JMX name prefix that will be used as part of the
    * name assigned to JMX enabled pools created with this configuration
    * instance.
    */
   public static final String CONNECTION_POOL_JMX_NAME_PREFIX = "org.plasma.sdo.access.provider.hbase.ConnectionPoolJmxNamePrefix";
-
-  private GenericObjectPool<Connection> pool;
-
-  private static final Log log = LogFactory.getLog(HBaseConnectionManager.class);
-
-  private static volatile HBaseConnectionManager instance;
-  private Configuration config;
 
   private HBaseConnectionManager() {
     this.config = CloudGraphContext.instance().getConfig();
@@ -270,7 +254,7 @@ public class HBaseConnectionManager {
     poolConfig.setJmxNamePrefix(this.config.get(CONNECTION_POOL_JMX_NAME_PREFIX,
         GenericObjectPoolConfig.DEFAULT_JMX_NAME_PREFIX));
 
-    PooledConnectionFactory factory = new PooledConnectionFactory(this.config);
+    HBasePooledConnectionFactory factory = new HBasePooledConnectionFactory(this.config);
     this.pool = new GenericObjectPool<Connection>(factory, poolConfig);
     factory.setPool(pool);
 
@@ -286,7 +270,7 @@ public class HBaseConnectionManager {
         + poolConfig.getNumTestsPerEvictionRun() + "\n...]");
   }
 
-  public static HBaseConnectionManager instance() {
+  public static ConnectionManager instance() {
     if (instance == null)
       initInstance();
     return instance;
@@ -306,6 +290,7 @@ public class HBaseConnectionManager {
     }
   }
 
+  @Override
   public Connection getConnection() {
     try {
       return this.pool.borrowObject();
@@ -315,32 +300,42 @@ public class HBaseConnectionManager {
     }
   }
 
-  public void createTable(Connection connection, TableName name, StoreMappingContext mappingContext) {
+  @Override
+  public void createTable(org.cloudgraph.core.Connection connection,
+      org.cloudgraph.core.client.TableName name, StoreMappingContext mappingContext) {
 
-    Admin admin = null;
+    org.apache.hadoop.hbase.client.Admin hbaseAdmin = null;
     try {
-      admin = connection.getAdmin();
-      String logicalTableNameKey = name.getNameAsString();
-      logicalTableNameKey = logicalTableNameKey.replace(':', '/');
+      TableName hbaseTableName = TableName.valueOf(name.getNamespace(), name.getTableName());
+      hbaseAdmin = HBaseAdmin.class.cast(connection.getAdmin()).getAdmin();
 
-      // FIXME: Apache HBase
-      String qualifiedLogicalName = StoreMapping
-          .getInstance()
-          .qualifiedLogicalTableNameFromPhysicalTablePath(null, logicalTableNameKey, mappingContext);
+      StringBuilder logicalTableNameKey = new StringBuilder();
+      if (hbaseTableName.getNamespaceAsString() != null) {
+        logicalTableNameKey.append(hbaseTableName.getNamespaceAsString());
+        logicalTableNameKey.append("/");
+      }
+      logicalTableNameKey.append(hbaseTableName.getNameAsString());
+
+      // Uses a path as the single key for internal table mapping across Apache
+      // and MAPR HBase
+      String qualifiedLogicalName = StoreMapping.getInstance()
+          .qualifiedLogicalTableNameFromPhysicalTablePath(null, logicalTableNameKey.toString(),
+              mappingContext);
 
       TableMapping tableConfig = StoreMapping.getInstance().getTableByQualifiedLogicalName(
-          name.getNamespaceAsString(), qualifiedLogicalName, mappingContext);
-      HTableDescriptor tableDesc = new HTableDescriptor(name);
+          qualifiedLogicalName, mappingContext);
+      HTableDescriptor tableDesc = new HTableDescriptor(hbaseTableName);
       HColumnDescriptor fam1 = new HColumnDescriptor(tableConfig.getDataColumnFamilyName()
           .getBytes());
       tableDesc.addFamily(fam1);
       try {
-        admin.createTable(tableDesc);
+        hbaseAdmin.createTable(tableDesc);
       } catch (NamespaceNotFoundException nnf) {
-        NamespaceDescriptor namespace = NamespaceDescriptor.create(name.getNamespaceAsString())
+        NamespaceDescriptor namespace = NamespaceDescriptor
+            .create(hbaseTableName.getNamespaceAsString())
             .addConfiguration("Description", "cloudgraph generated namespace").build();
-        admin.createNamespace(namespace);
-        admin.createTable(tableDesc);
+        hbaseAdmin.createNamespace(namespace);
+        hbaseAdmin.createTable(tableDesc);
       }
     } catch (MasterNotRunningException e1) {
       throw new GraphServiceException(e1);
@@ -349,22 +344,25 @@ public class HBaseConnectionManager {
     } catch (IOException e) {
       throw new GraphServiceException(e);
     } finally {
-      if (admin != null)
+      if (hbaseAdmin != null)
         try {
-          admin.close();
+          hbaseAdmin.close();
         } catch (IOException e) {
           log.error(e.getMessage(), e);
         }
     }
   }
 
-  public void deleteTable(Connection connection, TableName name) {
+  @Override
+  public void deleteTable(org.cloudgraph.core.Connection connection,
+      org.cloudgraph.core.client.TableName name) {
 
-    Admin admin = null;
+    org.apache.hadoop.hbase.client.Admin hbaseAdmin = null;
     try {
-      admin = connection.getAdmin();
-      admin.disableTable(name);
-      admin.deleteTable(name);
+      hbaseAdmin = HBaseAdmin.class.cast(connection.getAdmin()).getAdmin();
+      TableName hbaseTableName = TableName.valueOf(name.getNamespace(), name.getTableName());
+      hbaseAdmin.disableTable(hbaseTableName);
+      hbaseAdmin.deleteTable(hbaseTableName);
     } catch (MasterNotRunningException e1) {
       throw new GraphServiceException(e1);
     } catch (ZooKeeperConnectionException e1) {
@@ -372,9 +370,9 @@ public class HBaseConnectionManager {
     } catch (IOException e) {
       throw new GraphServiceException(e);
     } finally {
-      if (admin != null)
+      if (hbaseAdmin != null)
         try {
-          admin.close();
+          hbaseAdmin.close();
         } catch (IOException e) {
           log.error(e.getMessage(), e);
         }

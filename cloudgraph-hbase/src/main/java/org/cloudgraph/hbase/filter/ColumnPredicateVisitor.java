@@ -26,7 +26,8 @@ import org.apache.hadoop.hbase.filter.FilterList.Operator;
 import org.apache.hadoop.hbase.filter.QualifierFilter;
 import org.apache.hadoop.hbase.filter.RegexStringComparator;
 import org.apache.hadoop.hbase.filter.ValueFilter;
-import org.cloudgraph.hbase.key.CompositeColumnKeyFactory;
+import org.cloudgraph.core.key.CompositeColumnKeyFactory;
+import org.cloudgraph.core.util.PredicateUtil;
 import org.cloudgraph.hbase.service.HBaseDataConverter;
 import org.cloudgraph.store.lang.GraphFilterException;
 import org.cloudgraph.store.lang.InvalidOperatorException;
@@ -72,7 +73,7 @@ import org.plasma.sdo.helper.DataConverter;
  * rows or columns in HBase.
  * </p>
  * 
- * @see org.cloudgraph.common.key.CompositeColumnKeyFactory
+ * @see org.cloudgraph.core.key.key.CompositeColumnKeyFactory
  * @author Scott Cinnamond
  * @since 0.5
  */

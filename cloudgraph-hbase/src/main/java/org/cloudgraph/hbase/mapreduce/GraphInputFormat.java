@@ -40,6 +40,14 @@ import org.apache.hadoop.hbase.client.ConnectionFactory;
 import org.apache.hadoop.hbase.client.RegionLocator;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.client.Table;
+
+//import org.cloudgraph.core.Connection;
+//import org.cloudgraph.core.client.Admin;
+//import org.cloudgraph.core.client.RegionLocator;
+//import org.cloudgraph.core.client.Scan;
+//import org.cloudgraph.core.client.Table;
+//import org.cloudgraph.hbase.util.FilterUtil;
+
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
 import org.apache.hadoop.hbase.mapreduce.TableRecordReader;
 import org.apache.hadoop.hbase.mapreduce.TableSplit;

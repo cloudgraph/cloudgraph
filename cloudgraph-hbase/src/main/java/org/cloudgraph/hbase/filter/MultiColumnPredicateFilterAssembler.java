@@ -17,7 +17,7 @@ package org.cloudgraph.hbase.filter;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.cloudgraph.hbase.key.CompositeColumnKeyFactory;
+import org.cloudgraph.core.key.CompositeColumnKeyFactory;
 import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.plasma.query.model.Where;
 import org.plasma.sdo.PlasmaType;
@@ -53,7 +53,7 @@ import org.plasma.sdo.PlasmaType;
  * rows or columns in HBase.
  * </p>
  * 
- * @see org.cloudgraph.common.key.CompositeColumnKeyFactory
+ * @see org.cloudgraph.core.key.key.CompositeColumnKeyFactory
  * @see org.cloudgraph.hbase.filter.MultiColumnPredicateVisitor
  * @author Scott Cinnamond
  * @since 0.6.5

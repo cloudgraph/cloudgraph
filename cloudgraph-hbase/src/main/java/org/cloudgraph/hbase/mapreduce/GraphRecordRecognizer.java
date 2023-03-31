@@ -31,6 +31,12 @@ import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.client.ScannerCallable;
 import org.apache.hadoop.hbase.client.Table;
+//import org.cloudgraph.core.client.Result;
+//import org.cloudgraph.core.client.ResultScanner;
+//import org.cloudgraph.core.client.Scan;
+//import org.cloudgraph.core.client.Table;
+
+import org.apache.hadoop.hbase.client.ScannerCallable;
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.mapreduce.Counter;
@@ -38,15 +44,18 @@ import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.util.StringUtils;
 import org.cloudgraph.common.CloudGraphConstants;
-import org.cloudgraph.hbase.connect.Connection;
+import org.cloudgraph.core.Connection;
+import org.cloudgraph.core.ServiceContext;
+import org.cloudgraph.core.client.CellValues;
+import org.cloudgraph.core.graph.CoreGraphAssembler;
+import org.cloudgraph.core.graph.GraphAssembler;
+import org.cloudgraph.core.graph.GraphSliceAssembler;
+import org.cloudgraph.core.io.DistributedGraphReader;
+import org.cloudgraph.core.io.DistributedReader;
+import org.cloudgraph.core.io.TableReader;
 import org.cloudgraph.hbase.connect.HBaseConnectionManager;
-import org.cloudgraph.hbase.graph.GraphAssembler;
-import org.cloudgraph.hbase.graph.GraphSliceAssembler;
-import org.cloudgraph.hbase.graph.HBaseGraphAssembler;
-import org.cloudgraph.hbase.io.CellValues;
-import org.cloudgraph.hbase.io.DistributedGraphReader;
-import org.cloudgraph.hbase.io.DistributedReader;
-import org.cloudgraph.hbase.io.TableReader;
+import org.cloudgraph.hbase.io.HBaseCellValues;
+import org.cloudgraph.hbase.service.HBaseServiceContext;
 import org.cloudgraph.mapreduce.Counters;
 import org.cloudgraph.mapreduce.GraphWritable;
 import org.cloudgraph.query.expr.Expr;
@@ -56,10 +65,10 @@ import org.cloudgraph.recognizer.GraphRecognizerSyntaxTreeAssembler;
 import org.cloudgraph.store.key.GraphMetaKey;
 import org.cloudgraph.store.mapping.CloudGraphStoreMapping;
 import org.cloudgraph.store.mapping.ConfigurationProperty;
-import org.cloudgraph.store.mapping.DynamicTableMapping;
-import org.cloudgraph.store.mapping.MappingConfiguration;
 import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
+import org.cloudgraph.store.mapping.DynamicTableMapping;
+import org.cloudgraph.store.mapping.MappingConfiguration;
 import org.cloudgraph.store.mapping.StoreMapping;
 import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.mapping.StoreMappingDataBinding;
@@ -111,7 +120,7 @@ import commonj.sdo.Type;
  * @see GraphRecognizerSyntaxTreeAssembler
  * @see GraphRecognizerContext
  * @see GraphWritable
- * @see HBaseGraphAssembler
+ * @see CoreGraphAssembler
  * 
  * @author Scott Cinnamond
  * @since 0.5.8
@@ -137,7 +146,7 @@ public class GraphRecordRecognizer {
   private boolean logScannerActivity = false;
   private int logPerRowCount = 100;
   private Expr graphRecognizerRootExpr;
-  private HBaseGraphAssembler graphAssembler;
+  private CoreGraphAssembler graphAssembler;
   private GraphRecognizerContext recognizerContext;
   private TableReader rootTableReader;
   private Connection connection;
@@ -151,6 +160,7 @@ public class GraphRecordRecognizer {
   private long totalGrapRecognitionTime = 0;
 
   private Configuration configuration;
+  private ServiceContext serviceContext;
   private StoreMappingContext mappingContext;
 
   @SuppressWarnings("unused")
@@ -170,7 +180,8 @@ public class GraphRecordRecognizer {
     if (volume != null)
       mappingProps.setProperty(
           ConfigurationProperty.CLOUDGRAPH___MAPRDB___VOLUME___PATH___PREFIX.value(), volume);
-    this.mappingContext = new StoreMappingContext(mappingProps);
+    this.serviceContext = new HBaseServiceContext(mappingProps);
+    this.mappingContext = this.serviceContext.getStoreMapping();
   }
 
   /**
@@ -184,7 +195,8 @@ public class GraphRecordRecognizer {
   public void restart(byte[] firstRow) throws IOException {
     currentScan = new Scan(scan);
     currentScan.setStartRow(firstRow);
-    currentScan.setAttribute(Scan.SCAN_ATTRIBUTES_METRICS_ENABLE, Bytes.toBytes(Boolean.TRUE));
+    // currentScan.setAttribute(Scan.SCAN_ATTRIBUTES_METRICS_ENABLE,
+    // Bytes.toBytes(Boolean.TRUE));
 
     this.scanner = this.table.getScanner(currentScan);
     if (logScannerActivity) {
@@ -220,7 +232,7 @@ public class GraphRecordRecognizer {
    *          The root {@link Table} to scan.
    */
   public void setTable(Table table) {
-    Configuration conf = table.getConfiguration();
+    Configuration conf = (Configuration) table.getConfiguration();
     logScannerActivity = conf.getBoolean(ScannerCallable.LOG_SCANNER_ACTIVITY, false);
     logPerRowCount = conf.getInt(LOG_PER_ROW_COUNT, 100);
     this.table = table;
@@ -285,10 +297,10 @@ public class GraphRecordRecognizer {
 
       this.connection = HBaseConnectionManager.instance().getConnection();
       DistributedGraphReader graphReader = new DistributedGraphReader(type,
-          selectionCollector.getTypes(), this.connection, this.mappingContext);
+          selectionCollector.getTypes(), this.connection, this.serviceContext);
       this.rootTableReader = graphReader.getRootTableReader();
 
-      this.graphAssembler = createGraphAssembler(type, this.mappingContext, graphReader,
+      this.graphAssembler = createGraphAssembler(type, this.serviceContext, graphReader,
           selectionCollector, new Timestamp(System.currentTimeMillis()));
 
       boolean needsRecognizer = context.getConfiguration().getBoolean(GraphInputFormat.RECOGNIZER,
@@ -479,7 +491,7 @@ public class GraphRecordRecognizer {
    */
   private PlasmaDataGraph assemble(Result resultRow) {
     this.graphAssembler.clear();
-    this.graphAssembler.assemble(new CellValues(resultRow));
+    this.graphAssembler.assemble(new HBaseCellValues(resultRow));
     PlasmaDataGraph result = graphAssembler.getDataGraph();
     CoreDataObject root = (CoreDataObject) result.getRootObject();
     Long time = (Long) root.getValue(CloudGraphConstants.GRAPH_ASSEMBLY_TIME);
@@ -584,13 +596,13 @@ public class GraphRecordRecognizer {
     return type;
   }
 
-  private static HBaseGraphAssembler createGraphAssembler(PlasmaType type,
-      StoreMappingContext mappingContext, DistributedReader graphReader, Selection collector,
+  private static CoreGraphAssembler createGraphAssembler(PlasmaType type,
+      ServiceContext serviceContext, DistributedReader graphReader, Selection collector,
       Timestamp snapshotDate) {
-    HBaseGraphAssembler graphAssembler = null;
+    CoreGraphAssembler graphAssembler = null;
 
     if (collector.hasPredicates()) {
-      graphAssembler = new GraphSliceAssembler(type, mappingContext, collector, graphReader,
+      graphAssembler = new GraphSliceAssembler(type, serviceContext, collector, graphReader,
           snapshotDate);
     } else {
       graphAssembler = new GraphAssembler(type, collector, graphReader, snapshotDate);

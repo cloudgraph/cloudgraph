@@ -24,8 +24,8 @@ import org.apache.hadoop.hbase.filter.BinaryPrefixComparator;
 import org.apache.hadoop.hbase.filter.CompareFilter;
 import org.apache.hadoop.hbase.filter.FilterList;
 import org.apache.hadoop.hbase.filter.QualifierFilter;
-import org.cloudgraph.hbase.io.EdgeReader;
-import org.cloudgraph.hbase.key.StatefullColumnKeyFactory;
+import org.cloudgraph.core.io.EdgeReader;
+import org.cloudgraph.core.key.StatefullColumnKeyFactory;
 import org.cloudgraph.store.key.EntityMetaKey;
 import org.cloudgraph.store.key.GraphStatefullColumnKeyFactory;
 import org.plasma.sdo.PlasmaProperty;
@@ -53,7 +53,7 @@ import commonj.sdo.Property;
  * </p>
  * 
  * @see org.cloudgraph.store.key.GraphStatefullColumnKeyFactory
- * @see org.cloudgraph.hbase.key.StatefullColumnKeyFactory
+ * @see org.cloudgraph.core.key.StatefullColumnKeyFactory
  * @author Scott Cinnamond
  * @since 0.5
  */

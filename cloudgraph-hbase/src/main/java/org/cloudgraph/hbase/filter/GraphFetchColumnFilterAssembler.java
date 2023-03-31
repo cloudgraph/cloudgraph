@@ -29,7 +29,7 @@ import org.apache.hadoop.hbase.filter.MultipleColumnPrefixFilter;
 import org.apache.hadoop.hbase.filter.QualifierFilter;
 import org.apache.hadoop.hbase.filter.SubstringComparator;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.cloudgraph.hbase.key.CompositeColumnKeyFactory;
+import org.cloudgraph.core.key.CompositeColumnKeyFactory;
 import org.cloudgraph.store.key.EntityMetaKey;
 import org.cloudgraph.store.key.GraphColumnKeyFactory;
 import org.cloudgraph.store.key.GraphMetaKey;

@@ -15,19 +15,20 @@
  */
 package org.cloudgraph.hbase.test;
 
+import jakarta.xml.bind.JAXBException;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
-import jakarta.xml.bind.JAXBException;
+import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.cloudgraph.common.CommonTest;
-import org.cloudgraph.store.StoreServiceContext;
+import org.cloudgraph.hbase.service.HBaseServiceContext;
 import org.plasma.common.bind.DefaultValidationEventHandler;
 import org.plasma.query.Query;
 import org.plasma.query.bind.PlasmaQueryDataBinding;
@@ -51,7 +52,8 @@ public abstract class HBaseTestCase extends CommonTest {
   protected String targetDir = System.getProperty("target.dir");
 
   public void setUp() throws Exception {
-    service = new SDODataAccessClient(new HBasePojoDataAccessClient(new StoreServiceContext()));
+    service = new SDODataAccessClient(new HBasePojoDataAccessClient(new HBaseServiceContext(
+        new Properties())));
   }
 
   protected String serializeGraph(DataGraph graph) throws IOException {

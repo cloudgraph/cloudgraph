@@ -25,25 +25,24 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.hbase.client.Row;
+//import org.apache.hadoop.hbase.client.Row;
 import org.apache.hadoop.mapreduce.JobContext;
-import org.cloudgraph.hbase.connect.Connection;
-import org.cloudgraph.hbase.connect.HBaseConnectionManager;
-import org.cloudgraph.hbase.io.TableWriter;
-import org.cloudgraph.hbase.mutation.GraphMutationCollector;
-import org.cloudgraph.hbase.mutation.GraphMutationWriter;
-import org.cloudgraph.hbase.mutation.MutationCollector;
-import org.cloudgraph.hbase.mutation.Mutations;
-import org.cloudgraph.hbase.service.GraphQuery;
+import org.cloudgraph.core.Connection;
+import org.cloudgraph.core.ServiceContext;
+import org.cloudgraph.core.client.Row;
+import org.cloudgraph.core.io.TableWriter;
+import org.cloudgraph.core.mutation.GraphMutationCollector;
+import org.cloudgraph.core.mutation.GraphMutationWriter;
+import org.cloudgraph.core.mutation.MutationCollector;
+import org.cloudgraph.core.mutation.Mutations;
+import org.cloudgraph.core.service.GraphQuery;
+import org.cloudgraph.hbase.service.HBaseServiceContext;
 import org.cloudgraph.mapreduce.GraphService;
-import org.cloudgraph.store.StoreServiceContext;
-import org.cloudgraph.store.ServiceContext;
 import org.cloudgraph.store.mapping.ConfigurationProperty;
 import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.query.Query;
 import org.plasma.sdo.PlasmaNode;
-import org.plasma.sdo.PlasmaType;
 import org.plasma.sdo.core.SnapshotMap;
 
 import commonj.sdo.DataGraph;
@@ -78,14 +77,14 @@ public class GraphServiceDelegate implements GraphService {
 
   @Override
   public void commit(DataGraph graph, JobContext jobContext) throws IOException {
-    StoreMappingContext mappingContext = createMappingContext(jobContext);
+    ServiceContext serviceContext = createServiceContext(jobContext);
 
     String jobName = this.getClass().getSimpleName();
     if (jobContext != null)
       jobName = jobContext.getJobName();
     SnapshotMap snapshotMap = new SnapshotMap(new Timestamp((new Date()).getTime()));
     MutationCollector collector = null;
-    Connection connection = HBaseConnectionManager.instance().getConnection();
+    Connection connection = serviceContext.getConnectionManager().getConnection();
     try {
       collector = new GraphMutationCollector(this.context, snapshotMap, jobName);
 
@@ -104,7 +103,7 @@ public class GraphServiceDelegate implements GraphService {
 
       TableWriter[] tableWriters = new TableWriter[mutations.keySet().size()];
       mutations.keySet().toArray(tableWriters);
-      GraphMutationWriter writer = new GraphMutationWriter();
+      GraphMutationWriter writer = new GraphMutationWriter(serviceContext);
       try {
         writer.writeChanges(tableWriters, mutations, snapshotMap, jobName);
       } finally {
@@ -131,13 +130,13 @@ public class GraphServiceDelegate implements GraphService {
   @Override
   public void commit(DataGraph[] graphs, JobContext jobContext) throws IOException {
     String jobName = jobContext.getJobName();
-    StoreMappingContext mappingContext = createMappingContext(jobContext);
+    ServiceContext serviceContext = createServiceContext(jobContext);
     SnapshotMap snapshotMap = new SnapshotMap(new Timestamp((new Date()).getTime()));
     // Map<TableWriter, List<Row>> mutations = new HashMap<TableWriter,
     // List<Row>>();
     Map<TableWriter, Map<String, Mutations>> mutations = new HashMap<>();
     MutationCollector collector = null;
-    Connection connection = HBaseConnectionManager.instance().getConnection();
+    Connection connection = serviceContext.getConnectionManager().getConnection();
     try {
       collector = new GraphMutationCollector(this.context, snapshotMap, jobName);
       try {
@@ -148,7 +147,7 @@ public class GraphServiceDelegate implements GraphService {
       TableWriter[] tableWriters = new TableWriter[mutations.keySet().size()];
       mutations.keySet().toArray(tableWriters);
 
-      GraphMutationWriter writer = new GraphMutationWriter();
+      GraphMutationWriter writer = new GraphMutationWriter(serviceContext);
       try {
         writer.writeChanges(tableWriters, mutations, snapshotMap, jobName);
       } finally {
@@ -187,6 +186,22 @@ public class GraphServiceDelegate implements GraphService {
       mappingProps.setProperty(
           ConfigurationProperty.CLOUDGRAPH___MAPRDB___VOLUME___PATH___PREFIX.value(), volume);
     return new StoreMappingContext(mappingProps);
+  }
+
+  private ServiceContext createServiceContext(JobContext jobContext) {
+    Properties mappingProps = new Properties();
+    String rootPath = jobContext.getConfiguration().get(
+        ConfigurationProperty.CLOUDGRAPH___MAPRDB___TABLE___PATH___PREFIX.value());
+    if (rootPath != null)
+      mappingProps.setProperty(
+          ConfigurationProperty.CLOUDGRAPH___MAPRDB___TABLE___PATH___PREFIX.value(), rootPath);
+    String volume = jobContext.getConfiguration().get(
+        ConfigurationProperty.CLOUDGRAPH___MAPRDB___VOLUME___PATH___PREFIX.value());
+    if (volume != null)
+      mappingProps.setProperty(
+          ConfigurationProperty.CLOUDGRAPH___MAPRDB___VOLUME___PATH___PREFIX.value(), volume);
+
+    return new HBaseServiceContext(mappingProps);
   }
 
   private void writeChanges(TableWriter[] tableWriters, Map<TableWriter, List<Row>> mutations,

@@ -20,12 +20,8 @@ import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
-import org.apache.hadoop.mapreduce.JobContext;
 import org.apache.hadoop.mapreduce.Mapper;
-import org.cloudgraph.mapreduce.GraphMutator;
 import org.cloudgraph.mapreduce.GraphWritable;
-
-import commonj.sdo.DataGraph;
 
 /**
  * Supplies fully realized data {@link GraphWritable graphs} as the input value

@@ -25,7 +25,6 @@ import org.cloudgraph.hbase.test.SocialGraphModelTest;
 import org.cloudgraph.store.mapping.FetchType;
 import org.cloudgraph.store.mapping.ParallelFetchDisposition;
 import org.cloudgraph.test.socialgraph.actor.Actor;
-import org.cloudgraph.test.socialgraph.actor.Photo;
 import org.cloudgraph.test.socialgraph.actor.Topic;
 import org.cloudgraph.test.socialgraph.actor.query.QActor;
 import org.cloudgraph.test.socialgraph.story.Blog;

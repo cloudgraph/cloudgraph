@@ -18,16 +18,14 @@ package org.cloudgraph.hbase.scan;
 import java.io.IOException;
 import java.util.Date;
 
-//import junit.framework.Test;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.cloudgraph.test.datatypes.Node;
 import org.cloudgraph.test.datatypes.query.QStringNode;
 import org.junit.Test;
-import org.plasma.common.test.PlasmaTestSetup;
 
 import commonj.sdo.DataGraph;
+//import junit.framework.Test;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * String SDO datatype specific partial row-key scan operations test.

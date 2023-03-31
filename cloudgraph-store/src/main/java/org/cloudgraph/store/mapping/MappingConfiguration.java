@@ -108,15 +108,13 @@ public interface MappingConfiguration {
   /**
    * Returns a table mapping based on the given table name.
    * 
-   * @param tableNamespace
-   *          the table namespace
    * @param tableName
    *          the table name
    * @return the table configuration
    * @throws StoreMappingException
    *           if the given name is not found
    */
-  public TableMapping getTableByQualifiedLogicalName(String tableNamespace, String tableName,
+  public TableMapping getTableByQualifiedLogicalName(String qualifiedTableName,
       StoreMappingContext context);
 
   /**

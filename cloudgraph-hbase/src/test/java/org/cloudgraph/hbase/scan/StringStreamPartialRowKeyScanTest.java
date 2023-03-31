@@ -22,14 +22,13 @@ import io.reactivex.disposables.Disposable;
 import java.io.IOException;
 import java.util.Date;
 
+//import junit.framework.Test;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.cloudgraph.test.datatypes.Node;
 import org.cloudgraph.test.datatypes.query.QStringNode;
 
 import commonj.sdo.DataGraph;
-
-//import junit.framework.Test;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * String SDO datatype specific partial row-key stream scan operations test.

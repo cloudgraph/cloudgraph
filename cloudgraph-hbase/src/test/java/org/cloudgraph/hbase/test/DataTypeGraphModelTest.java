@@ -25,13 +25,12 @@ import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jena.ext.com.google.common.primitives.UnsignedInteger;
+import org.apache.jena.ext.com.google.common.primitives.UnsignedLong;
 import org.cloudgraph.test.datatypes.Node;
 import org.cloudgraph.test.datatypes.query.QNode;
 import org.plasma.query.Expression;
 import org.plasma.sdo.helper.DataConverter;
-
-import org.apache.jena.ext.com.google.common.primitives.UnsignedInteger;
-import org.apache.jena.ext.com.google.common.primitives.UnsignedLong;
 
 import commonj.sdo.DataGraph;
 import commonj.sdo.Property;

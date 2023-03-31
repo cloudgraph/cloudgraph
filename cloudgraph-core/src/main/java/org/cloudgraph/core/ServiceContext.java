@@ -15,6 +15,10 @@
  */
 package org.cloudgraph.core;
 
+import org.cloudgraph.core.client.ClientFactory;
+import org.cloudgraph.core.filter.ColumnFilterFactory;
+import org.cloudgraph.core.filter.RowFilterFactory;
+import org.cloudgraph.core.scan.RowKeyFactory;
 import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.plasma.sdo.access.AccessServiceContext;
 
@@ -32,4 +36,13 @@ public interface ServiceContext extends AccessServiceContext {
 
   public DataConverter getDataConverter();
 
+  public ConnectionManager getConnectionManager();
+
+  public ClientFactory getClientFactory();
+
+  public RowKeyFactory getRowKeyFactory();
+
+  public ColumnFilterFactory getColumnFilterFactory();
+
+  public RowFilterFactory getRowFilterFactory();
 }
