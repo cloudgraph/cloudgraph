@@ -43,8 +43,7 @@
         <module>cloudgraph-docs</module>
         -->
         <module>cloudgraph-maprdb</module>
-         <module>cloudgraph-bigtable</module>
-    </modules>
+     </modules>
 	<repositories>
 		<repository>
 			<id>maven2-repository.dev.java.net</id>

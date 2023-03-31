@@ -1,0 +1,40 @@
+23 Mar 2023 09:11:17,189 INFO  [main] fuml.Fuml loading artifact, PlasmaSDO.profile_v1_3.uml
+23 Mar 2023 09:11:17,203 INFO  [main] config.FumlConfiguration initializing...
+23 Mar 2023 09:11:17,206 INFO  [main] config.FumlConfigDataBinding loading schema chain...
+23 Mar 2023 09:11:17,251 INFO  [main] config.FumlConfiguration loading configuration, DefaultFumlConfig.xml
+23 Mar 2023 09:11:17,318 INFO  [main] model.InMemoryRepository initializing...
+23 Mar 2023 09:11:17,319 INFO  [main] repository.RepositoryConfigDataBinding loading schema chain...
+23 Mar 2023 09:11:17,345 INFO  [main] model.PrimitiveTypesAssembler initializing...
+23 Mar 2023 09:11:17,363 INFO  [main] model.InfrastructureAssembler initializing...
+23 Mar 2023 09:11:17,393 INFO  [main] model.SuperstructureAssembler initializing...
+23 Mar 2023 09:11:17,411 INFO  [main] model.fUML_SyntaxAssembler initializing...
+23 Mar 2023 09:11:17,415 INFO  [main] model.InMemoryRepository performing package merge...
+23 Mar 2023 09:11:17,431 INFO  [main] model.InMemoryRepository cacheing classifier attributes and operations...
+23 Mar 2023 09:11:17,449 INFO  [main] library.Library initializing...
+23 Mar 2023 09:11:17,920 INFO  [main] fuml.Fuml loading artifact, PlasmaSDODataTypes_v1_3.uml
+23 Mar 2023 09:11:17,969 WARN  [main] helper.PlasmaTypeHelper no cache configuration found - continuing w/o cache
+23 Mar 2023 09:11:17,975 INFO  [main] fuml.Fuml loading artifact, datatypes.uml
+23 Mar 2023 09:11:18,096 INFO  [main] fuml.Fuml loading artifact, social-graph.uml
+23 Mar 2023 09:11:18,357 INFO  [main] mapping.StoreMapping loading properties from bundled resource: cloudgraph.properties
+23 Mar 2023 09:11:18,411 WARN  [main] mapping.DataRowKeyFieldMapping expected value contraint total-digits for integral property, {http://cloudgraph.org/test/datatypes}Node.rootId - row key fields are fixed length and integral properties used in row key fields should be annotated with a value constraint with the total-digits set - defaulting to max size for datatype, Int.
+23 Mar 2023 09:11:18,414 WARN  [main] mapping.DataRowKeyFieldMapping expected value contraint total-digits for integral property, {http://cloudgraph.org/test/datatypes}Node.rootId - row key fields are fixed length and integral properties used in row key fields should be annotated with a value constraint with the total-digits set - defaulting to max size for datatype, Int.
+23 Mar 2023 09:11:18,415 WARN  [main] mapping.DataRowKeyFieldMapping expected value contraint total-digits for integral property, {http://cloudgraph.org/test/datatypes}Node.rootId - row key fields are fixed length and integral properties used in row key fields should be annotated with a value constraint with the total-digits set - defaulting to max size for datatype, Int.
+23 Mar 2023 09:11:18,416 WARN  [main] mapping.DataRowKeyFieldMapping expected value contraint total-digits for integral property, {http://cloudgraph.org/test/datatypes}Node.intField - row key fields are fixed length and integral properties used in row key fields should be annotated with a value constraint with the total-digits set - defaulting to max size for datatype, Int.
+23 Mar 2023 09:11:18,418 WARN  [main] mapping.DataRowKeyFieldMapping expected value contraint total-digits for integral property, {http://cloudgraph.org/test/datatypes}Node.rootId - row key fields are fixed length and integral properties used in row key fields should be annotated with a value constraint with the total-digits set - defaulting to max size for datatype, Int.
+23 Mar 2023 09:11:18,419 WARN  [main] mapping.DataRowKeyFieldMapping expected value contraint total-digits for integral property, {http://cloudgraph.org/test/datatypes}Node.longField - row key fields are fixed length and integral properties used in row key fields should be annotated with a value constraint with the total-digits set - defaulting to max size for datatype, Long.
+23 Mar 2023 09:11:18,421 WARN  [main] mapping.DataRowKeyFieldMapping expected value contraint total-digits for integral property, {http://cloudgraph.org/test/datatypes}Node.rootId - row key fields are fixed length and integral properties used in row key fields should be annotated with a value constraint with the total-digits set - defaulting to max size for datatype, Int.
+23 Mar 2023 09:11:18,424 WARN  [main] mapping.DataRowKeyFieldMapping expected value contraint total-digits for integral property, {http://cloudgraph.org/test/datatypes}Node.rootId - row key fields are fixed length and integral properties used in row key fields should be annotated with a value constraint with the total-digits set - defaulting to max size for datatype, Int.
+23 Mar 2023 09:11:18,436 INFO  [main] connect.HBaseConnectionManager created connection pool[ 
+	MaxTotal:		80
+	MinIdle:		1
+	MaxIdle:		8
+	Lifo:		true
+	MaxWaitMillis:		-1
+	TimeBetweenEvictionRunsMillis:		-1
+	EvictionPolicyClassName:		org.apache.commons.pool2.impl.DefaultEvictionPolicy
+	MinEvictableIdleTimeMillis:		1800000
+	SoftMinEvictableIdleTimeMillis:		-1
+	NumTestsPerEvictionRun:		3
+...]
+23 Mar 2023 09:11:18,465 WARN  [main] util.NativeCodeLoader Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+23 Mar 2023 09:11:22,546 INFO  [main] bind.PlasmaQueryDataBinding loading schema chain...
