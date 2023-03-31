@@ -18,6 +18,7 @@ N/A
 N/A    
  
 **Improvements**
+- **[Issue #60]** - Advance JAXB to Jakarta
 N/A
 
   
