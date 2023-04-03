@@ -15,6 +15,7 @@ import org.cloudgraph.hbase.filter.HBaseColumnFilterFactory;
 import org.cloudgraph.hbase.filter.HBaseRowFilterFactory;
 import org.cloudgraph.hbase.scan.HBaseRowKeyFactory;
 import org.cloudgraph.hbase.service.HBaseDataConverter;
+import org.cloudgraph.maprdb.client.MaprDBClientFactory;
 import org.cloudgraph.store.mapping.StoreMappingContext;
 
 public class MaprDBServiceContext implements ServiceContext {
@@ -34,7 +35,7 @@ public class MaprDBServiceContext implements ServiceContext {
     this.mappingContext = new StoreMappingContext(properties);
     this.dataConverter = HBaseDataConverter.INSTANCE;
     this.connectionManager = HBaseConnectionManager.instance();
-    this.clientFactory = new HBaseClientFactory();
+    this.clientFactory = new MaprDBClientFactory();
     this.rowKeyFactory = new HBaseRowKeyFactory();
     this.columnFilterFactory = new HBaseColumnFilterFactory();
     this.rowFilterFactory = new HBaseRowFilterFactory();
