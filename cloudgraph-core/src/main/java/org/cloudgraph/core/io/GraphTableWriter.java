@@ -117,8 +117,8 @@ public class GraphTableWriter extends GraphTable implements TableWriter {
   @Override
   public Table getTable() {
     try {
-      TableName tableName = TableName.valueOf(getQualifiedPhysicalTableNamespace(),
-          getQualifiedPhysicalTableName());
+      TableName tableName = serviceContext.getClientFactory().createTableName(
+          getQualifiedPhysicalTableNamespace(), getQualifiedPhysicalTableName());
       // Note: calling tableExists() using the admin HBase API is expensive
       // and is
       // showing up on CPU profiling results. Just call get table and catch :(

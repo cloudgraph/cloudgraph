@@ -19,6 +19,7 @@ import org.cloudgraph.core.client.Put;
 import org.cloudgraph.core.client.Result;
 import org.cloudgraph.core.client.RowMutations;
 import org.cloudgraph.core.client.Scan;
+import org.cloudgraph.core.client.TableName;
 import org.cloudgraph.core.scan.CompleteRowKey;
 import org.cloudgraph.core.scan.FuzzyRowKey;
 import org.cloudgraph.core.scan.PartialRowKey;
@@ -142,6 +143,11 @@ public class HBaseClientFactory implements ClientFactory {
   @Override
   public Scan createScan(Scan scan) throws IOException {
     return new HBaseScan(scan);
+  }
+
+  @Override
+  public TableName createTableName(String tableNamespace, String tableName) {
+    return HBaseTableName.valueOf(tableNamespace, tableName);
   }
 
 }

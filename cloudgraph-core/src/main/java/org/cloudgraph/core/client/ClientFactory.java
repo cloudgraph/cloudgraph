@@ -38,4 +38,6 @@ public interface ClientFactory {
   Scan createScan(FuzzyRowKey fuzzyRowKey, Filter columnFilter);
 
   Scan createScan(Scan scan) throws IOException;
+
+  TableName createTableName(String tableNamespace, String tableName);
 }
