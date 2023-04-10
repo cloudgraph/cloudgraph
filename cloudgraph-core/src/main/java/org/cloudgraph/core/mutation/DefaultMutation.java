@@ -209,7 +209,7 @@ abstract class DefaultMutation {
         throw new IllegalAccessException("attempt to modify row-key property, " + type.getURI()
             + "#" + type.getName() + "." + property.getName()
             + " - this property is configured as a row-key field for table '"
-            + dataGraphConfig.getTable().getQualifiedPhysicalName() + "'");
+            + dataGraphConfig.getTable().getNamespaceQualifiedPhysicalName() + "'");
       }
       // FIXME: what if an entire entity is deleted which is part
       // of the row key. Detect this. Or added for that matter.

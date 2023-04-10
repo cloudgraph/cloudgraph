@@ -482,12 +482,12 @@ public class GraphQuery implements QueryDispatcher {
     Result resultRow = rootTableReader.getTable().get(get);
     if (resultRow == null || resultRow.isEmpty()) {
       log.debug("no results from table "
-          + rootTableReader.getTableConfig().getQualifiedPhysicalName() + " for row '"
+          + rootTableReader.getTableConfig().getNamespaceQualifiedPhysicalName() + " for row '"
           + new String(get.getRow()) + "' - returning zero results graphs");
       return;
     }
     if (log.isDebugEnabled()) {
-      log.debug(rootTableReader.getTableConfig().getQualifiedPhysicalName() + ": "
+      log.debug(rootTableReader.getTableConfig().getNamespaceQualifiedPhysicalName() + ": "
           + new String(resultRow.getRow()));
       for (KeyValue keyValue : resultRow.list()) {
         log.debug("\tkey: " + new String(keyValue.getQualifier()) + "\tvalue: "
@@ -508,14 +508,14 @@ public class GraphQuery implements QueryDispatcher {
     Result[] resultRows = rootTableReader.getTable().get(gets);
     if (resultRows == null) {
       log.debug("no results from table "
-          + rootTableReader.getTableConfig().getQualifiedPhysicalName()
+          + rootTableReader.getTableConfig().getNamespaceQualifiedPhysicalName()
           + " for mget - returning zero results graphs");
       return;
     }
     for (Result resultRow : resultRows) {
       if (!resultRow.isEmpty()) {
         if (log.isDebugEnabled()) {
-          log.debug(rootTableReader.getTableConfig().getQualifiedPhysicalName() + ": "
+          log.debug(rootTableReader.getTableConfig().getNamespaceQualifiedPhysicalName() + ": "
               + new String(resultRow.getRow()));
           for (KeyValue keyValue : resultRow.list()) {
             log.debug("\tkey: " + new String(keyValue.getQualifier()) + "\tvalue: "
@@ -530,8 +530,8 @@ public class GraphQuery implements QueryDispatcher {
           if (resultRow.getRow() != null)
             rowKey = Bytes.toString(resultRow.getRow());
           log.debug("no results from table "
-              + rootTableReader.getTableConfig().getQualifiedPhysicalName() + " for row '" + rowKey
-              + "' - returning no results graph");
+              + rootTableReader.getTableConfig().getNamespaceQualifiedPhysicalName() + " for row '"
+              + rowKey + "' - returning no results graph");
         }
       }
     }
@@ -549,7 +549,7 @@ public class GraphQuery implements QueryDispatcher {
     try {
       for (Result resultRow : scanner) {
         if (log.isDebugEnabled()) {
-          log.debug(rootTableReader.getTableConfig().getQualifiedPhysicalName() + ": "
+          log.debug(rootTableReader.getTableConfig().getNamespaceQualifiedPhysicalName() + ": "
               + new String(resultRow.getRow()));
           for (KeyValue keyValue : resultRow.list()) {
             log.debug("\tkey: " + new String(keyValue.getQualifier()) + "\tvalue: "

@@ -176,30 +176,30 @@ public class GraphServiceDelegate implements GraphService {
   private StoreMappingContext createMappingContext(JobContext jobContext) {
     Properties mappingProps = new Properties();
     String rootPath = jobContext.getConfiguration().get(
-        ConfigurationProperty.CLOUDGRAPH___MAPRDB___TABLE___PATH___PREFIX.value());
+        ConfigurationProperty.CLOUDGRAPH___ROOT___TABLE___PATH___PREFIX.value());
     if (rootPath != null)
       mappingProps.setProperty(
-          ConfigurationProperty.CLOUDGRAPH___MAPRDB___TABLE___PATH___PREFIX.value(), rootPath);
+          ConfigurationProperty.CLOUDGRAPH___ROOT___TABLE___PATH___PREFIX.value(), rootPath);
     String volume = jobContext.getConfiguration().get(
-        ConfigurationProperty.CLOUDGRAPH___MAPRDB___VOLUME___PATH___PREFIX.value());
+        ConfigurationProperty.CLOUDGRAPH___VOLUME___PATH___PREFIX.value());
     if (volume != null)
-      mappingProps.setProperty(
-          ConfigurationProperty.CLOUDGRAPH___MAPRDB___VOLUME___PATH___PREFIX.value(), volume);
+      mappingProps.setProperty(ConfigurationProperty.CLOUDGRAPH___VOLUME___PATH___PREFIX.value(),
+          volume);
     return new StoreMappingContext(mappingProps);
   }
 
   private ServiceContext createServiceContext(JobContext jobContext) {
     Properties mappingProps = new Properties();
     String rootPath = jobContext.getConfiguration().get(
-        ConfigurationProperty.CLOUDGRAPH___MAPRDB___TABLE___PATH___PREFIX.value());
+        ConfigurationProperty.CLOUDGRAPH___ROOT___TABLE___PATH___PREFIX.value());
     if (rootPath != null)
       mappingProps.setProperty(
-          ConfigurationProperty.CLOUDGRAPH___MAPRDB___TABLE___PATH___PREFIX.value(), rootPath);
+          ConfigurationProperty.CLOUDGRAPH___ROOT___TABLE___PATH___PREFIX.value(), rootPath);
     String volume = jobContext.getConfiguration().get(
-        ConfigurationProperty.CLOUDGRAPH___MAPRDB___VOLUME___PATH___PREFIX.value());
+        ConfigurationProperty.CLOUDGRAPH___VOLUME___PATH___PREFIX.value());
     if (volume != null)
-      mappingProps.setProperty(
-          ConfigurationProperty.CLOUDGRAPH___MAPRDB___VOLUME___PATH___PREFIX.value(), volume);
+      mappingProps.setProperty(ConfigurationProperty.CLOUDGRAPH___VOLUME___PATH___PREFIX.value(),
+          volume);
 
     return new HBaseServiceContext(mappingProps);
   }
@@ -210,7 +210,7 @@ public class GraphServiceDelegate implements GraphService {
       List<Row> tableMutations = mutations.get(tableWriter);
       if (log.isDebugEnabled())
         log.debug("commiting " + tableMutations.size() + " mutations to table: "
-            + tableWriter.getTableConfig().getQualifiedPhysicalName());
+            + tableWriter.getTableConfig().getNamespaceQualifiedPhysicalName());
       Object[] results = new Object[tableMutations.size()];
       try {
         tableWriter.getTable().batch(tableMutations, results);

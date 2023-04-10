@@ -8,7 +8,7 @@
     <Property name="org.plasma.sdo.access.provider.hbase.ConnectionPoolMinSize">1</Property>    
     <Property name="org.plasma.sdo.access.provider.hbase.ConnectionPoolMaxSize">80</Property>    
 
-    <Table name="TEST_LEXICOSIMP_CODEC_TEMPORAL" namespace="test" dataColumnFamilyName="f1">
+    <Table name="TEST_LEXICOSIMP_CODEC_TEMPORAL" volumePathPrefix="testtenant"  namespace="simple_lexico" dataColumnFamilyName="f1">
         <HashAlgorithm name="murmur32"/>
          
         <DataGraph uri="http://cloudgraph.org/test/datatypes" type="DateTimeNode">
@@ -64,7 +64,7 @@
         </DataGraph>
     </Table>  
 
-    <Table name="TEST_LEXICOSIMP_CODEC_INTEGRAL" namespace="test" dataColumnFamilyName="f1">
+    <Table name="TEST_LEXICOSIMP_CODEC_INTEGRAL" volumePathPrefix="testtenant"  namespace="simple_lexico" dataColumnFamilyName="f1">
         <HashAlgorithm name="murmur32"/>
         
          <DataGraph uri="http://cloudgraph.org/test/datatypes" type="IntNode">
@@ -172,7 +172,7 @@
         </DataGraph>
     </Table>  
 
-    <Table name="TEST_LEXICOSIMP_CODEC_REAL" namespace="test" dataColumnFamilyName="f1">
+    <Table name="TEST_LEXICOSIMP_CODEC_REAL" volumePathPrefix="testtenant"  namespace="simple_lexico" dataColumnFamilyName="f1">
         <HashAlgorithm name="murmur32"/>
         
         <DataGraph uri="http://cloudgraph.org/test/datatypes" type="FloatNode">
@@ -205,7 +205,7 @@
         </DataGraph>
     </Table>  
 
-    <Table name="TEST_LEXICOSIMP_CODEC_STRING" namespace="test" dataColumnFamilyName="f1">
+    <Table name="TEST_LEXICOSIMP_CODEC_STRING" volumePathPrefix="testtenant"  namespace="simple_lexico" dataColumnFamilyName="f1">
         <HashAlgorithm name="murmur32"/>
         <DataGraph uri="http://cloudgraph.org/test/datatypes" type="StringNode">
             <RowKeyModel>

@@ -10,7 +10,7 @@
     <Property name="org.plasma.sdo.access.provider.hbase.ConnectionPoolMaxSize">80</Property>    
  
          
-    <Table name="TEST_ACTOR" namespace="test" dataColumnFamilyName="f1">
+    <Table name="TEST_ACTOR" volumePathPrefix="testtenant"  namespace="distributed" dataColumnFamilyName="f1">
         <HashAlgorithm name="murmur32"/>
         <DataGraph uri="http://cloudgraph.org/test/socialgraph/actor" type="Actor">
             <RowKeyModel>
@@ -29,7 +29,7 @@
             </ColumnKeyModel>
         </DataGraph>
     </Table>  
-    <Table name="TEST_STORY" namespace="test" dataColumnFamilyName="f1">
+    <Table name="TEST_STORY" volumePathPrefix="testtenant"  namespace="distributed" dataColumnFamilyName="f1">
         <HashAlgorithm name="murmur32"/>
         <DataGraph uri="http://cloudgraph.org/test/socialgraph/story" type="Blog">
             <RowKeyModel>
@@ -51,7 +51,7 @@
             </ColumnKeyModel>
         </DataGraph>
     </Table>  
-    <Table name="TEST_MEDIA" namespace="test" dataColumnFamilyName="f1">
+    <Table name="TEST_MEDIA" volumePathPrefix="testtenant"  namespace="distributed" dataColumnFamilyName="f1">
         <HashAlgorithm name="murmur32"/>
         <DataGraph uri="http://cloudgraph.org/test/socialgraph/actor" type="Photo">
             <RowKeyModel>
@@ -75,7 +75,7 @@
 
     </Table>  
 
-    <Table name="TEST_TOPIC" namespace="test" dataColumnFamilyName="f1">
+    <Table name="TEST_TOPIC" volumePathPrefix="testtenant"  namespace="distributed" dataColumnFamilyName="f1">
         <HashAlgorithm name="murmur32"/>
         <DataGraph uri="http://cloudgraph.org/test/socialgraph/actor" type="Topic">
             <RowKeyModel>
@@ -99,7 +99,7 @@
 
     </Table>  
  
-    <Table name="TEST_PARTIAL_KEY_TEMPORAL" namespace="test" dataColumnFamilyName="f1">
+    <Table name="TEST_PARTIAL_KEY_TEMPORAL" volumePathPrefix="testtenant"  namespace="distributed" dataColumnFamilyName="f1">
         <HashAlgorithm name="murmur32"/>
          
         <DataGraph uri="http://cloudgraph.org/test/datatypes" type="DateTimeNode">

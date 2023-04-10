@@ -107,8 +107,8 @@ public class WildcardStringLiteral extends StringLiteral implements WildcardPart
       throw new ScanException("cannot create fuzzy scan literal "
           + "with interviening wildcards ('" + keyValueStr
           + "') for fixed length row key field with path '" + this.fieldMapping.getPropertyPath()
-          + "' within table " + this.table.getQualifiedPhysicalName() + " for graph root type, "
-          + this.rootType.toString());
+          + "' within table " + this.table.getNamespaceQualifiedPhysicalName()
+          + " for graph root type, " + this.rootType.toString());
     default:
       if (keyValueStr.contains(Wildcard.WILDCARD_CHAR)) {
         if (keyValueStr.endsWith(Wildcard.WILDCARD_CHAR)) {
@@ -123,7 +123,7 @@ public class WildcardStringLiteral extends StringLiteral implements WildcardPart
               + "with interviening wildcards ('" + keyValueStr
               + "') for fixed length row key field with path '"
               + this.fieldMapping.getPropertyPath() + "' within table "
-              + this.table.getQualifiedPhysicalName() + " for graph root type, "
+              + this.table.getNamespaceQualifiedPhysicalName() + " for graph root type, "
               + this.rootType.toString());
         }
       } else {
@@ -167,8 +167,8 @@ public class WildcardStringLiteral extends StringLiteral implements WildcardPart
     case HASH:
       throw new ScanException("cannot create scan literal "
           + "for hashed key field - field with path '" + this.fieldMapping.getPropertyPath()
-          + "' within table " + this.table.getQualifiedPhysicalName() + " for graph root type, "
-          + this.rootType.toString());
+          + "' within table " + this.table.getNamespaceQualifiedPhysicalName()
+          + " for graph root type, " + this.rootType.toString());
     default:
       startBytes = startValueStr.getBytes(this.charset);
       startBytes = this.padding.pad(startBytes, this.fieldMapping.getMaxLength(),
@@ -197,8 +197,8 @@ public class WildcardStringLiteral extends StringLiteral implements WildcardPart
     case HASH:
       throw new ScanException("cannot create scan literal "
           + "for hashed key field - field with path '" + this.fieldMapping.getPropertyPath()
-          + "' within table " + this.table.getQualifiedPhysicalName() + " for graph root type, "
-          + this.rootType.toString() + "is configured as 'hashed'");
+          + "' within table " + this.table.getNamespaceQualifiedPhysicalName()
+          + " for graph root type, " + this.rootType.toString() + "is configured as 'hashed'");
     default:
       byte[] literalStopBytes = stopValueStr.getBytes(this.charset);
       stopBytes = new byte[literalStopBytes.length + 1];

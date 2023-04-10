@@ -41,13 +41,17 @@ public class HBaseResult implements Result {
   @Override
   public Cell[] rawCells() {
     org.apache.hadoop.hbase.Cell[] hbaseResults = this.result.rawCells();
-    Cell[] results = new Cell[hbaseResults.length];
-    int i = 0;
-    for (org.apache.hadoop.hbase.Cell hcell : hbaseResults) {
-      results[i] = new HBaseCell(hcell);
-      i++;
+    if (hbaseResults != null) {
+      Cell[] results = new Cell[hbaseResults.length];
+      int i = 0;
+      for (org.apache.hadoop.hbase.Cell hcell : hbaseResults) {
+        results[i] = new HBaseCell(hcell);
+        i++;
+      }
+      return results;
+    } else {
+      return null;
     }
-    return results;
   }
 
   public boolean advance() {

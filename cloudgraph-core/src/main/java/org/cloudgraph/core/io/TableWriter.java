@@ -51,11 +51,11 @@ public interface TableWriter extends TableOperation {
 
   /**
    * 
-   * Returns the qualified physical table name associated with this reader.
+   * Returns the physical table name associated with this reader.
    * 
-   * @return the qualified physical table name associated with this reader.
+   * @return the physical table name associated with this reader.
    */
-  public String getQualifiedPhysicalTableName();
+  public String getPhysicalTableName();
 
   /**
    * 

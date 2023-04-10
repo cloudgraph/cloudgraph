@@ -35,12 +35,14 @@ import org.plasma.sdo.core.CoreConstants;
  */
 public abstract class TableMapping {
   private static Log log = LogFactory.getLog(TableMapping.class);
-  /** Apache HBase namespace table-name delimiter */
-  static final String TABLE_LOGICAL_NAME_DELIM = "/";
-  /** MAPRDB table path delimiter */
-  static final String TABLE_PHYSICAL_NAME_DELIM = "/";
-  static final String TABLE_PHYSICAL_NAMESPACE_DELIM = "_";
-  static final String TABLE_NAME_DEFAULT_NAMESPACE = "default";
+
+  public static final String TABLE_LOGICAL_NAME_DELIM = "#";
+
+  /**
+   * Apache HBase namespace table-name and namespace delimiter. Let other store
+   * providers override as needed
+   */
+  public static final String TABLE_PHYSICAL_NAME_DELIM = "_";
 
   protected Table table;
   private MappingConfiguration config;
@@ -58,6 +60,7 @@ public abstract class TableMapping {
     this.charset = Charset.forName(CoreConstants.UTF8_ENCODING);
     for (Property prop : table.getProperties())
       propertyNameToPropertyMap.put(prop.getName(), prop);
+    validate();
   }
 
   public TableMapping(Table table) {
@@ -70,6 +73,14 @@ public abstract class TableMapping {
       throw new IllegalStateException("table name cannot be null or empty");
     if (tableName.contains(":"))
       throw new IllegalStateException("table name cannot contain ':' char");
+    String tableNamespace = this.table.getNamespace();
+    if (tableNamespace == null || tableNamespace.trim().length() == 0)
+      throw new IllegalStateException("table namespace cannot be null or empty");
+    if (tableNamespace.contains(":"))
+      throw new IllegalStateException("table namespace cannot contain ':' char");
+    if (tableNamespace.contains(TABLE_PHYSICAL_NAME_DELIM))
+      throw new IllegalStateException("table namespace cannot contain '"
+          + TABLE_PHYSICAL_NAME_DELIM + "' char");
   }
 
   /**
@@ -113,13 +124,13 @@ public abstract class TableMapping {
 
   public abstract StoreMappingContext getMappingContext();
 
-  protected String qualifiedPhysicalName;
+  protected String physicalName;
 
-  public abstract String getQualifiedPhysicalName();
+  public abstract String getPhysicalName();
 
-  protected String relativePhysicalName;
+  protected String namespaceQualifiedPhysicalName;
 
-  public abstract String getRelativePhysicalName();
+  public abstract String getNamespaceQualifiedPhysicalName();
 
   protected String qualifiedLogicalName;
 
@@ -129,85 +140,114 @@ public abstract class TableMapping {
 
   public abstract String getQualifiedPhysicalNamespace();
 
-  public static String qualifiedLogicalNameFor(String namespace, String tableName,
-      StoreMappingContext context) {
+  public static String qualifiedLogicalNameFor(Table table, StoreMappingContext context) {
     StringBuilder name = new StringBuilder();
-    if (context != null && context.hasMaprdbVolumePath()
-        && !tableName.startsWith(context.getMaprdbVolumePath())) {
-      name.append(context.getMaprdbVolumePath());
+    // note: for logical names no not prepend the root
+    // path as it is necessarily the same for all
+    // tables even in a multi-tenant / volume environment
+    if (table.getVolumePathPrefix() != null) {
+      if (table.getVolumePathPrefix().contains(TABLE_PHYSICAL_NAME_DELIM))
+        throw new IllegalStateException("volume prefix cannot contain '"
+            + TABLE_PHYSICAL_NAME_DELIM + "' char");
+      name.append(table.getVolumePathPrefix());
+      name.append(TABLE_LOGICAL_NAME_DELIM);
+    } else if (context != null && context.hasVolumePathPrefix()) {
+      if (context.getVolumePathPrefix().contains(TABLE_PHYSICAL_NAME_DELIM))
+        throw new IllegalStateException("volume prefix cannot contain '"
+            + TABLE_PHYSICAL_NAME_DELIM + "' char");
+      name.append(context.getVolumePathPrefix());
       name.append(TABLE_LOGICAL_NAME_DELIM);
     }
-    if (namespace != null) {
-      name.append(namespace);
-      name.append(TABLE_LOGICAL_NAME_DELIM);
-    }
-    name.append(tableName);
+    name.append(table.getNamespace());
+    name.append(TABLE_LOGICAL_NAME_DELIM);
+    name.append(table.getName());
     return name.toString();
   }
 
   public static String qualifiedLogicalNameFor(QName typeName, StoreMappingContext context) {
     StringBuilder name = new StringBuilder();
-    if (context != null && context.hasMaprdbVolumePath()) {
-      name.append(context.getMaprdbVolumePath());
+    // note: for logical names no not prepend the root
+    // path as it is necessarily the same for all
+    // tables even in a multi-tenant / volume environment
+    if (context != null && context.hasVolumePathPrefix()) {
+      if (context.getVolumePathPrefix().contains(TABLE_PHYSICAL_NAME_DELIM))
+        throw new IllegalStateException("volume prefix cannot contain '"
+            + TABLE_PHYSICAL_NAME_DELIM + "' char");
+      name.append(context.getVolumePathPrefix());
       name.append(TABLE_LOGICAL_NAME_DELIM);
     }
     name.append(typeName.toString());
     return name.toString();
   }
 
-  public static String qualifiedPhysicalNameFor(String namespace, String tableName,
-      StoreMappingContext context) {
+  public static String physicalNameFor(String tableName, StoreMappingContext context) {
     StringBuilder name = new StringBuilder();
-    String rootPath = StoreMapping.getInstance().maprdbTablePathPrefix();
+    name.append(tableName);
+    return name.toString();
+  }
+
+  public static String namespaceQualifiedPhysicalNameFor(String namespace,
+      String physicalTableName, StoreMappingContext context) {
+    StringBuilder name = new StringBuilder();
+    // prepend the root path is exists
+    String rootPath = StoreMapping.getInstance().rootTablePathPrefix();
     if (rootPath != null) {
       name.append(rootPath);
       name.append(TABLE_PHYSICAL_NAME_DELIM);
     }
-    if (context != null && context.hasMaprdbVolumePath()
-        && !tableName.startsWith(context.getMaprdbVolumePath())) {
-      name.append(context.getMaprdbVolumePath());
+    if (context != null && context.hasVolumePathPrefix()) {
+      name.append(context.getVolumePathPrefix());
       name.append(TABLE_PHYSICAL_NAME_DELIM);
     }
-    // if has a MAPRDB root path, and the table definition has a namespace,
-    // MAPRDB will need the namespace as part of the physical
-    // table path
-    if (rootPath != null && namespace != null) {
-      name.append(namespace);
-      name.append(TABLE_PHYSICAL_NAME_DELIM);
-    }
-    name.append(tableName);
+    name.append(namespace);
+    name.append(TABLE_PHYSICAL_NAME_DELIM);
+    name.append(physicalTableName);
     return name.toString();
   }
 
-  public static String relativePhysicalNameFor(String namespace, String tableName,
-      StoreMappingContext context) {
+  public static String qualifiedPhysicalNamespaceFor(Table table, StoreMappingContext context) {
     StringBuilder name = new StringBuilder();
-    if (context != null && context.hasMaprdbVolumePath()
-        && !tableName.startsWith(context.getMaprdbVolumePath())) {
-      name.append(context.getMaprdbVolumePath());
+    String rootPath = StoreMapping.getInstance().rootTablePathPrefix();
+    // prepend the root path is exists
+    if (rootPath != null) {
+      name.append(rootPath);
       name.append(TABLE_PHYSICAL_NAME_DELIM);
     }
-    if (namespace != null) {
-      name.append(namespace);
-      name.append(TABLE_PHYSICAL_NAME_DELIM);
-    }
-    name.append(tableName);
-    return name.toString();
-  }
-
-  public static String qualifiedPhysicalNamespaceFor(String namespace, String tableName,
-      StoreMappingContext context) {
-    StringBuilder name = new StringBuilder();
-    String rootPath = StoreMapping.getInstance().maprdbTablePathPrefix();
-    if (rootPath == null) {
-      if (context != null && context.hasMaprdbVolumePath()
-          && !namespace.startsWith(context.getMaprdbVolumePath())) {
-        name.append(context.getMaprdbVolumePath());
+    // prepend the volume name from either the
+    // table config or volume name or cont4xt volume name
+    if (table.getVolumePathPrefix() != null) {
+      if (context != null && context.hasVolumePathPrefix()
+          && !table.getVolumePathPrefix().equals(context.getVolumePathPrefix())) {
+        log.warn("overriding table volumme '" + table.getVolumePathPrefix()
+            + "' with context volue '" + context.getVolumePathPrefix() + "'");
+        name.append(context.getVolumePathPrefix());
+        name.append(TABLE_PHYSICAL_NAME_DELIM);
+      } else {
+        name.append(table.getVolumePathPrefix());
         name.append(TABLE_PHYSICAL_NAME_DELIM);
       }
-
-      name.append(namespace);
+    } else if (context != null && context.hasVolumePathPrefix()) {
+      name.append(context.getVolumePathPrefix());
+      name.append(TABLE_PHYSICAL_NAME_DELIM);
     }
+
+    name.append(table.getNamespace());
+    return name.toString();
+  }
+
+  public static String qualifiedPhysicalNamespaceFor(String namespace, StoreMappingContext context) {
+    StringBuilder name = new StringBuilder();
+    String rootPath = StoreMapping.getInstance().rootTablePathPrefix();
+    if (rootPath != null) {
+      name.append(rootPath);
+      name.append(TABLE_PHYSICAL_NAME_DELIM);
+    }
+    if (context != null && context.hasVolumePathPrefix()) {
+      name.append(context.getVolumePathPrefix());
+      name.append(TABLE_PHYSICAL_NAME_DELIM);
+    }
+
+    name.append(namespace);
     return name.toString();
   }
 
@@ -281,8 +321,8 @@ public abstract class TableMapping {
   public String maprdbTablePathPrefix() {
     if (maprdbTablePathPrefixVar == null) {
       maprdbTablePathPrefixVar = getTablePropertyString(
-          ConfigurationProperty.CLOUDGRAPH___MAPRDB___TABLE___PATH___PREFIX,
-          this.table.getMaprdbTablePathPrefix(), null);
+          ConfigurationProperty.CLOUDGRAPH___ROOT___TABLE___PATH___PREFIX,
+          this.table.getRootTablePathPrefix(), null);
     }
     return this.maprdbTablePathPrefixVar;
   }
@@ -292,8 +332,8 @@ public abstract class TableMapping {
   public String maprdbVolumePathPrefix() {
     if (maprdbVolumePathPrefixVar == null) {
       maprdbVolumePathPrefixVar = getTablePropertyString(
-          ConfigurationProperty.CLOUDGRAPH___MAPRDB___VOLUME___PATH___PREFIX,
-          this.table.getMaprdbVolumePathPrefix(), null);
+          ConfigurationProperty.CLOUDGRAPH___VOLUME___PATH___PREFIX,
+          this.table.getVolumePathPrefix(), null);
     }
     return this.maprdbVolumePathPrefixVar;
   }

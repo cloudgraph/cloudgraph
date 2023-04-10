@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cloudgraph.hbase.connect;
+package org.cloudgraph.maprdb.connect;
 
 import java.io.IOException;
 
@@ -36,7 +36,6 @@ import org.cloudgraph.core.ConnectionConstants;
 import org.cloudgraph.core.ConnectionManager;
 import org.cloudgraph.core.client.Admin;
 import org.cloudgraph.hbase.client.HBaseAdmin;
-import org.cloudgraph.hbase.client.HBaseTableName;
 import org.cloudgraph.hbase.service.CloudGraphContext;
 import org.cloudgraph.store.mapping.StoreMapping;
 import org.cloudgraph.store.mapping.StoreMappingContext;
@@ -51,16 +50,16 @@ import org.cloudgraph.store.service.GraphServiceException;
  * @author Scott Cinnamond
  * @since 0.5
  */
-public class HBaseConnectionManager implements ConnectionManager, ConnectionConstants {
+public class MaprDBConnectionManager implements ConnectionManager, ConnectionConstants {
 
   private GenericObjectPool<Connection> pool;
 
-  private static final Log log = LogFactory.getLog(HBaseConnectionManager.class);
+  private static final Log log = LogFactory.getLog(MaprDBConnectionManager.class);
 
   private static volatile ConnectionManager instance;
   private Configuration config;
 
-  private HBaseConnectionManager() {
+  private MaprDBConnectionManager() {
     this.config = CloudGraphContext.instance().getConfig();
 
     GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
@@ -118,7 +117,7 @@ public class HBaseConnectionManager implements ConnectionManager, ConnectionCons
     poolConfig.setJmxNamePrefix(this.config.get(CONNECTION_POOL_JMX_NAME_PREFIX,
         GenericObjectPoolConfig.DEFAULT_JMX_NAME_PREFIX));
 
-    HBasePooledConnectionFactory factory = new HBasePooledConnectionFactory(this.config);
+    MaprDBPooledConnectionFactory factory = new MaprDBPooledConnectionFactory(this.config);
     this.pool = new GenericObjectPool<Connection>(factory, poolConfig);
     factory.setPool(pool);
 
@@ -142,7 +141,7 @@ public class HBaseConnectionManager implements ConnectionManager, ConnectionCons
 
   private static synchronized void initInstance() {
     if (instance == null)
-      instance = new HBaseConnectionManager();
+      instance = new MaprDBConnectionManager();
   }
 
   protected void finalize() {
@@ -170,14 +169,25 @@ public class HBaseConnectionManager implements ConnectionManager, ConnectionCons
 
     org.apache.hadoop.hbase.client.Admin hbaseAdmin = null;
     try {
+      TableName hbaseTableName = TableName.valueOf(name.getNamespace(), name.getTableName());
       hbaseAdmin = HBaseAdmin.class.cast(connection.getAdmin()).getAdmin();
 
+      StringBuilder logicalTableNameKey = new StringBuilder();
+      if (hbaseTableName.getNamespaceAsString() != null) {
+        logicalTableNameKey.append(hbaseTableName.getNamespaceAsString());
+        logicalTableNameKey.append("/");
+      }
+      logicalTableNameKey.append(hbaseTableName.getNameAsString());
+
+      // Uses a path as the single key for internal table mapping across Apache
+      // and MAPR HBase
+      String qualifiedLogicalName = StoreMapping.getInstance()
+          .qualifiedLogicalTableNameFromPhysicalTablePath(null, logicalTableNameKey.toString(),
+              mappingContext);
+
       TableMapping tableConfig = StoreMapping.getInstance().getTableByQualifiedLogicalName(
-          name.getQualifiedLogicalName(mappingContext), mappingContext);
-
-      HBaseTableName hbaseTableName = (HBaseTableName) name;
-
-      HTableDescriptor tableDesc = new HTableDescriptor(hbaseTableName.get());
+          qualifiedLogicalName, mappingContext);
+      HTableDescriptor tableDesc = new HTableDescriptor(hbaseTableName);
       HColumnDescriptor fam1 = new HColumnDescriptor(tableConfig.getDataColumnFamilyName()
           .getBytes());
       tableDesc.addFamily(fam1);
@@ -185,7 +195,7 @@ public class HBaseConnectionManager implements ConnectionManager, ConnectionCons
         hbaseAdmin.createTable(tableDesc);
       } catch (NamespaceNotFoundException nnf) {
         NamespaceDescriptor namespace = NamespaceDescriptor
-            .create(hbaseTableName.get().getNamespaceAsString())
+            .create(hbaseTableName.getNamespaceAsString())
             .addConfiguration("Description", "cloudgraph generated namespace").build();
         hbaseAdmin.createNamespace(namespace);
         hbaseAdmin.createTable(tableDesc);

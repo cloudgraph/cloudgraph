@@ -49,11 +49,21 @@ public interface TableReader extends TableOperation {
 
   /**
    * 
-   * Returns the qualified physical table name associated with this reader.
+   * Returns the physical table name associated with this reader.
    * 
-   * @return the qualified physical table name associated with this reader.
+   * @return the physical table name associated with this reader.
    */
-  public String getQualifiedPhysicalTableName();
+  public String getPhysicalTableName();
+
+  /**
+   * 
+   * Returns the namespace qualified physical table name associated with this
+   * reader.
+   * 
+   * @return the namespace qualified physical table name associated with this
+   *         reader.
+   */
+  public String getNamespaceQualifiedPhysicalTableName();
 
   /**
    * 

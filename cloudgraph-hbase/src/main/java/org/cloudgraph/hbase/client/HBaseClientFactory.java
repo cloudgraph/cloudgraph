@@ -147,6 +147,7 @@ public class HBaseClientFactory implements ClientFactory {
 
   @Override
   public TableName createTableName(String tableNamespace, String tableName) {
+
     return HBaseTableName.valueOf(tableNamespace, tableName);
   }
 

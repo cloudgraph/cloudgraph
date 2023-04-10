@@ -29,6 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.cloudgraph.common.CommonTest;
 import org.cloudgraph.hbase.service.HBaseServiceContext;
+import org.cloudgraph.store.mapping.ConfigurationProperty;
 import org.plasma.common.bind.DefaultValidationEventHandler;
 import org.plasma.query.Query;
 import org.plasma.query.bind.PlasmaQueryDataBinding;
@@ -52,8 +53,16 @@ public abstract class HBaseTestCase extends CommonTest {
   protected String targetDir = System.getProperty("target.dir");
 
   public void setUp() throws Exception {
+    Properties testProps = new Properties();
+    testProps.put(ConfigurationProperty.CLOUDGRAPH___VOLUME___PATH___PREFIX.value(), "testtenant");
+    String rootPath = System
+        .getProperty(ConfigurationProperty.CLOUDGRAPH___ROOT___TABLE___PATH___PREFIX.value());
+    if (rootPath != null)
+      testProps.put(ConfigurationProperty.CLOUDGRAPH___ROOT___TABLE___PATH___PREFIX.value(),
+          rootPath);
+
     service = new SDODataAccessClient(new HBasePojoDataAccessClient(new HBaseServiceContext(
-        new Properties())));
+        testProps)));
   }
 
   protected String serializeGraph(DataGraph graph) throws IOException {

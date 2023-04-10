@@ -15,6 +15,9 @@
  */
 package org.cloudgraph.store.mapping;
 
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.UnmarshalException;
+
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -28,8 +31,6 @@ import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.UnmarshalException;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -82,6 +83,8 @@ public class StoreMapping implements MappingConfiguration {
 
   private List<Class<?>> annotatedClasses = new ArrayList<Class<?>>();
   private ReadWriteLock lock = new ReentrantReadWriteLock();
+
+  private TableMappingFactory tableMappingFactory = new DefaultTableMappingFactory();
 
   private StoreMapping() {
     log.debug("initializing...");
@@ -161,7 +164,7 @@ public class StoreMapping implements MappingConfiguration {
         propertyNameToPropertyMap.put(prop.getName(), prop);
 
       for (Table table : config.tables) {
-        TableMapping tableConfig = new StaticTableMapping(table, this);
+        TableMapping tableConfig = this.tableMappingFactory.createStaticTableMapping(table, this);
         mapTable(tableConfig);
       }
     } catch (SAXException e) {
@@ -315,8 +318,8 @@ public class StoreMapping implements MappingConfiguration {
     String qualifiedGraphName = dataGraphConfig.getQualifiedLogicalName();
     if (graphURIToTableMap.get(qualifiedGraphName) == null)
       throw new StoreMappingException("no data graph definition already exists within table '"
-          + dataGraphConfig.getTable().getQualifiedPhysicalName() + "' for type (uri/name), "
-          + qualifiedGraphName);
+          + dataGraphConfig.getTable().getNamespaceQualifiedPhysicalName()
+          + "' for type (uri/name), " + qualifiedGraphName);
     graphURIToTableMap.remove(qualifiedGraphName);
   }
 
@@ -333,11 +336,6 @@ public class StoreMapping implements MappingConfiguration {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.cloudgraph.config.TableMapping#marshal(java.io.OutputStream)
-   */
   @Override
   public void marshal(OutputStream stream) {
     try {
@@ -433,8 +431,8 @@ public class StoreMapping implements MappingConfiguration {
               throw new IllegalStateException("expected static mapping for type, "
                   + plasmaType.getQualifiedName());
             if (!this.graphURIToTableMap.containsKey(contextQualifiedName)) {
-              result = new DynamicTableMapping(result.getTable(), result.getMappingConfiguration(),
-                  context);
+              result = this.tableMappingFactory.createDynamicTableMapping(result.getTable(),
+                  result.getMappingConfiguration(), context);
               this.graphURIToTableMap.put(contextQualifiedName, result);
             } else {
               result = this.graphURIToTableMap.get(contextQualifiedName);
@@ -518,7 +516,7 @@ public class StoreMapping implements MappingConfiguration {
                     + qualifiedLogicaltableName);
               // check again for other thread mod
               if (!this.tableNameToTableMap.containsKey(contextQualifiedName)) {
-                result = new DynamicTableMapping(result.getTable(),
+                result = this.tableMappingFactory.createDynamicTableMapping(result.getTable(),
                     result.getMappingConfiguration(), context);
                 this.tableNameToTableMap.put(contextQualifiedName, result);
               } else {
@@ -540,11 +538,8 @@ public class StoreMapping implements MappingConfiguration {
   @Override
   public String qualifiedLogicalTableNameFromPhysicalTablePath(String namespace, String tableName,
       StoreMappingContext context) {
-    if (namespace != null && namespace.length() > 0
-        && TableMapping.TABLE_NAME_DEFAULT_NAMESPACE.equals(namespace))
-      throw new RuntimeException("not implemented");
     String result = tableName;
-    String pathPrefix = this.maprdbTablePathPrefix();
+    String pathPrefix = this.rootTablePathPrefix();
     if (pathPrefix != null && result.startsWith(pathPrefix)) {
       result = result.substring(pathPrefix.length());
     }
@@ -556,8 +551,8 @@ public class StoreMapping implements MappingConfiguration {
   private String logicalTableNameFromQualifiedLogialTableName(String tableName,
       StoreMappingContext context) {
     String result = tableName;
-    if (context != null && context.hasMaprdbVolumePath()) {
-      String volumePrefix = context.getMaprdbVolumePath();
+    if (context != null && context.hasVolumePathPrefix()) {
+      String volumePrefix = context.getVolumePathPrefix();
       if (result.startsWith(volumePrefix) || result.startsWith(volumePrefix.toLowerCase()))
         result = result.substring(volumePrefix.length());
     }
@@ -575,20 +570,12 @@ public class StoreMapping implements MappingConfiguration {
     if (result != null) {
       return result;
     } else {
-      String contextQualifiedName = TableMapping.qualifiedLogicalNameFor(null,
-          qualifiedLogicalTableName, context);
-      throw new StoreMappingException("no table configured for '" + contextQualifiedName + "'");
+      throw new StoreMappingException("no table configured for '" + qualifiedLogicalTableName + "'");
     }
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.cloudgraph.config.TableMapping#getTableName(javax.xml.namespace.QName )
-   */
   @Override
-  public String getQualifiedPhysicalTableName(QName typeName, StoreMappingContext context) {
+  public String getNamespaceQualifiedPhysicalTableName(QName typeName, StoreMappingContext context) {
     lock.readLock().lock();
     try {
       String contextQualifiedName = TableMapping.qualifiedLogicalNameFor(typeName, context);
@@ -599,7 +586,7 @@ public class StoreMapping implements MappingConfiguration {
           throw new StoreMappingException("no table configured for" + " CloudGraph '"
               + typeName.toString() + "'");
       }
-      return result.getQualifiedPhysicalName();
+      return result.getNamespaceQualifiedPhysicalName();
     } finally {
       lock.readLock().unlock();
     }
@@ -729,11 +716,11 @@ public class StoreMapping implements MappingConfiguration {
   private String maprdbTablePathPrefixVar = null;
 
   @Override
-  public String maprdbTablePathPrefix() {
+  public String rootTablePathPrefix() {
     if (maprdbTablePathPrefixVar == null) {
       maprdbTablePathPrefixVar = getTablePropertyString(
-          ConfigurationProperty.CLOUDGRAPH___MAPRDB___TABLE___PATH___PREFIX,
-          this.config.getMaprdbTablePathPrefix(), null);
+          ConfigurationProperty.CLOUDGRAPH___ROOT___TABLE___PATH___PREFIX,
+          this.config.getRootTablePathPrefix(), null);
     }
     return this.maprdbTablePathPrefixVar;
   }
@@ -741,11 +728,11 @@ public class StoreMapping implements MappingConfiguration {
   private String maprdbVolumePathPrefixVar = null;
 
   @Override
-  public String maprdbVolumePathPrefix() {
+  public String volumePathPrefix() {
     if (maprdbVolumePathPrefixVar == null) {
       maprdbVolumePathPrefixVar = getTablePropertyString(
-          ConfigurationProperty.CLOUDGRAPH___MAPRDB___VOLUME___PATH___PREFIX,
-          this.config.getMaprdbVolumePathPrefix(), null);
+          ConfigurationProperty.CLOUDGRAPH___VOLUME___PATH___PREFIX,
+          this.config.getVolumePathPrefix(), null);
     }
     return this.maprdbVolumePathPrefixVar;
   }

@@ -172,16 +172,15 @@ public class GraphMapReduceSetup extends JobSetup {
     Configuration conf = job.getConfiguration();
     HBaseConfiguration.merge(conf, HBaseConfiguration.create(conf));
     Properties mappingProps = new Properties();
-    String rootPath = conf.get(ConfigurationProperty.CLOUDGRAPH___MAPRDB___TABLE___PATH___PREFIX
+    String rootPath = conf.get(ConfigurationProperty.CLOUDGRAPH___ROOT___TABLE___PATH___PREFIX
         .value());
     if (rootPath != null)
       mappingProps.setProperty(
-          ConfigurationProperty.CLOUDGRAPH___MAPRDB___TABLE___PATH___PREFIX.value(), rootPath);
-    String volume = conf.get(ConfigurationProperty.CLOUDGRAPH___MAPRDB___VOLUME___PATH___PREFIX
-        .value());
+          ConfigurationProperty.CLOUDGRAPH___ROOT___TABLE___PATH___PREFIX.value(), rootPath);
+    String volume = conf.get(ConfigurationProperty.CLOUDGRAPH___VOLUME___PATH___PREFIX.value());
     if (volume != null)
-      mappingProps.setProperty(
-          ConfigurationProperty.CLOUDGRAPH___MAPRDB___VOLUME___PATH___PREFIX.value(), volume);
+      mappingProps.setProperty(ConfigurationProperty.CLOUDGRAPH___VOLUME___PATH___PREFIX.value(),
+          volume);
 
     ServiceContext serviceContext = new HBaseServiceContext(mappingProps);
     StoreMappingContext mappingContext = serviceContext.getStoreMapping();
@@ -212,7 +211,7 @@ public class GraphMapReduceSetup extends JobSetup {
 
     conf.set(GraphInputFormat.QUERY, marshal(query));
     conf.set(GraphInputFormat.ROOT_TABLE_NAME, graphReader.getRootTableReader()
-        .getQualifiedPhysicalTableName());
+        .getNamespaceQualifiedPhysicalTableName());
     conf.set(GraphInputFormat.ROOT_TABLE_NAMESPACE, graphReader.getRootTableReader()
         .getQualifiedPhysicalTableNamespace());
 
@@ -220,7 +219,7 @@ public class GraphMapReduceSetup extends JobSetup {
 
     for (Scan scan : scans) {
       scan.setAttribute(Scan.SCAN_ATTRIBUTES_TABLE_NAME,
-          Bytes.toBytes(graphReader.getRootTableReader().getQualifiedPhysicalTableName()));
+          Bytes.toBytes(graphReader.getRootTableReader().getNamespaceQualifiedPhysicalTableName()));
       scanStrings.add(convertScanToString(scan));
     }
     conf.setStrings(GraphInputFormat.SCANS, scanStrings.toArray(new String[scanStrings.size()]));

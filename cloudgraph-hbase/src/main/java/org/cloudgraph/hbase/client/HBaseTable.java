@@ -52,14 +52,24 @@ public class HBaseTable implements Table {
   }
 
   @Override
-  public void batch(List<Row> rows, Object[] results) throws InterruptedException, IOException {
+  public void batch(List<Row> rows, Object[] source) throws InterruptedException, IOException {
 
     List<org.apache.hadoop.hbase.client.Row> hbaseRows = new ArrayList<>(rows.size());
     for (Row row : rows) {
       hbaseRows.add(((HBaseRow) row).get());
     }
 
+    Object[] results = new Object[source.length];
+
     this.table.batch(hbaseRows, results);
+
+    for (int i = 0; i < source.length; i++) {
+      if (org.apache.hadoop.hbase.client.Result.class.isInstance(results[i])) {
+        source[i] = new HBaseResult(org.apache.hadoop.hbase.client.Result.class.cast(results[i]));
+      } else {
+        source[i] = results[i];
+      }
+    }
   }
 
   @Override

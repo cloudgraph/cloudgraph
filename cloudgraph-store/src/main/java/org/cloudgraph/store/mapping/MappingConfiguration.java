@@ -124,7 +124,7 @@ public interface MappingConfiguration {
    *          the qualified name of an SDO Type
    * @return the table name
    */
-  public String getQualifiedPhysicalTableName(QName typeName, StoreMappingContext context);
+  public String getNamespaceQualifiedPhysicalTableName(QName typeName, StoreMappingContext context);
 
   /**
    * Adds the given configuration
@@ -189,9 +189,9 @@ public interface MappingConfiguration {
 
   public boolean tombstoneRowsOverwriteable();
 
-  public String maprdbTablePathPrefix();
+  public String rootTablePathPrefix();
 
-  public String maprdbVolumePathPrefix();
+  public String volumePathPrefix();
 
   public boolean optimisticConcurrency();
 

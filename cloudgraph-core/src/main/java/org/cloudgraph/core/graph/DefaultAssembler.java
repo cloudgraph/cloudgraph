@@ -299,7 +299,7 @@ public abstract class DefaultAssembler {
     if (rootUuid == null)
       throw new GraphServiceException("expected column: " + Bytes.toString(uuidQual) + " for row '"
           + childResult.getRowKey() + "' in table: "
-          + childTableReader.getTableConfig().getQualifiedPhysicalName());
+          + childTableReader.getTableConfig().getNamespaceQualifiedPhysicalName());
     String uuidStr = new String(rootUuid, childTableReader.getTableConfig().getCharset());
     UUID uuid = null;
     if (uuidStr.length() == 22) {
@@ -321,7 +321,7 @@ public abstract class DefaultAssembler {
     if (rootType == null)
       throw new GraphServiceException("expected column: " + Bytes.toString(typeQual) + " for row '"
           + childResult.getRowKey() + "' in table: "
-          + childTableReader.getTableConfig().getQualifiedPhysicalName());
+          + childTableReader.getTableConfig().getNamespaceQualifiedPhysicalName());
     String[] tokens = Bytes.toString(rootType).split(GraphRow.ROOT_TYPE_DELIM);
     PlasmaType result = (PlasmaType) PlasmaTypeHelper.INSTANCE.findTypeByPhysicalName(tokens[0],
         tokens[1]);
@@ -353,7 +353,8 @@ public abstract class DefaultAssembler {
     PlasmaType result = rowReader.decodeType(typeValue);
     if (result == null)
       throw new GraphServiceException("no type found for '" + Bytes.toString(typeValue)
-          + "' in table: " + rowReader.getTableReader().getTableConfig().getQualifiedPhysicalName());
+          + "' in table: "
+          + rowReader.getTableReader().getTableConfig().getNamespaceQualifiedPhysicalName());
     return result;
   }
 
@@ -655,7 +656,7 @@ public abstract class DefaultAssembler {
     Result result = tableReader.getTable().get(row);
     if (result == null || result.isEmpty())
       throw new GraphServiceException("expected result from table "
-          + tableReader.getTableConfig().getQualifiedPhysicalName() + " for row '"
+          + tableReader.getTableConfig().getNamespaceQualifiedPhysicalName() + " for row '"
           + new String(rowKey) + "'");
     if (log.isDebugEnabled()) {
       long after = System.currentTimeMillis();

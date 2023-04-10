@@ -36,14 +36,23 @@ public class StoreMappingContext {
     this.properties = properties;
   }
 
-  public boolean hasMaprdbVolumePath() {
+  public boolean hasRootTablePathPrefix() {
     return this.properties
-        .containsKey(ConfigurationProperty.CLOUDGRAPH___MAPRDB___VOLUME___PATH___PREFIX.value());
+        .containsKey(ConfigurationProperty.CLOUDGRAPH___ROOT___TABLE___PATH___PREFIX.value());
   }
 
-  public String getMaprdbVolumePath() {
-    return this.getProperty(ConfigurationProperty.CLOUDGRAPH___MAPRDB___VOLUME___PATH___PREFIX
+  public String getRootTablePathPrefix() {
+    return this
+        .getProperty(ConfigurationProperty.CLOUDGRAPH___ROOT___TABLE___PATH___PREFIX.value());
+  }
+
+  public boolean hasVolumePathPrefix() {
+    return this.properties.containsKey(ConfigurationProperty.CLOUDGRAPH___VOLUME___PATH___PREFIX
         .value());
+  }
+
+  public String getVolumePathPrefix() {
+    return this.getProperty(ConfigurationProperty.CLOUDGRAPH___VOLUME___PATH___PREFIX.value());
   }
 
   public Object setProperty(String key, String value) {

@@ -1,8 +1,5 @@
 package org.cloudgraph.store.mapping;
 
-import java.nio.charset.Charset;
-import java.util.List;
-
 public class StaticTableMapping extends TableMapping {
 
   public StaticTableMapping(Table table, MappingConfiguration config) {
@@ -16,38 +13,46 @@ public class StaticTableMapping extends TableMapping {
   @Override
   public String getQualifiedLogicalName() {
     if (this.qualifiedLogicalName == null) {
-      this.qualifiedLogicalName = qualifiedLogicalNameFor(this.table.getNamespace(),
-          this.table.getName(), null); // static mapping w/o context
+      this.qualifiedLogicalName = qualifiedLogicalNameFor(this.table, null); // static
+                                                                             // mapping
+                                                                             // w/o
+                                                                             // context
     }
 
     return this.qualifiedLogicalName;
   }
 
   @Override
-  public String getQualifiedPhysicalName() {
-    if (this.qualifiedPhysicalName == null) {
-      this.qualifiedPhysicalName = qualifiedPhysicalNameFor(this.table.getNamespace(),
-          this.table.getName(), null); // static mapping w/o context
+  public String getPhysicalName() {
+    if (this.physicalName == null) {
+      this.physicalName = physicalNameFor(this.table.getName(), null); // static
+                                                                       // mapping
+                                                                       // w/o
+                                                                       // context
     }
 
-    return this.qualifiedPhysicalName;
+    return this.physicalName;
   }
 
   @Override
-  public String getRelativePhysicalName() {
-    if (this.relativePhysicalName == null) {
-      this.relativePhysicalName = relativePhysicalNameFor(this.table.getNamespace(),
-          this.table.getName(), null); // static mapping w/o context
+  public String getNamespaceQualifiedPhysicalName() {
+    if (this.namespaceQualifiedPhysicalName == null) {
+      this.namespaceQualifiedPhysicalName = namespaceQualifiedPhysicalNameFor(
+          this.table.getNamespace(), this.table.getName(), null); // static
+                                                                  // mapping w/o
+                                                                  // context
     }
 
-    return this.relativePhysicalName;
+    return this.namespaceQualifiedPhysicalName;
   }
 
   @Override
   public String getQualifiedPhysicalNamespace() {
     if (this.qualifiedPhysicalNamespace == null) {
-      this.qualifiedPhysicalNamespace = qualifiedPhysicalNamespaceFor(this.table.getNamespace(),
-          this.table.getName(), null); // static mapping w/o context
+      this.qualifiedPhysicalNamespace = qualifiedPhysicalNamespaceFor(this.table, null); // static
+                                                                                         // mapping
+                                                                                         // w/o
+                                                                                         // context
     }
 
     return this.qualifiedPhysicalNamespace;

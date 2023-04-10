@@ -360,6 +360,7 @@ avoid NoClassDefFoundError: Could not initialize class org.apache.hadoop.hbase.s
                             <cloudgraph.configuration>test-partial-key-store.xml</cloudgraph.configuration>
                             <plasma.configuration>plasma-config.xml</plasma.configuration>
                             <log4j.configuration>log4j.properties</log4j.configuration>
+                            <cloudgraph.root.table.path.prefix>testroot</cloudgraph.root.table.path.prefix>
                         </systemPropertyVariables>
                         <includes>     
                              <include>**/StringPartialRowKeyScanTest*</include>     
@@ -546,9 +547,9 @@ avoid NoClassDefFoundError: Could not initialize class org.apache.hadoop.hbase.s
                     <argLine>-Xms128M -Xmx500M</argLine>                      
                       --> 
                     <!-- debugging -->  
-                         <!--                                                       
+                        <!--                                                            
                    <argLine>-Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,address=8002,server=y,suspend=y</argLine>                     
-                             -->                                             
+                        -->                                                    
                     <!-- profiling  -->
                     <!--
                     <argLine>-Xrunhprof:cpu=samples,depth=25</argLine>  

@@ -34,12 +34,12 @@ Top level configuration settings
                     <xsd:documentation>Whether to ignore and overwrite tombstone rows when creating new graph roots</xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
-                <xsd:attribute name="maprdbTablePathPrefix" type="xsd:string" use="optional" >
+                <xsd:attribute name="rootTablePathPrefix" type="xsd:string" use="optional" >
                     <xsd:annotation>
                     <xsd:documentation>The path to prepend to all MAPRD-DB (M7) table names for tables found within a configuration. Used for only MAPR-DB (M7) tables. To fully qualify Apache HBase tables, use table namespaces.</xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
-                 <xsd:attribute name="maprdbVolumePathPrefix" type="xsd:string" use="optional" >
+                 <xsd:attribute name="volumePathPrefix" type="xsd:string" use="optional" >
                     <xsd:annotation>
                     <xsd:documentation>The volume path to prepend to all MAPRD-DB (M7) table names for tables found within a configuration. Used for only MAPR-DB (M7) tables. To fully qualify Apache HBase tables, use table namespaces.</xsd:documentation>
                     </xsd:annotation>
@@ -87,7 +87,7 @@ Configuration settings for a table.
 	                <xsd:documentation>The table name</xsd:documentation>
 	                </xsd:annotation>
                 </xsd:attribute>
-                <xsd:attribute name="namespace" type="xsd:string" use="optional">
+                <xsd:attribute name="namespace" type="xsd:string" use="required">
 	                <xsd:annotation>
 	                <xsd:documentation>The table namespace</xsd:documentation>
 	                </xsd:annotation>
@@ -112,14 +112,14 @@ Configuration settings for a table.
                     <xsd:documentation>Whether to ignore and overwrite tombstone rows when creating new graph roots</xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
-                <xsd:attribute name="maprdbTablePathPrefix" type="xsd:string" use="optional" >
+                <xsd:attribute name="rootTablePathPrefix" type="xsd:string" use="optional" >
                     <xsd:annotation>
-                    <xsd:documentation>The path to prepend to all MAPRD-DB (M7) table names for tables found within a configuration. Used for only MAPR-DB (M7) tables. To fully qualify Apache HBase tables, use table namespaces.</xsd:documentation>
+                    <xsd:documentation>The path to prepend to table namespaces. This is typically a tenant name under multi-tenant installations, and can be controlled dynamically using dynamic table mappings. Used for stores which reference tables using fully qualified, file-based physical names.</xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
-                <xsd:attribute name="maprdbVolumePathPrefix" type="xsd:string" use="optional" >
+                <xsd:attribute name="volumePathPrefix" type="xsd:string" use="optional" >
                     <xsd:annotation>
-                    <xsd:documentation>The volume path to prepend to all MAPRD-DB (M7) table names for tables found within a configuration. Used for only MAPR-DB (M7) tables. To fully qualify Apache HBase tables, use table namespaces.</xsd:documentation>
+                    <xsd:documentation>The path to prepend to table namespaces for all tables within an entire installation. Used for stores which reference tables using fully qualified, file-based physical names</xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
                 <xsd:attribute name="optimisticConcurrency" type="xsd:boolean" use="optional" default="false">
@@ -633,22 +633,22 @@ column field may be specified.
                     </xsd:documentation> 
                 </xsd:annotation>
             </xsd:enumeration>
-            <xsd:enumeration value="cloudgraph.maprdb.table.path.prefix">
+            <xsd:enumeration value="cloudgraph.root.table.path.prefix">
                 <xsd:annotation>
-                    <xsd:documentation>The path to prepend to all MAPRD-DB (M7) table names for tables found within a configuration. Used for only MAPR-DB (M7) tables. To fully qualify Apache HBase tables, use table namespaces.  
+                    <xsd:documentation>The path to prepend to table namespaces. This is typically a tenant name under multi-tenant installations, and can be controlled dynamically using dynamic table mappings. Used for stores which reference tables using fully qualified, file-based physical names.  
                     &lt;ul&gt;
-                    &lt;li&gt;Name: cloudgraph.maprdb.table.path.prefix&lt;/li&gt;
+                    &lt;li&gt;Name: cloudgraph.root.table.path.prefix&lt;/li&gt;
                     &lt;li&gt;Data Type: string&lt;/li&gt;
                     &lt;li&gt;Default: null&lt;/li&gt;
                     &lt;/ul&gt;
                     </xsd:documentation> 
                 </xsd:annotation>
             </xsd:enumeration>
-            <xsd:enumeration value="cloudgraph.maprdb.volume.path.prefix">
+            <xsd:enumeration value="cloudgraph.volume.path.prefix">
                 <xsd:annotation>
-                    <xsd:documentation>The volume path to prepend to all MAPRD-DB (M7) table names for tables found within a configuration. Used for only MAPR-DB (M7) tables. To fully qualify Apache HBase tables, use table namespaces.  
+                    <xsd:documentation>The path to prepend to table namespaces for all tables within an entire installation. Used for stores which reference tables using fully qualified, file-based physical names.  
                     &lt;ul&gt;
-                    &lt;li&gt;Name: cloudgraph.maprdb.volume.path.prefix&lt;/li&gt;
+                    &lt;li&gt;Name: cloudgraph.volume.path.prefix&lt;/li&gt;
                     &lt;li&gt;Data Type: string&lt;/li&gt;
                     &lt;li&gt;Default: null&lt;/li&gt;
                     &lt;/ul&gt;

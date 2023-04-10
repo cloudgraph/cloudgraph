@@ -210,7 +210,7 @@ public class StringLiteral extends ScanLiteral implements PartialRowKeyLiteral, 
       throw new ScanException("cannot create fuzzy scan literal " + "for "
           + this.fieldMapping.getCodecType() + " encoded key field with path '"
           + this.fieldMapping.getPropertyPath() + "' within table "
-          + this.table.getQualifiedPhysicalName() + " for graph root type, "
+          + this.table.getNamespaceQualifiedPhysicalName() + " for graph root type, "
           + this.rootType.toString());
   }
 

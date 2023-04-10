@@ -17,38 +17,35 @@ public class DynamicTableMapping extends TableMapping {
   @Override
   public String getQualifiedLogicalName() {
     if (this.qualifiedLogicalName == null) {
-      this.qualifiedLogicalName = qualifiedLogicalNameFor(this.table.getNamespace(),
-          this.table.getName(), this.context);
+      this.qualifiedLogicalName = qualifiedLogicalNameFor(this.table, this.context);
     }
 
     return this.qualifiedLogicalName;
   }
 
   @Override
-  public String getQualifiedPhysicalName() {
-    if (this.qualifiedPhysicalName == null) {
-      this.qualifiedPhysicalName = qualifiedPhysicalNameFor(this.table.getNamespace(),
-          this.table.getName(), this.context);
+  public String getPhysicalName() {
+    if (this.physicalName == null) {
+      this.physicalName = physicalNameFor(this.table.getName(), this.context);
     }
 
-    return this.qualifiedPhysicalName;
+    return this.physicalName;
   }
 
   @Override
-  public String getRelativePhysicalName() {
-    if (this.relativePhysicalName == null) {
-      this.relativePhysicalName = relativePhysicalNameFor(this.table.getNamespace(),
-          this.table.getName(), this.context);
+  public String getNamespaceQualifiedPhysicalName() {
+    if (this.namespaceQualifiedPhysicalName == null) {
+      this.namespaceQualifiedPhysicalName = namespaceQualifiedPhysicalNameFor(
+          this.table.getNamespace(), this.table.getName(), this.context);
     }
 
-    return this.relativePhysicalName;
+    return this.namespaceQualifiedPhysicalName;
   }
 
   @Override
   public String getQualifiedPhysicalNamespace() {
     if (this.qualifiedPhysicalNamespace == null) {
-      this.qualifiedPhysicalNamespace = qualifiedPhysicalNamespaceFor(this.table.getNamespace(),
-          this.table.getName(), this.context);
+      this.qualifiedPhysicalNamespace = qualifiedPhysicalNamespaceFor(this.table, this.context);
     }
 
     return this.qualifiedPhysicalNamespace;
