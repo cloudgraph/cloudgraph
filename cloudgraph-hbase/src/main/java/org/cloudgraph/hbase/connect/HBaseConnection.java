@@ -81,9 +81,9 @@ public class HBaseConnection implements Connection {
     this.con = conection;
     this.pool = pool;
     this.config = config;
-    final int cacheMax = StoreMappingProp.getHBaseConnectionTablecacheSizeMax();
-    final int cacheTimeout = StoreMappingProp.getHBaseConnectionTablecacheTimeoutSeconds();
-    Map<String, String> propsMap = StoreMappingProp.getHBaseConnectionTableConfigProperties();
+    final int cacheMax = StoreMappingProp.getConnectionTablecacheSizeMax();
+    final int cacheTimeout = StoreMappingProp.getConnectionTablecacheTimeoutSeconds();
+    Map<String, String> propsMap = StoreMappingProp.getConnectionTableConfigProperties();
     Iterator<String> keys = propsMap.keySet().iterator();
     while (keys.hasNext()) {
       String key = keys.next();

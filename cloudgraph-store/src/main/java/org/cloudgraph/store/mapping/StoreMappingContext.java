@@ -36,23 +36,33 @@ public class StoreMappingContext {
     this.properties = properties;
   }
 
-  public boolean hasRootTablePathPrefix() {
-    return this.properties
-        .containsKey(ConfigurationProperty.CLOUDGRAPH___ROOT___TABLE___PATH___PREFIX.value());
-  }
-
-  public String getRootTablePathPrefix() {
-    return this
-        .getProperty(ConfigurationProperty.CLOUDGRAPH___ROOT___TABLE___PATH___PREFIX.value());
-  }
-
-  public boolean hasVolumePathPrefix() {
-    return this.properties.containsKey(ConfigurationProperty.CLOUDGRAPH___VOLUME___PATH___PREFIX
+  public boolean hasTableNamespaceRoot() {
+    return this.properties.containsKey(ConfigurationProperty.CLOUDGRAPH___TABLE___NAMESPACE___ROOT
         .value());
   }
 
-  public String getVolumePathPrefix() {
-    return this.getProperty(ConfigurationProperty.CLOUDGRAPH___VOLUME___PATH___PREFIX.value());
+  public String getTableNamespaceRoot() {
+    return this.getProperty(ConfigurationProperty.CLOUDGRAPH___TABLE___NAMESPACE___ROOT.value());
+  }
+
+  public boolean hasTableVolumeName() {
+    return this.properties.containsKey(ConfigurationProperty.CLOUDGRAPH___TABLE___VOLUME___NAME
+        .value());
+  }
+
+  public String getTableVolumeName() {
+    return this.getProperty(ConfigurationProperty.CLOUDGRAPH___TABLE___VOLUME___NAME.value());
+  }
+
+  public boolean hasTablePhysicalNamespaceDelim() {
+    return this.properties
+        .containsKey(ConfigurationProperty.CLOUDGRAPH___TABLE___PHYSICAL___NAMESPACE___DELIM
+            .value());
+  }
+
+  public String getTablePhysicalNamespaceDelim() {
+    return this.getProperty(ConfigurationProperty.CLOUDGRAPH___TABLE___PHYSICAL___NAMESPACE___DELIM
+        .value());
   }
 
   public Object setProperty(String key, String value) {

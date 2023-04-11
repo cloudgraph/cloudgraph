@@ -54,12 +54,11 @@ public abstract class HBaseTestCase extends CommonTest {
 
   public void setUp() throws Exception {
     Properties testProps = new Properties();
-    testProps.put(ConfigurationProperty.CLOUDGRAPH___VOLUME___PATH___PREFIX.value(), "testtenant");
+    testProps.put(ConfigurationProperty.CLOUDGRAPH___TABLE___VOLUME___NAME.value(), "testtenant");
     String rootPath = System
-        .getProperty(ConfigurationProperty.CLOUDGRAPH___ROOT___TABLE___PATH___PREFIX.value());
+        .getProperty(ConfigurationProperty.CLOUDGRAPH___TABLE___NAMESPACE___ROOT.value());
     if (rootPath != null)
-      testProps.put(ConfigurationProperty.CLOUDGRAPH___ROOT___TABLE___PATH___PREFIX.value(),
-          rootPath);
+      testProps.put(ConfigurationProperty.CLOUDGRAPH___TABLE___NAMESPACE___ROOT.value(), rootPath);
 
     service = new SDODataAccessClient(new HBasePojoDataAccessClient(new HBaseServiceContext(
         testProps)));

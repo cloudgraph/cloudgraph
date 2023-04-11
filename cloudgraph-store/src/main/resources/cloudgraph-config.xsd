@@ -34,22 +34,27 @@ Top level configuration settings
                     <xsd:documentation>Whether to ignore and overwrite tombstone rows when creating new graph roots</xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
-                <xsd:attribute name="rootTablePathPrefix" type="xsd:string" use="optional" >
-                    <xsd:annotation>
-                    <xsd:documentation>The path to prepend to all MAPRD-DB (M7) table names for tables found within a configuration. Used for only MAPR-DB (M7) tables. To fully qualify Apache HBase tables, use table namespaces.</xsd:documentation>
-                    </xsd:annotation>
-                </xsd:attribute>
-                 <xsd:attribute name="volumePathPrefix" type="xsd:string" use="optional" >
-                    <xsd:annotation>
-                    <xsd:documentation>The volume path to prepend to all MAPRD-DB (M7) table names for tables found within a configuration. Used for only MAPR-DB (M7) tables. To fully qualify Apache HBase tables, use table namespaces.</xsd:documentation>
-                    </xsd:annotation>
-                </xsd:attribute>
-                <xsd:attribute name="optimisticConcurrency" type="xsd:boolean" use="optional" default="false">
+                 <xsd:attribute name="optimisticConcurrency" type="xsd:boolean" use="optional" default="false">
                     <xsd:annotation>
                     <xsd:documentation>Whether optimistic concurrency processing is enabled. This setting effects all entities
                     with types that contain concurrent properties of type optimistic</xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute> 
+                <xsd:attribute name="tableNamespaceRoot" type="xsd:string" use="optional" >
+                    <xsd:annotation>
+                     <xsd:documentation>The path to prepend to table namespaces for all tables within an entire installation. Used for stores which reference tables using fully qualified, file-based physical names</xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="tableVolumeName" type="xsd:string" use="optional" >
+                    <xsd:annotation>
+                     <xsd:documentation>This is typically a volume or tenant name under multi-tenant installations, and can be controlled dynamically using dynamic table mappings.</xsd:documentation>   
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="tablePhysicalNamespaceDelim" type="xsd:string" use="optional" >
+                    <xsd:annotation>
+                    <xsd:documentation>The delimiter to use when assembling qualified physical table namespaces and table names.</xsd:documentation>  
+                    </xsd:annotation>
+                </xsd:attribute>
             </xsd:extension>
         </xsd:complexContent>
          
@@ -112,23 +117,28 @@ Configuration settings for a table.
                     <xsd:documentation>Whether to ignore and overwrite tombstone rows when creating new graph roots</xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
-                <xsd:attribute name="rootTablePathPrefix" type="xsd:string" use="optional" >
-                    <xsd:annotation>
-                    <xsd:documentation>The path to prepend to table namespaces. This is typically a tenant name under multi-tenant installations, and can be controlled dynamically using dynamic table mappings. Used for stores which reference tables using fully qualified, file-based physical names.</xsd:documentation>
-                    </xsd:annotation>
-                </xsd:attribute>
-                <xsd:attribute name="volumePathPrefix" type="xsd:string" use="optional" >
-                    <xsd:annotation>
-                    <xsd:documentation>The path to prepend to table namespaces for all tables within an entire installation. Used for stores which reference tables using fully qualified, file-based physical names</xsd:documentation>
-                    </xsd:annotation>
-                </xsd:attribute>
                 <xsd:attribute name="optimisticConcurrency" type="xsd:boolean" use="optional" default="false">
                     <xsd:annotation>
                     <xsd:documentation>Whether optimistic concurrency processing is enabled. This setting effects all entities
                     with types that contain concurrent properties of type optimistic</xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute> 
-               
+                <xsd:attribute name="tableNamespaceRoot" type="xsd:string" use="optional" >
+                    <xsd:annotation>
+                     <xsd:documentation>The path to prepend to table namespaces for all tables within an entire installation. Used for stores which reference tables using fully qualified, file-based physical names</xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="tableVolumeName" type="xsd:string" use="optional" >
+                    <xsd:annotation>
+                     <xsd:documentation>This is typically a volume or tenant name under multi-tenant installations, and can be controlled dynamically using dynamic table mappings.</xsd:documentation>   
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="tablePhysicalNamespaceDelim" type="xsd:string" use="optional" >
+                    <xsd:annotation>
+                    <xsd:documentation>The delimiter to use when assembling qualified physical table namespaces and table names.</xsd:documentation>  
+                    </xsd:annotation>
+                </xsd:attribute>
+                
             </xsd:extension>
         </xsd:complexContent>
          
@@ -633,22 +643,33 @@ column field may be specified.
                     </xsd:documentation> 
                 </xsd:annotation>
             </xsd:enumeration>
-            <xsd:enumeration value="cloudgraph.root.table.path.prefix">
+            <xsd:enumeration value="cloudgraph.table.namespace.root">
                 <xsd:annotation>
-                    <xsd:documentation>The path to prepend to table namespaces. This is typically a tenant name under multi-tenant installations, and can be controlled dynamically using dynamic table mappings. Used for stores which reference tables using fully qualified, file-based physical names.  
+                    <xsd:documentation>The path to prepend to table namespaces for all tables within an entire installation. Used for stores which reference tables using fully qualified, file-based physical names.  
                     &lt;ul&gt;
-                    &lt;li&gt;Name: cloudgraph.root.table.path.prefix&lt;/li&gt;
+                    &lt;li&gt;Name: cloudgraph.table.namespace.root&lt;/li&gt;
                     &lt;li&gt;Data Type: string&lt;/li&gt;
                     &lt;li&gt;Default: null&lt;/li&gt;
                     &lt;/ul&gt;
                     </xsd:documentation> 
                 </xsd:annotation>
             </xsd:enumeration>
-            <xsd:enumeration value="cloudgraph.volume.path.prefix">
+            <xsd:enumeration value="cloudgraph.table.volume.name">
                 <xsd:annotation>
-                    <xsd:documentation>The path to prepend to table namespaces for all tables within an entire installation. Used for stores which reference tables using fully qualified, file-based physical names.  
+                     <xsd:documentation>This is typically a volume or tenant name under multi-tenant installations, and can be controlled dynamically using dynamic table mappings.   
                     &lt;ul&gt;
-                    &lt;li&gt;Name: cloudgraph.volume.path.prefix&lt;/li&gt;
+                    &lt;li&gt;Name: cloudgraph.table.volume.name&lt;/li&gt;
+                    &lt;li&gt;Data Type: string&lt;/li&gt;
+                    &lt;li&gt;Default: null&lt;/li&gt;
+                    &lt;/ul&gt;
+                    </xsd:documentation> 
+                </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="cloudgraph.table.physical.namespace.delim">
+                <xsd:annotation>
+                    <xsd:documentation>The delimiter to use when assembling qualified physical table namespaces and table names.  
+                    &lt;ul&gt;
+                    &lt;li&gt;Name: cloudgraph.table.physical.namespace.delim&lt;/li&gt;
                     &lt;li&gt;Data Type: string&lt;/li&gt;
                     &lt;li&gt;Default: null&lt;/li&gt;
                     &lt;/ul&gt;
@@ -678,28 +699,28 @@ column field may be specified.
                     </xsd:documentation> 
                 </xsd:annotation>
             </xsd:enumeration>
-            <xsd:enumeration value="cloudgraph.hbase.connection.tablecache.size.max">
+            <xsd:enumeration value="cloudgraph.connection.tablecache.size.max">
                <xsd:annotation>
                     <xsd:documentation>The maximum size of the table cache for each HBase connection.
-                    &lt;li&gt;Name: cloudgraph.hbase.connection.tablecache.size.max&lt;/li&gt;
+                    &lt;li&gt;Name: cloudgraph.connection.tablecache.size.max&lt;/li&gt;
                     &lt;li&gt;Data Type: int&lt;/li&gt;
                     &lt;li&gt;Default: 200&lt;/li&gt;
                     </xsd:documentation> 
                 </xsd:annotation>
             </xsd:enumeration>
-            <xsd:enumeration value="cloudgraph.hbase.connection.tablecache.timeout.seconds">
+            <xsd:enumeration value="cloudgraph.connection.tablecache.timeout.seconds">
                <xsd:annotation>
-                    <xsd:documentation>The table cache timeout in seconds for each HBase connection.
-                    &lt;li&gt;Name: cloudgraph.hbase.connection.tablecache.timeout.seconds&lt;/li&gt;
+                    <xsd:documentation>The table cache timeout in seconds for each connection.
+                    &lt;li&gt;Name: cloudgraph.connection.tablecache.timeout.seconds&lt;/li&gt;
                     &lt;li&gt;Data Type: int&lt;/li&gt;
                     &lt;li&gt;Default: 30&lt;/li&gt;
                     </xsd:documentation> 
                 </xsd:annotation>
             </xsd:enumeration>
-            <xsd:enumeration value="cloudgraph.hbase.connection.table.config.properties">
+            <xsd:enumeration value="cloudgraph.connection.table.config.properties">
                <xsd:annotation>
                     <xsd:documentation>Comma seperated name-value pairs to add to the configuration for every connection. E.g. name1=value1,name2=value2
-                    &lt;li&gt;Name: cloudgraph.hbase.connection.table.config.properties&lt;/li&gt;
+                    &lt;li&gt;Name: cloudgraph.connection.table.config.properties&lt;/li&gt;
                     &lt;li&gt;Data Type: string&lt;/li&gt;
                     </xsd:documentation> 
                 </xsd:annotation>

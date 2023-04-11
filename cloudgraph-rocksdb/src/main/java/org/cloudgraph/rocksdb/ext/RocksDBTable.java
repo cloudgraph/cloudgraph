@@ -475,11 +475,11 @@ public class RocksDBTable implements Table, TableName {
   public Object getConfiguration() {
     return new Properties();
   }
- 
-@Override
-public String getQualifiedLogicalName(StoreMappingContext mappingContext) {
-	// TODO Auto-generated method stub
-	return null;
-}
+
+  @Override
+  public String getQualifiedLogicalName(StoreMappingContext mappingContext) {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
 }

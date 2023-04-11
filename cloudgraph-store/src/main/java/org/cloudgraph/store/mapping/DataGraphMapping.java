@@ -199,12 +199,12 @@ public class DataGraphMapping {
       StoreMappingContext context) {
     StringBuilder name = new StringBuilder();
     String typeNameString = typeName.toString();
-    if (table.getVolumePathPrefix() != null) {
-      name.append(table.getVolumePathPrefix());
+    if (table.getTableVolumeName() != null) {
+      name.append(table.getTableVolumeName());
       name.append(GRAPH_PATH_DELIM);
-    } else if (context != null && context.hasVolumePathPrefix()
-        && !typeNameString.contains(context.getVolumePathPrefix())) {
-      name.append(context.getVolumePathPrefix());
+    } else if (context != null && context.hasTableVolumeName()
+        && !typeNameString.contains(context.getTableVolumeName())) {
+      name.append(context.getTableVolumeName());
       name.append(GRAPH_PATH_DELIM);
     }
     name.append(typeName.toString());
@@ -214,9 +214,9 @@ public class DataGraphMapping {
   public static String qualifiedLogicalNameFor(QName typeName, StoreMappingContext context) {
     StringBuilder name = new StringBuilder();
     String typeNameString = typeName.toString();
-    if (context != null && context.hasVolumePathPrefix()
-        && !typeNameString.contains(context.getVolumePathPrefix())) {
-      name.append(context.getVolumePathPrefix());
+    if (context != null && context.hasTableVolumeName()
+        && !typeNameString.contains(context.getTableVolumeName())) {
+      name.append(context.getTableVolumeName());
       name.append(GRAPH_PATH_DELIM);
     }
     name.append(typeName.toString());

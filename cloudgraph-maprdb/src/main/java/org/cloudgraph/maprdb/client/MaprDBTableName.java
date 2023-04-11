@@ -35,23 +35,23 @@ public class MaprDBTableName implements TableName {
 
   @Override
   public String getQualifiedLogicalName(StoreMappingContext mappingContext) {
-	    StringBuilder result = new StringBuilder();
-	    String qualifiedNamespace = getNamespace();
-	    // namespace has a prefix, strip it and its delim
-	    // to reconstruct just the logical name
-	    // which will necessarily not involve the root prefix
-	    if (mappingContext.hasRootTablePathPrefix()) {
-	      if (qualifiedNamespace.startsWith(mappingContext.getRootTablePathPrefix())) {
-	        qualifiedNamespace = qualifiedNamespace.substring(mappingContext.getRootTablePathPrefix()
-	            .length() + 1/* the delim */);
-	      }
-	    }
-	    // replace physical with logical delimiters
-	    qualifiedNamespace = qualifiedNamespace.replaceAll(TableMapping.TABLE_PHYSICAL_NAME_DELIM,
-	        TableMapping.TABLE_LOGICAL_NAME_DELIM);
-	    result.append(qualifiedNamespace);
-	    result.append(TableMapping.TABLE_LOGICAL_NAME_DELIM);
-	    result.append(getTableName());
-	    return result.toString();
+    StringBuilder result = new StringBuilder();
+    String qualifiedNamespace = getNamespace();
+    // namespace has a prefix, strip it and its delim
+    // to reconstruct just the logical name
+    // which will necessarily not involve the root prefix
+    if (mappingContext.hasTableNamespaceRoot()) {
+      if (qualifiedNamespace.startsWith(mappingContext.getTableNamespaceRoot())) {
+        qualifiedNamespace = qualifiedNamespace.substring(mappingContext.getTableNamespaceRoot()
+            .length() + 1/* the delim */);
+      }
+    }
+    // replace physical with logical delimiters
+    qualifiedNamespace = qualifiedNamespace.replaceAll(TableMapping.TABLE_PHYSICAL_NAME_DELIM,
+        TableMapping.TABLE_LOGICAL_NAME_DELIM);
+    result.append(qualifiedNamespace);
+    result.append(TableMapping.TABLE_LOGICAL_NAME_DELIM);
+    result.append(getTableName());
+    return result.toString();
   }
 }

@@ -171,14 +171,14 @@ public class GraphRecordRecognizer {
     this.configuration = configuration;
     Properties mappingProps = new Properties();
     String rootPath = this.configuration
-        .get(ConfigurationProperty.CLOUDGRAPH___ROOT___TABLE___PATH___PREFIX.value());
+        .get(ConfigurationProperty.CLOUDGRAPH___TABLE___NAMESPACE___ROOT.value());
     if (rootPath != null)
-      mappingProps.setProperty(
-          ConfigurationProperty.CLOUDGRAPH___ROOT___TABLE___PATH___PREFIX.value(), rootPath);
-    String volume = this.configuration
-        .get(ConfigurationProperty.CLOUDGRAPH___VOLUME___PATH___PREFIX.value());
+      mappingProps.setProperty(ConfigurationProperty.CLOUDGRAPH___TABLE___NAMESPACE___ROOT.value(),
+          rootPath);
+    String volume = this.configuration.get(ConfigurationProperty.CLOUDGRAPH___TABLE___VOLUME___NAME
+        .value());
     if (volume != null)
-      mappingProps.setProperty(ConfigurationProperty.CLOUDGRAPH___VOLUME___PATH___PREFIX.value(),
+      mappingProps.setProperty(ConfigurationProperty.CLOUDGRAPH___TABLE___VOLUME___NAME.value(),
           volume);
     this.serviceContext = new HBaseServiceContext(mappingProps);
     this.mappingContext = this.serviceContext.getStoreMapping();

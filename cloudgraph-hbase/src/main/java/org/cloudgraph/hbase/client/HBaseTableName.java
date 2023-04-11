@@ -23,9 +23,9 @@ public class HBaseTableName implements TableName {
     // namespace has a prefix, strip it and its delim
     // to reconstruct just the logical name
     // which will necessarily not involve the root prefix
-    if (mappingContext.hasRootTablePathPrefix()) {
-      if (qualifiedNamespace.startsWith(mappingContext.getRootTablePathPrefix())) {
-        qualifiedNamespace = qualifiedNamespace.substring(mappingContext.getRootTablePathPrefix()
+    if (mappingContext.hasTableNamespaceRoot()) {
+      if (qualifiedNamespace.startsWith(mappingContext.getTableNamespaceRoot())) {
+        qualifiedNamespace = qualifiedNamespace.substring(mappingContext.getTableNamespaceRoot()
             .length() + 1/* the delim */);
       }
     }

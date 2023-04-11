@@ -39,8 +39,8 @@ public abstract class TableMapping {
   public static final String TABLE_LOGICAL_NAME_DELIM = "#";
 
   /**
-   * Apache HBase namespace table-name and namespace delimiter. Let other store
-   * providers override as needed
+   * Apache HBase namespace and namespace delimiter. Let other store providers
+   * override as needed
    */
   public static final String TABLE_PHYSICAL_NAME_DELIM = "_";
 
@@ -145,17 +145,17 @@ public abstract class TableMapping {
     // note: for logical names no not prepend the root
     // path as it is necessarily the same for all
     // tables even in a multi-tenant / volume environment
-    if (table.getVolumePathPrefix() != null) {
-      if (table.getVolumePathPrefix().contains(TABLE_PHYSICAL_NAME_DELIM))
+    if (table.getTableVolumeName() != null) {
+      if (table.getTableVolumeName().contains(TABLE_PHYSICAL_NAME_DELIM))
         throw new IllegalStateException("volume prefix cannot contain '"
             + TABLE_PHYSICAL_NAME_DELIM + "' char");
-      name.append(table.getVolumePathPrefix());
+      name.append(table.getTableVolumeName());
       name.append(TABLE_LOGICAL_NAME_DELIM);
-    } else if (context != null && context.hasVolumePathPrefix()) {
-      if (context.getVolumePathPrefix().contains(TABLE_PHYSICAL_NAME_DELIM))
+    } else if (context != null && context.hasTableVolumeName()) {
+      if (context.getTableVolumeName().contains(TABLE_PHYSICAL_NAME_DELIM))
         throw new IllegalStateException("volume prefix cannot contain '"
             + TABLE_PHYSICAL_NAME_DELIM + "' char");
-      name.append(context.getVolumePathPrefix());
+      name.append(context.getTableVolumeName());
       name.append(TABLE_LOGICAL_NAME_DELIM);
     }
     name.append(table.getNamespace());
@@ -169,11 +169,11 @@ public abstract class TableMapping {
     // note: for logical names no not prepend the root
     // path as it is necessarily the same for all
     // tables even in a multi-tenant / volume environment
-    if (context != null && context.hasVolumePathPrefix()) {
-      if (context.getVolumePathPrefix().contains(TABLE_PHYSICAL_NAME_DELIM))
+    if (context != null && context.hasTableVolumeName()) {
+      if (context.getTableVolumeName().contains(TABLE_PHYSICAL_NAME_DELIM))
         throw new IllegalStateException("volume prefix cannot contain '"
             + TABLE_PHYSICAL_NAME_DELIM + "' char");
-      name.append(context.getVolumePathPrefix());
+      name.append(context.getTableVolumeName());
       name.append(TABLE_LOGICAL_NAME_DELIM);
     }
     name.append(typeName.toString());
@@ -188,47 +188,56 @@ public abstract class TableMapping {
 
   public static String namespaceQualifiedPhysicalNameFor(String namespace,
       String physicalTableName, StoreMappingContext context) {
+    String delim = TABLE_PHYSICAL_NAME_DELIM;
+    if (context.hasTablePhysicalNamespaceDelim()) {
+      delim = context.getTablePhysicalNamespaceDelim();
+    }
     StringBuilder name = new StringBuilder();
     // prepend the root path is exists
-    String rootPath = StoreMapping.getInstance().rootTablePathPrefix();
+    String rootPath = StoreMapping.getInstance().tableNamespaceRoot();
     if (rootPath != null) {
       name.append(rootPath);
-      name.append(TABLE_PHYSICAL_NAME_DELIM);
+      name.append(delim);
     }
-    if (context != null && context.hasVolumePathPrefix()) {
-      name.append(context.getVolumePathPrefix());
-      name.append(TABLE_PHYSICAL_NAME_DELIM);
+    if (context != null && context.hasTableVolumeName()) {
+      name.append(context.getTableVolumeName());
+      name.append(delim);
     }
     name.append(namespace);
-    name.append(TABLE_PHYSICAL_NAME_DELIM);
+    name.append(delim);
     name.append(physicalTableName);
     return name.toString();
   }
 
   public static String qualifiedPhysicalNamespaceFor(Table table, StoreMappingContext context) {
     StringBuilder name = new StringBuilder();
-    String rootPath = StoreMapping.getInstance().rootTablePathPrefix();
+
+    String delim = TABLE_PHYSICAL_NAME_DELIM;
+    if (context.hasTablePhysicalNamespaceDelim()) {
+      delim = context.getTablePhysicalNamespaceDelim();
+    }
+    String rootPath = StoreMapping.getInstance().tableNamespaceRoot();
     // prepend the root path is exists
     if (rootPath != null) {
       name.append(rootPath);
-      name.append(TABLE_PHYSICAL_NAME_DELIM);
+      name.append(delim);
     }
     // prepend the volume name from either the
     // table config or volume name or cont4xt volume name
-    if (table.getVolumePathPrefix() != null) {
-      if (context != null && context.hasVolumePathPrefix()
-          && !table.getVolumePathPrefix().equals(context.getVolumePathPrefix())) {
-        log.warn("overriding table volumme '" + table.getVolumePathPrefix()
-            + "' with context volue '" + context.getVolumePathPrefix() + "'");
-        name.append(context.getVolumePathPrefix());
-        name.append(TABLE_PHYSICAL_NAME_DELIM);
+    if (table.getTableVolumeName() != null) {
+      if (context != null && context.hasTableVolumeName()
+          && !table.getTableVolumeName().equals(context.getTableVolumeName())) {
+        log.warn("overriding table volumme '" + table.getTableVolumeName()
+            + "' with context volue '" + context.getTableVolumeName() + "'");
+        name.append(context.getTableVolumeName());
+        name.append(delim);
       } else {
-        name.append(table.getVolumePathPrefix());
-        name.append(TABLE_PHYSICAL_NAME_DELIM);
+        name.append(table.getTableVolumeName());
+        name.append(delim);
       }
-    } else if (context != null && context.hasVolumePathPrefix()) {
-      name.append(context.getVolumePathPrefix());
-      name.append(TABLE_PHYSICAL_NAME_DELIM);
+    } else if (context != null && context.hasTableVolumeName()) {
+      name.append(context.getTableVolumeName());
+      name.append(delim);
     }
 
     name.append(table.getNamespace());
@@ -237,14 +246,18 @@ public abstract class TableMapping {
 
   public static String qualifiedPhysicalNamespaceFor(String namespace, StoreMappingContext context) {
     StringBuilder name = new StringBuilder();
-    String rootPath = StoreMapping.getInstance().rootTablePathPrefix();
+    String delim = TABLE_PHYSICAL_NAME_DELIM;
+    if (context.hasTablePhysicalNamespaceDelim()) {
+      delim = context.getTablePhysicalNamespaceDelim();
+    }
+    String rootPath = StoreMapping.getInstance().tableNamespaceRoot();
     if (rootPath != null) {
       name.append(rootPath);
-      name.append(TABLE_PHYSICAL_NAME_DELIM);
+      name.append(delim);
     }
-    if (context != null && context.hasVolumePathPrefix()) {
-      name.append(context.getVolumePathPrefix());
-      name.append(TABLE_PHYSICAL_NAME_DELIM);
+    if (context != null && context.hasTableVolumeName()) {
+      name.append(context.getTableVolumeName());
+      name.append(delim);
     }
 
     name.append(namespace);
@@ -316,26 +329,26 @@ public abstract class TableMapping {
     return this.tombstoneRowsOverwriteableVar.booleanValue();
   }
 
-  private String maprdbTablePathPrefixVar = null;
+  private String tableVolumeNameVar = null;
 
-  public String maprdbTablePathPrefix() {
-    if (maprdbTablePathPrefixVar == null) {
-      maprdbTablePathPrefixVar = getTablePropertyString(
-          ConfigurationProperty.CLOUDGRAPH___ROOT___TABLE___PATH___PREFIX,
-          this.table.getRootTablePathPrefix(), null);
+  public String tableVolumeName() {
+    if (tableVolumeNameVar == null) {
+      tableVolumeNameVar = getTablePropertyString(
+          ConfigurationProperty.CLOUDGRAPH___TABLE___VOLUME___NAME,
+          this.table.getTableVolumeName(), null);
     }
-    return this.maprdbTablePathPrefixVar;
+    return this.tableVolumeNameVar;
   }
 
-  private String maprdbVolumePathPrefixVar = null;
+  private String tableNamespaceRootVar = null;
 
-  public String maprdbVolumePathPrefix() {
-    if (maprdbVolumePathPrefixVar == null) {
-      maprdbVolumePathPrefixVar = getTablePropertyString(
-          ConfigurationProperty.CLOUDGRAPH___VOLUME___PATH___PREFIX,
-          this.table.getVolumePathPrefix(), null);
+  public String tableNamespaceRoot() {
+    if (tableNamespaceRootVar == null) {
+      tableNamespaceRootVar = getTablePropertyString(
+          ConfigurationProperty.CLOUDGRAPH___TABLE___NAMESPACE___ROOT,
+          this.table.getTableNamespaceRoot(), null);
     }
-    return this.maprdbVolumePathPrefixVar;
+    return this.tableNamespaceRootVar;
   }
 
   private Boolean optimisticConcurrencyVar = null;

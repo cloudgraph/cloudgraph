@@ -92,24 +92,21 @@ public class StoreMappingProp {
     return depthMax;
   }
 
-  public static int getHBaseConnectionTablecacheSizeMax() {
+  public static int getConnectionTablecacheSizeMax() {
     int depthMax = findIntValue(
-        ConfigurationProperty.CLOUDGRAPH___HBASE___CONNECTION___TABLECACHE___SIZE___MAX.value(),
-        200);
+        ConfigurationProperty.CLOUDGRAPH___CONNECTION___TABLECACHE___SIZE___MAX.value(), 200);
     return depthMax;
   }
 
-  public static int getHBaseConnectionTablecacheTimeoutSeconds() {
+  public static int getConnectionTablecacheTimeoutSeconds() {
     int depthMax = findIntValue(
-        ConfigurationProperty.CLOUDGRAPH___HBASE___CONNECTION___TABLECACHE___TIMEOUT___SECONDS
-            .value(),
-        30);
+        ConfigurationProperty.CLOUDGRAPH___CONNECTION___TABLECACHE___TIMEOUT___SECONDS.value(), 30);
     return depthMax;
   }
 
-  public static Map<String, String> getHBaseConnectionTableConfigProperties() {
+  public static Map<String, String> getConnectionTableConfigProperties() {
     String fetchPropsValue = System
-        .getProperty(ConfigurationProperty.CLOUDGRAPH___HBASE___CONNECTION___TABLE___CONFIG___PROPERTIES
+        .getProperty(ConfigurationProperty.CLOUDGRAPH___CONNECTION___TABLE___CONFIG___PROPERTIES
             .value());
     if (fetchPropsValue != null) {
       Map<String, String> result = new HashMap<>();
@@ -118,12 +115,12 @@ public class StoreMappingProp {
         if (nameValue == null || nameValue.contains(","))
           throw new StoreMappingException("invalid system configuration value '" + fetchPropsValue
               + "' for property, "
-              + ConfigurationProperty.CLOUDGRAPH___HBASE___CONNECTION___TABLE___CONFIG___PROPERTIES);
+              + ConfigurationProperty.CLOUDGRAPH___CONNECTION___TABLE___CONFIG___PROPERTIES);
         String[] tokens = nameValue.split("=");
         if (tokens[0] == null || tokens[1] == null)
           throw new StoreMappingException("invalid system configuration value '" + fetchPropsValue
               + "' for property, "
-              + ConfigurationProperty.CLOUDGRAPH___HBASE___CONNECTION___TABLE___CONFIG___PROPERTIES);
+              + ConfigurationProperty.CLOUDGRAPH___CONNECTION___TABLE___CONFIG___PROPERTIES);
         result.put(tokens[0].trim(), tokens[1].trim());
       }
       return result;

@@ -33,11 +33,10 @@ public class RocksDBTableName implements TableName {
     return new RocksDBTableName(qualifiedPhysicalTableNamespace, qualifiedPhysicalTableName);
   }
 
-@Override
-public String getQualifiedLogicalName(StoreMappingContext mappingContext) {
-	// TODO Auto-generated method stub
-	return null;
-}
+  @Override
+  public String getQualifiedLogicalName(StoreMappingContext mappingContext) {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
-  
 }

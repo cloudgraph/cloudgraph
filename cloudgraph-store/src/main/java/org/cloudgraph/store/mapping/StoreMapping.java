@@ -449,11 +449,6 @@ public class StoreMapping implements MappingConfiguration {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.cloudgraph.config.TableMapping#getTable(commonj.sdo.Type)
-   */
   @Override
   public TableMapping getTable(Type type, StoreMappingContext context) {
     TableMapping result = findTable(type, context);
@@ -539,7 +534,7 @@ public class StoreMapping implements MappingConfiguration {
   public String qualifiedLogicalTableNameFromPhysicalTablePath(String namespace, String tableName,
       StoreMappingContext context) {
     String result = tableName;
-    String pathPrefix = this.rootTablePathPrefix();
+    String pathPrefix = this.tableNamespaceRoot();
     if (pathPrefix != null && result.startsWith(pathPrefix)) {
       result = result.substring(pathPrefix.length());
     }
@@ -551,8 +546,8 @@ public class StoreMapping implements MappingConfiguration {
   private String logicalTableNameFromQualifiedLogialTableName(String tableName,
       StoreMappingContext context) {
     String result = tableName;
-    if (context != null && context.hasVolumePathPrefix()) {
-      String volumePrefix = context.getVolumePathPrefix();
+    if (context != null && context.hasTableVolumeName()) {
+      String volumePrefix = context.getTableVolumeName();
       if (result.startsWith(volumePrefix) || result.startsWith(volumePrefix.toLowerCase()))
         result = result.substring(volumePrefix.length());
     }
@@ -634,12 +629,6 @@ public class StoreMapping implements MappingConfiguration {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.cloudgraph.config.TableMapping#findDataGraph(javax.xml.namespace.
-   * QName)
-   */
   @Override
   public DataGraphMapping findDataGraph(QName typeName, StoreMappingContext context) {
     lock.readLock().lock();
@@ -655,12 +644,6 @@ public class StoreMapping implements MappingConfiguration {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.cloudgraph.config.TableMapping#getDataGraph(javax.xml.namespace.QName )
-   */
   @Override
   public DataGraphMapping getDataGraph(QName typeName, StoreMappingContext context) {
     DataGraphMapping result = this.findDataGraph(typeName, context);
@@ -669,11 +652,6 @@ public class StoreMapping implements MappingConfiguration {
     return result;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.cloudgraph.config.TableMapping#getCharset()
-   */
   @Override
   public Charset getCharset() {
     return charset;
@@ -713,28 +691,26 @@ public class StoreMapping implements MappingConfiguration {
     return this.tombstoneRowsOverwriteableVar.booleanValue();
   }
 
-  private String maprdbTablePathPrefixVar = null;
+  private String tableVolumeNameVar = null;
 
-  @Override
-  public String rootTablePathPrefix() {
-    if (maprdbTablePathPrefixVar == null) {
-      maprdbTablePathPrefixVar = getTablePropertyString(
-          ConfigurationProperty.CLOUDGRAPH___ROOT___TABLE___PATH___PREFIX,
-          this.config.getRootTablePathPrefix(), null);
+  public String tableVolumeName() {
+    if (tableVolumeNameVar == null) {
+      tableVolumeNameVar = getTablePropertyString(
+          ConfigurationProperty.CLOUDGRAPH___TABLE___VOLUME___NAME,
+          this.config.getTableVolumeName(), null);
     }
-    return this.maprdbTablePathPrefixVar;
+    return this.tableVolumeNameVar;
   }
 
-  private String maprdbVolumePathPrefixVar = null;
+  private String tableNamespaceRootVar = null;
 
-  @Override
-  public String volumePathPrefix() {
-    if (maprdbVolumePathPrefixVar == null) {
-      maprdbVolumePathPrefixVar = getTablePropertyString(
-          ConfigurationProperty.CLOUDGRAPH___VOLUME___PATH___PREFIX,
-          this.config.getVolumePathPrefix(), null);
+  public String tableNamespaceRoot() {
+    if (tableNamespaceRootVar == null) {
+      tableNamespaceRootVar = getTablePropertyString(
+          ConfigurationProperty.CLOUDGRAPH___TABLE___NAMESPACE___ROOT,
+          this.config.getTableNamespaceRoot(), null);
     }
-    return this.maprdbVolumePathPrefixVar;
+    return this.tableNamespaceRootVar;
   }
 
   private Boolean optimisticConcurrencyVar = null;

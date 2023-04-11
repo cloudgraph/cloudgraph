@@ -176,14 +176,14 @@ public class GraphServiceDelegate implements GraphService {
   private StoreMappingContext createMappingContext(JobContext jobContext) {
     Properties mappingProps = new Properties();
     String rootPath = jobContext.getConfiguration().get(
-        ConfigurationProperty.CLOUDGRAPH___ROOT___TABLE___PATH___PREFIX.value());
+        ConfigurationProperty.CLOUDGRAPH___TABLE___NAMESPACE___ROOT.value());
     if (rootPath != null)
-      mappingProps.setProperty(
-          ConfigurationProperty.CLOUDGRAPH___ROOT___TABLE___PATH___PREFIX.value(), rootPath);
+      mappingProps.setProperty(ConfigurationProperty.CLOUDGRAPH___TABLE___NAMESPACE___ROOT.value(),
+          rootPath);
     String volume = jobContext.getConfiguration().get(
-        ConfigurationProperty.CLOUDGRAPH___VOLUME___PATH___PREFIX.value());
+        ConfigurationProperty.CLOUDGRAPH___TABLE___VOLUME___NAME.value());
     if (volume != null)
-      mappingProps.setProperty(ConfigurationProperty.CLOUDGRAPH___VOLUME___PATH___PREFIX.value(),
+      mappingProps.setProperty(ConfigurationProperty.CLOUDGRAPH___TABLE___VOLUME___NAME.value(),
           volume);
     return new StoreMappingContext(mappingProps);
   }
@@ -191,14 +191,14 @@ public class GraphServiceDelegate implements GraphService {
   private ServiceContext createServiceContext(JobContext jobContext) {
     Properties mappingProps = new Properties();
     String rootPath = jobContext.getConfiguration().get(
-        ConfigurationProperty.CLOUDGRAPH___ROOT___TABLE___PATH___PREFIX.value());
+        ConfigurationProperty.CLOUDGRAPH___TABLE___NAMESPACE___ROOT.value());
     if (rootPath != null)
-      mappingProps.setProperty(
-          ConfigurationProperty.CLOUDGRAPH___ROOT___TABLE___PATH___PREFIX.value(), rootPath);
+      mappingProps.setProperty(ConfigurationProperty.CLOUDGRAPH___TABLE___NAMESPACE___ROOT.value(),
+          rootPath);
     String volume = jobContext.getConfiguration().get(
-        ConfigurationProperty.CLOUDGRAPH___VOLUME___PATH___PREFIX.value());
+        ConfigurationProperty.CLOUDGRAPH___TABLE___VOLUME___NAME.value());
     if (volume != null)
-      mappingProps.setProperty(ConfigurationProperty.CLOUDGRAPH___VOLUME___PATH___PREFIX.value(),
+      mappingProps.setProperty(ConfigurationProperty.CLOUDGRAPH___TABLE___VOLUME___NAME.value(),
           volume);
 
     return new HBaseServiceContext(mappingProps);

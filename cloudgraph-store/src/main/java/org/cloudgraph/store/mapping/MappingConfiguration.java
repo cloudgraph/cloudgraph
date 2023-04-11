@@ -189,9 +189,9 @@ public interface MappingConfiguration {
 
   public boolean tombstoneRowsOverwriteable();
 
-  public String rootTablePathPrefix();
+  public String tableNamespaceRoot();
 
-  public String volumePathPrefix();
+  public String tableVolumeName();
 
   public boolean optimisticConcurrency();
 

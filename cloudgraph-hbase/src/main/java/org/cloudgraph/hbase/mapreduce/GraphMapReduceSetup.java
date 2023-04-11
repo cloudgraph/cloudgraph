@@ -172,14 +172,13 @@ public class GraphMapReduceSetup extends JobSetup {
     Configuration conf = job.getConfiguration();
     HBaseConfiguration.merge(conf, HBaseConfiguration.create(conf));
     Properties mappingProps = new Properties();
-    String rootPath = conf.get(ConfigurationProperty.CLOUDGRAPH___ROOT___TABLE___PATH___PREFIX
-        .value());
+    String rootPath = conf.get(ConfigurationProperty.CLOUDGRAPH___TABLE___NAMESPACE___ROOT.value());
     if (rootPath != null)
-      mappingProps.setProperty(
-          ConfigurationProperty.CLOUDGRAPH___ROOT___TABLE___PATH___PREFIX.value(), rootPath);
-    String volume = conf.get(ConfigurationProperty.CLOUDGRAPH___VOLUME___PATH___PREFIX.value());
+      mappingProps.setProperty(ConfigurationProperty.CLOUDGRAPH___TABLE___NAMESPACE___ROOT.value(),
+          rootPath);
+    String volume = conf.get(ConfigurationProperty.CLOUDGRAPH___TABLE___VOLUME___NAME.value());
     if (volume != null)
-      mappingProps.setProperty(ConfigurationProperty.CLOUDGRAPH___VOLUME___PATH___PREFIX.value(),
+      mappingProps.setProperty(ConfigurationProperty.CLOUDGRAPH___TABLE___VOLUME___NAME.value(),
           volume);
 
     ServiceContext serviceContext = new HBaseServiceContext(mappingProps);
