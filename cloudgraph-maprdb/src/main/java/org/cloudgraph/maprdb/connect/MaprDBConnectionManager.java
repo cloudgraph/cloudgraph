@@ -37,6 +37,7 @@ import org.cloudgraph.core.ConnectionManager;
 import org.cloudgraph.core.client.Admin;
 import org.cloudgraph.hbase.client.HBaseAdmin;
 import org.cloudgraph.hbase.service.CloudGraphContext;
+import org.cloudgraph.maprdb.client.MaprDBTableName;
 import org.cloudgraph.store.mapping.StoreMapping;
 import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.mapping.TableMapping;
@@ -169,25 +170,12 @@ public class MaprDBConnectionManager implements ConnectionManager, ConnectionCon
 
     org.apache.hadoop.hbase.client.Admin hbaseAdmin = null;
     try {
-      TableName hbaseTableName = TableName.valueOf(name.getNamespace(), name.getTableName());
-      hbaseAdmin = HBaseAdmin.class.cast(connection.getAdmin()).getAdmin();
-
-      StringBuilder logicalTableNameKey = new StringBuilder();
-      if (hbaseTableName.getNamespaceAsString() != null) {
-        logicalTableNameKey.append(hbaseTableName.getNamespaceAsString());
-        logicalTableNameKey.append("/");
-      }
-      logicalTableNameKey.append(hbaseTableName.getNameAsString());
-
-      // Uses a path as the single key for internal table mapping across Apache
-      // and MAPR HBase
-      String qualifiedLogicalName = StoreMapping.getInstance()
-          .qualifiedLogicalTableNameFromPhysicalTablePath(null, logicalTableNameKey.toString(),
-              mappingContext);
-
-      TableMapping tableConfig = StoreMapping.getInstance().getTableByQualifiedLogicalName(
-          qualifiedLogicalName, mappingContext);
-      HTableDescriptor tableDesc = new HTableDescriptor(hbaseTableName);
+       hbaseAdmin = HBaseAdmin.class.cast(connection.getAdmin()).getAdmin();
+ 
+       TableMapping tableConfig = StoreMapping.getInstance().getTableByQualifiedLogicalName(
+    		  name.getQualifiedLogicalName(mappingContext), mappingContext);     
+      MaprDBTableName hbaseTableName = (MaprDBTableName)name;
+      HTableDescriptor tableDesc = new HTableDescriptor(hbaseTableName.get());
       HColumnDescriptor fam1 = new HColumnDescriptor(tableConfig.getDataColumnFamilyName()
           .getBytes());
       tableDesc.addFamily(fam1);
@@ -195,7 +183,7 @@ public class MaprDBConnectionManager implements ConnectionManager, ConnectionCon
         hbaseAdmin.createTable(tableDesc);
       } catch (NamespaceNotFoundException nnf) {
         NamespaceDescriptor namespace = NamespaceDescriptor
-            .create(hbaseTableName.getNamespaceAsString())
+            .create(hbaseTableName.get().getNamespaceAsString())
             .addConfiguration("Description", "cloudgraph generated namespace").build();
         hbaseAdmin.createNamespace(namespace);
         hbaseAdmin.createTable(tableDesc);

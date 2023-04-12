@@ -551,10 +551,8 @@ public class StoreMapping implements MappingConfiguration {
       if (result.startsWith(volumePrefix) || result.startsWith(volumePrefix.toLowerCase()))
         result = result.substring(volumePrefix.length());
     }
-    if (result.startsWith(TableMapping.TABLE_PHYSICAL_NAME_DELIM)) // FIXME:
-                                                                   // should be
-                                                                   // logical?
-      result = result.substring(TableMapping.TABLE_PHYSICAL_NAME_DELIM.length());
+    if (result.startsWith(TableMapping.TABLE_LOGICAL_NAME_DELIM))  
+       result = result.substring(TableMapping.TABLE_LOGICAL_NAME_DELIM.length());
     return result;
   }
 

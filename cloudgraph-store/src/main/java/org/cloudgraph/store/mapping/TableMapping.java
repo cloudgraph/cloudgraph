@@ -216,6 +216,8 @@ public abstract class TableMapping {
     if (context.hasTablePhysicalNamespaceDelim()) {
       delim = context.getTablePhysicalNamespaceDelim();
     }
+    String physicalNamespace = table.getNamespace().replaceAll(TABLE_LOGICAL_NAME_DELIM, delim);
+    
     String rootPath = StoreMapping.getInstance().tableNamespaceRoot();
     // prepend the root path is exists
     if (rootPath != null) {
@@ -224,45 +226,53 @@ public abstract class TableMapping {
     }
     // prepend the volume name from either the
     // table config or volume name or cont4xt volume name
-    if (table.getTableVolumeName() != null) {
-      if (context != null && context.hasTableVolumeName()
-          && !table.getTableVolumeName().equals(context.getTableVolumeName())) {
-        log.warn("overriding table volumme '" + table.getTableVolumeName()
-            + "' with context volue '" + context.getTableVolumeName() + "'");
-        name.append(context.getTableVolumeName());
-        name.append(delim);
-      } else {
-        name.append(table.getTableVolumeName());
-        name.append(delim);
-      }
-    } else if (context != null && context.hasTableVolumeName()) {
-      name.append(context.getTableVolumeName());
-      name.append(delim);
-    }
-
+    String volumeName = findVolumeName(table, context);
+	if (volumeName != null && !physicalNamespace.startsWith(volumeName)) {
+	    name.append(volumeName);
+	    name.append(delim);	
+	}
+	
     name.append(table.getNamespace());
     return name.toString();
   }
-
-  public static String qualifiedPhysicalNamespaceFor(String namespace, StoreMappingContext context) {
-    StringBuilder name = new StringBuilder();
-    String delim = TABLE_PHYSICAL_NAME_DELIM;
-    if (context.hasTablePhysicalNamespaceDelim()) {
-      delim = context.getTablePhysicalNamespaceDelim();
-    }
-    String rootPath = StoreMapping.getInstance().tableNamespaceRoot();
-    if (rootPath != null) {
-      name.append(rootPath);
-      name.append(delim);
-    }
-    if (context != null && context.hasTableVolumeName()) {
-      name.append(context.getTableVolumeName());
-      name.append(delim);
-    }
-
-    name.append(namespace);
-    return name.toString();
+  
+  private static String findVolumeName(Table table, StoreMappingContext context)
+  {
+	    if (table.getTableVolumeName() != null) {
+	        if (context != null && context.hasTableVolumeName()
+	            && !table.getTableVolumeName().equals(context.getTableVolumeName())) {
+	          log.warn("overriding table volumme '" + table.getTableVolumeName()
+	              + "' with context volue '" + context.getTableVolumeName() + "'");
+	          return context.getTableVolumeName();
+ 	        } else {
+ 	        	return table.getTableVolumeName();
+	           
+	        }
+	      } else if (context != null && context.hasTableVolumeName()) {
+	    	  return context.getTableVolumeName();
+ 	      }
+	  return null;
   }
+
+//  public static String qualifiedPhysicalNamespaceFor(String namespace, StoreMappingContext context) {
+//    StringBuilder name = new StringBuilder();
+//    String delim = TABLE_PHYSICAL_NAME_DELIM;
+//    if (context.hasTablePhysicalNamespaceDelim()) {
+//      delim = context.getTablePhysicalNamespaceDelim();
+//    }
+//    String rootPath = StoreMapping.getInstance().tableNamespaceRoot();
+//    if (rootPath != null) {
+//      name.append(rootPath);
+//      name.append(delim);
+//    }
+//    if (context != null && context.hasTableVolumeName()) {
+//      name.append(context.getTableVolumeName());
+//      name.append(delim);
+//    }
+//
+//    name.append(namespace);
+//    return name.toString();
+//  }
 
   public String getDataColumnFamilyName() {
     return this.table.getDataColumnFamilyName();
