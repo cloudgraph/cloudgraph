@@ -10,7 +10,7 @@ public interface ConnectionManager {
   public abstract Connection getConnection();
 
   public abstract void createTable(Connection connection, TableName name,
-      StoreMappingContext mappingContext);
+      ServiceContext serviceContext);
 
   public abstract void deleteTable(Connection connection, TableName name);
 

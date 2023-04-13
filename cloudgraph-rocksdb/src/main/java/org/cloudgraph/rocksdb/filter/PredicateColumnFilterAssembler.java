@@ -19,6 +19,7 @@ import jakarta.xml.bind.JAXBException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.cloudgraph.core.ServiceContext;
 import org.cloudgraph.core.key.StatefullColumnKeyFactory;
 //import org.cloudgraph.rocksdb.key.CompositeColumnKeyFactory;
 //import org.cloudgraph.rocksdb.key.StatefullColumnKeyFactory;
@@ -56,10 +57,10 @@ public class PredicateColumnFilterAssembler extends ColumnPredicateVisitor imple
    * @see org.plasma.query.visitor.QueryVisitor
    * @see org.plasma.query.model.Query
    */
-  public PredicateColumnFilterAssembler(PlasmaType rootType, StoreMappingContext mappingContext) {
+  public PredicateColumnFilterAssembler(PlasmaType rootType, ServiceContext serviceContext) {
     super(rootType);
 
-    this.columnKeyFac = new StatefullColumnKeyFactory(rootType, mappingContext);
+    this.columnKeyFac = new StatefullColumnKeyFactory(rootType, serviceContext);
   }
 
   @Override

@@ -29,6 +29,7 @@ import org.apache.hadoop.hbase.filter.MultipleColumnPrefixFilter;
 import org.apache.hadoop.hbase.filter.QualifierFilter;
 import org.apache.hadoop.hbase.filter.SubstringComparator;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.cloudgraph.core.ServiceContext;
 import org.cloudgraph.core.key.CompositeColumnKeyFactory;
 import org.cloudgraph.store.key.EntityMetaKey;
 import org.cloudgraph.store.key.GraphColumnKeyFactory;
@@ -67,11 +68,11 @@ public class GraphFetchColumnFilterAssembler extends FilterListAssembler impleme
   private Selection propertySelection;
 
   public GraphFetchColumnFilterAssembler(Selection selection, PlasmaType rootType,
-      StoreMappingContext mappingContext) {
+      ServiceContext serviceContext) {
 
     super(rootType);
     this.propertySelection = selection;
-    this.columnKeyFac = new CompositeColumnKeyFactory(rootType, mappingContext);
+    this.columnKeyFac = new CompositeColumnKeyFactory(rootType, serviceContext);
 
     this.rootFilter = new FilterList(FilterList.Operator.MUST_PASS_ONE);
 

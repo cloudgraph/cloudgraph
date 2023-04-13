@@ -6,6 +6,8 @@ import org.cloudgraph.store.mapping.TableMapping;
 
 public class HBaseTableName implements TableName {
   private org.apache.hadoop.hbase.TableName tablename;
+  // Note: use the logical namespace delimiter
+  public static String PHYSICAL_NAME_DELIMITER = "_";
 
   private HBaseTableName(String qualifiedPhysicalTableNamespace, String qualifiedPhysicalTableName) {
     this.tablename = org.apache.hadoop.hbase.TableName.valueOf(qualifiedPhysicalTableNamespace,
@@ -30,7 +32,7 @@ public class HBaseTableName implements TableName {
       }
     }
     // replace physical with logical delimiters
-    qualifiedNamespace = qualifiedNamespace.replaceAll(TableMapping.TABLE_PHYSICAL_NAME_DELIM,
+    qualifiedNamespace = qualifiedNamespace.replaceAll(HBaseTableName.PHYSICAL_NAME_DELIMITER,
         TableMapping.TABLE_LOGICAL_NAME_DELIM);
     result.append(qualifiedNamespace);
     result.append(TableMapping.TABLE_LOGICAL_NAME_DELIM);

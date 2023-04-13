@@ -24,6 +24,7 @@ import jakarta.xml.bind.JAXBException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.cloudgraph.core.ServiceContext;
 import org.cloudgraph.core.key.StatefullColumnKeyFactory;
 import org.cloudgraph.rocksdb.RocksDBConstants;
 //import org.cloudgraph.rocksdb.key.CompositeColumnKeyFactory;
@@ -75,11 +76,11 @@ public class GraphFetchColumnFilterAssembler extends FilterListAssembler impleme
   private byte[] family;
 
   public GraphFetchColumnFilterAssembler(Selection selection, PlasmaType rootType,
-      StoreMappingContext mappingContext) {
+      ServiceContext serviceContext) {
 
     super(rootType);
     this.propertySelection = selection;
-    this.columnKeyFac = new StatefullColumnKeyFactory(rootType, mappingContext);
+    this.columnKeyFac = new StatefullColumnKeyFactory(rootType, serviceContext);
     this.charset = StoreMapping.getInstance().getCharset();
     this.family = this.columnKeyFac.getTable().getDataColumnFamilyNameBytes();
 

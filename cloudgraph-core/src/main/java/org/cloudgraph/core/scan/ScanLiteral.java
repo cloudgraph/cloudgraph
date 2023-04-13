@@ -19,11 +19,11 @@ import java.nio.charset.Charset;
 
 import javax.xml.namespace.QName;
 
+import org.cloudgraph.core.ServiceContext;
 import org.cloudgraph.core.key.KeySupport;
 import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 //import org.cloudgraph.store.mapping.Padding;
 import org.cloudgraph.store.mapping.StoreMapping;
-import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.mapping.TableMapping;
 import org.cloudgraph.store.service.GraphServiceException;
 import org.plasma.query.model.LogicalOperatorName;
@@ -58,6 +58,7 @@ public abstract class ScanLiteral {
   protected KeySupport keySupport = new KeySupport();
   protected PlasmaProperty property;
   protected LogicalOperatorName logicalOperatorContext;
+  protected ServiceContext serviceContext;
 
   @SuppressWarnings("unused")
   private ScanLiteral() {
@@ -65,7 +66,7 @@ public abstract class ScanLiteral {
 
   public ScanLiteral(String literal, PlasmaType rootType,
       RelationalOperatorName relationalOperator, LogicalOperatorName logicalOperatorContext,
-      DataRowKeyFieldMapping fieldMapping, StoreMappingContext mappingContext) {
+      DataRowKeyFieldMapping fieldMapping, ServiceContext serviceContext) {
     super();
     this.rootType = rootType;
     this.relationalOperator = relationalOperator;
@@ -73,9 +74,11 @@ public abstract class ScanLiteral {
     this.logicalOperatorContext = logicalOperatorContext;
     this.property = (PlasmaProperty) this.fieldMapping.getEndpointProperty();
     this.literal = literal;
+    this.serviceContext = serviceContext;
 
     QName rootTypeQname = this.rootType.getQualifiedName();
-    this.table = StoreMapping.getInstance().getTable(rootTypeQname, mappingContext);
+    this.table = StoreMapping.getInstance().getTable(rootTypeQname,
+        serviceContext.getStoreMapping());
     this.charset = StoreMapping.getInstance().getCharset();
   }
 

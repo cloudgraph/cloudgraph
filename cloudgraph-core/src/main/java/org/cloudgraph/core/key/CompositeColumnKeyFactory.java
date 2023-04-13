@@ -17,6 +17,7 @@ package org.cloudgraph.core.key;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.cloudgraph.core.ServiceContext;
 import org.cloudgraph.core.io.RowOperation;
 import org.cloudgraph.store.key.EdgeMetaKey;
 import org.cloudgraph.store.key.EntityMetaKey;
@@ -53,8 +54,8 @@ public class CompositeColumnKeyFactory extends ByteBufferKeyFactory implements
     GraphColumnKeyFactory {
   private static final Log log = LogFactory.getLog(CompositeColumnKeyFactory.class);
 
-  public CompositeColumnKeyFactory(PlasmaType rootType, StoreMappingContext mappingContext) {
-    super(rootType, mappingContext);
+  public CompositeColumnKeyFactory(PlasmaType rootType, ServiceContext serviceContext) {
+    super(rootType, serviceContext);
   }
 
   public CompositeColumnKeyFactory(RowOperation graphRow) {

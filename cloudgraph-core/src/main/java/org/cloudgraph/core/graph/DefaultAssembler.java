@@ -130,7 +130,7 @@ public abstract class DefaultAssembler {
     this.charset = config.getCharset();
     this.keyFactories = new HashMap<>();
     this.keyFactories.put(this.rootType, new CompositeColumnKeyFactory(this.rootType,
-        this.rootTableReader.getMappingContext()));
+        this.rootTableReader.getServiceContext()));
   }
 
   /**
@@ -143,7 +143,7 @@ public abstract class DefaultAssembler {
   protected GraphColumnKeyFactory getKeyFactory(PlasmaType type) {
     GraphColumnKeyFactory result = this.keyFactories.get(type);
     if (result == null) {
-      result = new CompositeColumnKeyFactory(type, this.rootTableReader.getMappingContext());
+      result = new CompositeColumnKeyFactory(type, this.rootTableReader.getServiceContext());
       this.keyFactories.put(type, result);
     }
     return result;
@@ -297,9 +297,13 @@ public abstract class DefaultAssembler {
     byte[] rootUuid = childResult.getColumnValue(childTableReader.getTableConfig()
         .getDataColumnFamilyNameBytes(), uuidQual);
     if (rootUuid == null)
-      throw new GraphServiceException("expected column: " + Bytes.toString(uuidQual) + " for row '"
-          + childResult.getRowKey() + "' in table: "
-          + childTableReader.getTableConfig().getNamespaceQualifiedPhysicalName());
+      throw new GraphServiceException("expected column: "
+          + Bytes.toString(uuidQual)
+          + " for row '"
+          + childResult.getRowKey()
+          + "' in table: "
+          + this.serviceContext.getClientFactory().getNamespaceQualifiedPhysicalName(
+              childTableReader.getTableConfig(), this.serviceContext.getStoreMapping()));
     String uuidStr = new String(rootUuid, childTableReader.getTableConfig().getCharset());
     UUID uuid = null;
     if (uuidStr.length() == 22) {
@@ -319,9 +323,13 @@ public abstract class DefaultAssembler {
     byte[] rootType = childResult.getColumnValue(childTableReader.getTableConfig()
         .getDataColumnFamilyNameBytes(), typeQual);
     if (rootType == null)
-      throw new GraphServiceException("expected column: " + Bytes.toString(typeQual) + " for row '"
-          + childResult.getRowKey() + "' in table: "
-          + childTableReader.getTableConfig().getNamespaceQualifiedPhysicalName());
+      throw new GraphServiceException("expected column: "
+          + Bytes.toString(typeQual)
+          + " for row '"
+          + childResult.getRowKey()
+          + "' in table: "
+          + this.serviceContext.getClientFactory().getNamespaceQualifiedPhysicalName(
+              childTableReader.getTableConfig(), this.serviceContext.getStoreMapping()));
     String[] tokens = Bytes.toString(rootType).split(GraphRow.ROOT_TYPE_DELIM);
     PlasmaType result = (PlasmaType) PlasmaTypeHelper.INSTANCE.findTypeByPhysicalName(tokens[0],
         tokens[1]);
@@ -352,9 +360,11 @@ public abstract class DefaultAssembler {
         rowReader.getTableReader().getTableConfig(), rowReader);
     PlasmaType result = rowReader.decodeType(typeValue);
     if (result == null)
-      throw new GraphServiceException("no type found for '" + Bytes.toString(typeValue)
+      throw new GraphServiceException("no type found for '"
+          + Bytes.toString(typeValue)
           + "' in table: "
-          + rowReader.getTableReader().getTableConfig().getNamespaceQualifiedPhysicalName());
+          + this.serviceContext.getClientFactory().getNamespaceQualifiedPhysicalName(
+              rowReader.getTableReader().getTableConfig(), this.serviceContext.getStoreMapping()));
     return result;
   }
 
@@ -644,7 +654,7 @@ public abstract class DefaultAssembler {
     Get row = this.serviceContext.getClientFactory().createGet(rowKey);
     ColumnFilterFactory filterFac = this.serviceContext.getColumnFilterFactory();
     Filter columnFetchFilter = filterFac.createGraphFetchColumnFilter(this.selection, type,
-        this.rootTableReader.getMappingContext());
+        this.rootTableReader.getServiceContext());
     row.setFilter(columnFetchFilter);
     long before = 0L;
     // if (log.isDebugEnabled())
@@ -656,7 +666,8 @@ public abstract class DefaultAssembler {
     Result result = tableReader.getTable().get(row);
     if (result == null || result.isEmpty())
       throw new GraphServiceException("expected result from table "
-          + tableReader.getTableConfig().getNamespaceQualifiedPhysicalName() + " for row '"
+          + this.serviceContext.getClientFactory().getNamespaceQualifiedPhysicalName(
+              tableReader.getTableConfig(), this.serviceContext.getStoreMapping())
           + new String(rowKey) + "'");
     if (log.isDebugEnabled()) {
       long after = System.currentTimeMillis();

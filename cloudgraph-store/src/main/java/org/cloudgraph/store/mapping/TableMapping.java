@@ -38,12 +38,6 @@ public abstract class TableMapping {
 
   public static final String TABLE_LOGICAL_NAME_DELIM = "#";
 
-  /**
-   * Apache HBase namespace and namespace delimiter. Let other store providers
-   * override as needed
-   */
-  public static final String TABLE_PHYSICAL_NAME_DELIM = "_";
-
   protected Table table;
   private MappingConfiguration config;
   private Charset charset;
@@ -67,20 +61,23 @@ public abstract class TableMapping {
     this(table, StoreMapping.getInstance());
   }
 
+  private static char[] ILLEGAL_NAMESPACE_CHARS = { ':', '_', '-', '/' };
+
   private void validate() {
     String tableName = this.table.getName();
     if (tableName == null || tableName.trim().length() == 0)
-      throw new IllegalStateException("table name cannot be null or empty");
+      throw new IllegalStateException("logical table names cannot be null or empty");
     if (tableName.contains(":"))
-      throw new IllegalStateException("table name cannot contain ':' char");
+      throw new IllegalStateException("logical table names cannot contain ':' char");
     String tableNamespace = this.table.getNamespace();
     if (tableNamespace == null || tableNamespace.trim().length() == 0)
-      throw new IllegalStateException("table namespace cannot be null or empty");
-    if (tableNamespace.contains(":"))
-      throw new IllegalStateException("table namespace cannot contain ':' char");
-    if (tableNamespace.contains(TABLE_PHYSICAL_NAME_DELIM))
-      throw new IllegalStateException("table namespace cannot contain '"
-          + TABLE_PHYSICAL_NAME_DELIM + "' char");
+      throw new IllegalStateException("logical table namespaces cannot be null or empty");
+    for (char ch : ILLEGAL_NAMESPACE_CHARS) {
+      for (char nsChar : tableNamespace.toCharArray())
+        if (nsChar == ch)
+          throw new IllegalStateException("logical table namespaces cannot contain '" + nsChar
+              + "' chars");
+    }
   }
 
   /**
@@ -95,50 +92,14 @@ public abstract class TableMapping {
   public MappingConfiguration getMappingConfiguration() {
     return config;
   }
-
-  /**
-   * Returns the table name for this table configuration.
-   * 
-   * @return the table name for this table configuration.
-   */
-  // public String getName() {
-  // String name = this.table.getName();
-  // String prefix = this.maprdbTablePathPrefix();
-  // if (prefix != null) {
-  // if (!prefix.endsWith(TABLE_PATH_DELIM) &&
-  // !name.startsWith(TABLE_PATH_DELIM))
-  // prefix = prefix + TABLE_PATH_DELIM;
-  // name = prefix + name;
-  // }
-  // return name;
-  // }
-
-  /**
-   * Returns the table namespace for this table configuration.
-   * 
-   * @return the table namespace for this table configuration.
-   */
-  // public String getNamespace() {
-  // return this.table.getNamespace();
-  // }
-
+ 
   public abstract StoreMappingContext getMappingContext();
 
   protected String physicalName;
 
-  public abstract String getPhysicalName();
-
-  protected String namespaceQualifiedPhysicalName;
-
-  public abstract String getNamespaceQualifiedPhysicalName();
-
   protected String qualifiedLogicalName;
 
   public abstract String getQualifiedLogicalName();
-
-  protected String qualifiedPhysicalNamespace;
-
-  public abstract String getQualifiedPhysicalNamespace();
 
   public static String qualifiedLogicalNameFor(Table table, StoreMappingContext context) {
     StringBuilder name = new StringBuilder();
@@ -146,15 +107,9 @@ public abstract class TableMapping {
     // path as it is necessarily the same for all
     // tables even in a multi-tenant / volume environment
     if (table.getTableVolumeName() != null) {
-      if (table.getTableVolumeName().contains(TABLE_PHYSICAL_NAME_DELIM))
-        throw new IllegalStateException("volume prefix cannot contain '"
-            + TABLE_PHYSICAL_NAME_DELIM + "' char");
       name.append(table.getTableVolumeName());
       name.append(TABLE_LOGICAL_NAME_DELIM);
     } else if (context != null && context.hasTableVolumeName()) {
-      if (context.getTableVolumeName().contains(TABLE_PHYSICAL_NAME_DELIM))
-        throw new IllegalStateException("volume prefix cannot contain '"
-            + TABLE_PHYSICAL_NAME_DELIM + "' char");
       name.append(context.getTableVolumeName());
       name.append(TABLE_LOGICAL_NAME_DELIM);
     }
@@ -170,109 +125,12 @@ public abstract class TableMapping {
     // path as it is necessarily the same for all
     // tables even in a multi-tenant / volume environment
     if (context != null && context.hasTableVolumeName()) {
-      if (context.getTableVolumeName().contains(TABLE_PHYSICAL_NAME_DELIM))
-        throw new IllegalStateException("volume prefix cannot contain '"
-            + TABLE_PHYSICAL_NAME_DELIM + "' char");
       name.append(context.getTableVolumeName());
       name.append(TABLE_LOGICAL_NAME_DELIM);
     }
     name.append(typeName.toString());
     return name.toString();
   }
-
-  public static String physicalNameFor(String tableName, StoreMappingContext context) {
-    StringBuilder name = new StringBuilder();
-    name.append(tableName);
-    return name.toString();
-  }
-
-  public static String namespaceQualifiedPhysicalNameFor(String namespace,
-      String physicalTableName, StoreMappingContext context) {
-    String delim = TABLE_PHYSICAL_NAME_DELIM;
-    if (context.hasTablePhysicalNamespaceDelim()) {
-      delim = context.getTablePhysicalNamespaceDelim();
-    }
-    StringBuilder name = new StringBuilder();
-    // prepend the root path is exists
-    String rootPath = StoreMapping.getInstance().tableNamespaceRoot();
-    if (rootPath != null) {
-      name.append(rootPath);
-      name.append(delim);
-    }
-    if (context != null && context.hasTableVolumeName()) {
-      name.append(context.getTableVolumeName());
-      name.append(delim);
-    }
-    name.append(namespace);
-    name.append(delim);
-    name.append(physicalTableName);
-    return name.toString();
-  }
-
-  public static String qualifiedPhysicalNamespaceFor(Table table, StoreMappingContext context) {
-    StringBuilder name = new StringBuilder();
-
-    String delim = TABLE_PHYSICAL_NAME_DELIM;
-    if (context.hasTablePhysicalNamespaceDelim()) {
-      delim = context.getTablePhysicalNamespaceDelim();
-    }
-    String physicalNamespace = table.getNamespace().replaceAll(TABLE_LOGICAL_NAME_DELIM, delim);
-    
-    String rootPath = StoreMapping.getInstance().tableNamespaceRoot();
-    // prepend the root path is exists
-    if (rootPath != null) {
-      name.append(rootPath);
-      name.append(delim);
-    }
-    // prepend the volume name from either the
-    // table config or volume name or cont4xt volume name
-    String volumeName = findVolumeName(table, context);
-	if (volumeName != null && !physicalNamespace.startsWith(volumeName)) {
-	    name.append(volumeName);
-	    name.append(delim);	
-	}
-	
-    name.append(table.getNamespace());
-    return name.toString();
-  }
-  
-  private static String findVolumeName(Table table, StoreMappingContext context)
-  {
-	    if (table.getTableVolumeName() != null) {
-	        if (context != null && context.hasTableVolumeName()
-	            && !table.getTableVolumeName().equals(context.getTableVolumeName())) {
-	          log.warn("overriding table volumme '" + table.getTableVolumeName()
-	              + "' with context volue '" + context.getTableVolumeName() + "'");
-	          return context.getTableVolumeName();
- 	        } else {
- 	        	return table.getTableVolumeName();
-	           
-	        }
-	      } else if (context != null && context.hasTableVolumeName()) {
-	    	  return context.getTableVolumeName();
- 	      }
-	  return null;
-  }
-
-//  public static String qualifiedPhysicalNamespaceFor(String namespace, StoreMappingContext context) {
-//    StringBuilder name = new StringBuilder();
-//    String delim = TABLE_PHYSICAL_NAME_DELIM;
-//    if (context.hasTablePhysicalNamespaceDelim()) {
-//      delim = context.getTablePhysicalNamespaceDelim();
-//    }
-//    String rootPath = StoreMapping.getInstance().tableNamespaceRoot();
-//    if (rootPath != null) {
-//      name.append(rootPath);
-//      name.append(delim);
-//    }
-//    if (context != null && context.hasTableVolumeName()) {
-//      name.append(context.getTableVolumeName());
-//      name.append(delim);
-//    }
-//
-//    name.append(namespace);
-//    return name.toString();
-//  }
 
   public String getDataColumnFamilyName() {
     return this.table.getDataColumnFamilyName();

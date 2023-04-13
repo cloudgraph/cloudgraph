@@ -2,6 +2,7 @@ package org.cloudgraph.rocksdb.filter;
 
 import java.util.Set;
 
+import org.cloudgraph.core.ServiceContext;
 import org.cloudgraph.core.client.Filter;
 import org.cloudgraph.core.filter.ColumnFilterFactory;
 import org.cloudgraph.core.io.EdgeReader;
@@ -19,21 +20,21 @@ public class RocksDBColumnFilterFactory implements ColumnFilterFactory {
 
   @Override
   public Filter createGraphFetchColumnFilter(Selection selection, PlasmaType type,
-      StoreMappingContext mappingContext) {
+      ServiceContext serviceContext) {
     GraphFetchColumnFilterAssembler columnFilterAssembler = new GraphFetchColumnFilterAssembler(
-        selection, type, mappingContext);
+        selection, type, serviceContext);
     return new RocksDBFilter(columnFilterAssembler.getFilter());
 
   }
 
   @Override
   public Filter createColumnPredicateFilter(PlasmaType rootType, Where where,
-      PlasmaType contextType, StoreMappingContext storeMapping) {
+      PlasmaType contextType, ServiceContext serviceContext) {
     PredicateUtil predicateUtil = new PredicateUtil();
     boolean multiDescendantProperties = predicateUtil.hasHeterogeneousDescendantProperties(where);
     // if (!multiDescendantProperties) {
     ColumnPredicateFilterAssembler filterAssembler = new ColumnPredicateFilterAssembler(rootType,
-        storeMapping);
+        serviceContext);
     // }
     // else {
     // filterAssembler = new
@@ -47,9 +48,9 @@ public class RocksDBColumnFilterFactory implements ColumnFilterFactory {
 
   @Override
   public Filter createBinaryPrefixColumnFilter(PlasmaType rootType, Set<Property> properties,
-      PlasmaType contextType, StoreMappingContext storeMapping) {
+      PlasmaType contextType, ServiceContext serviceContext) {
     BinaryPrefixColumnFilterAssembler columnFilterAssembler = new BinaryPrefixColumnFilterAssembler(
-        rootType, storeMapping);
+        rootType, serviceContext);
 
     columnFilterAssembler.assemble(properties, contextType);
     return new RocksDBFilter(columnFilterAssembler.getFilter());
@@ -66,9 +67,9 @@ public class RocksDBColumnFilterFactory implements ColumnFilterFactory {
 
   @Override
   public Filter createInitialFetchColumnFilter(SelectionCollector collector, PlasmaType type,
-      StoreMappingContext storeMapping) {
+      ServiceContext serviceContext) {
     InitialFetchColumnFilterAssembler columnFilterAssembler = new InitialFetchColumnFilterAssembler(
-        collector, type, storeMapping);
+        collector, type, serviceContext);
     return new RocksDBFilter(columnFilterAssembler.getFilter());
   }
 

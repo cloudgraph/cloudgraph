@@ -201,10 +201,11 @@ public abstract class DefaultEdgeOperation implements EdgeOperation {
     TableMapping table = null;
     if (this.collectionDefaultSubType != null) {
       table = StoreMapping.getInstance().findTable(
-          this.collectionDefaultSubType.getQualifiedName(), this.rowOperation.getMappingContext());
+          this.collectionDefaultSubType.getQualifiedName(),
+          this.rowOperation.getServiceContext().getStoreMapping());
     } else {
       table = StoreMapping.getInstance().findTable(this.collectionBaseType.getQualifiedName(),
-          this.rowOperation.getMappingContext());
+          this.rowOperation.getServiceContext().getStoreMapping());
     }
     return table.getQualifiedLogicalName();
   }
@@ -233,12 +234,13 @@ public abstract class DefaultEdgeOperation implements EdgeOperation {
     } else {
       boolean result = false;
       if (this.collectionDefaultSubType != null) {
-        result = StoreMapping.getInstance()
-            .findTable(this.collectionDefaultSubType.getQualifiedName(),
-                this.rowOperation.getMappingContext()) != null;
+        result = StoreMapping.getInstance().findTable(
+            this.collectionDefaultSubType.getQualifiedName(),
+            this.rowOperation.getServiceContext().getStoreMapping()) != null;
       } else {
         edgeTypeBound = StoreMapping.getInstance().findTable(
-            this.collectionBaseType.getQualifiedName(), this.rowOperation.getMappingContext()) != null;
+            this.collectionBaseType.getQualifiedName(),
+            this.rowOperation.getServiceContext().getStoreMapping()) != null;
         result = edgeTypeBound;
       }
       return result;

@@ -18,6 +18,8 @@ package org.cloudgraph.core.io;
 import java.util.List;
 import java.util.UUID;
 
+import org.cloudgraph.core.ServiceContext;
+
 /**
  * Provides access to the operational, configuration and other state information
  * required for write operations on a single graph table.
@@ -49,13 +51,13 @@ public interface TableWriter extends TableOperation {
    */
   public String getQualifiedLogicalTableName();
 
-  /**
-   * 
-   * Returns the physical table name associated with this reader.
-   * 
-   * @return the physical table name associated with this reader.
-   */
-  public String getPhysicalTableName();
+  // /**
+  // *
+  // * Returns the physical table name associated with this reader.
+  // *
+  // * @return the physical table name associated with this reader.
+  // */
+  // public String getPhysicalTableName();
 
   /**
    * 
@@ -110,5 +112,7 @@ public interface TableWriter extends TableOperation {
    * @return all row writer context values for this table context.
    */
   public List<RowWriter> getAllRowWriters();
+
+  public ServiceContext getServiceContext();
 
 }

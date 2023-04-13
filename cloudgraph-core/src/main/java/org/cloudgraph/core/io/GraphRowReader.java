@@ -104,8 +104,8 @@ public class GraphRowReader extends DefaultRowOperation implements RowReader {
   }
 
   @Override
-  public StoreMappingContext getMappingContext() {
-    return this.tableReader.getMappingContext();
+  public ServiceContext getServiceContext() {
+    return this.tableReader.getServiceContext();
   }
 
   /**

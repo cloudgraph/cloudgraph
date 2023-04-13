@@ -15,6 +15,7 @@
  */
 package org.cloudgraph.core.io;
 
+import org.cloudgraph.core.ServiceContext;
 import org.cloudgraph.state.RowState;
 import org.cloudgraph.store.mapping.StoreMappingContext;
 
@@ -25,5 +26,5 @@ import org.cloudgraph.store.mapping.StoreMappingContext;
  * @since 0.5.1
  */
 public interface RowOperation extends RowState {
-  public StoreMappingContext getMappingContext();
+  public ServiceContext getServiceContext();
 }

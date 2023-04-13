@@ -6,16 +6,14 @@ import org.plasma.sdo.PlasmaType;
 public class DefaultRowKeyFactory implements RowKeyFactory {
   @Override
   public CompleteRowKey createCompleteRowKey(PlasmaType rootType, ServiceContext serviceContext) {
-    CompleteRowKeyAssembler assembler = new CompleteRowKeyAssembler(rootType,
-        serviceContext.getStoreMapping());
+    CompleteRowKeyAssembler assembler = new CompleteRowKeyAssembler(rootType, serviceContext);
     assembler.assemble();
     return assembler;
   }
 
   @Override
   public PartialRowKey createPartialRowKey(PlasmaType rootType, ServiceContext serviceContext) {
-    PartialRowKeyAssembler assembler = new PartialRowKeyAssembler(rootType,
-        serviceContext.getStoreMapping());
+    PartialRowKeyAssembler assembler = new PartialRowKeyAssembler(rootType, serviceContext);
     assembler.assemble();
     return assembler;
   }

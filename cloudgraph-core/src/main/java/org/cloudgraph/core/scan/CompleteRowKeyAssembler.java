@@ -24,6 +24,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.cloudgraph.core.ServiceContext;
 import org.cloudgraph.core.key.KeySupport;
 import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
@@ -53,7 +54,7 @@ public class CompleteRowKeyAssembler implements RowKeyAssembler, CompleteRowKey 
   protected int bufsize = 4000;
   protected ByteBuffer startKey = ByteBuffer.allocate(bufsize);
   protected PlasmaType rootType;
-  protected StoreMappingContext mappingContext;
+  protected ServiceContext serviceContext;
   protected DataGraphMapping graph;
   protected TableMapping table;
   protected KeySupport keySupport = new KeySupport();
@@ -75,12 +76,14 @@ public class CompleteRowKeyAssembler implements RowKeyAssembler, CompleteRowKey 
    * @param rootType
    *          the root type
    */
-  public CompleteRowKeyAssembler(PlasmaType rootType, StoreMappingContext mappingContext) {
+  public CompleteRowKeyAssembler(PlasmaType rootType, ServiceContext serviceContext) {
     this.rootType = rootType;
-    this.mappingContext = mappingContext;
+    this.serviceContext = serviceContext;
     QName rootTypeQname = this.rootType.getQualifiedName();
-    this.graph = StoreMapping.getInstance().getDataGraph(rootTypeQname, mappingContext);
-    this.table = StoreMapping.getInstance().getTable(rootTypeQname, mappingContext);
+    this.graph = StoreMapping.getInstance().getDataGraph(rootTypeQname,
+        serviceContext.getStoreMapping());
+    this.table = StoreMapping.getInstance().getTable(rootTypeQname,
+        serviceContext.getStoreMapping());
     // Hash hash = this.keySupport.getHashAlgorithm(this.table);
     this.charset = StoreMapping.getInstance().getCharset();
     // this.hashing = new Hashing(hash, this.charset);
@@ -96,9 +99,8 @@ public class CompleteRowKeyAssembler implements RowKeyAssembler, CompleteRowKey 
    * @param rootUUID
    *          the root UUID.
    */
-  public CompleteRowKeyAssembler(PlasmaType rootType, String rootUUID,
-      StoreMappingContext mappingContext) {
-    this(rootType, mappingContext);
+  public CompleteRowKeyAssembler(PlasmaType rootType, String rootUUID, ServiceContext serviceContext) {
+    this(rootType, serviceContext);
     this.rootUUID = rootUUID;
   }
 
@@ -149,7 +151,7 @@ public class CompleteRowKeyAssembler implements RowKeyAssembler, CompleteRowKey 
       log.debug("begin traverse");
 
     ScanLiteralAssembler literalAssembler = new ScanLiteralAssembler(this.rootType,
-        this.mappingContext);
+        this.serviceContext);
     where.accept(literalAssembler); // traverse
 
     this.scanLiterals = literalAssembler.getPartialKeyScanResult();

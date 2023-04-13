@@ -17,6 +17,7 @@ package org.cloudgraph.core.scan;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.cloudgraph.core.ServiceContext;
 import org.cloudgraph.core.graph.LocalEdgeRecognizerContext;
 import org.cloudgraph.query.expr.DefaultRelationalBinaryExpr;
 import org.cloudgraph.query.expr.EvaluationContext;
@@ -45,7 +46,7 @@ public class ScanRecognizerRelationalBinaryExpr extends DefaultRelationalBinaryE
     RelationalBinaryExpr {
   private static Log log = LogFactory.getLog(ScanRecognizerRelationalBinaryExpr.class);
   protected ScanLiteral scanLiteral;
-  protected StoreMappingContext mappingContext;
+  protected ServiceContext serviceContext;
 
   /**
    * Constructs an expression based on the given terms.
@@ -59,9 +60,9 @@ public class ScanRecognizerRelationalBinaryExpr extends DefaultRelationalBinaryE
    * @see LocalEdgeRecognizerContext
    */
   public ScanRecognizerRelationalBinaryExpr(Property property, Literal literal,
-      RelationalOperator operator, StoreMappingContext mappingContext) {
+      RelationalOperator operator, ServiceContext serviceContext) {
     super(property, literal, operator);
-    this.mappingContext = mappingContext;
+    this.serviceContext = serviceContext;
   }
 
   /**
@@ -90,7 +91,7 @@ public class ScanRecognizerRelationalBinaryExpr extends DefaultRelationalBinaryE
       ScanLiteralFactory factory = new ScanLiteralFactory();
 
       ScanLiteral scanLiteral = factory.createLiteral(this.literal.getValue(), property,
-          (PlasmaType) graph.getRootType(), this.operator, null, fieldConfig, this.mappingContext);
+          (PlasmaType) graph.getRootType(), this.operator, null, fieldConfig, this.serviceContext);
       return scanLiteral;
     } else
       log.warn("no user defined row-key field for query path '" + this.propertyPath

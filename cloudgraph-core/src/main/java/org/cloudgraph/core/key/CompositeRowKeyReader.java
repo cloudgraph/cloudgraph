@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.cloudgraph.core.ServiceContext;
 import org.cloudgraph.recognizer.Endpoint;
 import org.cloudgraph.recognizer.RecognizerEndpoint;
 import org.cloudgraph.store.key.KeyValue;
@@ -63,17 +64,19 @@ public class CompositeRowKeyReader {
   private char rowKeyFieldDelimChar;
   private Map<DataRowKeyFieldMapping, Endpoint> endpointMap;
   private Map<Endpoint, KeyValue> valueMap;
+  private ServiceContext serviceContext;
   private StoreMappingContext mappingContext;
 
   @SuppressWarnings("unused")
   private CompositeRowKeyReader() {
   }
 
-  public CompositeRowKeyReader(PlasmaType contextType, StoreMappingContext mappingContext) {
+  public CompositeRowKeyReader(PlasmaType contextType, ServiceContext serviceContext) {
     if (contextType == null)
       throw new IllegalArgumentException("expected arg contextType");
     this.contextType = contextType;
-    this.mappingContext = mappingContext;
+    this.serviceContext = serviceContext;
+    this.mappingContext = this.serviceContext.getStoreMapping();
     this.table = StoreMapping.getInstance().getTable(this.contextType, this.mappingContext);
     this.graph = StoreMapping.getInstance().getDataGraph(this.contextType.getQualifiedName(),
         this.mappingContext);
@@ -101,7 +104,8 @@ public class CompositeRowKeyReader {
       PlasmaProperty endpointProp = userDefinedKeyField.getEndpointProperty();
       if (keyField.getCodecType().ordinal() == KeyFieldCodecType.HASH.ordinal()) {
         log.warn("cannot unmarshal hashed row key field for table, "
-            + this.table.getNamespaceQualifiedPhysicalName() + ", with graph, " + this.graph
+            + this.serviceContext.getClientFactory().getNamespaceQualifiedPhysicalName(this.table,
+                this.serviceContext.getStoreMapping()) + ", with graph, " + this.graph
             + ", and endpoint property, " + endpointProp + " - continuing");
         continue;
       }
@@ -147,7 +151,7 @@ public class CompositeRowKeyReader {
       PlasmaProperty endpointProp = userDefinedKeyField.getEndpointProperty();
       if (keyField.getCodecType().ordinal() == KeyFieldCodecType.HASH.ordinal()) {
         log.warn("cannot unmarshal hashed row key field(" + i + ") for table, "
-            + this.table.getNamespaceQualifiedPhysicalName() + ", with graph, " + this.graph
+            + this.table.getQualifiedLogicalName() + ", with graph, " + this.graph
             + ", and endpoint property, " + endpointProp + " - continuing");
         continue;
       }

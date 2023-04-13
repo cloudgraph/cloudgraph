@@ -80,12 +80,18 @@ public class GraphMutationWriter {
       if (log.isDebugEnabled()) {
         if (tableWriter.hasConcurrentRows()
             && !tableWriter.getTableConfig().optimisticConcurrency()) {
-          log.debug("commiting " + tableMutations.size() + " mutations to table: "
-              + tableWriter.getTableConfig().getNamespaceQualifiedPhysicalName()
+          log.debug("commiting "
+              + tableMutations.size()
+              + " mutations to table: "
+              + this.serviceContext.getNamespaceQualifiedPhysicalName(tableWriter.getTableConfig(),
+                  this.serviceContext.getStoreMapping())
               + " - ignoring concurrent processing for table");
         } else {
-          log.debug("commiting " + tableMutations.size() + " mutations to table: "
-              + tableWriter.getTableConfig().getNamespaceQualifiedPhysicalName());
+          log.debug("commiting "
+              + tableMutations.size()
+              + " mutations to table: "
+              + this.serviceContext.getNamespaceQualifiedPhysicalName(tableWriter.getTableConfig(),
+                  this.serviceContext.getStoreMapping()));
         }
       }
 
@@ -157,8 +163,11 @@ public class GraphMutationWriter {
         throw new GraphServiceException("unexpected mutation class for concurrent row, "
             + row.getClass());
       if (log.isDebugEnabled()) {
-        log.debug("commiting concurrent " + row.getClass().getSimpleName() + " mutation to table: "
-            + tableWriter.getTableConfig().getNamespaceQualifiedPhysicalName());
+        log.debug("commiting concurrent "
+            + row.getClass().getSimpleName()
+            + " mutation to table: "
+            + this.serviceContext.getClientFactory().getNamespaceQualifiedPhysicalName(
+                tableWriter.getTableConfig(), this.serviceContext.getStoreMapping()));
         debugRowValues(row);
       }
     }
@@ -248,8 +257,11 @@ public class GraphMutationWriter {
       rows.addAll(rowMutations.getRows());
     if (log.isDebugEnabled()) {
       for (Row row : rows) {
-        log.debug("commiting " + row.getClass().getSimpleName() + " mutation to table: "
-            + tableWriter.getTableConfig().getNamespaceQualifiedPhysicalName());
+        log.debug("commiting "
+            + row.getClass().getSimpleName()
+            + " mutation to table: "
+            + this.serviceContext.getClientFactory().getNamespaceQualifiedPhysicalName(
+                tableWriter.getTableConfig(), this.serviceContext.getStoreMapping()));
         debugRowValues(row);
       }
     }

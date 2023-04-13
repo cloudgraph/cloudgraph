@@ -32,12 +32,37 @@ import org.cloudgraph.hbase.client.HBasePut;
 import org.cloudgraph.hbase.client.HBaseRowMutations;
 import org.cloudgraph.hbase.client.HBaseTableName;
 import org.cloudgraph.hbase.io.HBaseCellValues;
+import org.cloudgraph.store.mapping.StoreMappingContext;
+import org.cloudgraph.store.mapping.TableMapping;
 
 public class MaprDBClientFactory extends HBaseClientFactory implements ClientFactory {
 
   @Override
   public TableName createTableName(String tableNamespace, String tableName) {
     return MaprDBTableName.valueOf(tableNamespace, tableName);
+  }
+
+  @Override
+  public TableName createTableName(TableMapping table, StoreMappingContext context) {
+    String namespace = this.createPhysicalNamespace(MaprDBTableName.PHYSICAL_NAME_DELIMITER, table,
+        context);
+    return MaprDBTableName.valueOf(namespace, table.getTable().getName());
+  }
+
+  @Override
+  public String getNamespaceQualifiedPhysicalName(TableMapping tableConfig,
+      StoreMappingContext storeMapping) {
+    String name = this.createPhysicalNamespaceQualifiedPhysicalName(
+        MaprDBTableName.PHYSICAL_NAME_DELIMITER, tableConfig, storeMapping);
+    return name;
+  }
+
+  @Override
+  public String getQualifiedPhysicalTableNamespace(TableMapping tableConfig,
+      StoreMappingContext storeMapping) {
+    String namespace = this.createPhysicalNamespace(MaprDBTableName.PHYSICAL_NAME_DELIMITER,
+        tableConfig, storeMapping);
+    return namespace;
   }
 
 }

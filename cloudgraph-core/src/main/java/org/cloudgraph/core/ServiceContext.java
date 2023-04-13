@@ -20,6 +20,7 @@ import org.cloudgraph.core.filter.ColumnFilterFactory;
 import org.cloudgraph.core.filter.RowFilterFactory;
 import org.cloudgraph.core.scan.RowKeyFactory;
 import org.cloudgraph.store.mapping.StoreMappingContext;
+import org.cloudgraph.store.mapping.TableMapping;
 import org.plasma.sdo.access.AccessServiceContext;
 
 /**
@@ -45,4 +46,7 @@ public interface ServiceContext extends AccessServiceContext {
   public ColumnFilterFactory getColumnFilterFactory();
 
   public RowFilterFactory getRowFilterFactory();
+
+  public String getNamespaceQualifiedPhysicalName(TableMapping tableConfig,
+      StoreMappingContext storeMapping);
 }

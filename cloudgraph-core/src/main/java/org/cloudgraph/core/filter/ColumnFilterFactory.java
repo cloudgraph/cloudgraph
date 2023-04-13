@@ -2,6 +2,7 @@ package org.cloudgraph.core.filter;
 
 import java.util.Set;
 
+import org.cloudgraph.core.ServiceContext;
 import org.cloudgraph.core.client.Filter;
 import org.cloudgraph.core.io.EdgeReader;
 import org.cloudgraph.store.mapping.StoreMappingContext;
@@ -15,18 +16,18 @@ import commonj.sdo.Property;
 public interface ColumnFilterFactory {
 
   Filter createGraphFetchColumnFilter(Selection selection, PlasmaType type,
-      StoreMappingContext mappingContext);
+      ServiceContext serviceContext);
 
   Filter createColumnPredicateFilter(PlasmaType rootType, Where where, PlasmaType contextType,
-      StoreMappingContext storeMapping);
+      ServiceContext serviceContext);
 
   Filter createBinaryPrefixColumnFilter(PlasmaType rootType, Set<Property> properties,
-      PlasmaType contextType, StoreMappingContext storeMapping);
+      PlasmaType contextType, ServiceContext serviceContext);
 
   Filter createStatefullBinaryPrefixColumnFilter(PlasmaType rootType, Set<Property> properties,
       Set<Long> sequences, PlasmaType contextType, EdgeReader edgeReader);
 
   Filter createInitialFetchColumnFilter(SelectionCollector collector, PlasmaType type,
-      StoreMappingContext storeMapping);
+      ServiceContext serviceContext);
 
 }

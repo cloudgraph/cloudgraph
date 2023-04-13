@@ -4,6 +4,7 @@ import org.cloudgraph.core.client.TableName;
 import org.cloudgraph.store.mapping.StoreMappingContext;
 
 public class RocksDBTableName implements TableName {
+  public static final String PHYSICAL_NAME_DELIMITER = "-";
   private String qualifiedPhysicalTableNamespace;
   private String qualifiedPhysicalTableName;
 

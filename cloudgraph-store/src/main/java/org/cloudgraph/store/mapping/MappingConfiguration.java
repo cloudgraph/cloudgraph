@@ -117,14 +117,15 @@ public interface MappingConfiguration {
   public TableMapping getTableByQualifiedLogicalName(String qualifiedTableName,
       StoreMappingContext context);
 
-  /**
-   * Returns a table name for the given qualified SDO Type name.
-   * 
-   * @param typeName
-   *          the qualified name of an SDO Type
-   * @return the table name
-   */
-  public String getNamespaceQualifiedPhysicalTableName(QName typeName, StoreMappingContext context);
+  // /**
+  // * Returns a table name for the given qualified SDO Type name.
+  // *
+  // * @param typeName
+  // * the qualified name of an SDO Type
+  // * @return the table name
+  // */
+  // public String getNamespaceQualifiedPhysicalTableName(QName typeName,
+  // StoreMappingContext context);
 
   /**
    * Adds the given configuration
@@ -195,7 +196,8 @@ public interface MappingConfiguration {
 
   public boolean optimisticConcurrency();
 
-  public String qualifiedLogicalTableNameFromPhysicalTablePath(String namespace, String tableName,
-      StoreMappingContext context);
+  // public String qualifiedLogicalTableNameFromPhysicalTablePath(String
+  // namespace, String tableName,
+  // StoreMappingContext context);
 
 }

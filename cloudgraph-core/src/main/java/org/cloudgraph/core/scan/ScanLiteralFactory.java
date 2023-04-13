@@ -15,6 +15,7 @@
  */
 package org.cloudgraph.core.scan;
 
+import org.cloudgraph.core.ServiceContext;
 import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.plasma.query.model.LogicalOperatorName;
@@ -57,7 +58,7 @@ public class ScanLiteralFactory {
    */
   public ScanLiteral createLiteral(String content, PlasmaProperty property, PlasmaType rootType,
       RelationalOperator relationalOperator, LogicalOperatorName logicalOperatorContext,
-      DataRowKeyFieldMapping fieldConfig, StoreMappingContext mappingContext) {
+      DataRowKeyFieldMapping fieldConfig, ServiceContext serviceContext) {
 
     ScanLiteral result = null;
     DataType dataType = DataType.valueOf(property.getType().getName());
@@ -65,15 +66,15 @@ public class ScanLiteralFactory {
     switch (property.getDataFlavor()) {
     case integral:
       result = new IntegralLiteral(content, rootType, relationalOperator.getValue(),
-          logicalOperatorContext, fieldConfig, mappingContext);
+          logicalOperatorContext, fieldConfig, serviceContext);
       break;
     case string:
       result = new StringLiteral(content, rootType, relationalOperator.getValue(),
-          logicalOperatorContext, fieldConfig, mappingContext);
+          logicalOperatorContext, fieldConfig, serviceContext);
       break;
     case real:
       result = new RealLiteral(content, rootType, relationalOperator.getValue(),
-          logicalOperatorContext, fieldConfig, mappingContext);
+          logicalOperatorContext, fieldConfig, serviceContext);
       break;
     case temporal:
       switch (dataType) {
@@ -81,7 +82,7 @@ public class ScanLiteralFactory {
       case DateTime:
       default:
         result = new TemporalLiteral(content, rootType, relationalOperator.getValue(),
-            logicalOperatorContext, fieldConfig, mappingContext);
+            logicalOperatorContext, fieldConfig, serviceContext);
       }
       break;
     case other:
@@ -112,7 +113,7 @@ public class ScanLiteralFactory {
    */
   public ScanLiteral createLiteral(String content, PlasmaProperty property, PlasmaType rootType,
       PredicateOperator predicateOperator, LogicalOperatorName logicalOperatorContext,
-      DataRowKeyFieldMapping fieldConfig, StoreMappingContext mappingContext) {
+      DataRowKeyFieldMapping fieldConfig, ServiceContext serviceContext) {
 
     ScanLiteral result = null;
     DataType dataType = DataType.valueOf(property.getType().getName());
@@ -121,7 +122,7 @@ public class ScanLiteralFactory {
       switch (property.getDataFlavor()) {
       case string:
         result = new WildcardStringLiteral(content, rootType, predicateOperator,
-            logicalOperatorContext, fieldConfig, mappingContext);
+            logicalOperatorContext, fieldConfig, serviceContext);
         break;
       case integral:
       case real:
@@ -135,15 +136,15 @@ public class ScanLiteralFactory {
       switch (property.getDataFlavor()) {
       case integral:
         result = new IntegralLiteral(content, rootType, RelationalOperatorName.EQUALS,
-            logicalOperatorContext, fieldConfig, mappingContext);
+            logicalOperatorContext, fieldConfig, serviceContext);
         break;
       case string:
         result = new StringLiteral(content, rootType, RelationalOperatorName.EQUALS,
-            logicalOperatorContext, fieldConfig, mappingContext);
+            logicalOperatorContext, fieldConfig, serviceContext);
         break;
       case real:
         result = new RealLiteral(content, rootType, RelationalOperatorName.EQUALS,
-            logicalOperatorContext, fieldConfig, mappingContext);
+            logicalOperatorContext, fieldConfig, serviceContext);
         break;
       case temporal:
         switch (dataType) {
@@ -151,7 +152,7 @@ public class ScanLiteralFactory {
         case DateTime:
         default:
           result = new TemporalLiteral(content, rootType, RelationalOperatorName.EQUALS,
-              logicalOperatorContext, fieldConfig, mappingContext);
+              logicalOperatorContext, fieldConfig, serviceContext);
         }
         break;
       default:

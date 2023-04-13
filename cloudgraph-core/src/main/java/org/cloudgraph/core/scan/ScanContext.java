@@ -21,6 +21,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.cloudgraph.core.ServiceContext;
 import org.cloudgraph.store.mapping.DataGraphMapping;
 import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.cloudgraph.store.mapping.StoreMapping;
@@ -80,14 +81,15 @@ public class ScanContext extends DefaultQueryVisitor {
    * @param where
    *          the predicates
    */
-  public ScanContext(PlasmaType rootType, Where where, StoreMappingContext mappingContext) {
+  public ScanContext(PlasmaType rootType, Where where, ServiceContext serviceContext) {
     this.rootType = rootType;
     QName rootTypeQname = this.rootType.getQualifiedName();
-    this.graph = StoreMapping.getInstance().getDataGraph(rootTypeQname, mappingContext);
+    this.graph = StoreMapping.getInstance().getDataGraph(rootTypeQname,
+        serviceContext.getStoreMapping());
     if (log.isDebugEnabled())
       log.debug("begin traverse");
 
-    ScanLiteralAssembler literalAssembler = new ScanLiteralAssembler(this.rootType, mappingContext);
+    ScanLiteralAssembler literalAssembler = new ScanLiteralAssembler(this.rootType, serviceContext);
     where.accept(literalAssembler); // traverse
     this.partialKeyScanLiterals = literalAssembler.getPartialKeyScanResult();
     this.fuzzyKeyScanLiterals = literalAssembler.getFuzzyKeyScanResult();

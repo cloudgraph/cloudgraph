@@ -15,6 +15,7 @@ import org.cloudgraph.hbase.filter.HBaseColumnFilterFactory;
 import org.cloudgraph.hbase.filter.HBaseRowFilterFactory;
 import org.cloudgraph.hbase.scan.HBaseRowKeyFactory;
 import org.cloudgraph.store.mapping.StoreMappingContext;
+import org.cloudgraph.store.mapping.TableMapping;
 
 public class HBaseServiceContext implements ServiceContext {
 
@@ -41,6 +42,12 @@ public class HBaseServiceContext implements ServiceContext {
 
   public HBaseServiceContext() {
     this(new Properties());
+  }
+
+  @Override
+  public String getNamespaceQualifiedPhysicalName(TableMapping tableConfig,
+      StoreMappingContext storeMapping) {
+    return this.clientFactory.getNamespaceQualifiedPhysicalName(tableConfig, storeMapping);
   }
 
   @Override

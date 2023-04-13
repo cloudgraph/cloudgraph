@@ -4,11 +4,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.filter.FuzzyRowFilter;
 import org.apache.hadoop.hbase.util.Pair;
 import org.cloudgraph.core.client.CellUtil;
 import org.cloudgraph.core.client.CellValues;
 import org.cloudgraph.core.client.ClientFactory;
+import org.cloudgraph.core.client.DefaultClientFactory;
 import org.cloudgraph.core.client.Delete;
 import org.cloudgraph.core.client.Filter;
 import org.cloudgraph.core.client.FilterList;
@@ -20,12 +23,18 @@ import org.cloudgraph.core.client.Result;
 import org.cloudgraph.core.client.RowMutations;
 import org.cloudgraph.core.client.Scan;
 import org.cloudgraph.core.client.TableName;
+import org.cloudgraph.core.io.GraphTableReader;
 import org.cloudgraph.core.scan.CompleteRowKey;
 import org.cloudgraph.core.scan.FuzzyRowKey;
 import org.cloudgraph.core.scan.PartialRowKey;
 import org.cloudgraph.hbase.io.HBaseCellValues;
+import org.cloudgraph.store.mapping.StoreMapping;
+import org.cloudgraph.store.mapping.StoreMappingContext;
+import org.cloudgraph.store.mapping.Table;
+import org.cloudgraph.store.mapping.TableMapping;
 
-public class HBaseClientFactory implements ClientFactory {
+public class HBaseClientFactory extends DefaultClientFactory implements ClientFactory {
+  private static Log log = LogFactory.getLog(HBaseClientFactory.class);
 
   @Override
   public Put createPut(byte[] rowKey) {
@@ -147,8 +156,30 @@ public class HBaseClientFactory implements ClientFactory {
 
   @Override
   public TableName createTableName(String tableNamespace, String tableName) {
-
     return HBaseTableName.valueOf(tableNamespace, tableName);
+  }
+
+  @Override
+  public TableName createTableName(TableMapping table, StoreMappingContext context) {
+    String namespace = this.createPhysicalNamespace(HBaseTableName.PHYSICAL_NAME_DELIMITER, table,
+        context);
+    return HBaseTableName.valueOf(namespace, table.getTable().getName());
+  }
+
+  @Override
+  public String getNamespaceQualifiedPhysicalName(TableMapping tableConfig,
+      StoreMappingContext storeMapping) {
+    String name = this.createPhysicalNamespaceQualifiedPhysicalName(
+        HBaseTableName.PHYSICAL_NAME_DELIMITER, tableConfig, storeMapping);
+    return name;
+  }
+
+  @Override
+  public String getQualifiedPhysicalTableNamespace(TableMapping tableConfig,
+      StoreMappingContext storeMapping) {
+    String namespace = this.createPhysicalNamespace(HBaseTableName.PHYSICAL_NAME_DELIMITER,
+        tableConfig, storeMapping);
+    return namespace;
   }
 
 }

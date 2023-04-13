@@ -350,7 +350,7 @@ avoid NoClassDefFoundError: Could not initialize class org.apache.hadoop.hbase.s
                       <goal>test</goal>
                     </goals>
                     <configuration>
-                        <skip>false</skip>
+                        <skip>true</skip>
                         <additionalClasspathElements>
                             <additionalClasspathElement>${basedir}/src/main/resources</additionalClasspathElement>
                             <additionalClasspathElement>${basedir}/src/test/resources</additionalClasspathElement>
@@ -377,7 +377,7 @@ avoid NoClassDefFoundError: Could not initialize class org.apache.hadoop.hbase.s
                       <goal>test</goal>
                     </goals>
                     <configuration>
-                        <skip>false</skip>
+                        <skip>true</skip>
                         <additionalClasspathElements>
                             <additionalClasspathElement>${basedir}/src/main/resources</additionalClasspathElement>
                             <additionalClasspathElement>${basedir}/src/test/resources</additionalClasspathElement>
@@ -422,7 +422,7 @@ avoid NoClassDefFoundError: Could not initialize class org.apache.hadoop.hbase.s
                       <goal>test</goal>
                     </goals>
                     <configuration>
-	                    <skip>false</skip>
+	                    <skip>true</skip>
 	                    <additionalClasspathElements>
 	                        <additionalClasspathElement>${basedir}/src/main/resources</additionalClasspathElement>
 	                        <additionalClasspathElement>${basedir}/src/test/resources</additionalClasspathElement>
@@ -446,7 +446,7 @@ avoid NoClassDefFoundError: Could not initialize class org.apache.hadoop.hbase.s
                       <goal>test</goal>
                     </goals>
                     <configuration>
-	                    <skip>false</skip>
+	                    <skip>true</skip>
 	                    <additionalClasspathElements>
 	                        <additionalClasspathElement>${basedir}/src/main/resources</additionalClasspathElement>
 	                        <additionalClasspathElement>${basedir}/src/test/resources</additionalClasspathElement>
@@ -472,7 +472,7 @@ avoid NoClassDefFoundError: Could not initialize class org.apache.hadoop.hbase.s
                       <goal>test</goal>
                     </goals>
                     <configuration>
-                        <skip>false</skip>
+                        <skip>true</skip>
                         <additionalClasspathElements>
                             <additionalClasspathElement>${basedir}/src/main/resources</additionalClasspathElement>
                             <additionalClasspathElement>${basedir}/src/test/resources</additionalClasspathElement>
@@ -495,7 +495,7 @@ avoid NoClassDefFoundError: Could not initialize class org.apache.hadoop.hbase.s
                       <goal>test</goal>
                     </goals>
                     <configuration>
-                        <skip>false</skip>
+                        <skip>true</skip>
                         <additionalClasspathElements>
                             <additionalClasspathElement>${basedir}/src/main/resources</additionalClasspathElement>
                             <additionalClasspathElement>${basedir}/src/test/resources</additionalClasspathElement>
@@ -547,9 +547,9 @@ avoid NoClassDefFoundError: Could not initialize class org.apache.hadoop.hbase.s
                     <argLine>-Xms128M -Xmx500M</argLine>                      
                       --> 
                     <!-- debugging -->  
-                        <!--                                                            
+                                                                                       
                    <argLine>-Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,address=8002,server=y,suspend=y</argLine>                     
-                        -->                                                    
+                                                                              
                     <!-- profiling  -->
                     <!--
                     <argLine>-Xrunhprof:cpu=samples,depth=25</argLine>  

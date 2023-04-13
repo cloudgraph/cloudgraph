@@ -16,6 +16,7 @@
 package org.cloudgraph.core.graph;
 
 import org.cloudgraph.common.Bytes;
+import org.cloudgraph.core.ServiceContext;
 import org.cloudgraph.core.expr.PathPredicateBinaryExprTreeAssembler;
 import org.cloudgraph.query.expr.DefaultLogicalBinaryExpr;
 import org.cloudgraph.query.expr.Expr;
@@ -86,8 +87,8 @@ public class LocalEdgeRecognizerSyntaxTreeAssembler extends PathPredicateBinaryE
    *          the graph config
    */
   public LocalEdgeRecognizerSyntaxTreeAssembler(Where predicate, DataGraphMapping graphConfig,
-      PlasmaType edgeType, PlasmaType rootType, StoreMappingContext mappingContext) {
-    super(predicate, edgeType, rootType, mappingContext);
+      PlasmaType edgeType, PlasmaType rootType, ServiceContext serviceContext) {
+    super(predicate, edgeType, rootType, serviceContext);
     this.graphConfig = graphConfig;
   }
 

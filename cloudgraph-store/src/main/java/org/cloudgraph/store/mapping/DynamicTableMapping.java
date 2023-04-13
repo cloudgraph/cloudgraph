@@ -24,34 +24,6 @@ public class DynamicTableMapping extends TableMapping {
   }
 
   @Override
-  public String getPhysicalName() {
-    if (this.physicalName == null) {
-      this.physicalName = physicalNameFor(this.table.getName(), this.context);
-    }
-
-    return this.physicalName;
-  }
-
-  @Override
-  public String getNamespaceQualifiedPhysicalName() {
-    if (this.namespaceQualifiedPhysicalName == null) {
-      this.namespaceQualifiedPhysicalName = namespaceQualifiedPhysicalNameFor(
-          this.table.getNamespace(), this.table.getName(), this.context);
-    }
-
-    return this.namespaceQualifiedPhysicalName;
-  }
-
-  @Override
-  public String getQualifiedPhysicalNamespace() {
-    if (this.qualifiedPhysicalNamespace == null) {
-      this.qualifiedPhysicalNamespace = qualifiedPhysicalNamespaceFor(this.table, this.context);
-    }
-
-    return this.qualifiedPhysicalNamespace;
-  }
-
-  @Override
   public StoreMappingContext getMappingContext() {
     return this.context;
   }

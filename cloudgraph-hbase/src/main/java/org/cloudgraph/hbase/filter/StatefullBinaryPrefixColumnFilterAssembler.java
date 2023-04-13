@@ -68,7 +68,7 @@ public class StatefullBinaryPrefixColumnFilterAssembler extends FilterListAssemb
     this.rootFilter = new FilterList(FilterList.Operator.MUST_PASS_ONE);
 
     this.columnKeyFac = new StatefullColumnKeyFactory(rootType, this.edgeReader.getRowReader()
-        .getMappingContext());
+        .getServiceContext());
   }
 
   public void assemble(Set<Property> properies, Set<Long> sequences, PlasmaType contextType) {

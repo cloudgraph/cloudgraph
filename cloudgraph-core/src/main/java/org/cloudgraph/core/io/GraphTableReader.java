@@ -80,62 +80,41 @@ public class GraphTableReader extends GraphTable implements TableReader {
     return serviceContext;
   }
 
-  /**
-   * 
-   * Returns the qualified logical table name associated with this reader.
-   * 
-   * @return the qualified logical table name associated with this reader.
-   */
   @Override
   public String getQualifiedLogicalTableName() {
     return this.getTableConfig().getQualifiedLogicalName();
   }
 
-  /**
-   * 
-   * Returns the qualified physical table name associated with this reader.
-   * 
-   * @return the qualified physical table name associated with this reader.
-   */
-  @Override
-  public String getPhysicalTableName() {
-    return this.getTableConfig().getPhysicalName();
-  }
-
   @Override
   public String getNamespaceQualifiedPhysicalTableName() {
-    return this.getTableConfig().getNamespaceQualifiedPhysicalName();
+    return this.serviceContext.getClientFactory().getNamespaceQualifiedPhysicalName(
+        this.getTableConfig(), this.serviceContext.getStoreMapping());
   }
 
-  /**
-   * 
-   * Returns the qualified physical table namespace associated with this reader.
-   * 
-   * @return the qualified physical table namespace associated with this reader.
-   */
   @Override
   public String getQualifiedPhysicalTableNamespace() {
-    return this.getTableConfig().getQualifiedPhysicalNamespace();
+    return this.serviceContext.getClientFactory().getQualifiedPhysicalTableNamespace(
+        this.getTableConfig(), this.serviceContext.getStoreMapping());
   }
 
   @Override
   public Table getTable() {
     try {
-      TableName tableName = serviceContext.getClientFactory().createTableName(
-          getQualifiedPhysicalTableNamespace(), getPhysicalTableName());
+      TableName tableName = this.serviceContext.getClientFactory().createTableName(
+          this.getTableConfig(), this.serviceContext.getStoreMapping());
       // Note: calling tableExists() using the admin HBase API is expensive
       // and is
       // showing up on CPU profiling results. Just call get table and catch :(
       if (!this.distributedOperation.getConnection().tableExists(tableName)) {
         this.serviceContext.getConnectionManager().createTable(
-            this.distributedOperation.getConnection(), tableName, this.mappingContext);
+            this.distributedOperation.getConnection(), tableName, this.serviceContext);
         this.table = this.distributedOperation.getConnection().getTable(tableName);
       } else {
         try {
           this.table = this.distributedOperation.getConnection().getTable(tableName);
         } catch (IOException e) {
           serviceContext.getConnectionManager().createTable(
-              this.distributedOperation.getConnection(), tableName, this.mappingContext);
+              this.distributedOperation.getConnection(), tableName, this.serviceContext);
           this.table = this.distributedOperation.getConnection().getTable(tableName);
         }
       }

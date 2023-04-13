@@ -10,6 +10,7 @@ import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.cloudgraph.common.Bytes;
+import org.cloudgraph.core.ServiceContext;
 import org.cloudgraph.core.client.CompareOper;
 import org.cloudgraph.core.client.Filter;
 import org.cloudgraph.core.client.Get;
@@ -46,14 +47,14 @@ public class RocksDBTable implements Table, TableName {
   private String setName;
   private RocksDB client;
   private TableMapping tableMapping;
-  private StoreMappingContext mappingContext;
+  private ServiceContext serviceContext;
 
   @SuppressWarnings("unused")
   private RocksDBTable() {
   }
 
   public RocksDBTable(TableName tableName, RocksDB client, TableMapping tableMapping,
-      StoreMappingContext mappingContext) {
+      ServiceContext serviceContext) {
     this.namespace = tableName.getNamespace();
     this.qualifiedName = tableName.getTableName();
     this.setName = this.qualifiedName;
@@ -64,7 +65,7 @@ public class RocksDBTable implements Table, TableName {
       this.setName = this.qualifiedName.substring(idx + 1);
     this.client = client;
     this.tableMapping = tableMapping;
-    this.mappingContext = mappingContext;
+    this.serviceContext = serviceContext;
   }
 
   public String getNamespace() {

@@ -34,6 +34,7 @@ import org.apache.hadoop.hbase.ZooKeeperConnectionException;
 import org.cloudgraph.core.Connection;
 import org.cloudgraph.core.ConnectionConstants;
 import org.cloudgraph.core.ConnectionManager;
+import org.cloudgraph.core.ServiceContext;
 import org.cloudgraph.core.client.Admin;
 import org.cloudgraph.hbase.client.HBaseAdmin;
 import org.cloudgraph.hbase.client.HBaseTableName;
@@ -166,14 +167,15 @@ public class HBaseConnectionManager implements ConnectionManager, ConnectionCons
 
   @Override
   public void createTable(org.cloudgraph.core.Connection connection,
-      org.cloudgraph.core.client.TableName name, StoreMappingContext mappingContext) {
+      org.cloudgraph.core.client.TableName name, ServiceContext serviceContext) {
 
     org.apache.hadoop.hbase.client.Admin hbaseAdmin = null;
     try {
       hbaseAdmin = HBaseAdmin.class.cast(connection.getAdmin()).getAdmin();
 
       TableMapping tableConfig = StoreMapping.getInstance().getTableByQualifiedLogicalName(
-          name.getQualifiedLogicalName(mappingContext), mappingContext);
+          name.getQualifiedLogicalName(serviceContext.getStoreMapping()),
+          serviceContext.getStoreMapping());
 
       HBaseTableName hbaseTableName = (HBaseTableName) name;
 

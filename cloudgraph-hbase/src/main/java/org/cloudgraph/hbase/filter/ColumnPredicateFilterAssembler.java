@@ -17,6 +17,7 @@ package org.cloudgraph.hbase.filter;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.cloudgraph.core.ServiceContext;
 import org.cloudgraph.core.key.CompositeColumnKeyFactory;
 import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.plasma.query.model.Where;
@@ -71,9 +72,9 @@ public class ColumnPredicateFilterAssembler extends ColumnPredicateVisitor imple
    * @see org.plasma.query.visitor.QueryVisitor
    * @see org.plasma.query.model.Query
    */
-  public ColumnPredicateFilterAssembler(PlasmaType rootType, StoreMappingContext mappingContext) {
+  public ColumnPredicateFilterAssembler(PlasmaType rootType, ServiceContext serviceContext) {
     super(rootType);
-    this.columnKeyFac = new CompositeColumnKeyFactory(rootType, mappingContext);
+    this.columnKeyFac = new CompositeColumnKeyFactory(rootType, serviceContext);
   }
 
   @Override

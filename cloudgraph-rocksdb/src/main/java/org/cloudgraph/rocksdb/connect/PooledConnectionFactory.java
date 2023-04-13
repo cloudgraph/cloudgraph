@@ -22,6 +22,7 @@ import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.cloudgraph.core.Connection;
+import org.cloudgraph.core.ServiceContext;
 import org.cloudgraph.store.mapping.StoreMappingContext;
 
 /**
@@ -40,11 +41,11 @@ public class PooledConnectionFactory extends BasePooledObjectFactory<Connection>
   private static Log log = LogFactory.getLog(PooledConnectionFactory.class);
 
   private ObjectPool<Connection> pool;
-  private StoreMappingContext mappingContext;
+  private ServiceContext serviceContext;
 
-  public PooledConnectionFactory(StoreMappingContext mappingContext) {
+  public PooledConnectionFactory(ServiceContext serviceContext) {
     super();
-    this.mappingContext = mappingContext;
+    this.serviceContext = serviceContext;
   }
 
   public void setPool(ObjectPool<Connection> pool) {
@@ -55,7 +56,7 @@ public class PooledConnectionFactory extends BasePooledObjectFactory<Connection>
   public Connection create() throws Exception {
     if (log.isDebugEnabled())
       log.debug("creating new hbase connection");
-    return new RocksDBConnection(this.pool, this.mappingContext);
+    return new RocksDBConnection(this.pool, this.serviceContext);
   }
 
   @Override

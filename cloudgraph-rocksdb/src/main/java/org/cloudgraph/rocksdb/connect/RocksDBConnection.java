@@ -31,6 +31,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.pool2.ObjectPool;
 import org.cloudgraph.core.Connection;
+import org.cloudgraph.core.ServiceContext;
 import org.cloudgraph.core.client.Admin;
 import org.cloudgraph.core.client.BufferedMutator;
 import org.cloudgraph.core.client.RegionLocator;
@@ -101,13 +102,13 @@ public class RocksDBConnection implements Connection {
   private ObjectPool<Connection> pool;
   private LoadingCache<TableName, RocksDBTable> tableCache;
   private RocksDB connection;
-  private StoreMappingContext mappingContext;
+  private ServiceContext serviceContext;
   private List<ColumnFamilyHandle> columnFamilyHandles = new ArrayList<>();
 
-  public RocksDBConnection(ObjectPool<Connection> pool, StoreMappingContext mappingContext) {
+  public RocksDBConnection(ObjectPool<Connection> pool, ServiceContext serviceContext) {
     super();
     this.pool = pool;
-    this.mappingContext = mappingContext;
+    this.serviceContext = serviceContext;
     final Options options = new Options();
     final Filter bloomFilter = new BloomFilter(10);
     final ReadOptions readOptions = new ReadOptions().setFillCache(false);
@@ -216,14 +217,15 @@ public class RocksDBConnection implements Connection {
               logicalTableNameKey.append("/");
             }
             logicalTableNameKey.append(tableName.getTableName());
-            // Uses a path as the single key for internal table mapping
-            String qualifiedLogicalName = StoreMapping.getInstance()
-                .qualifiedLogicalTableNameFromPhysicalTablePath(null,
-                    logicalTableNameKey.toString(), mappingContext);
+            // // Uses a path as the single key for internal table mapping
+            // String qualifiedLogicalName = StoreMapping.getInstance()
+            // .qualifiedLogicalTableNameFromPhysicalTablePath(null,
+            // logicalTableNameKey.toString(), serviceContext);
 
             TableMapping tableConfig = StoreMapping.getInstance().getTableByQualifiedLogicalName(
-                qualifiedLogicalName, mappingContext);
-            return new RocksDBTable(tableName, connection, tableConfig, mappingContext);
+                logicalTableNameKey.toString(), serviceContext.getStoreMapping());
+
+            return new RocksDBTable(tableName, connection, tableConfig, serviceContext);
           }
         });
     if (log.isDebugEnabled())

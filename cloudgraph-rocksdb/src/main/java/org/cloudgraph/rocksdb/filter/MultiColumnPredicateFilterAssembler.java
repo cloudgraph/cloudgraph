@@ -17,6 +17,7 @@ package org.cloudgraph.rocksdb.filter;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.cloudgraph.core.ServiceContext;
 import org.cloudgraph.core.key.CompositeColumnKeyFactory;
 //import org.cloudgraph.rocksdb.key.CompositeColumnKeyFactory;
 import org.cloudgraph.store.mapping.StoreMappingContext;
@@ -78,10 +79,10 @@ public class MultiColumnPredicateFilterAssembler extends MultiColumnPredicateVis
    * @see org.plasma.query.visitor.QueryVisitor
    * @see org.plasma.query.model.Query
    */
-  public MultiColumnPredicateFilterAssembler(PlasmaType rootType, StoreMappingContext mappingContext) {
+  public MultiColumnPredicateFilterAssembler(PlasmaType rootType, ServiceContext serviceContext) {
     super(rootType);
 
-    this.columnKeyFac = new CompositeColumnKeyFactory(rootType, mappingContext);
+    this.columnKeyFac = new CompositeColumnKeyFactory(rootType, serviceContext);
   }
 
   @Override

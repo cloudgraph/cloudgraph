@@ -7,8 +7,8 @@
 
     <Property name="org.plasma.sdo.access.provider.hbase.ConnectionPoolMinSize">1</Property>    
     <Property name="org.plasma.sdo.access.provider.hbase.ConnectionPoolMaxSize">80</Property>    
-
-    <Table name="TEST_COMPLETE_KEY_TEMPORAL" tableVolumeName="testtenant"  namespace="get" dataColumnFamilyName="f1">
+<!-- 
+    <Table name="TEST_COMPLETE_KEY_TEMPORAL" tableVolumeName="sometesttenant"  namespace="test_get" dataColumnFamilyName="f1">
         <HashAlgorithm name="murmur32"/>
          
         <DataGraph uri="http://cloudgraph.org/test/datatypes" type="DateTimeNode">
@@ -58,7 +58,7 @@
         </DataGraph>
     </Table>  
 
-    <Table name="TEST_COMPLETE_KEY_INTEGRAL" tableVolumeName="testtenant"  namespace="get" dataColumnFamilyName="f1">
+    <Table name="TEST_COMPLETE_KEY_INTEGRAL" tableVolumeName="sometesttenant"  namespace="get" dataColumnFamilyName="f1">
         <HashAlgorithm name="murmur32"/>
         
          <DataGraph uri="http://cloudgraph.org/test/datatypes" type="IntNode">
@@ -108,19 +108,11 @@
         </DataGraph>
     </Table>  
 
-    <Table name="TEST_COMPLETE_KEY_REAL" tableVolumeName="testtenant"  namespace="get" dataColumnFamilyName="f1">
+    <Table name="TEST_COMPLETE_KEY_REAL" tableVolumeName="sometesttenant"  namespace="get" dataColumnFamilyName="f1">
         <HashAlgorithm name="murmur32"/>
         
         <DataGraph uri="http://cloudgraph.org/test/datatypes" type="FloatNode">
             <RowKeyModel>
-                <!--  
-                <RowKeyField>
-                    <MetaField name="uri" />
-                </RowKeyField>
-                <RowKeyField>
-                    <MetaField name="type" />
-                </RowKeyField>
-                -->
                 <RowKeyField>
                     <DataField path="rootId"/>
                 </RowKeyField>
@@ -137,8 +129,8 @@
             </ColumnKeyModel>
         </DataGraph>
     </Table>  
-
-    <Table name="TEST_COMPLETE_KEY_STRING" tableVolumeName="testtenant"  namespace="get" dataColumnFamilyName="f1">
+ -->
+    <Table name="GGG_TEST_COMPLETE_KEY_STRING" tableVolumeName="testtenant"  namespace="test_get" dataColumnFamilyName="f1">
         <HashAlgorithm name="murmur32"/>
         <DataGraph uri="http://cloudgraph.org/test/datatypes" type="StringNode">
             <RowKeyModel>

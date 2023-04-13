@@ -7,7 +7,7 @@
          <version>2.0.0</version>
     </parent>
    	<artifactId>cloudgraph-maprdb</artifactId>
-  	<name>CloudGraph MAPR-DB (M7) Service</name>
+  	<name>CloudGraph MAPR-DB Service</name>
 	<description>CloudGraph(tm) is a suite of Service Data Object (SDO) 2.1 services designed for relational and big-table style "cloud" databases, such as HBase and others.</description>
 	<properties>
  		<cloudgraph.version>2.0.0</cloudgraph.version>

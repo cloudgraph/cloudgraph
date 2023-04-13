@@ -16,6 +16,7 @@ import org.cloudgraph.hbase.filter.HBaseRowFilterFactory;
 import org.cloudgraph.hbase.scan.HBaseRowKeyFactory;
 import org.cloudgraph.hbase.service.HBaseDataConverter;
 import org.cloudgraph.store.mapping.StoreMappingContext;
+import org.cloudgraph.store.mapping.TableMapping;
 
 public class BigTableServiceContext implements ServiceContext {
 
@@ -87,6 +88,12 @@ public class BigTableServiceContext implements ServiceContext {
   @Override
   public RowFilterFactory getRowFilterFactory() {
     return this.rowFilterFactory;
+  }
+
+  @Override
+  public String getNamespaceQualifiedPhysicalName(TableMapping tableConfig,
+      StoreMappingContext storeMapping) {
+    return this.clientFactory.getNamespaceQualifiedPhysicalName(tableConfig, storeMapping);
   }
 
 }

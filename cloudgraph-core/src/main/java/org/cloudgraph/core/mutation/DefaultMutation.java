@@ -206,10 +206,15 @@ abstract class DefaultMutation {
       DataRowKeyFieldMapping userDefinedField = dataGraphConfig
           .findUserDefinedRowKeyField(property);
       if (userDefinedField != null) {
-        throw new IllegalAccessException("attempt to modify row-key property, " + type.getURI()
-            + "#" + type.getName() + "." + property.getName()
+        throw new IllegalAccessException("attempt to modify row-key property, "
+            + type.getURI()
+            + "#"
+            + type.getName()
+            + "."
+            + property.getName()
             + " - this property is configured as a row-key field for table '"
-            + dataGraphConfig.getTable().getNamespaceQualifiedPhysicalName() + "'");
+            + this.context.getNamespaceQualifiedPhysicalName(dataGraphConfig.getTable(),
+                this.context.getStoreMapping()) + "'");
       }
       // FIXME: what if an entire entity is deleted which is part
       // of the row key. Detect this. Or added for that matter.

@@ -72,6 +72,11 @@ public class GraphTableWriter extends GraphTable implements TableWriter {
   }
 
   @Override
+  public ServiceContext getServiceContext() {
+    return serviceContext;
+  }
+
+  @Override
   public DistributedWriter getDistributedWriter() {
     return this.distributedGraphWriter;
   }
@@ -94,31 +99,26 @@ public class GraphTableWriter extends GraphTable implements TableWriter {
 
   /**
    * 
-   * Returns the qualified physical table name associated with this reader.
-   * 
-   * @return the qualified physical table name associated with this reader.
-   */
-  @Override
-  public String getPhysicalTableName() {
-    return this.getTableConfig().getPhysicalName();
-  }
-
-  /**
-   * 
    * Returns the qualified physical table namespace associated with this reader.
    * 
    * @return the qualified physical table namespace associated with this reader.
    */
   @Override
   public String getQualifiedPhysicalTableNamespace() {
-    return this.getTableConfig().getQualifiedPhysicalNamespace();
+    return this.serviceContext.getClientFactory().getQualifiedPhysicalTableNamespace(
+        this.getTableConfig(), this.serviceContext.getStoreMapping());
   }
+
+  // @Override
+  // public String getPhysicalTableName() {
+  // return this.getTableConfig().getTable().getName();
+  // }
 
   @Override
   public Table getTable() {
     try {
       TableName tableName = serviceContext.getClientFactory().createTableName(
-          getQualifiedPhysicalTableNamespace(), getPhysicalTableName());
+          this.getTableConfig(), this.serviceContext.getStoreMapping());
       // Note: calling tableExists() using the admin HBase API is expensive
       // and is
       // showing up on CPU profiling results. Just call get table and catch :(
@@ -127,14 +127,14 @@ public class GraphTableWriter extends GraphTable implements TableWriter {
       // anything and continues on.
       if (!distributedGraphWriter.getConnection().tableExists(tableName)) {
         serviceContext.getConnectionManager().createTable(distributedGraphWriter.getConnection(),
-            tableName, this.mappingContext);
+            tableName, this.serviceContext);
         this.table = distributedGraphWriter.getConnection().getTable(tableName);
       } else {
         try {
           this.table = distributedGraphWriter.getConnection().getTable(tableName);
         } catch (IOException e) {
           serviceContext.getConnectionManager().createTable(distributedGraphWriter.getConnection(),
-              tableName, this.mappingContext);
+              tableName, this.serviceContext);
           this.table = distributedGraphWriter.getConnection().getTable(tableName);
         }
       }

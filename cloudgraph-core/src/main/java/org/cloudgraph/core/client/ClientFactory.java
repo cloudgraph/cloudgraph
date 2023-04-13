@@ -6,6 +6,8 @@ import org.cloudgraph.core.client.FilterList.Operator;
 import org.cloudgraph.core.scan.CompleteRowKey;
 import org.cloudgraph.core.scan.FuzzyRowKey;
 import org.cloudgraph.core.scan.PartialRowKey;
+import org.cloudgraph.store.mapping.StoreMappingContext;
+import org.cloudgraph.store.mapping.TableMapping;
 
 public interface ClientFactory {
 
@@ -39,5 +41,13 @@ public interface ClientFactory {
 
   Scan createScan(Scan scan) throws IOException;
 
+  TableName createTableName(TableMapping table, StoreMappingContext context);
+
   TableName createTableName(String tableNamespace, String tableName);
+
+  String getNamespaceQualifiedPhysicalName(TableMapping tableConfig,
+      StoreMappingContext storeMapping);
+
+  String getQualifiedPhysicalTableNamespace(TableMapping tableConfig,
+      StoreMappingContext storeMapping);
 }

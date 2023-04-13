@@ -170,7 +170,7 @@ class GraphSliceSupport {
     CellConverter cellConverter = new CellConverter(contextType, tableReader.getTableConfig(),
         this.serviceContext);
     ExternalEdgeRecognizerContext edgeRecogniserContext = new ExternalEdgeRecognizerContext(
-        contextType, this.serviceContext.getStoreMapping());
+        contextType, this.serviceContext);
     boolean complete = rowKeyModelCompleteSelection(contextType, level,
         edgeRecogniserContext.getEndpoints());
     for (KeyBytes rowKeyBytes : edgeReader.getRowKeys()) {
@@ -217,7 +217,7 @@ class GraphSliceSupport {
     }
     ColumnFilterFactory filterFac = this.serviceContext.getColumnFilterFactory();
     Filter columnFilter = filterFac.createGraphFetchColumnFilter(predicateSelection, contextType,
-        this.serviceContext.getStoreMapping());
+        this.serviceContext);
 
     // // column filter
     // HBaseFilterAssembler columnFilterAssembler = new
@@ -391,7 +391,7 @@ class GraphSliceSupport {
     PredicateUtil predicateUtil = new PredicateUtil();
     ColumnFilterFactory filterFac = this.serviceContext.getColumnFilterFactory();
     Filter filter = filterFac.createColumnPredicateFilter(rootType, where, contextType,
-        this.serviceContext.getStoreMapping());
+        this.serviceContext);
     get.setFilter(filter);
 
     Result result = fetchResult(get, rowReader.getTableReader(), graphConfig);
@@ -405,7 +405,7 @@ class GraphSliceSupport {
     // assemble a recognizer once for
     // all results. Then only evaluate each result.
     LocalEdgeRecognizerSyntaxTreeAssembler assembler = new LocalEdgeRecognizerSyntaxTreeAssembler(
-        where, graphConfig, contextType, rootType, this.serviceContext.getStoreMapping());
+        where, graphConfig, contextType, rootType, this.serviceContext);
     Expr recogniser = assembler.getResult();
     LocalEdgeRecognizerContext context = new LocalEdgeRecognizerContext();
     for (Long seq : buckets.keySet()) {
@@ -446,8 +446,9 @@ class GraphSliceSupport {
     Result result = tableOperation.getTable().get(get);
     if (result == null) // Note: may not have any key-values
       throw new GraphServiceException("expected result from table "
-          + tableOperation.getTableConfig().getNamespaceQualifiedPhysicalName() + " for row '"
-          + new String(get.getRow()) + "'");
+          + this.serviceContext.getClientFactory().getNamespaceQualifiedPhysicalName(
+              tableOperation.getTableConfig(), this.serviceContext.getStoreMapping())
+          + " for row '" + new String(get.getRow()) + "'");
 
     long after = System.currentTimeMillis();
     if (log.isDebugEnabled())
@@ -537,7 +538,8 @@ class GraphSliceSupport {
     Result result = tableReader.getTable().get(get);
     if (result == null) // Note: may not have any key-values
       throw new GraphServiceException("expected result from table "
-          + tableReader.getTableConfig().getNamespaceQualifiedPhysicalName() + " for row '"
+          + this.serviceContext.getClientFactory().getNamespaceQualifiedPhysicalName(
+              tableReader.getTableConfig(), this.serviceContext.getStoreMapping()) + " for row '"
           + new String(get.getRow()) + "'");
 
     Map<Integer, Integer> seqMap = new HashMap<Integer, Integer>();
@@ -622,7 +624,7 @@ class GraphSliceSupport {
     PlasmaType rootType = (PlasmaType) rowReader.getRootType();
     ColumnFilterFactory filterFac = this.serviceContext.getColumnFilterFactory();
     Filter filter = filterFac.createBinaryPrefixColumnFilter(rootType, properties, contextType,
-        this.serviceContext.getStoreMapping());
+        this.serviceContext);
     get.setFilter(filter);
     load(get, rowReader);
   }
@@ -653,7 +655,7 @@ class GraphSliceSupport {
       get.setFilter(filter);
     } else {
       StatefullColumnKeyFactory columnKeyFac = new StatefullColumnKeyFactory(rootType,
-          this.serviceContext.getStoreMapping());
+          this.serviceContext);
       PlasmaType subType = edgeReader.getSubType();
       if (subType == null)
         subType = edgeReader.getBaseType();
@@ -725,8 +727,9 @@ class GraphSliceSupport {
     if (result == null) // do expect a result since a Get oper, but might
       // have no columns
       throw new GraphServiceException("expected result from table "
-          + rowReader.getTableReader().getTableConfig().getNamespaceQualifiedPhysicalName()
-          + " for row '" + new String(get.getRow()) + "'");
+          + this.serviceContext.getNamespaceQualifiedPhysicalName(rowReader.getTableReader()
+              .getTableConfig(), this.serviceContext.getStoreMapping()) + " for row '"
+          + new String(get.getRow()) + "'");
     if (!result.isEmpty())
       for (KeyValue keyValue : result.list()) {
         rowReader.getRow().addColumn(keyValue);

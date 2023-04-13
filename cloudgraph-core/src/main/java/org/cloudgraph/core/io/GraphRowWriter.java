@@ -110,8 +110,8 @@ public class GraphRowWriter extends DefaultRowOperation implements RowWriter {
   }
 
   @Override
-  public StoreMappingContext getMappingContext() {
-    return this.tableWriter.getMappingContext();
+  public ServiceContext getServiceContext() {
+    return this.tableWriter.getServiceContext();
   }
 
   @Override

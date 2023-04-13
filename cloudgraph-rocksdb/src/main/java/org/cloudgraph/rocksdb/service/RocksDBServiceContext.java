@@ -15,6 +15,7 @@ import org.cloudgraph.rocksdb.filter.RocksDBColumnFilterFactory;
 import org.cloudgraph.rocksdb.filter.RocksDBRowFilterFactory;
 import org.cloudgraph.rocksdb.scan.RocksDBRowKeyFactory;
 import org.cloudgraph.store.mapping.StoreMappingContext;
+import org.cloudgraph.store.mapping.TableMapping;
 
 public class RocksDBServiceContext implements ServiceContext {
 
@@ -37,6 +38,12 @@ public class RocksDBServiceContext implements ServiceContext {
     this.rowKeyFactory = new RocksDBRowKeyFactory();
     this.columnFilterFactory = new RocksDBColumnFilterFactory();
     this.rowFilterFactory = new RocksDBRowFilterFactory();
+  }
+
+  @Override
+  public String getNamespaceQualifiedPhysicalName(TableMapping tableConfig,
+      StoreMappingContext storeMapping) {
+    return this.clientFactory.getNamespaceQualifiedPhysicalName(tableConfig, storeMapping);
   }
 
   public RocksDBServiceContext() {

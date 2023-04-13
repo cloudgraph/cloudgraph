@@ -482,13 +482,15 @@ public class GraphQuery implements QueryDispatcher {
     Result resultRow = rootTableReader.getTable().get(get);
     if (resultRow == null || resultRow.isEmpty()) {
       log.debug("no results from table "
-          + rootTableReader.getTableConfig().getNamespaceQualifiedPhysicalName() + " for row '"
+          + this.context.getClientFactory().getNamespaceQualifiedPhysicalName(
+              rootTableReader.getTableConfig(), this.context.getStoreMapping()) + " for row '"
           + new String(get.getRow()) + "' - returning zero results graphs");
       return;
     }
     if (log.isDebugEnabled()) {
-      log.debug(rootTableReader.getTableConfig().getNamespaceQualifiedPhysicalName() + ": "
-          + new String(resultRow.getRow()));
+      log.debug(this.context.getClientFactory().getNamespaceQualifiedPhysicalName(
+          rootTableReader.getTableConfig(), this.context.getStoreMapping())
+          + ": " + new String(resultRow.getRow()));
       for (KeyValue keyValue : resultRow.list()) {
         log.debug("\tkey: " + new String(keyValue.getQualifier()) + "\tvalue: "
             + new String(keyValue.getValue()));
@@ -508,14 +510,16 @@ public class GraphQuery implements QueryDispatcher {
     Result[] resultRows = rootTableReader.getTable().get(gets);
     if (resultRows == null) {
       log.debug("no results from table "
-          + rootTableReader.getTableConfig().getNamespaceQualifiedPhysicalName()
-          + " for mget - returning zero results graphs");
+          + this.context.getNamespaceQualifiedPhysicalName(rootTableReader.getTableConfig(),
+              this.context.getStoreMapping()) + " for mget - returning zero results graphs");
       return;
     }
     for (Result resultRow : resultRows) {
       if (!resultRow.isEmpty()) {
         if (log.isDebugEnabled()) {
-          log.debug(rootTableReader.getTableConfig().getNamespaceQualifiedPhysicalName() + ": "
+          log.debug(this.context.getNamespaceQualifiedPhysicalName(
+              rootTableReader.getTableConfig(), this.context.getStoreMapping())
+              + ": "
               + new String(resultRow.getRow()));
           for (KeyValue keyValue : resultRow.list()) {
             log.debug("\tkey: " + new String(keyValue.getQualifier()) + "\tvalue: "
@@ -530,8 +534,9 @@ public class GraphQuery implements QueryDispatcher {
           if (resultRow.getRow() != null)
             rowKey = Bytes.toString(resultRow.getRow());
           log.debug("no results from table "
-              + rootTableReader.getTableConfig().getNamespaceQualifiedPhysicalName() + " for row '"
-              + rowKey + "' - returning no results graph");
+              + this.context.getNamespaceQualifiedPhysicalName(rootTableReader.getTableConfig(),
+                  this.context.getStoreMapping()) + " for row '" + rowKey
+              + "' - returning no results graph");
         }
       }
     }
@@ -549,8 +554,9 @@ public class GraphQuery implements QueryDispatcher {
     try {
       for (Result resultRow : scanner) {
         if (log.isDebugEnabled()) {
-          log.debug(rootTableReader.getTableConfig().getNamespaceQualifiedPhysicalName() + ": "
-              + new String(resultRow.getRow()));
+          log.debug(this.context.getClientFactory().getNamespaceQualifiedPhysicalName(
+              rootTableReader.getTableConfig(), this.context.getStoreMapping())
+              + ": " + new String(resultRow.getRow()));
           for (KeyValue keyValue : resultRow.list()) {
             log.debug("\tkey: " + new String(keyValue.getQualifier()) + "\tvalue: "
                 + new String(keyValue.getValue()));
@@ -590,10 +596,9 @@ public class GraphQuery implements QueryDispatcher {
     ColumnFilterFactory colFilterFac = context.getColumnFilterFactory();
 
     if (collector.getPredicateMap().size() > 0) {
-      return colFilterFac
-          .createInitialFetchColumnFilter(collector, type, context.getStoreMapping());
+      return colFilterFac.createInitialFetchColumnFilter(collector, type, context);
     } else {
-      return colFilterFac.createGraphFetchColumnFilter(collector, type, context.getStoreMapping());
+      return colFilterFac.createGraphFetchColumnFilter(collector, type, context);
     }
   }
 

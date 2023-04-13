@@ -9,6 +9,7 @@ import org.cloudgraph.core.client.Delete;
 import org.cloudgraph.core.client.Filter;
 import org.cloudgraph.core.client.FilterList;
 import org.cloudgraph.core.client.FilterList.Operator;
+import org.cloudgraph.core.client.DefaultClientFactory;
 import org.cloudgraph.core.client.Get;
 import org.cloudgraph.core.client.Increment;
 import org.cloudgraph.core.client.Put;
@@ -19,8 +20,10 @@ import org.cloudgraph.core.client.TableName;
 import org.cloudgraph.core.scan.CompleteRowKey;
 import org.cloudgraph.core.scan.FuzzyRowKey;
 import org.cloudgraph.core.scan.PartialRowKey;
+import org.cloudgraph.store.mapping.StoreMappingContext;
+import org.cloudgraph.store.mapping.TableMapping;
 
-public class RocksDBClientFactory implements ClientFactory {
+public class RocksDBClientFactory extends DefaultClientFactory implements ClientFactory {
 
   @Override
   public Put createPut(byte[] rowKey) {
@@ -104,6 +107,27 @@ public class RocksDBClientFactory implements ClientFactory {
   @Override
   public TableName createTableName(String tableNamespace, String tableName) {
     return RocksDBTableName.valueOf(tableNamespace, tableName);
+  }
+
+  @Override
+  public TableName createTableName(TableMapping table, StoreMappingContext context) {
+    throw new IllegalStateException("not implemented");
+  }
+
+  @Override
+  public String getNamespaceQualifiedPhysicalName(TableMapping tableConfig,
+      StoreMappingContext storeMapping) {
+    String name = this.createPhysicalNamespaceQualifiedPhysicalName(
+        RocksDBTableName.PHYSICAL_NAME_DELIMITER, tableConfig, storeMapping);
+    return name;
+  }
+
+  @Override
+  public String getQualifiedPhysicalTableNamespace(TableMapping tableConfig,
+      StoreMappingContext storeMapping) {
+    String namespace = this.createPhysicalNamespace(RocksDBTableName.PHYSICAL_NAME_DELIMITER,
+        tableConfig, storeMapping);
+    return namespace;
   }
 
 }

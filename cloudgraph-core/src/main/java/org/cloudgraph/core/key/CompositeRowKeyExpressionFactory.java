@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.cloudgraph.core.ServiceContext;
 import org.cloudgraph.core.io.RowOperation;
 import org.cloudgraph.store.key.GraphKeyException;
 import org.cloudgraph.store.key.GraphRowKeyExpressionFactory;
@@ -57,12 +58,12 @@ public class CompositeRowKeyExpressionFactory extends ByteBufferKeyFactory imple
     GraphRowKeyExpressionFactory {
   private static final Log log = LogFactory.getLog(CompositeRowKeyExpressionFactory.class);
 
-  public CompositeRowKeyExpressionFactory(RowOperation graphRow) {
-    super(graphRow);
-  }
-
-  public CompositeRowKeyExpressionFactory(PlasmaType rootType, StoreMappingContext mappingContext) {
-    super(rootType, mappingContext);
+  // public CompositeRowKeyExpressionFactory(RowOperation graphRow) {
+  // super(graphRow);
+  // }
+  //
+  public CompositeRowKeyExpressionFactory(PlasmaType rootType, ServiceContext serviceContext) {
+    super(rootType, serviceContext);
   }
 
   @Override
@@ -96,7 +97,7 @@ public class CompositeRowKeyExpressionFactory extends ByteBufferKeyFactory imple
                       + userFieldConfig.getPathExpression()
                       + "'"
                       + " for table '"
-                      + this.getTable().getNamespaceQualifiedPhysicalName()
+                      + this.getTable().getQualifiedLogicalName()
                       + "' - this field is defined as using an integral hash algorithm which prevents the use of wildcards");
             break;
           default:
@@ -116,7 +117,7 @@ public class CompositeRowKeyExpressionFactory extends ByteBufferKeyFactory imple
                     + userFieldConfig.getPathExpression()
                     + "'"
                     + " for table '"
-                    + this.getTable().getNamespaceQualifiedPhysicalName()
+                    + this.getTable().getQualifiedLogicalName()
                     + "' - this field is defined as using an integral hash algorithm which prevents the use of wildcards");
           default:
             PlasmaProperty prop = (PlasmaProperty) userFieldConfig.getEndpointProperty();
@@ -170,7 +171,7 @@ public class CompositeRowKeyExpressionFactory extends ByteBufferKeyFactory imple
                       + userFieldConfig.getPathExpression()
                       + "'"
                       + " for table '"
-                      + this.getTable().getNamespaceQualifiedPhysicalName()
+                      + this.getTable().getQualifiedLogicalName()
                       + "' - this field is defined as using an integral hash algorithm which prevents the use of wildcards");
             break;
           default:
@@ -191,7 +192,7 @@ public class CompositeRowKeyExpressionFactory extends ByteBufferKeyFactory imple
                     + userFieldConfig.getPathExpression()
                     + "'"
                     + " for table '"
-                    + this.getTable().getNamespaceQualifiedPhysicalName()
+                    + this.getTable().getQualifiedLogicalName()
                     + "' - this field is defined as using an integral hash algorithm which prevents the use of wildcards");
           default:
             PlasmaProperty prop = (PlasmaProperty) userFieldConfig.getEndpointProperty();

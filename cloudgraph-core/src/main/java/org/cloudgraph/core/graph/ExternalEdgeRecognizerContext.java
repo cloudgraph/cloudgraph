@@ -17,6 +17,7 @@ package org.cloudgraph.core.graph;
 
 import java.util.Collection;
 
+import org.cloudgraph.core.ServiceContext;
 import org.cloudgraph.core.key.CompositeRowKeyReader;
 import org.cloudgraph.query.expr.EvaluationContext;
 import org.cloudgraph.recognizer.Endpoint;
@@ -51,8 +52,8 @@ public class ExternalEdgeRecognizerContext implements EvaluationContext {
   /**
    * Constructs an empty context.
    */
-  public ExternalEdgeRecognizerContext(PlasmaType contextType, StoreMappingContext mappingContext) {
-    this.rowKeyReader = new CompositeRowKeyReader(contextType, mappingContext);
+  public ExternalEdgeRecognizerContext(PlasmaType contextType, ServiceContext serviceContext) {
+    this.rowKeyReader = new CompositeRowKeyReader(contextType, serviceContext);
   }
 
   public void read(byte[] rowKey) {

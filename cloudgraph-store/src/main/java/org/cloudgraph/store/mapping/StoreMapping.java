@@ -318,8 +318,8 @@ public class StoreMapping implements MappingConfiguration {
     String qualifiedGraphName = dataGraphConfig.getQualifiedLogicalName();
     if (graphURIToTableMap.get(qualifiedGraphName) == null)
       throw new StoreMappingException("no data graph definition already exists within table '"
-          + dataGraphConfig.getTable().getNamespaceQualifiedPhysicalName()
-          + "' for type (uri/name), " + qualifiedGraphName);
+          + dataGraphConfig.getTable().getQualifiedLogicalName() + "' for type (uri/name), "
+          + qualifiedGraphName);
     graphURIToTableMap.remove(qualifiedGraphName);
   }
 
@@ -530,18 +530,20 @@ public class StoreMapping implements MappingConfiguration {
     }
   }
 
-  @Override
-  public String qualifiedLogicalTableNameFromPhysicalTablePath(String namespace, String tableName,
-      StoreMappingContext context) {
-    String result = tableName;
-    String pathPrefix = this.tableNamespaceRoot();
-    if (pathPrefix != null && result.startsWith(pathPrefix)) {
-      result = result.substring(pathPrefix.length());
-    }
-    if (result.startsWith(TableMapping.TABLE_PHYSICAL_NAME_DELIM))
-      result = result.substring(TableMapping.TABLE_PHYSICAL_NAME_DELIM.length());
-    return result;
-  }
+  // @Deprecated
+  // @Override
+  // public String qualifiedLogicalTableNameFromPhysicalTablePath(String
+  // namespace, String tableName,
+  // StoreMappingContext context) {
+  // String result = tableName;
+  // String pathPrefix = this.tableNamespaceRoot();
+  // if (pathPrefix != null && result.startsWith(pathPrefix)) {
+  // result = result.substring(pathPrefix.length());
+  // }
+  // if (result.startsWith("/"/* /TableMapping.TABLE_PHYSICAL_NAME_DELIM */))
+  // result = result.substring(1);
+  // return result;
+  // }
 
   private String logicalTableNameFromQualifiedLogialTableName(String tableName,
       StoreMappingContext context) {
@@ -551,8 +553,8 @@ public class StoreMapping implements MappingConfiguration {
       if (result.startsWith(volumePrefix) || result.startsWith(volumePrefix.toLowerCase()))
         result = result.substring(volumePrefix.length());
     }
-    if (result.startsWith(TableMapping.TABLE_LOGICAL_NAME_DELIM))  
-       result = result.substring(TableMapping.TABLE_LOGICAL_NAME_DELIM.length());
+    if (result.startsWith(TableMapping.TABLE_LOGICAL_NAME_DELIM))
+      result = result.substring(TableMapping.TABLE_LOGICAL_NAME_DELIM.length());
     return result;
   }
 
@@ -567,23 +569,25 @@ public class StoreMapping implements MappingConfiguration {
     }
   }
 
-  @Override
-  public String getNamespaceQualifiedPhysicalTableName(QName typeName, StoreMappingContext context) {
-    lock.readLock().lock();
-    try {
-      String contextQualifiedName = TableMapping.qualifiedLogicalNameFor(typeName, context);
-      TableMapping result = this.graphURIToTableMap.get(contextQualifiedName);
-      if (result == null) {
-        result = this.graphURIToTableMap.get(typeName.toString());
-        if (result == null)
-          throw new StoreMappingException("no table configured for" + " CloudGraph '"
-              + typeName.toString() + "'");
-      }
-      return result.getNamespaceQualifiedPhysicalName();
-    } finally {
-      lock.readLock().unlock();
-    }
-  }
+  // @Override
+  // public String getNamespaceQualifiedPhysicalTableName(QName typeName,
+  // StoreMappingContext context) {
+  // lock.readLock().lock();
+  // try {
+  // String contextQualifiedName =
+  // TableMapping.qualifiedLogicalNameFor(typeName, context);
+  // TableMapping result = this.graphURIToTableMap.get(contextQualifiedName);
+  // if (result == null) {
+  // result = this.graphURIToTableMap.get(typeName.toString());
+  // if (result == null)
+  // throw new StoreMappingException("no table configured for" + " CloudGraph '"
+  // + typeName.toString() + "'");
+  // }
+  // return result.getNamespaceQualifiedPhysicalName();
+  // } finally {
+  // lock.readLock().unlock();
+  // }
+  // }
 
   @Override
   public void addTable(TableMapping tableConfig) {

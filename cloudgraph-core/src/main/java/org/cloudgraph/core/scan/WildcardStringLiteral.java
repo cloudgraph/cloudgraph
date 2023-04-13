@@ -16,6 +16,7 @@
 package org.cloudgraph.core.scan;
 
 import org.cloudgraph.common.Padding;
+import org.cloudgraph.core.ServiceContext;
 import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.service.GraphServiceException;
@@ -46,8 +47,8 @@ public class WildcardStringLiteral extends StringLiteral implements WildcardPart
 
   public WildcardStringLiteral(String literal, PlasmaType rootType,
       PredicateOperator wildcardOperator, LogicalOperatorName logicalOperatorContext,
-      DataRowKeyFieldMapping fieldConfig, StoreMappingContext mappingContext) {
-    super(literal, rootType, null, logicalOperatorContext, fieldConfig, mappingContext);
+      DataRowKeyFieldMapping fieldConfig, ServiceContext serviceContext) {
+    super(literal, rootType, null, logicalOperatorContext, fieldConfig, serviceContext);
     this.wildcardOperator = wildcardOperator;
     this.padding = new Padding(this.charset);
   }
@@ -105,10 +106,14 @@ public class WildcardStringLiteral extends StringLiteral implements WildcardPart
     switch (fieldMapping.getCodecType()) {
     case HASH:
       throw new ScanException("cannot create fuzzy scan literal "
-          + "with interviening wildcards ('" + keyValueStr
-          + "') for fixed length row key field with path '" + this.fieldMapping.getPropertyPath()
-          + "' within table " + this.table.getNamespaceQualifiedPhysicalName()
-          + " for graph root type, " + this.rootType.toString());
+          + "with interviening wildcards ('"
+          + keyValueStr
+          + "') for fixed length row key field with path '"
+          + this.fieldMapping.getPropertyPath()
+          + "' within table "
+          + this.serviceContext.getNamespaceQualifiedPhysicalName(this.table,
+              this.serviceContext.getStoreMapping()) + " for graph root type, "
+          + this.rootType.toString());
     default:
       if (keyValueStr.contains(Wildcard.WILDCARD_CHAR)) {
         if (keyValueStr.endsWith(Wildcard.WILDCARD_CHAR)) {
@@ -123,7 +128,7 @@ public class WildcardStringLiteral extends StringLiteral implements WildcardPart
               + "with interviening wildcards ('" + keyValueStr
               + "') for fixed length row key field with path '"
               + this.fieldMapping.getPropertyPath() + "' within table "
-              + this.table.getNamespaceQualifiedPhysicalName() + " for graph root type, "
+              + this.table.getQualifiedLogicalName() + " for graph root type, "
               + this.rootType.toString());
         }
       } else {
@@ -166,9 +171,12 @@ public class WildcardStringLiteral extends StringLiteral implements WildcardPart
     switch (fieldMapping.getCodecType()) {
     case HASH:
       throw new ScanException("cannot create scan literal "
-          + "for hashed key field - field with path '" + this.fieldMapping.getPropertyPath()
-          + "' within table " + this.table.getNamespaceQualifiedPhysicalName()
-          + " for graph root type, " + this.rootType.toString());
+          + "for hashed key field - field with path '"
+          + this.fieldMapping.getPropertyPath()
+          + "' within table "
+          + this.serviceContext.getNamespaceQualifiedPhysicalName(this.table,
+              this.serviceContext.getStoreMapping()) + " for graph root type, "
+          + this.rootType.toString());
     default:
       startBytes = startValueStr.getBytes(this.charset);
       startBytes = this.padding.pad(startBytes, this.fieldMapping.getMaxLength(),
@@ -196,9 +204,12 @@ public class WildcardStringLiteral extends StringLiteral implements WildcardPart
     switch (fieldMapping.getCodecType()) {
     case HASH:
       throw new ScanException("cannot create scan literal "
-          + "for hashed key field - field with path '" + this.fieldMapping.getPropertyPath()
-          + "' within table " + this.table.getNamespaceQualifiedPhysicalName()
-          + " for graph root type, " + this.rootType.toString() + "is configured as 'hashed'");
+          + "for hashed key field - field with path '"
+          + this.fieldMapping.getPropertyPath()
+          + "' within table "
+          + this.serviceContext.getNamespaceQualifiedPhysicalName(this.table,
+              this.serviceContext.getStoreMapping()) + " for graph root type, "
+          + this.rootType.toString() + "is configured as 'hashed'");
     default:
       byte[] literalStopBytes = stopValueStr.getBytes(this.charset);
       stopBytes = new byte[literalStopBytes.length + 1];

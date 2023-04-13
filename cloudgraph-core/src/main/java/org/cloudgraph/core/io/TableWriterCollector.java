@@ -196,7 +196,10 @@ public class TableWriterCollector extends WriterSupport {
         this.serviceContext.getStoreMapping());
     if (table != null)
       throw new IllegalArgumentException("expected unbound data object - given data object "
-          + target + " is bound to table, " + table.getNamespaceQualifiedPhysicalName());
+          + target
+          + " is bound to table, "
+          + this.serviceContext.getClientFactory().getNamespaceQualifiedPhysicalName(table,
+              this.serviceContext.getStoreMapping()));
 
     RowWriter rowWriter = this.rowWriterMap.get(target);
     if (rowWriter == null) {
@@ -220,14 +223,21 @@ public class TableWriterCollector extends WriterSupport {
             + target + ", or its containment ancestry");
       rowWriter = containerRowWriter;
       if (log.isDebugEnabled())
-        log.debug("associating " + target + " with table '"
-            + rowWriter.getTableWriter().getTableConfig().getNamespaceQualifiedPhysicalName() + "'");
+        log.debug("associating "
+            + target
+            + " with table '"
+            + this.serviceContext.getClientFactory().getNamespaceQualifiedPhysicalName(
+                rowWriter.getTableWriter().getTableConfig(), this.serviceContext.getStoreMapping())
+            + "'");
       rowWriter.addDataObject(target);
       this.rowWriterMap.put(target, rowWriter);
     } else {
       if (log.isDebugEnabled())
-        log.debug("type " + target.getType() + " already associated with table '"
-            + rowWriter.getTableWriter().getTableConfig().getNamespaceQualifiedPhysicalName()
+        log.debug("type "
+            + target.getType()
+            + " already associated with table '"
+            + this.serviceContext.getClientFactory().getNamespaceQualifiedPhysicalName(
+                rowWriter.getTableWriter().getTableConfig(), this.serviceContext.getStoreMapping())
             + "' by means of another source/parent");
     }
   }

@@ -145,7 +145,7 @@ public class FuzzyRowKeyAssembler implements RowKeyAssembler, FuzzyRowKey {
       log.debug("begin traverse");
 
     ScanLiteralAssembler literalAssembler = new ScanLiteralAssembler(this.rootType,
-        this.mappingContext);
+        this.serviceContext);
     where.accept(literalAssembler); // traverse
 
     this.scanLiterals = literalAssembler.getPartialKeyScanResult();

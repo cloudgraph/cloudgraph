@@ -202,7 +202,7 @@ public class GraphMapReduceSetup extends JobSetup {
         selectionCollector.getTypes(), null, serviceContext);
 
     HBaseFilterAssembler columnFilterAssembler = new GraphFetchColumnFilterAssembler(
-        selectionCollector, type, mappingContext);
+        selectionCollector, type, serviceContext);
     Filter columnFilter = columnFilterAssembler.getFilter();
 
     From from = query.getModel().getFromClause();
@@ -241,7 +241,7 @@ public class GraphMapReduceSetup extends JobSetup {
     }
 
     ScanRecognizerSyntaxTreeAssembler recognizerAssembler = new ScanRecognizerSyntaxTreeAssembler(
-        where, type, serviceContext.getStoreMapping());
+        where, type, serviceContext);
     Expr scanRecognizerRootExpr = recognizerAssembler.getResult();
     if (LOG.isDebugEnabled()) {
       ExprPrinter printer = new ExprPrinter();
@@ -285,8 +285,7 @@ public class GraphMapReduceSetup extends JobSetup {
       ServiceContext serviceContext) {
     Scan scan;
 
-    PartialRowKeyAssembler scanAssembler = new PartialRowKeyAssembler(type,
-        serviceContext.getStoreMapping());
+    PartialRowKeyAssembler scanAssembler = new PartialRowKeyAssembler(type, serviceContext);
     scanAssembler.assemble();
     byte[] startKey = scanAssembler.getStartKey();
     if (startKey != null && startKey.length > 0) {

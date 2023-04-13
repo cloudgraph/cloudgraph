@@ -17,6 +17,7 @@ package org.cloudgraph.core.expr;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.cloudgraph.core.ServiceContext;
 import org.cloudgraph.core.key.CompositeColumnKeyFactory;
 import org.cloudgraph.query.expr.DefaultBinaryExprTreeAssembler;
 import org.cloudgraph.query.expr.Expr;
@@ -87,10 +88,10 @@ public abstract class PathPredicateBinaryExprTreeAssembler extends DefaultBinary
    *          the graph root type
    */
   public PathPredicateBinaryExprTreeAssembler(Where predicate, PlasmaType edgeType,
-      PlasmaType rootType, StoreMappingContext mappingContext) {
+      PlasmaType rootType, ServiceContext serviceContext) {
     super(predicate, rootType);
     this.edgeType = edgeType;
-    this.columnKeyFactory = new CompositeColumnKeyFactory(this.rootType, mappingContext);
+    this.columnKeyFactory = new CompositeColumnKeyFactory(this.rootType, serviceContext);
 
   }
 

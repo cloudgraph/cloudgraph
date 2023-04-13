@@ -25,8 +25,10 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.cloudgraph.core.Connection;
 import org.cloudgraph.core.ConnectionManager;
+import org.cloudgraph.core.ServiceContext;
 import org.cloudgraph.core.client.TableName;
 import org.cloudgraph.rocksdb.service.CloudGraphContext;
+import org.cloudgraph.rocksdb.service.RocksDBServiceContext;
 import org.cloudgraph.store.mapping.StoreMapping;
 import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.cloudgraph.store.mapping.TableMapping;
@@ -270,8 +272,9 @@ public class RocksDBConnectionManager implements ConnectionManager {
     // FIXME: hack this is service specific
     Properties properties = new Properties();
     StoreMappingContext mappingContext = new StoreMappingContext(properties);
+    ServiceContext serviceCOntext = new RocksDBServiceContext();
 
-    PooledConnectionFactory factory = new PooledConnectionFactory(mappingContext);
+    PooledConnectionFactory factory = new PooledConnectionFactory(serviceCOntext);
     this.pool = new GenericObjectPool<Connection>(factory, poolConfig);
     factory.setPool(pool);
 
@@ -316,7 +319,7 @@ public class RocksDBConnectionManager implements ConnectionManager {
     }
   }
 
-  public void createTable(Connection connection, TableName name, StoreMappingContext mappingContext) {
+  public void createTable(Connection connection, TableName name, ServiceContext serviceContext) {
     log.warn("create table not supported");
   }
 

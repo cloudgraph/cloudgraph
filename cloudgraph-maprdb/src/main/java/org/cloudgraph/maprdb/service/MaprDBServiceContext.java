@@ -18,6 +18,7 @@ import org.cloudgraph.hbase.service.HBaseDataConverter;
 import org.cloudgraph.maprdb.client.MaprDBClientFactory;
 import org.cloudgraph.maprdb.connect.MaprDBConnectionManager;
 import org.cloudgraph.store.mapping.StoreMappingContext;
+import org.cloudgraph.store.mapping.TableMapping;
 
 public class MaprDBServiceContext implements ServiceContext {
 
@@ -40,6 +41,12 @@ public class MaprDBServiceContext implements ServiceContext {
     this.rowKeyFactory = new HBaseRowKeyFactory();
     this.columnFilterFactory = new HBaseColumnFilterFactory();
     this.rowFilterFactory = new HBaseRowFilterFactory();
+  }
+
+  @Override
+  public String getNamespaceQualifiedPhysicalName(TableMapping tableConfig,
+      StoreMappingContext storeMapping) {
+    return this.clientFactory.getNamespaceQualifiedPhysicalName(tableConfig, storeMapping);
   }
 
   public MaprDBServiceContext() {

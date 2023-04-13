@@ -17,6 +17,7 @@ package org.cloudgraph.core.scan;
 
 import java.util.Arrays;
 
+import org.cloudgraph.core.ServiceContext;
 import org.cloudgraph.store.mapping.DataRowKeyFieldMapping;
 import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.plasma.query.model.LogicalOperatorName;
@@ -45,9 +46,9 @@ public class IntegralLiteral extends ScanLiteral implements PartialRowKeyLiteral
 
   public IntegralLiteral(String literal, PlasmaType rootType,
       RelationalOperatorName relationalOperator, LogicalOperatorName logicalOperatorContext,
-      DataRowKeyFieldMapping fieldConfig, StoreMappingContext mappingContext) {
+      DataRowKeyFieldMapping fieldConfig, ServiceContext serviceContext) {
     super(literal, rootType, relationalOperator, logicalOperatorContext, fieldConfig,
-        mappingContext);
+        serviceContext);
   }
 
   /**
@@ -208,10 +209,14 @@ public class IntegralLiteral extends ScanLiteral implements PartialRowKeyLiteral
       Object value = this.dataConverter.convert(property.getType(), this.literal);
       return this.fieldMapping.getCodec().encode(value);
     } else
-      throw new ScanException("cannot create fuzzy scan literal " + "for "
-          + this.fieldMapping.getCodecType() + " encoded key field with path '"
-          + this.fieldMapping.getPropertyPath() + "' within table "
-          + this.table.getNamespaceQualifiedPhysicalName() + " for graph root type, "
+      throw new ScanException("cannot create fuzzy scan literal "
+          + "for "
+          + this.fieldMapping.getCodecType()
+          + " encoded key field with path '"
+          + this.fieldMapping.getPropertyPath()
+          + "' within table "
+          + this.serviceContext.getNamespaceQualifiedPhysicalName(this.table,
+              this.serviceContext.getStoreMapping()) + " for graph root type, "
           + this.rootType.toString());
   }
 

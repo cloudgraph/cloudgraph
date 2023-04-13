@@ -19,6 +19,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.cloudgraph.core.ServiceContext;
 import org.cloudgraph.core.key.CompositeColumnKeyFactory;
 //import org.apache.hadoop.hbase.filter.BinaryPrefixComparator;
 //import org.apache.hadoop.hbase.filter.CompareFilter;
@@ -59,9 +60,9 @@ public class BinaryPrefixColumnFilterAssembler extends FilterListAssembler {
   private static Log log = LogFactory.getLog(BinaryPrefixColumnFilterAssembler.class);
   private GraphColumnKeyFactory columnKeyFac;
 
-  public BinaryPrefixColumnFilterAssembler(PlasmaType rootType, StoreMappingContext mappingContext) {
+  public BinaryPrefixColumnFilterAssembler(PlasmaType rootType, ServiceContext serviceContext) {
     super(rootType);
-    this.columnKeyFac = new CompositeColumnKeyFactory(rootType, mappingContext);
+    this.columnKeyFac = new CompositeColumnKeyFactory(rootType, serviceContext);
 
     // this.rootFilter = new FilterList(FilterList.Operator.MUST_PASS_ONE);
   }

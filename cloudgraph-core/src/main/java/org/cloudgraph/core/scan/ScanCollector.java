@@ -114,12 +114,12 @@ public class ScanCollector implements ExprVisitor {
 
         if (scanLiterals.supportCompleteRowKey(this)) {
           CompleteRowKeyAssembler assembler = new CompleteRowKeyAssembler(this.rootType,
-              this.serviceContext.getStoreMapping());
+              this.serviceContext);
           assembler.assemble(scanLiterals);
           this.completeKeys.add(assembler);
         } else if (scanLiterals.supportPartialRowKeyScan(this)) {
           PartialRowKeyAssembler assembler = new PartialRowKeyAssembler(this.rootType,
-              this.serviceContext.getStoreMapping());
+              this.serviceContext);
           assembler.assemble(scanLiterals);
           this.partialKeyScans.add(assembler);
         } else if (scanLiterals.supportFuzzyRowKeyScan(this)) {
@@ -179,7 +179,7 @@ public class ScanCollector implements ExprVisitor {
 
     ScanLiteral scanLiteral = factory.createLiteral(target.getLiteral().getValue(), property,
         (PlasmaType) graph.getRootType(), target.getOperator(), logicalOperContext, fieldConfig,
-        this.mappingContext);
+        this.serviceContext);
     if (log.isDebugEnabled())
       log.debug("collecting path: " + target.getPropertyPath());
     collect(scanLiteral, fieldConfig, source);
@@ -215,14 +215,14 @@ public class ScanCollector implements ExprVisitor {
         // create a derived literal with no logical operator context
         ScanLiteral scanLiteral = factory.createLiteral(literal, property,
             (PlasmaType) graph.getRootType(), target.getOperator(), null/* important */,
-            fieldConfig, this.mappingContext);
+            fieldConfig, this.serviceContext);
         this.collect(fieldConfig, LogicalOperatorName.OR, scanLiteral);
       }
       break;
     default:
       ScanLiteral scanLiteral = factory.createLiteral(target.getLiteral().getValue(), property,
           (PlasmaType) graph.getRootType(), target.getOperator(), logicalOperContext, fieldConfig,
-          this.mappingContext);
+          this.serviceContext);
       if (log.isDebugEnabled())
         log.debug("collecting path: " + target.getPropertyPath());
       collect(scanLiteral, fieldConfig, source);
