@@ -1,6 +1,6 @@
 package org.cloudgraph.core.client;
 
-import org.cloudgraph.store.mapping.StoreMappingContext;
+ import org.cloudgraph.store.mapping.StoreMappingContext;
 
 public interface TableName {
 
@@ -27,4 +27,5 @@ public interface TableName {
    */
   public String getQualifiedLogicalName(StoreMappingContext mappingContext);
 
+ 
 }
