@@ -92,7 +92,7 @@ public abstract class TableMapping {
   public MappingConfiguration getMappingConfiguration() {
     return config;
   }
- 
+
   public abstract StoreMappingContext getMappingContext();
 
   protected String physicalName;

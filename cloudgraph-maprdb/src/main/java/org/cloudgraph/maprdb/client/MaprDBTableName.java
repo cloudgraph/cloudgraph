@@ -45,13 +45,14 @@ public class MaprDBTableName implements TableName {
   }
 
   /**
-   * Constructs a physical table name from a qualified logical namespace and logical name
+   * Constructs a physical table name from a qualified logical namespace and
+   * logical name
    * 
    * @param mappingContext
    *          the mapping context
    * @return the physical table name
    */
-   public static MaprDBTableName fromLogicalName(String qualifiedLogicalTableNamespace,
+  public static MaprDBTableName fromLogicalName(String qualifiedLogicalTableNamespace,
       String logicalTableName, StoreMappingContext mappingContext) {
     if (qualifiedLogicalTableNamespace == null
         || qualifiedLogicalTableNamespace.trim().length() == 0)
@@ -62,9 +63,9 @@ public class MaprDBTableName implements TableName {
     String qualifiedPhysicalTableNamespace = qualifiedLogicalTableNamespace.replaceAll(
         TableMapping.TABLE_LOGICAL_NAME_DELIM, MaprDBTableName.PHYSICAL_NAME_DELIMITER);
     if (mappingContext.hasTableNamespaceRoot()) {
-        maprDBTableName.append(mappingContext.getTableNamespaceRoot());
-        maprDBTableName.append(MaprDBTableName.PHYSICAL_NAME_DELIMITER);   	
-    }   	
+      maprDBTableName.append(mappingContext.getTableNamespaceRoot());
+      maprDBTableName.append(MaprDBTableName.PHYSICAL_NAME_DELIMITER);
+    }
     maprDBTableName.append(qualifiedPhysicalTableNamespace);
     maprDBTableName.append(MaprDBTableName.PHYSICAL_NAME_DELIMITER);
     maprDBTableName.append(logicalTableName);
