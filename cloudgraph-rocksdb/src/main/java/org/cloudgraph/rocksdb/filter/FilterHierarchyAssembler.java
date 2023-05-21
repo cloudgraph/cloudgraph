@@ -29,7 +29,7 @@ import org.apache.commons.logging.LogFactory;
 //import org.apache.hadoop.hbase.filter.Filter;
 //import org.apache.hadoop.hbase.filter.FilterList;
 import org.cloudgraph.query.expr.ExpresionVisitorSupport;
-import org.cloudgraph.rocksdb.ext.PredExp;
+import org.cloudgraph.rocksdb.client.PredExp;
 import org.plasma.common.bind.DefaultValidationEventHandler;
 import org.plasma.query.bind.PlasmaQueryDataBinding;
 import org.plasma.query.model.NullLiteral;

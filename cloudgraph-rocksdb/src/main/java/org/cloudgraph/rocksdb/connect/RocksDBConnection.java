@@ -37,7 +37,7 @@ import org.cloudgraph.core.client.BufferedMutator;
 import org.cloudgraph.core.client.RegionLocator;
 import org.cloudgraph.core.client.Table;
 import org.cloudgraph.core.client.TableName;
-import org.cloudgraph.rocksdb.ext.RocksDBTable;
+import org.cloudgraph.rocksdb.client.RocksDBTable;
 import org.cloudgraph.rocksdb.service.CloudGraphContext;
 import org.cloudgraph.store.mapping.StoreMapping;
 import org.cloudgraph.store.mapping.StoreMappingContext;
@@ -102,13 +102,11 @@ public class RocksDBConnection implements Connection {
   private ObjectPool<Connection> pool;
   private LoadingCache<TableName, RocksDBTable> tableCache;
   private RocksDB connection;
-  private ServiceContext serviceContext;
   private List<ColumnFamilyHandle> columnFamilyHandles = new ArrayList<>();
 
-  public RocksDBConnection(ObjectPool<Connection> pool, ServiceContext serviceContext) {
+  public RocksDBConnection(ObjectPool<Connection> pool) {
     super();
     this.pool = pool;
-    this.serviceContext = serviceContext;
     final Options options = new Options();
     final Filter bloomFilter = new BloomFilter(10);
     final ReadOptions readOptions = new ReadOptions().setFillCache(false);
@@ -222,10 +220,7 @@ public class RocksDBConnection implements Connection {
             // .qualifiedLogicalTableNameFromPhysicalTablePath(null,
             // logicalTableNameKey.toString(), serviceContext);
 
-            TableMapping tableConfig = StoreMapping.getInstance().getTableByQualifiedLogicalName(
-                logicalTableNameKey.toString(), serviceContext.getStoreMapping());
-
-            return new RocksDBTable(tableName, connection, tableConfig, serviceContext);
+            return new RocksDBTable(tableName, connection);
           }
         });
     if (log.isDebugEnabled())

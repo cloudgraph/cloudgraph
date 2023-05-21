@@ -34,6 +34,8 @@ public class StoreMappingContext {
 
   public StoreMappingContext(Properties properties) {
     this.properties = properties;
+    if (this.properties == null)
+      throw new IllegalArgumentException("expected properties");
   }
 
   public boolean hasTableNamespaceRoot() {

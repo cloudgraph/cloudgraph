@@ -31,6 +31,11 @@ public class HBaseTable implements Table {
   }
 
   @Override
+  public String toString() {
+    return this.table.toString();
+  }
+
+  @Override
   public Result get(Get get) throws IOException {
     org.cloudgraph.hbase.client.HBaseGet hbaseGet = (org.cloudgraph.hbase.client.HBaseGet) get;
     return new HBaseResult(this.table.get(hbaseGet.get()));

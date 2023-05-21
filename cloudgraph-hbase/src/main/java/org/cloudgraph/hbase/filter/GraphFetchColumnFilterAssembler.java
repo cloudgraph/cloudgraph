@@ -23,6 +23,7 @@ import jakarta.xml.bind.JAXBException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.hbase.filter.BinaryComparator;
 import org.apache.hadoop.hbase.filter.CompareFilter;
 import org.apache.hadoop.hbase.filter.FilterList;
 import org.apache.hadoop.hbase.filter.MultipleColumnPrefixFilter;
@@ -79,8 +80,8 @@ public class GraphFetchColumnFilterAssembler extends FilterListAssembler impleme
     // add default filters for graph state info needed for all queries
     QualifierFilter filter = null;
     for (GraphMetaKey field : GraphMetaKey.values()) {
-      filter = new QualifierFilter(CompareFilter.CompareOp.EQUAL, new SubstringComparator(
-          field.code()));
+      filter = new QualifierFilter(CompareFilter.CompareOp.EQUAL, new BinaryComparator(
+          Bytes.toBytes(field.code())));
       this.rootFilter.addFilter(filter);
     }
 

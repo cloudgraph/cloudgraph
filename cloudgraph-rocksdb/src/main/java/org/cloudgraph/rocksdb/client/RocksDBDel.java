@@ -1,4 +1,4 @@
-package org.cloudgraph.rocksdb.ext;
+package org.cloudgraph.rocksdb.client;
 
 import java.util.List;
 import java.util.NavigableMap;
@@ -13,33 +13,24 @@ public class RocksDBDel extends RocksDBRowMutation implements Delete {
   }
 
   @Override
-  public byte[] getRow() {
-    // TODO Auto-generated method stub
-    return null;
+  public void addColumns(byte[] fam, byte[] qual) {
+    // FIXME: we are only able to delete an entire row at present
+    // not to even distinguish particular columns
   }
 
   @Override
   public void setAttribute(String name, byte[] value) {
-    // TODO Auto-generated method stub
-
+    throw new IllegalStateException("not implemented");
   }
 
   @Override
   public byte[] getAttribute(String name) {
-    // TODO Auto-generated method stub
-    return null;
+    throw new IllegalStateException("not implemented");
   }
 
   @Override
   public NavigableMap<byte[], List<Cell>> getFamilyCellMap() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public void addColumns(byte[] fam, byte[] qual) {
-    // TODO Auto-generated method stub
-
+    throw new IllegalStateException("not implemented");
   }
 
 }

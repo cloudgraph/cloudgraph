@@ -1,4 +1,4 @@
-package org.cloudgraph.rocksdb.ext;
+package org.cloudgraph.rocksdb.client;
 
 import java.util.HashMap;
 import java.util.Map;

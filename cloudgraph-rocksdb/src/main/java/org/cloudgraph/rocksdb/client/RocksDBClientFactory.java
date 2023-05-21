@@ -1,4 +1,4 @@
-package org.cloudgraph.rocksdb.ext;
+package org.cloudgraph.rocksdb.client;
 
 import java.io.IOException;
 
@@ -111,7 +111,9 @@ public class RocksDBClientFactory extends DefaultClientFactory implements Client
 
   @Override
   public TableName createTableName(TableMapping table, StoreMappingContext context) {
-    throw new IllegalStateException("not implemented");
+    String namespace = this.createPhysicalNamespace(RocksDBTableName.PHYSICAL_NAME_DELIMITER,
+        table, context);
+    return RocksDBTableName.valueOf(namespace, table.getTable().getName());
   }
 
   @Override

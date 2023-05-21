@@ -12,7 +12,7 @@
   		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
  	<artifactId>cloudgraph-bigtable</artifactId>
-  	<name>CloudGraph Big Table Service</name>
+  	<name>CloudGraph Big Table</name>
 	<description>CloudGraph(tm) is a suite of Service Data Object (SDO) 2.1 services designed for relational and big-table style "cloud" databases, such as HBase and others.</description>
   	<url>http://cloudgraph.org</url>
 	<dependencies>

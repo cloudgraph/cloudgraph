@@ -1,4 +1,4 @@
-package org.cloudgraph.rocksdb.ext;
+package org.cloudgraph.rocksdb.client;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -89,17 +89,14 @@ public abstract class RocksDBRowMutation extends RocksDBRow {
     if (this.map == null)
       this.map = new HashMap<>();
     String qualifier = Bytes.toString(qual);
-    if (qualifier.endsWith("UU@5")) {
-      int foo = 0;
-      foo++;
-    }
     if (this.map.containsKey(qualifier)) {
       if (this.map.size() > 0) {
         if (this.map.containsKey(qualifier)) {
           ColumnValue existing = this.map.get(qualifier);
-          org.cloudgraph.rocksdb.ext.Bytes existingBytes = new org.cloudgraph.rocksdb.ext.Bytes(
+          org.cloudgraph.rocksdb.client.Bytes existingBytes = new org.cloudgraph.rocksdb.client.Bytes(
               existing.getValue());
-          org.cloudgraph.rocksdb.ext.Bytes currBytes = new org.cloudgraph.rocksdb.ext.Bytes(value);
+          org.cloudgraph.rocksdb.client.Bytes currBytes = new org.cloudgraph.rocksdb.client.Bytes(
+              value);
           int compare = currBytes.compareTo(existingBytes);
           if (compare != 0) {
             throw new IllegalArgumentException("attempt to overwrite qualifier '" + qualifier

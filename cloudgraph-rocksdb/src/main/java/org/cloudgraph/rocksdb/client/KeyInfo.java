@@ -1,4 +1,4 @@
-package org.cloudgraph.rocksdb.ext;
+package org.cloudgraph.rocksdb.client;
 
 public class KeyInfo {
   private Key key;

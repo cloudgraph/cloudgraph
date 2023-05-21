@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.cloudgraph.rocksdb.ext.Column;
+import org.cloudgraph.rocksdb.client.Column;
 import org.cloudgraph.rocksdb.proto.TupleProto.Cell;
 import org.cloudgraph.rocksdb.proto.TupleProto.Tuple;
 import org.cloudgraph.store.service.GraphServiceException;

@@ -1,10 +1,12 @@
-package org.cloudgraph.rocksdb.ext;
+package org.cloudgraph.rocksdb.client;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.cloudgraph.common.Bytes;
 import org.cloudgraph.core.client.Cell;
 import org.cloudgraph.core.client.KeyValue;
@@ -12,6 +14,7 @@ import org.cloudgraph.core.client.Result;
 import org.cloudgraph.rocksdb.io.RocksDBKeyValue;
 
 public class RocksDBResult extends RocksDBRow implements Result {
+  private static Log log = LogFactory.getLog(RocksDBResult.class);
   private KeyInfo keyInfo;
   private Column[] columns;
   private Map<String, Column> columnMap;
@@ -25,8 +28,11 @@ public class RocksDBResult extends RocksDBRow implements Result {
     this.keyInfo = key;
     this.columns = columns;
     this.columnMap = new HashMap<>();
-    for (Column col : columns)
+    for (Column col : columns) {
+      if (this.columnMap.containsKey(col.getName()))
+        log.warn("found existing column key: " + col.getName());
       this.columnMap.put(col.getName(), col);
+    }
   }
 
   public byte[] getValue(byte[] family, byte[] qualifier) {
@@ -79,6 +85,8 @@ public class RocksDBResult extends RocksDBRow implements Result {
   public Object getValue(String name) {
     Column column = this.columnMap.get(name);
     if (column != null) {
+      if (log.isDebugEnabled())
+        log.debug("get column: " + column.toString());
       byte[] bytesValue = column.getData();
       return bytesValue;
     }
@@ -89,6 +97,8 @@ public class RocksDBResult extends RocksDBRow implements Result {
     List<KeyValue> result = new ArrayList<>();
     if (!isEmpty()) {
       for (Column column : getColumns()) {
+        if (log.isDebugEnabled())
+          log.debug("list column: " + column.toString());
         byte[] bytesValue = column.getData();
         KeyValue kv = new RocksDBKeyValue(this.keyInfo.getKey().getData(),
             Bytes.toBytes(this.keyInfo.getFamily()), Bytes.toBytes(column.getName()), bytesValue);
@@ -106,6 +116,8 @@ public class RocksDBResult extends RocksDBRow implements Result {
       result = new Cell[columns.length];
       int i = 0;
       for (Column column : columns) {
+        if (log.isDebugEnabled())
+          log.debug("raw column: " + column.toString());
         byte[] bytesValue = column.getData();
         Cell cell = new RocksDBCell(/* this.keyInfo.getKey().getData(), */
         Bytes.toBytes(this.keyInfo.getFamily()), Bytes.toBytes(column.getName()), bytesValue);

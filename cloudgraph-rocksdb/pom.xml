@@ -8,7 +8,7 @@
     </parent>
      <artifactId>cloudgraph-rocksdb</artifactId>
     <packaging>jar</packaging>
-    <name>CloudGraph RocksDB Service</name>
+    <name>CloudGraph RocksDB</name>
     <description>CloudGraph(tm) is a suite of Service Data Object (SDO) 2.1 services designed for relational and big-table style "cloud" databases, such as HBase and others.</description>
 	<properties>
 		<cloudgraph.version>2.0.0</cloudgraph.version>
@@ -228,7 +228,7 @@
                       <goal>test</goal>
                     </goals>
                     <configuration>
-                        <skip>true</skip>
+                        <skip>false</skip>
                         <additionalClasspathElements>
                             <additionalClasspathElement>${basedir}/src/main/resources</additionalClasspathElement>
                             <additionalClasspathElement>${basedir}/src/test/resources</additionalClasspathElement>
@@ -241,8 +241,8 @@
                         </systemPropertyVariables>
                         <includes>     
                              <include>**/StringPartialRowKeyScanTest*</include>     
-<!--                              <include>**/IntPartialRowKeyScanTest*</include>     -->
-<!--                              <include>**/DateTimePartialRowKeyScanTest*</include>     -->
+                             <include>**/DateTimePartialRowKeyScanTest*</include>    
+                             <include>**/IntPartialRowKeyScanTest*</include>    
                         </includes> 
                     </configuration>
                   </execution>
@@ -275,7 +275,7 @@
                       <goal>test</goal>
                     </goals>
                     <configuration>
-	                    <skip>true</skip>
+	                    <skip>false</skip>
 	                    <additionalClasspathElements>
 	                        <additionalClasspathElement>${basedir}/src/main/resources</additionalClasspathElement>
 	                        <additionalClasspathElement>${basedir}/src/test/resources</additionalClasspathElement>
@@ -395,13 +395,13 @@
                 </executions>                
                 <configuration>
                     <skip>true</skip>
-                     <!--
+                      
                     <argLine>-Xms128M -Xmx500M</argLine>                      
-                      --> 
+                        
                     <!-- debugging -->  
-                                                                                                     
+                         <!--                                                                                
                    <argLine>-Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,address=8002,server=y,suspend=y</argLine>                     
-                                                                                                   
+                             -->                                                                        
                     <!-- profiling  -->
                     <!--
                     <argLine>-Xrunhprof:cpu=samples,depth=25</argLine>  

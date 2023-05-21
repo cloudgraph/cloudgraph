@@ -105,7 +105,8 @@ public class BigTableConnection implements Connection {
         });
     if (log.isDebugEnabled())
       log.debug("created " + this + " pool active/idle " + pool.getNumActive() + "/"
-          + pool.getNumIdle());
+          + pool.getNumIdle() + " tableCacheMax/tableCacheTimeout: " + cacheMax + "/"
+          + cacheTimeout);
   }
 
   @Override

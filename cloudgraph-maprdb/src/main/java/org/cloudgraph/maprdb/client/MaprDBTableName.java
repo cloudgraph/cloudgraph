@@ -18,6 +18,31 @@ public class MaprDBTableName implements TableName {
   }
 
   @Override
+public int hashCode() {
+	final int prime = 31;
+	int result = 1;
+	result = prime * result + ((tablename == null) ? 0 : tablename.hashCode());
+	return result;
+}
+
+@Override
+public boolean equals(Object obj) {
+	if (this == obj)
+		return true;
+	if (obj == null)
+		return false;
+	if (getClass() != obj.getClass())
+		return false;
+	MaprDBTableName other = (MaprDBTableName) obj;
+	if (tablename == null) {
+		if (other.tablename != null)
+			return false;
+	} else if (!tablename.equals(other.tablename))
+		return false;
+	return true;
+}
+
+@Override
   public String getNamespace() {
     return this.tablename.getNamespaceAsString();
   }
@@ -75,26 +100,22 @@ public class MaprDBTableName implements TableName {
   @Override
   public String getQualifiedLogicalName(StoreMappingContext mappingContext) {
     StringBuilder result = new StringBuilder();
-    String volumePath = getTableName();
+    String completePath = getTableName();
     // namespace has a prefix, strip it and its delim
     // to reconstruct just the logical name
     // which will necessarily not involve the root prefix
     if (mappingContext.hasTableNamespaceRoot()) {
-      if (volumePath.startsWith(mappingContext.getTableNamespaceRoot())) {
-        volumePath = volumePath.substring(mappingContext.getTableNamespaceRoot().length() + 1/*
-                                                                                              * the
-                                                                                              * delim
-                                                                                              */);
+      if (completePath.startsWith(mappingContext.getTableNamespaceRoot())) {
+        completePath = completePath.substring(mappingContext.getTableNamespaceRoot().length()
+            + MaprDBTableName.PHYSICAL_NAME_DELIMITER.length());
       }
     }
-    String qualifiedNamespace = volumePath;
+    String qualifiedLogicalName = completePath;
 
     // replace physical with logical delimiters
-    qualifiedNamespace = qualifiedNamespace.replaceAll(MaprDBTableName.PHYSICAL_NAME_DELIMITER,
+    qualifiedLogicalName = qualifiedLogicalName.replaceAll(MaprDBTableName.PHYSICAL_NAME_DELIMITER,
         TableMapping.TABLE_LOGICAL_NAME_DELIM);
-    result.append(qualifiedNamespace);
-    result.append(TableMapping.TABLE_LOGICAL_NAME_DELIM);
-    result.append(getTableName());
+    result.append(qualifiedLogicalName);
     return result.toString();
   }
 }

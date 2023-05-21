@@ -1,4 +1,4 @@
-package org.cloudgraph.rocksdb.ext;
+package org.cloudgraph.rocksdb.client;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -46,15 +46,15 @@ public class RocksDBTable implements Table, TableName {
   private String qualifiedName;
   private String setName;
   private RocksDB client;
-  private TableMapping tableMapping;
-  private ServiceContext serviceContext;
+  // FIXME: super bad hack but so is passing
+  // context data into pooled table creation
+  private static final String DATA_DOLUMN_FAMILY = "f1";
 
   @SuppressWarnings("unused")
   private RocksDBTable() {
   }
 
-  public RocksDBTable(TableName tableName, RocksDB client, TableMapping tableMapping,
-      ServiceContext serviceContext) {
+  public RocksDBTable(TableName tableName, RocksDB client) {
     this.namespace = tableName.getNamespace();
     this.qualifiedName = tableName.getTableName();
     this.setName = this.qualifiedName;
@@ -64,8 +64,6 @@ public class RocksDBTable implements Table, TableName {
     if (idx != -1)
       this.setName = this.qualifiedName.substring(idx + 1);
     this.client = client;
-    this.tableMapping = tableMapping;
-    this.serviceContext = serviceContext;
   }
 
   public String getNamespace() {
@@ -94,6 +92,7 @@ public class RocksDBTable implements Table, TableName {
     writeOpt.setSync(true);
     writeOpt.setDisableWAL(false);
     try {
+      int i = 0;
       for (Row row : rows) {
         RocksDBRowMutation mutation = RocksDBRowMutation.class.cast(row); // FIXME:
         // cast
@@ -109,6 +108,7 @@ public class RocksDBTable implements Table, TableName {
             results[col] = merged; // FIXME: or convert to long?
             col++;
           }
+          results[i] = new Boolean(true); // FIXME:
           break;
         case PUT:
           break;
@@ -117,18 +117,20 @@ public class RocksDBTable implements Table, TableName {
         default:
           throw new IllegalArgumentException("unknown mutation tape, " + mutation.getMutationType());
         }
+        i++;
       }
     } catch (RocksDBException e) {
       throw new GraphServiceException(e);
     }
   }
 
-  public void writePuts(List<Row> rows, Object[] results) {
+  private void writePuts(List<Row> rows, Object[] results) {
     WriteOptions writeOpt = new WriteOptions();
     writeOpt.setSync(true);
     writeOpt.setDisableWAL(false);
     WriteBatch batch = new WriteBatch();
     try {
+      int i = 0;
       for (Row row : rows) {
         RocksDBRowMutation mutation = RocksDBRowMutation.class.cast(row); // FIXME:
         // cast
@@ -160,12 +162,14 @@ public class RocksDBTable implements Table, TableName {
             log.debug("batch/put: " + this.toDebugString(key, columns, true));
           byte[] rowBytes = TupleCodec.encodeRow(columns);
           batch.put(mutation.getRow(), rowBytes);
+          results[i] = new Boolean(true); // FIXME:
           break;
         case DEL:
           break;
         default:
           throw new IllegalArgumentException("unknown mutation tape, " + mutation.getMutationType());
         }
+        i++;
       }
 
       // write puts
@@ -176,12 +180,13 @@ public class RocksDBTable implements Table, TableName {
     }
   }
 
-  public void writeDeletes(List<Row> rows, Object[] results) {
+  private void writeDeletes(List<Row> rows, Object[] results) {
     WriteOptions writeOpt = new WriteOptions();
     writeOpt.setSync(true);
     writeOpt.setDisableWAL(false);
     WriteBatch batch = new WriteBatch();
     try {
+      int i = 0;
       for (Row row : rows) {
         RocksDBRowMutation mutation = RocksDBRowMutation.class.cast(row); // FIXME:
         Key key = mutation.getKey(this);
@@ -226,6 +231,7 @@ public class RocksDBTable implements Table, TableName {
               log.debug("batch/delete row: " + key);
             batch.delete(mutation.getRow());
           }
+          results[i] = new Boolean(true); // FIXME:
 
           break;
         case PUT:
@@ -233,6 +239,7 @@ public class RocksDBTable implements Table, TableName {
         default:
           throw new IllegalArgumentException("unknown mutation tape, " + mutation.getMutationType());
         }
+        i++;
       }
 
       // write deletes
@@ -269,7 +276,7 @@ public class RocksDBTable implements Table, TableName {
         log.debug("filtered get: " + this.toDebugString(key, columns, true));
     }
 
-    KeyInfo ki = new KeyInfo(key, this.tableMapping.getDataColumnFamilyName());
+    KeyInfo ki = new KeyInfo(key, DATA_DOLUMN_FAMILY);
     return new RocksDBResult(ki, columns);
   }
 
@@ -293,16 +300,16 @@ public class RocksDBTable implements Table, TableName {
       columns = this.filter(columns, columnFilter);
       if (log.isDebugEnabled())
         log.debug("mget: " + this.toDebugString(key, columns, true));
-      KeyInfo ki = new KeyInfo(key, this.tableMapping.getDataColumnFamilyName());
+      KeyInfo ki = new KeyInfo(key, DATA_DOLUMN_FAMILY);
       results[i] = new RocksDBResult(ki, columns);
       i++;
     }
     return results;
   }
 
-  public Result[] scan(Scan scan) {
+  public RocksDBResult[] scan(Scan scan) {
 
-    List<Result> list = new ArrayList<>();
+    List<RocksDBResult> list = new ArrayList<>();
     try {
       ReadOptions readOpts = new ReadOptions();
       Slice lower = new Slice(scan.getStartRow());
@@ -320,28 +327,29 @@ public class RocksDBTable implements Table, TableName {
         if (log.isDebugEnabled())
           log.debug("iter key: " + Bytes.toString(iterKey));
         if (prevIterKey != null) {
-          org.cloudgraph.rocksdb.ext.Bytes prevBytes = new org.cloudgraph.rocksdb.ext.Bytes(
+          org.cloudgraph.rocksdb.client.Bytes prevBytes = new org.cloudgraph.rocksdb.client.Bytes(
               prevIterKey);
-          org.cloudgraph.rocksdb.ext.Bytes currBytes = new org.cloudgraph.rocksdb.ext.Bytes(iterKey);
+          org.cloudgraph.rocksdb.client.Bytes currBytes = new org.cloudgraph.rocksdb.client.Bytes(
+              iterKey);
           int compare = currBytes.compareTo(prevBytes);
           if (compare != 1)
             log.warn("expected ordered key");
         }
         Key key = new Key(iterKey);
-        KeyInfo ki = new KeyInfo(key, this.tableMapping.getDataColumnFamilyName());
+        KeyInfo ki = new KeyInfo(key, DATA_DOLUMN_FAMILY);
         byte[] value = iterator.value();
         Column[] columns = TupleCodec.decodeRow(value);
         columns = this.filter(columns, scan.getFilter());
         if (log.isDebugEnabled())
           log.debug("scan: " + this.toDebugString(key, columns, true));
-        Result result = new RocksDBResult(ki, columns);
+        RocksDBResult result = new RocksDBResult(ki, columns);
         list.add(result);
         prevIterKey = iterKey;
       }
     } catch (RocksDBException e) {
       throw new GraphServiceException(e);
     }
-    Result[] results = new Result[list.size()];
+    RocksDBResult[] results = new RocksDBResult[list.size()];
     list.toArray(results);
     return results;
   }
@@ -363,6 +371,9 @@ public class RocksDBTable implements Table, TableName {
               // log.trace("prefix filter/added '" + col.getName()
               // + "' (" +
               // filterName + ")");
+            } else {
+              if (log.isDebugEnabled())
+                log.debug("filtered out: " + toDebugString(col, true));
             }
           }
         }
@@ -378,6 +389,9 @@ public class RocksDBTable implements Table, TableName {
               // log.trace("prefix filter/added '" + col.getName()
               // + "' (" +
               // filterName + ")");
+            } else {
+              if (log.isDebugEnabled())
+                log.debug("filtered out: " + toDebugString(col, true));
             }
           }
         }
@@ -469,7 +483,7 @@ public class RocksDBTable implements Table, TableName {
 
   @Override
   public ResultScanner getScanner(Scan scan) throws IOException {
-    return new RocksDBResultScanner();
+    return new RocksDBResultScanner(this.scan(scan));
   }
 
   @Override

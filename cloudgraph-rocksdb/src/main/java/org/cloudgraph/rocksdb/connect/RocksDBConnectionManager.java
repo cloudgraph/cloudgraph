@@ -271,10 +271,10 @@ public class RocksDBConnectionManager implements ConnectionManager {
 
     // FIXME: hack this is service specific
     Properties properties = new Properties();
-    StoreMappingContext mappingContext = new StoreMappingContext(properties);
-    ServiceContext serviceCOntext = new RocksDBServiceContext();
+    // StoreMappingContext mappingContext = new StoreMappingContext(properties);
+    // ServiceContext serviceCOntext = new RocksDBServiceContext();
 
-    PooledConnectionFactory factory = new PooledConnectionFactory(serviceCOntext);
+    PooledConnectionFactory factory = new PooledConnectionFactory();
     this.pool = new GenericObjectPool<Connection>(factory, poolConfig);
     factory.setPool(pool);
 

@@ -30,6 +30,7 @@ import org.apache.hadoop.hbase.NamespaceDescriptor;
 import org.apache.hadoop.hbase.NamespaceNotFoundException;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.ZooKeeperConnectionException;
+import org.cloudgraph.bigtable.client.BigTableTableName;
 //import org.apache.hadoop.hbase.client.Admin;
 import org.cloudgraph.core.Connection;
 import org.cloudgraph.core.ConnectionManager;
@@ -68,6 +69,11 @@ public class BigTableConnectionManager implements ConnectionManager {
    * The GCP BigTable instance name
    */
   public static final String CONNECTION_FACTORY_INSTANCE = "org.plasma.sdo.access.provider.bigtable.ConnectionFactoryInstance";
+
+  /**
+   * The GCP BigTable app profile
+   */
+  public static final String CONNECTION_FACTORY_APP_PROFILE = "org.plasma.sdo.access.provider.bigtable.ConnectionFactoryAppProfile";
 
   /**
    * Synonym for min idle. The property name for the {@code minIdle}
@@ -323,7 +329,7 @@ public class BigTableConnectionManager implements ConnectionManager {
       TableMapping tableConfig = StoreMapping.getInstance().getTableByQualifiedLogicalName(
           name.getQualifiedLogicalName(serviceContext.getStoreMapping()),
           serviceContext.getStoreMapping());
-      HBaseTableName hbaseTableName = (HBaseTableName) name;
+      BigTableTableName hbaseTableName = (BigTableTableName) name;
       HTableDescriptor tableDesc = new HTableDescriptor(hbaseTableName.get());
       HColumnDescriptor fam1 = new HColumnDescriptor(tableConfig.getDataColumnFamilyName()
           .getBytes());
@@ -360,9 +366,9 @@ public class BigTableConnectionManager implements ConnectionManager {
     org.apache.hadoop.hbase.client.Admin hbaseAdmin = null;
     try {
       hbaseAdmin = HBaseAdmin.class.cast(connection.getAdmin()).getAdmin();
-      TableName hbaseTableName = TableName.valueOf(name.getNamespace(), name.getTableName());
-      hbaseAdmin.disableTable(hbaseTableName);
-      hbaseAdmin.deleteTable(hbaseTableName);
+      BigTableTableName hbaseTableName = (BigTableTableName) name;
+      hbaseAdmin.disableTable(hbaseTableName.get());
+      hbaseAdmin.deleteTable(hbaseTableName.get());
     } catch (MasterNotRunningException e1) {
       throw new GraphServiceException(e1);
     } catch (ZooKeeperConnectionException e1) {

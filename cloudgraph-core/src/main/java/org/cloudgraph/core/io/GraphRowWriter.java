@@ -458,11 +458,6 @@ public class GraphRowWriter extends DefaultRowOperation implements RowWriter {
     else
       qual = keyFac.createColumnKey(plasmaType, property);
     DataType propertyType = DataType.valueOf(property.getType().getName());
-    if (property.getName().equals("rootId")) {
-      int foo = 0;
-      foo++;
-      log.info("rootId: " + Bytes.toString(value));
-    }
     this.getPut().addColumn(fam, qual, propertyType, value);
     this.qualifierMap.add(fam, qual, dataObject, property);
 

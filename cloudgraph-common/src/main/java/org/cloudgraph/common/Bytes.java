@@ -216,6 +216,16 @@ public class Bytes {
     return b;
   }
 
+  public static byte[] toBytes(int val) {
+    byte[] b = new byte[4];
+    for (int i = 3; i > 0; i--) {
+      b[i] = (byte) val;
+      val >>>= 8;
+    }
+    b[0] = (byte) val;
+    return b;
+  }
+
   public static byte[] toBytes(BigDecimal val) {
     byte[] valueBytes = val.unscaledValue().toByteArray();
     byte[] result = new byte[valueBytes.length + SIZEOF_INT];

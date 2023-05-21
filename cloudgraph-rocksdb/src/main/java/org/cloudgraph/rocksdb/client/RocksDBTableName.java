@@ -1,4 +1,4 @@
-package org.cloudgraph.rocksdb.ext;
+package org.cloudgraph.rocksdb.client;
 
 import org.cloudgraph.core.client.TableName;
 import org.cloudgraph.store.mapping.StoreMappingContext;
@@ -12,6 +12,41 @@ public class RocksDBTableName implements TableName {
     super();
     this.qualifiedPhysicalTableNamespace = qualifiedPhysicalTableNamespace;
     this.qualifiedPhysicalTableName = qualifiedPhysicalTableName;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result
+        + ((qualifiedPhysicalTableName == null) ? 0 : qualifiedPhysicalTableName.hashCode());
+    result = prime
+        * result
+        + ((qualifiedPhysicalTableNamespace == null) ? 0 : qualifiedPhysicalTableNamespace
+            .hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    RocksDBTableName other = (RocksDBTableName) obj;
+    if (qualifiedPhysicalTableName == null) {
+      if (other.qualifiedPhysicalTableName != null)
+        return false;
+    } else if (!qualifiedPhysicalTableName.equals(other.qualifiedPhysicalTableName))
+      return false;
+    if (qualifiedPhysicalTableNamespace == null) {
+      if (other.qualifiedPhysicalTableNamespace != null)
+        return false;
+    } else if (!qualifiedPhysicalTableNamespace.equals(other.qualifiedPhysicalTableNamespace))
+      return false;
+    return true;
   }
 
   @Override

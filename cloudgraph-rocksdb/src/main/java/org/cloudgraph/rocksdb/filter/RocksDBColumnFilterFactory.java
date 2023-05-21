@@ -7,7 +7,7 @@ import org.cloudgraph.core.client.Filter;
 import org.cloudgraph.core.filter.ColumnFilterFactory;
 import org.cloudgraph.core.io.EdgeReader;
 import org.cloudgraph.core.util.PredicateUtil;
-import org.cloudgraph.rocksdb.ext.RocksDBFilter;
+import org.cloudgraph.rocksdb.client.RocksDBFilter;
 import org.cloudgraph.store.mapping.StoreMappingContext;
 import org.plasma.query.collector.Selection;
 import org.plasma.query.collector.SelectionCollector;

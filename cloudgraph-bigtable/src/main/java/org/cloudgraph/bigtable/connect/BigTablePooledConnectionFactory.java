@@ -23,6 +23,7 @@ import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.client.ConnectionFactory;
+import org.cloudgraph.common.CloudGraphRuntimeException;
 import org.cloudgraph.core.Connection;
 
 import com.google.cloud.bigtable.hbase.BigtableConfiguration;
@@ -51,13 +52,27 @@ public class BigTablePooledConnectionFactory extends BasePooledObjectFactory<Con
   @Override
   public Connection create() throws Exception {
     String project = this.config.get(BigTableConnectionManager.CONNECTION_FACTORY_PROJECT);
+    if (project == null || project.trim().length() == 0)
+      throw new CloudGraphRuntimeException("expected mandatory configuration property '"
+          + BigTableConnectionManager.CONNECTION_FACTORY_PROJECT + "'");
     String instance = this.config.get(BigTableConnectionManager.CONNECTION_FACTORY_INSTANCE);
-    org.apache.hadoop.hbase.client.Connection con = BigtableConfiguration
-        .connect(project, instance);
+    if (instance == null || instance.trim().length() == 0)
+      throw new CloudGraphRuntimeException("expected mandatory configuration property '"
+          + BigTableConnectionManager.CONNECTION_FACTORY_INSTANCE + "'");
+    String appProfile = this.config.get(BigTableConnectionManager.CONNECTION_FACTORY_APP_PROFILE);
+    org.apache.hadoop.hbase.client.Connection con = null;
+    if (appProfile != null) {
+      con = BigtableConfiguration.connect(project, instance, appProfile);
+      if (log.isDebugEnabled())
+        log.debug("created new bigtable connection  " + con + " for project/instance/profile: "
+            + project + "/" + instance + "/" + appProfile);
+    } else {
+      con = BigtableConfiguration.connect(project, instance);
+      if (log.isDebugEnabled())
+        log.debug("created new bigtable connection  " + con + " for project/instance: " + project
+            + "/" + instance);
+    }
 
-    if (log.isDebugEnabled())
-      log.debug("created new bigtable connection  " + con + " for project/instance: " + project
-          + "/" + instance);
     return new BigTableConnection(con, this.pool, this.config);
   }
 
@@ -69,7 +84,7 @@ public class BigTablePooledConnectionFactory extends BasePooledObjectFactory<Con
   @Override
   public void destroyObject(PooledObject<Connection> p) throws Exception {
     if (log.isDebugEnabled())
-      log.debug("destroying connection" + p.getObject());
+      log.debug("destroying connection " + p.getObject());
     p.getObject().destroy();
     super.destroyObject(p);
 
@@ -78,21 +93,21 @@ public class BigTablePooledConnectionFactory extends BasePooledObjectFactory<Con
   @Override
   public boolean validateObject(PooledObject<Connection> p) {
     if (log.isDebugEnabled())
-      log.debug("validating connection" + p.getObject());
+      log.debug("validating connection " + p.getObject());
     return super.validateObject(p);
   }
 
   @Override
   public void activateObject(PooledObject<Connection> p) throws Exception {
     if (log.isDebugEnabled())
-      log.debug("activate connection" + p.getObject());
+      log.debug("activate connection " + p.getObject());
     super.activateObject(p);
   }
 
   @Override
   public void passivateObject(PooledObject<Connection> p) throws Exception {
     if (log.isDebugEnabled())
-      log.debug("passivate connection" + p.getObject());
+      log.debug("passivate connection " + p.getObject());
     super.passivateObject(p);
   }
 }

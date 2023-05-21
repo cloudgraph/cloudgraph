@@ -1,10 +1,11 @@
-package org.cloudgraph.rocksdb.ext;
+package org.cloudgraph.rocksdb.client;
 
 import java.util.List;
 import java.util.NavigableMap;
 
 import org.cloudgraph.core.client.Cell;
 import org.cloudgraph.core.client.Increment;
+import org.plasma.sdo.DataType;
 
 public class RocksDBIncrement extends RocksDBRowMutation implements Increment {
 
@@ -14,14 +15,12 @@ public class RocksDBIncrement extends RocksDBRowMutation implements Increment {
 
   @Override
   public void setAttribute(String name, byte[] value) {
-    // TODO Auto-generated method stub
-
+    throw new IllegalStateException("not implemented");
   }
 
   @Override
   public byte[] getAttribute(String name) {
-    // TODO Auto-generated method stub
-    return null;
+    throw new IllegalStateException("not implemented");
   }
 
   @Override
@@ -32,8 +31,7 @@ public class RocksDBIncrement extends RocksDBRowMutation implements Increment {
 
   @Override
   public void addColumn(byte[] fam, byte[] qual, long value) {
-    // TODO Auto-generated method stub
-
+    super.addColumn(fam, qual, DataType.Long, org.cloudgraph.common.Bytes.toBytes(value));
   }
 
   // public void addColumn(byte[] fam, byte[] qual, DataType valueDataType, long

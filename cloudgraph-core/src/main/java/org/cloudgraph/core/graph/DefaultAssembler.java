@@ -381,7 +381,6 @@ public abstract class DefaultAssembler {
       PlasmaProperty prop = (PlasmaProperty) p;
       if (!prop.getType().isDataType())
         continue;
-
       byte[] keyValue = getDataColumnValue(targetType, prop, targetSequence, tableConfig, rowReader);
 
       if (keyValue == null || keyValue.length == 0) {

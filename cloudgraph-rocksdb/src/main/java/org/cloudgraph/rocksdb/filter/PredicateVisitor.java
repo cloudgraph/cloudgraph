@@ -17,7 +17,7 @@ package org.cloudgraph.rocksdb.filter;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.cloudgraph.rocksdb.ext.PredExp;
+import org.cloudgraph.rocksdb.client.PredExp;
 //import org.apache.hadoop.hbase.filter.CompareFilter;
 import org.plasma.query.QueryException;
 import org.plasma.query.model.GroupOperator;

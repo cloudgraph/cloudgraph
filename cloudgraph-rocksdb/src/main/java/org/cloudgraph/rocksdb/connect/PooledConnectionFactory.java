@@ -41,11 +41,9 @@ public class PooledConnectionFactory extends BasePooledObjectFactory<Connection>
   private static Log log = LogFactory.getLog(PooledConnectionFactory.class);
 
   private ObjectPool<Connection> pool;
-  private ServiceContext serviceContext;
 
-  public PooledConnectionFactory(ServiceContext serviceContext) {
+  public PooledConnectionFactory() {
     super();
-    this.serviceContext = serviceContext;
   }
 
   public void setPool(ObjectPool<Connection> pool) {
@@ -56,7 +54,7 @@ public class PooledConnectionFactory extends BasePooledObjectFactory<Connection>
   public Connection create() throws Exception {
     if (log.isDebugEnabled())
       log.debug("creating new hbase connection");
-    return new RocksDBConnection(this.pool, this.serviceContext);
+    return new RocksDBConnection(this.pool);
   }
 
   @Override

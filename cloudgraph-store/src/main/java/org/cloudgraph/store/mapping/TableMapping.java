@@ -61,7 +61,7 @@ public abstract class TableMapping {
     this(table, StoreMapping.getInstance());
   }
 
-  private static char[] ILLEGAL_NAMESPACE_CHARS = { ':', '_', '-', '/' };
+  private static char[] ILLEGAL_NAMESPACE_CHARS = { ':', '-', '/' };
 
   private void validate() {
     String tableName = this.table.getName();
@@ -106,10 +106,12 @@ public abstract class TableMapping {
     // note: for logical names no not prepend the root
     // path as it is necessarily the same for all
     // tables even in a multi-tenant / volume environment
-    if (table.getTableVolumeName() != null) {
+    if (table.getTableVolumeName() != null
+        && !table.getNamespace().startsWith(table.getTableVolumeName())) {
       name.append(table.getTableVolumeName());
       name.append(TABLE_LOGICAL_NAME_DELIM);
-    } else if (context != null && context.hasTableVolumeName()) {
+    } else if (context != null && context.hasTableVolumeName()
+        && !table.getNamespace().startsWith(context.getTableVolumeName())) {
       name.append(context.getTableVolumeName());
       name.append(TABLE_LOGICAL_NAME_DELIM);
     }
