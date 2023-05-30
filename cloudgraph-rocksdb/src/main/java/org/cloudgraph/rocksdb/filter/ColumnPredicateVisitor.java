@@ -38,7 +38,7 @@ import org.plasma.sdo.access.DataAccessException;
  * Creates an Aerospike value and qualifier filter hierarchy.
  * 
  * @author Scott Cinnamond
- * @since 2.0.0
+ * @since 2.0.1
  */
 public class ColumnPredicateVisitor extends PredicateVisitor implements RocksDBConstants {
   private static Log log = LogFactory.getLog(ColumnPredicateVisitor.class);

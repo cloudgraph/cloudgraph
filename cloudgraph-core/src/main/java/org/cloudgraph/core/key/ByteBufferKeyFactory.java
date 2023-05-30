@@ -91,15 +91,15 @@ public abstract class ByteBufferKeyFactory implements ConfigurableKeyFactory {
    * @param rootType
    *          the SDO type
    */
-  protected ByteBufferKeyFactory(PlasmaType rootType, ServiceContext serviceContext) {
+  protected ByteBufferKeyFactory(PlasmaType rootType, StoreMappingContext mappingContext) {
     this.rootType = rootType;
     // FIXME: should be table context delegate?
     QName rootTypeQname = this.rootType.getQualifiedName();
     MappingConfiguration config = StoreMapping.getInstance();
-    if (config.findTable(rootTypeQname, serviceContext.getStoreMapping()) == null)
+    if (config.findTable(rootTypeQname, mappingContext) == null)
       throw new IllegalArgumentException("given type is not a bound (graph root) type, " + rootType);
-    this.table = config.getTable(rootTypeQname, serviceContext.getStoreMapping());
-    this.graph = config.getDataGraph(rootTypeQname, serviceContext.getStoreMapping());
+    this.table = config.getTable(rootTypeQname, mappingContext);
+    this.graph = config.getDataGraph(rootTypeQname, mappingContext);
     this.charset = config.getCharset();
   }
 

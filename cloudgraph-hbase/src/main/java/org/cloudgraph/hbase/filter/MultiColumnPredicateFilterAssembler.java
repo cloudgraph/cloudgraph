@@ -81,7 +81,7 @@ public class MultiColumnPredicateFilterAssembler extends MultiColumnPredicateVis
   public MultiColumnPredicateFilterAssembler(PlasmaType rootType, ServiceContext serviceContext) {
     super(rootType);
 
-    this.columnKeyFac = new CompositeColumnKeyFactory(rootType, serviceContext);
+    this.columnKeyFac = new CompositeColumnKeyFactory(rootType, serviceContext.getStoreMapping());
   }
 
   @Override

@@ -56,7 +56,7 @@ public class CellConverter {
     super();
     this.rootType = rootType;
     this.rootTableConfig = rootTableConfig;
-    this.keyFactory = new CompositeColumnKeyFactory(rootType, serviceContext);
+    this.keyFactory = new CompositeColumnKeyFactory(rootType, serviceContext.getStoreMapping());
     this.serviceContext = serviceContext;
   }
 

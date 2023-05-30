@@ -32,7 +32,7 @@ import com.google.cloud.bigtable.hbase.BigtableConfiguration;
  * Connection factory which creates pooled connections.
  * 
  * @author Scott Cinnamond
- * @since 2.0.0
+ * @since 2.0.1
  */
 public class BigTablePooledConnectionFactory extends BasePooledObjectFactory<Connection> {
   private static Log log = LogFactory.getLog(BigTablePooledConnectionFactory.class);

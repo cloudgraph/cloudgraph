@@ -73,7 +73,7 @@ public class GraphFetchColumnFilterAssembler extends FilterListAssembler impleme
 
     super(rootType);
     this.propertySelection = selection;
-    this.columnKeyFac = new CompositeColumnKeyFactory(rootType, serviceContext);
+    this.columnKeyFac = new CompositeColumnKeyFactory(rootType, serviceContext.getStoreMapping());
 
     this.rootFilter = new FilterList(FilterList.Operator.MUST_PASS_ONE);
 

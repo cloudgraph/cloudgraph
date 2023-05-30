@@ -79,7 +79,7 @@ public class PredicateColumnFilterAssembler extends ColumnPredicateVisitor imple
   public PredicateColumnFilterAssembler(PlasmaType rootType, ServiceContext serviceContext) {
     super(rootType);
 
-    this.columnKeyFac = new CompositeColumnKeyFactory(rootType, serviceContext);
+    this.columnKeyFac = new CompositeColumnKeyFactory(rootType, serviceContext.getStoreMapping());
   }
 
   @Override

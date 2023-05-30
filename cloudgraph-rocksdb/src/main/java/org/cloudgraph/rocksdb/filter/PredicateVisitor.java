@@ -34,7 +34,7 @@ import org.plasma.sdo.access.DataAccessException;
  * useful to subclasses.
  * 
  * @author Scott Cinnamond
- * @since 2.0.0
+ * @since 2.0.1
  */
 public abstract class PredicateVisitor extends FilterHierarchyAssembler {
   private static Log log = LogFactory.getLog(PredicateVisitor.class);

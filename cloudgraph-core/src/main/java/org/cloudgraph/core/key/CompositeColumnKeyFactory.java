@@ -54,8 +54,8 @@ public class CompositeColumnKeyFactory extends ByteBufferKeyFactory implements
     GraphColumnKeyFactory {
   private static final Log log = LogFactory.getLog(CompositeColumnKeyFactory.class);
 
-  public CompositeColumnKeyFactory(PlasmaType rootType, ServiceContext serviceContext) {
-    super(rootType, serviceContext);
+  public CompositeColumnKeyFactory(PlasmaType rootType, StoreMappingContext mappingContext) {
+    super(rootType, mappingContext);
   }
 
   public CompositeColumnKeyFactory(RowOperation graphRow) {

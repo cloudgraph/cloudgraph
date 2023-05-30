@@ -56,7 +56,7 @@ import com.google.common.cache.RemovalNotification;
  * </p>
  * 
  * @author Scott Cinnamond
- * @since 2.0.0
+ * @since 2.0.1
  */
 public class BigTableConnection implements Connection {
   private static Log log = LogFactory.getLog(BigTableConnection.class);

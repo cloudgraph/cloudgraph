@@ -66,7 +66,7 @@ public class CompositeRowKeyFactory extends ByteBufferKeyFactory implements Grap
   }
 
   public CompositeRowKeyFactory(PlasmaType rootType, ServiceContext serviceContext) {
-    super(rootType, serviceContext);
+    super(rootType, serviceContext.getStoreMapping());
   }
 
   /**

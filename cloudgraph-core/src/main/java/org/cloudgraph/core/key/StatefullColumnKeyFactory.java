@@ -57,7 +57,7 @@ public class StatefullColumnKeyFactory extends CompositeColumnKeyFactory impleme
   private static final Log log = LogFactory.getLog(StatefullColumnKeyFactory.class);
 
   public StatefullColumnKeyFactory(PlasmaType rootType, ServiceContext serviceContext) {
-    super(rootType, serviceContext);
+    super(rootType, serviceContext.getStoreMapping());
   }
 
   public StatefullColumnKeyFactory(RowOperation graphRow) {

@@ -36,7 +36,7 @@ import org.xml.sax.SAXException;
  * 
  * @see org.cloudgraph.common.key.CompositeColumnKeyFactory
  * @author Scott Cinnamond
- * @since 2.0.0
+ * @since 2.0.1
  */
 public class PredicateColumnFilterAssembler extends ColumnPredicateVisitor implements
     PredicateFilterAssembler {

@@ -91,7 +91,8 @@ public abstract class PathPredicateBinaryExprTreeAssembler extends DefaultBinary
       PlasmaType rootType, ServiceContext serviceContext) {
     super(predicate, rootType);
     this.edgeType = edgeType;
-    this.columnKeyFactory = new CompositeColumnKeyFactory(this.rootType, serviceContext);
+    this.columnKeyFactory = new CompositeColumnKeyFactory(this.rootType,
+        serviceContext.getStoreMapping());
 
   }
 

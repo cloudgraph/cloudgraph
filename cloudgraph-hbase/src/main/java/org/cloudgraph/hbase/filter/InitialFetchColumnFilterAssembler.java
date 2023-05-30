@@ -72,7 +72,7 @@ public class InitialFetchColumnFilterAssembler extends FilterListAssembler {
       ServiceContext serviceContext) {
     super(rootType);
     this.selection = collector;
-    this.columnKeyFac = new CompositeColumnKeyFactory(rootType, serviceContext);
+    this.columnKeyFac = new CompositeColumnKeyFactory(rootType, serviceContext.getStoreMapping());
 
     this.rootFilter = new FilterList(FilterList.Operator.MUST_PASS_ONE);
 

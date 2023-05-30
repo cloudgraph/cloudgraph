@@ -49,7 +49,7 @@ import org.cloudgraph.store.service.GraphServiceException;
  * @see CloudGraphContext
  * @see TableMapping
  * @author Scott Cinnamond
- * @since 2.0.0
+ * @since 2.0.1
  */
 public class BigTableConnectionManager implements ConnectionManager {
 

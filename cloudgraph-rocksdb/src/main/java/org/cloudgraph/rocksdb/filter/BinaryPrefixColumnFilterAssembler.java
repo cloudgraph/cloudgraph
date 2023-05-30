@@ -62,7 +62,7 @@ public class BinaryPrefixColumnFilterAssembler extends FilterListAssembler {
 
   public BinaryPrefixColumnFilterAssembler(PlasmaType rootType, ServiceContext serviceContext) {
     super(rootType);
-    this.columnKeyFac = new CompositeColumnKeyFactory(rootType, serviceContext);
+    this.columnKeyFac = new CompositeColumnKeyFactory(rootType, serviceContext.getStoreMapping());
 
     // this.rootFilter = new FilterList(FilterList.Operator.MUST_PASS_ONE);
   }

@@ -74,7 +74,7 @@ public class ColumnPredicateFilterAssembler extends ColumnPredicateVisitor imple
    */
   public ColumnPredicateFilterAssembler(PlasmaType rootType, ServiceContext serviceContext) {
     super(rootType);
-    this.columnKeyFac = new CompositeColumnKeyFactory(rootType, serviceContext);
+    this.columnKeyFac = new CompositeColumnKeyFactory(rootType, serviceContext.getStoreMapping());
   }
 
   @Override

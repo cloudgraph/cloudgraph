@@ -18,31 +18,31 @@ public class MaprDBTableName implements TableName {
   }
 
   @Override
-public int hashCode() {
-	final int prime = 31;
-	int result = 1;
-	result = prime * result + ((tablename == null) ? 0 : tablename.hashCode());
-	return result;
-}
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((tablename == null) ? 0 : tablename.hashCode());
+    return result;
+  }
 
-@Override
-public boolean equals(Object obj) {
-	if (this == obj)
-		return true;
-	if (obj == null)
-		return false;
-	if (getClass() != obj.getClass())
-		return false;
-	MaprDBTableName other = (MaprDBTableName) obj;
-	if (tablename == null) {
-		if (other.tablename != null)
-			return false;
-	} else if (!tablename.equals(other.tablename))
-		return false;
-	return true;
-}
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    MaprDBTableName other = (MaprDBTableName) obj;
+    if (tablename == null) {
+      if (other.tablename != null)
+        return false;
+    } else if (!tablename.equals(other.tablename))
+      return false;
+    return true;
+  }
 
-@Override
+  @Override
   public String getNamespace() {
     return this.tablename.getNamespaceAsString();
   }

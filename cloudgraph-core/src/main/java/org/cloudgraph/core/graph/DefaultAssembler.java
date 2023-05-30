@@ -130,7 +130,7 @@ public abstract class DefaultAssembler {
     this.charset = config.getCharset();
     this.keyFactories = new HashMap<>();
     this.keyFactories.put(this.rootType, new CompositeColumnKeyFactory(this.rootType,
-        this.rootTableReader.getServiceContext()));
+        this.rootTableReader.getServiceContext().getStoreMapping()));
   }
 
   /**
@@ -143,7 +143,8 @@ public abstract class DefaultAssembler {
   protected GraphColumnKeyFactory getKeyFactory(PlasmaType type) {
     GraphColumnKeyFactory result = this.keyFactories.get(type);
     if (result == null) {
-      result = new CompositeColumnKeyFactory(type, this.rootTableReader.getServiceContext());
+      result = new CompositeColumnKeyFactory(type, this.rootTableReader.getServiceContext()
+          .getStoreMapping());
       this.keyFactories.put(type, result);
     }
     return result;

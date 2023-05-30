@@ -63,7 +63,7 @@ public class CompositeRowKeyExpressionFactory extends ByteBufferKeyFactory imple
   // }
   //
   public CompositeRowKeyExpressionFactory(PlasmaType rootType, ServiceContext serviceContext) {
-    super(rootType, serviceContext);
+    super(rootType, serviceContext.getStoreMapping());
   }
 
   @Override
