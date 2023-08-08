@@ -130,7 +130,7 @@
         </DataGraph>
     </Table>  
  -->
-    <Table name="GGG_TEST_COMPLETE_KEY_STRING" tableVolumeName="testtenant"  namespace="test_get" dataColumnFamilyName="f1">
+    <Table name="GGG_TEST_COMPLETE_KEY_STRING" tableVolumeName="testtenant"  namespace="get" dataColumnFamilyName="f1">
         <HashAlgorithm name="murmur32"/>
         <DataGraph uri="http://cloudgraph.org/test/datatypes" type="StringNode">
             <RowKeyModel>

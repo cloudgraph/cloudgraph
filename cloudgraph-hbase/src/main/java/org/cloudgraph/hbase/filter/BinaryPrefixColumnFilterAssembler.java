@@ -20,7 +20,9 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.filter.BinaryPrefixComparator;
+import org.apache.hadoop.hbase.filter.ColumnPrefixFilter;
 import org.apache.hadoop.hbase.filter.CompareFilter;
+import org.apache.hadoop.hbase.filter.Filter;
 import org.apache.hadoop.hbase.filter.FilterList;
 import org.apache.hadoop.hbase.filter.QualifierFilter;
 import org.cloudgraph.core.ServiceContext;
@@ -76,8 +78,10 @@ public class BinaryPrefixColumnFilterAssembler extends FilterListAssembler {
     for (Property p : properties) {
       PlasmaProperty prop = (PlasmaProperty) p;
       byte[] key = this.columnKeyFac.createColumnKey(contextType, prop);
-      QualifierFilter qualFilter = new QualifierFilter(CompareFilter.CompareOp.EQUAL,
-          new BinaryPrefixComparator(key));
+      Filter qualFilter = new ColumnPrefixFilter(key);
+      // QualifierFilter qualFilter = new
+      // QualifierFilter(CompareFilter.CompareOp.EQUAL,
+      // new BinaryPrefixComparator(key));
       this.rootFilter.addFilter(qualFilter);
     }
   }

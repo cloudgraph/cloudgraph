@@ -52,7 +52,7 @@ import org.xml.sax.SAXException;
  * @author Scott Cinnamond
  * @since 0.5
  */
-public abstract class FilterHierarchyAssembler extends ExpresionVisitorSupport implements
+abstract class FilterHierarchyAssembler extends ExpresionVisitorSupport implements
     HBaseFilterAssembler {
   private static Log log = LogFactory.getLog(FilterHierarchyAssembler.class);
 

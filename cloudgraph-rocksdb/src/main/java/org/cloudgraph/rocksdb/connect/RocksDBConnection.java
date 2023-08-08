@@ -68,11 +68,11 @@ import org.rocksdb.Statistics;
 import org.rocksdb.VectorMemTableConfig;
 import org.rocksdb.util.SizeUnit;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
+import org.apache.jena.ext.com.google.common.cache.CacheBuilder;
+import org.apache.jena.ext.com.google.common.cache.CacheLoader;
+import org.apache.jena.ext.com.google.common.cache.LoadingCache;
+import org.apache.jena.ext.com.google.common.cache.RemovalListener;
+import org.apache.jena.ext.com.google.common.cache.RemovalNotification;
 
 /**
  * Pooled HBase connection wrapper which complies with Apache pool semantics and

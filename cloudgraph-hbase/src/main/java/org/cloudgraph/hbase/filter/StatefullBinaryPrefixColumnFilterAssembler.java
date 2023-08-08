@@ -21,7 +21,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.filter.BinaryComparator;
 import org.apache.hadoop.hbase.filter.BinaryPrefixComparator;
+import org.apache.hadoop.hbase.filter.ColumnPrefixFilter;
 import org.apache.hadoop.hbase.filter.CompareFilter;
+import org.apache.hadoop.hbase.filter.Filter;
 import org.apache.hadoop.hbase.filter.FilterList;
 import org.apache.hadoop.hbase.filter.QualifierFilter;
 import org.cloudgraph.core.io.EdgeReader;
@@ -75,7 +77,7 @@ public class StatefullBinaryPrefixColumnFilterAssembler extends FilterListAssemb
     if (sequences == null || sequences.size() == 0)
       throw new IllegalArgumentException("expected one or more sequences");
     byte[] colKey = null;
-    QualifierFilter qualFilter = null;
+    Filter qualFilter = null;
     PlasmaType subType = edgeReader.getSubType();
     if (subType == null)
       subType = edgeReader.getBaseType();
@@ -103,8 +105,9 @@ public class StatefullBinaryPrefixColumnFilterAssembler extends FilterListAssemb
           // reference props have several meta keys so are
           // only property type requiring a prefix filter.
           colKey = this.columnKeyFac.createColumnKey(subType, seq, prop);
-          qualFilter = new QualifierFilter(CompareFilter.CompareOp.EQUAL,
-              new BinaryPrefixComparator(colKey));
+          qualFilter = new ColumnPrefixFilter(colKey);
+          // qualFilter = new QualifierFilter(CompareFilter.CompareOp.EQUAL,
+          // new BinaryPrefixComparator(colKey));
           this.rootFilter.addFilter(qualFilter);
         }
       }

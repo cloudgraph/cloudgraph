@@ -46,7 +46,7 @@ import org.plasma.sdo.access.DataAccessException;
  * @author Scott Cinnamond
  * @since 0.5
  */
-public abstract class PredicateVisitor extends FilterHierarchyAssembler {
+abstract class PredicateVisitor extends FilterHierarchyAssembler {
   private static Log log = LogFactory.getLog(PredicateVisitor.class);
   protected PlasmaType contextType;
   protected PlasmaProperty contextProperty;

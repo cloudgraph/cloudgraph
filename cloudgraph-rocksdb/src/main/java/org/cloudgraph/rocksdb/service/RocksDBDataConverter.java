@@ -29,7 +29,7 @@ import org.cloudgraph.common.Bytes;
 import org.plasma.sdo.DataType;
 import org.plasma.sdo.helper.DataConverter;
 
-import com.google.common.primitives.Ints;
+import org.apache.jena.ext.com.google.common.primitives.Ints;
 
 import commonj.sdo.Property;
 

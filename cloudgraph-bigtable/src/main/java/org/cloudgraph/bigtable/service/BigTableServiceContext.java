@@ -4,6 +4,7 @@ import java.util.Properties;
 
 import org.cloudgraph.bigtable.client.BigTableClientFactory;
 import org.cloudgraph.bigtable.connect.BigTableConnectionManager;
+import org.cloudgraph.bigtable.filter.BigTableColumnFilterFactory;
 import org.cloudgraph.core.ConnectionManager;
 import org.cloudgraph.core.DataConverter;
 import org.cloudgraph.core.ServiceContext;
@@ -38,7 +39,7 @@ public class BigTableServiceContext implements ServiceContext {
     this.connectionManager = BigTableConnectionManager.instance();
     this.clientFactory = new BigTableClientFactory();
     this.rowKeyFactory = new HBaseRowKeyFactory();
-    this.columnFilterFactory = new HBaseColumnFilterFactory();
+    this.columnFilterFactory = new BigTableColumnFilterFactory();
     this.rowFilterFactory = new HBaseRowFilterFactory();
   }
 

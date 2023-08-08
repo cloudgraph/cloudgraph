@@ -80,7 +80,8 @@ import org.cloudgraph.core.scan.PartialRowKey;
 import org.cloudgraph.core.scan.PartialRowKeyAssembler;
 import org.cloudgraph.core.scan.ScanCollector;
 import org.cloudgraph.core.scan.ScanRecognizerSyntaxTreeAssembler;
-import org.cloudgraph.hbase.filter.GraphFetchColumnFilterAssembler;
+import org.cloudgraph.hbase.client.HBaseFilter;
+import org.cloudgraph.hbase.filter.HBaseColumnFilterFactory;
 import org.cloudgraph.hbase.filter.HBaseFilterAssembler;
 import org.cloudgraph.hbase.service.HBaseServiceContext;
 import org.cloudgraph.hbase.util.FilterUtil;
@@ -104,6 +105,7 @@ import org.plasma.sdo.PlasmaType;
 import org.xml.sax.SAXException;
 
 import com.google.protobuf.InvalidProtocolBufferException;
+
 import commonj.sdo.Type;
 
 /**
@@ -201,12 +203,12 @@ public class GraphMapReduceSetup extends JobSetup {
     DistributedGraphReader graphReader = new DistributedGraphReader(type,
         selectionCollector.getTypes(), null, serviceContext);
 
-    HBaseFilterAssembler columnFilterAssembler = new GraphFetchColumnFilterAssembler(
+    HBaseColumnFilterFactory filterFac = new HBaseColumnFilterFactory();
+    HBaseFilter columnFilter = (HBaseFilter) filterFac.createGraphFetchColumnFilter(
         selectionCollector, type, serviceContext);
-    Filter columnFilter = columnFilterAssembler.getFilter();
 
     From from = query.getModel().getFromClause();
-    List<Scan> scans = createScans(from, where, type, columnFilter, conf, serviceContext);
+    List<Scan> scans = createScans(from, where, type, columnFilter.get(), conf, serviceContext);
 
     conf.set(GraphInputFormat.QUERY, marshal(query));
     conf.set(GraphInputFormat.ROOT_TABLE_NAME, graphReader.getRootTableReader()

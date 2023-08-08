@@ -59,7 +59,7 @@ import org.plasma.sdo.PlasmaType;
  * @author Scott Cinnamond
  * @since 0.6.5
  */
-public class MultiColumnPredicateFilterAssembler extends MultiColumnPredicateVisitor implements
+class MultiColumnPredicateFilterAssembler extends MultiColumnPredicateVisitor implements
     PredicateFilterAssembler {
   private static Log log = LogFactory.getLog(MultiColumnPredicateFilterAssembler.class);
 

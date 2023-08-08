@@ -15,7 +15,7 @@
  */
 package org.cloudgraph.core.graph;
 
-import static com.google.common.util.concurrent.Uninterruptibles.awaitUninterruptibly;
+import static org.apache.jena.ext.com.google.common.util.concurrent.Uninterruptibles.awaitUninterruptibly;
 
 import java.io.IOException;
 import java.sql.Timestamp;

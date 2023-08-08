@@ -19,6 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.filter.BinaryComparator;
 import org.apache.hadoop.hbase.filter.BinaryPrefixComparator;
+import org.apache.hadoop.hbase.filter.ColumnPrefixFilter;
 import org.apache.hadoop.hbase.filter.CompareFilter;
 import org.apache.hadoop.hbase.filter.Filter;
 import org.apache.hadoop.hbase.filter.FilterList;
@@ -77,7 +78,7 @@ import org.plasma.sdo.helper.DataConverter;
  * @author Scott Cinnamond
  * @since 0.5
  */
-public class ColumnPredicateVisitor extends PredicateVisitor {
+class ColumnPredicateVisitor extends PredicateVisitor {
   private static Log log = LogFactory.getLog(ColumnPredicateVisitor.class);
   protected CompositeColumnKeyFactory columnKeyFac;
   protected String contextPropertyPath;
@@ -241,8 +242,10 @@ public class ColumnPredicateVisitor extends PredicateVisitor {
     byte[] colKey = this.contextQueryProperty.getPhysicalNameBytes();
 
     FilterList list = new FilterList(FilterList.Operator.MUST_PASS_ALL);
-    QualifierFilter qualFilter = new QualifierFilter(CompareFilter.CompareOp.EQUAL,
-        new BinaryPrefixComparator(colKey));
+    Filter qualFilter = new ColumnPrefixFilter(colKey);
+    // QualifierFilter qualFilter = new
+    // QualifierFilter(CompareFilter.CompareOp.EQUAL,
+    // new BinaryPrefixComparator(colKey));
     list.addFilter(qualFilter);
 
     ValueFilter valueFilter = null;

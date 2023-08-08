@@ -57,8 +57,7 @@ import org.xml.sax.SAXException;
  * @author Scott Cinnamond
  * @since 0.5
  */
-public class PredicateRowFilterAssembler extends RowPredicateVisitor implements
-    PredicateFilterAssembler {
+class PredicateRowFilterAssembler extends RowPredicateVisitor implements PredicateFilterAssembler {
   private static Log log = LogFactory.getLog(PredicateRowFilterAssembler.class);
 
   /**
