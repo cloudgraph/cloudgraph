@@ -14,7 +14,7 @@
 	<properties>
  		<cloudgraph.version>2.0.2</cloudgraph.version>
  		<plasma.version>2.2.0</plasma.version>
-		<hadoop.version>2.7.3</hadoop.version>
+		<hadoop.version>3.2.4</hadoop.version>
  		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <slf4j.version>1.6.1</slf4j.version>
 	</properties>
