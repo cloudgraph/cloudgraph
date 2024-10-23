@@ -4,11 +4,11 @@
     <parent>
         <groupId>org.cloudgraph</groupId>
         <artifactId>cloudgraph</artifactId>
-        <version>2.0.2</version>
+        <version>2.0.3</version>
     </parent>
 	<properties>
- 		<cloudgraph.version>2.0.2</cloudgraph.version>
- 		<plasma.version>2.2.0</plasma.version>
+ 		<cloudgraph.version>2.0.3</cloudgraph.version>
+ 		<plasma.version>2.2.1</plasma.version>
   		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
  	<artifactId>cloudgraph-bigtable</artifactId>
@@ -19,7 +19,7 @@
 		<dependency>
 			<groupId>org.cloudgraph</groupId>
 			<artifactId>cloudgraph-hbase</artifactId>
- 			<version>2.0.2</version>
+ 			<version>2.0.3</version>
  			<exclusions>
 				<exclusion>
 					<artifactId>hbase-client</artifactId>

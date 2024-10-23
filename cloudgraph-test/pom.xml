@@ -4,15 +4,15 @@
     <parent>
         <groupId>org.cloudgraph</groupId>
         <artifactId>cloudgraph</artifactId>
-         <version>2.0.2</version>
+         <version>2.0.3</version>
     </parent>
    	<artifactId>cloudgraph-test</artifactId>
  	<name>CloudGraph Test</name>
 	<description>CloudGraph(tm) is a suite of Service Data Object (SDO) 2.1 services designed for relational and big-table style "cloud" databases, such as HBase and others.</description>
  	<url>http://cloudgraph.org</url>
 	<properties>
- 		<cloudgraph.version>2.0.2</cloudgraph.version>
- 		<plasma.version>2.2.0</plasma.version>
+ 		<cloudgraph.version>2.0.3</cloudgraph.version>
+ 		<plasma.version>2.2.1</plasma.version>
         <slf4j.version>1.6.1</slf4j.version>
  		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -20,7 +20,7 @@
 		<dependency>
 			<groupId>org.cloudgraph</groupId>
 			<artifactId>cloudgraph-common</artifactId>
-  			<version>2.0.2</version>
+  			<version>2.0.3</version>
   		</dependency>
 	</dependencies>
 	<build>
@@ -31,8 +31,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.3.2</version>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.8</source>
+					<target>1.8</target>
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
