@@ -1,12 +1,12 @@
 package org.cloudgraph.hbase.client;
 
- import org.apache.hadoop.hbase.HRegionInfo;
+import org.apache.hadoop.hbase.HRegionInfo;
 import org.cloudgraph.core.client.RegionLocation;
 
 public class HBaseRegionLocation implements RegionLocation {
   private org.apache.hadoop.hbase.HRegionLocation regionLocation;
   private HRegionInfo regionInfo;
-  
+
   @SuppressWarnings("unused")
   private HBaseRegionLocation() {
   }
@@ -57,5 +57,4 @@ public class HBaseRegionLocation implements RegionLocation {
     return regionInfo.getEndKey();
   }
 
- 
 }

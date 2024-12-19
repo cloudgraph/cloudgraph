@@ -99,8 +99,9 @@ public class BigTableConnection implements Connection {
           public Table load(TableName tableName) throws Exception {
             if (log.isDebugEnabled())
               log.debug("loading table " + this + " " + tableName);
-            return con.getTable(org.apache.hadoop.hbase.TableName.valueOf(tableName.getNamespace(),
-                tableName.getTableName()));
+            org.apache.hadoop.hbase.TableName hbaseTableName = org.apache.hadoop.hbase.TableName
+                .valueOf(tableName.getNamespace(), tableName.getTableName());
+            return con.getTable(hbaseTableName);
           }
         });
     if (log.isDebugEnabled())
@@ -158,15 +159,23 @@ public class BigTableConnection implements Connection {
     if (table != null) {
       exists = true;
     } else {
-      exists = con.getAdmin().tableExists(
-          org.apache.hadoop.hbase.TableName.valueOf(tableName.getNamespace(),
-              tableName.getTableName()));
+      org.apache.hadoop.hbase.TableName hbaseTableName = org.apache.hadoop.hbase.TableName.valueOf(
+          tableName.getNamespace(), tableName.getTableName());
+      // expensive
+      // exists = con.getAdmin().tableExists(hbaseTableName);
+      try {
+        table = con.getTable(hbaseTableName);
+      } catch (IOException e) {
+        log.debug("table not found: " + hbaseTableName);
+      }
+      exists = table != null;
+
       if (exists) {
-        try {
-          this.tableCache.get(tableName);
-        } catch (ExecutionException e) {
-          log.error(e.getMessage(), e);
-        }
+        // try {
+        this.tableCache.put(tableName, table);
+        // } catch (ExecutionException e) {
+        // log.error(e.getMessage(), e);
+        // }
       }
     }
     return exists;

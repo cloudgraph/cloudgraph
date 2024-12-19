@@ -1,23 +1,21 @@
 package org.cloudgraph.core.client;
 
- 
 public interface RegionLocation {
 
-	String getHostname();
+  String getHostname();
 
-	int getPort();
+  int getPort();
 
-	long getSeqNum();
+  long getSeqNum();
 
-	String getHostnamePort();
+  String getHostnamePort();
 
-	long getRegionId();
+  long getRegionId();
 
-	String getRegionNameAsString();
+  String getRegionNameAsString();
 
-	byte[] getStartKey();
+  byte[] getStartKey();
 
-	byte[] getEndKey();
+  byte[] getEndKey();
 
- 
 }

@@ -27,10 +27,10 @@ public class HBaseRegionLocator implements RegionLocator {
   @Override
   public List<RegionLocation> getAllRegionLocations() throws IOException {
     List<HRegionLocation> locs = this.regionLocator.getAllRegionLocations();
-    
+
     List<RegionLocation> result = new ArrayList<>(locs.size());
     for (HRegionLocation loc : locs) {
-       result.add(new HBaseRegionLocation(loc));
+      result.add(new HBaseRegionLocation(loc));
     }
 
     return result;
