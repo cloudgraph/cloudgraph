@@ -1,0 +1,33 @@
+***Release Notes***
+
+CloudGraph 2.0.6 Release Notes
+
+CloudGraph 2.0.6 is a production release of CloudGraph.
+
+The full list of changes can be found in our issue management system github, and is reproduced below.
+See https://github.com/cloudgraph/cloudgraph/issues. 
+
+For issues created during beta testing see:
+See https://github.com/cloudgraph/cloudgraph/issues. 
+
+
+**Major Changes**
+N/A
+
+**Bugs**
+N/A    
+ 
+**Improvements**
+- **[Issue #66]** - Remove or Make Configurable Table Create on Read 
+ 
+N/A
+
+  
+**New Features**
+N/A
+
+**Tasks**
+N/A
+
+**Wish**
+N/A

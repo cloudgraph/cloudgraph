@@ -35,6 +35,7 @@ import org.cloudgraph.core.client.Result;
 import org.cloudgraph.core.client.ResultScanner;
 import org.cloudgraph.core.client.Scan;
 import org.cloudgraph.core.io.DistributedGraphReader;
+import org.cloudgraph.core.io.TableNotFoundException;
 import org.cloudgraph.core.io.TableReader;
 import org.cloudgraph.core.results.ResultsAssembler;
 import org.cloudgraph.core.results.ResultsComparator;
@@ -246,29 +247,34 @@ public class GraphStreamQuery extends GraphQuery implements
 
     if (log.isDebugEnabled())
       log.debug(scan.getFilter().printFilterTree());
-    ResultScanner scanner = rootTableReader.getTable().getScanner(scan);
+    ResultScanner scanner = null;
     try {
-      for (Result resultRow : scanner) {
-        if (log.isDebugEnabled()) {
-          log.debug(this.context.getClientFactory().getNamespaceQualifiedPhysicalName(
-              rootTableReader.getTableConfig(), this.context.getStoreMapping())
-              + ": " + new String(resultRow.getRow()));
-          for (KeyValue keyValue : resultRow.list()) {
-            log.debug("\tkey: " + new String(keyValue.getQualifier()) + "\tvalue: "
-                + new String(keyValue.getValue()));
-          }
-        }
-        if (collector.isResultEndRangeReached()) {
-          break;
-        }
-
-        if (collector.collect(resultRow))
-          this.emitter.onNext(collector.getCurrentResult());
-      }
-    } finally {
-      if (scanner != null)
-        scanner.close();
+      scanner = rootTableReader.getTable().getScanner(scan);
+    } catch (TableNotFoundException tnf) {
     }
+    if (scanner != null)
+      try {
+        for (Result resultRow : scanner) {
+          if (log.isDebugEnabled()) {
+            log.debug(this.context.getClientFactory().getNamespaceQualifiedPhysicalName(
+                rootTableReader.getTableConfig(), this.context.getStoreMapping())
+                + ": " + new String(resultRow.getRow()));
+            for (KeyValue keyValue : resultRow.list()) {
+              log.debug("\tkey: " + new String(keyValue.getQualifier()) + "\tvalue: "
+                  + new String(keyValue.getValue()));
+            }
+          }
+          if (collector.isResultEndRangeReached()) {
+            break;
+          }
+
+          if (collector.collect(resultRow))
+            this.emitter.onNext(collector.getCurrentResult());
+        }
+      } finally {
+        if (scanner != null)
+          scanner.close();
+      }
   }
 
   @Override

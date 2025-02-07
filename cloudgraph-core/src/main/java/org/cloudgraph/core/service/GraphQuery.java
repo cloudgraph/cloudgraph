@@ -39,6 +39,7 @@ import org.cloudgraph.core.client.Scan;
 import org.cloudgraph.core.filter.ColumnFilterFactory;
 import org.cloudgraph.core.filter.RowFilterFactory;
 import org.cloudgraph.core.io.DistributedGraphReader;
+import org.cloudgraph.core.io.TableNotFoundException;
 import org.cloudgraph.core.io.TableReader;
 import org.cloudgraph.core.results.NoOpResultsComparator;
 import org.cloudgraph.core.results.ParallelSlidingResultsAssembler;
@@ -479,7 +480,11 @@ public class GraphQuery implements QueryDispatcher {
 
     if (log.isDebugEnabled())
       log.debug(get.getFilter().printFilterTree());
-    Result resultRow = rootTableReader.getTable().get(get);
+    Result resultRow = null;
+    try {
+      resultRow = rootTableReader.getTable().get(get);
+    } catch (TableNotFoundException tnf) {
+    }
     if (resultRow == null || resultRow.isEmpty()) {
       log.debug("no results from table "
           + this.context.getClientFactory().getNamespaceQualifiedPhysicalName(
@@ -507,7 +512,11 @@ public class GraphQuery implements QueryDispatcher {
 
     if (log.isDebugEnabled())
       log.debug(gets.get(0).getFilter().printFilterTree());
-    Result[] resultRows = rootTableReader.getTable().get(gets);
+    Result[] resultRows = null;
+    try {
+      resultRows = rootTableReader.getTable().get(gets);
+    } catch (TableNotFoundException tnf) {
+    }
     if (resultRows == null) {
       log.debug("no results from table "
           + this.context.getNamespaceQualifiedPhysicalName(rootTableReader.getTableConfig(),
@@ -550,28 +559,33 @@ public class GraphQuery implements QueryDispatcher {
 
     if (log.isDebugEnabled())
       log.debug(scan.getFilter().printFilterTree());
-    ResultScanner scanner = rootTableReader.getTable().getScanner(scan);
+    ResultScanner scanner = null;
     try {
-      for (Result resultRow : scanner) {
-        if (log.isDebugEnabled()) {
-          log.debug(this.context.getClientFactory().getNamespaceQualifiedPhysicalName(
-              rootTableReader.getTableConfig(), this.context.getStoreMapping())
-              + ": " + new String(resultRow.getRow()));
-          for (KeyValue keyValue : resultRow.list()) {
-            log.debug("\tkey: " + new String(keyValue.getQualifier()) + "\tvalue: "
-                + new String(keyValue.getValue()));
-          }
-        }
-        if (collector.isResultEndRangeReached()) {
-          break;
-        }
-
-        collector.collect(resultRow);
-      }
-    } finally {
-      if (scanner != null)
-        scanner.close();
+      scanner = rootTableReader.getTable().getScanner(scan);
+    } catch (TableNotFoundException tnf) {
     }
+    if (scanner != null)
+      try {
+        for (Result resultRow : scanner) {
+          if (log.isDebugEnabled()) {
+            log.debug(this.context.getClientFactory().getNamespaceQualifiedPhysicalName(
+                rootTableReader.getTableConfig(), this.context.getStoreMapping())
+                + ": " + new String(resultRow.getRow()));
+            for (KeyValue keyValue : resultRow.list()) {
+              log.debug("\tkey: " + new String(keyValue.getQualifier()) + "\tvalue: "
+                  + new String(keyValue.getValue()));
+            }
+          }
+          if (collector.isResultEndRangeReached()) {
+            break;
+          }
+
+          collector.collect(resultRow);
+        }
+      } finally {
+        if (scanner != null)
+          scanner.close();
+      }
   }
 
   /**

@@ -49,6 +49,7 @@ import org.cloudgraph.core.filter.ColumnFilterFactory;
 import org.cloudgraph.core.io.EdgeOperation;
 import org.cloudgraph.core.io.EdgeReader;
 import org.cloudgraph.core.io.RowReader;
+import org.cloudgraph.core.io.TableNotFoundException;
 import org.cloudgraph.core.io.TableReader;
 import org.cloudgraph.core.key.CompositeColumnKeyFactory;
 import org.cloudgraph.state.GraphRow;
@@ -663,7 +664,11 @@ public abstract class DefaultAssembler {
       log.debug("executing get...");
       before = System.currentTimeMillis();
     }
-    Result result = tableReader.getTable().get(row);
+    Result result = null;
+    try {
+      result = tableReader.getTable().get(row);
+    } catch (TableNotFoundException tnf) {
+    }
     if (result == null || result.isEmpty())
       throw new GraphServiceException("expected result from table "
           + this.serviceContext.getClientFactory().getNamespaceQualifiedPhysicalName(

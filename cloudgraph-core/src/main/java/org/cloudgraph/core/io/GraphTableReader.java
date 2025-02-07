@@ -105,21 +105,31 @@ public class GraphTableReader extends GraphTable implements TableReader {
       // Note: calling tableExists() using the admin HBase API is expensive
       // and is
       // showing up on CPU profiling results. Just call get table and catch :(
-      if (!this.distributedOperation.getConnection().tableExists(tableName)) {
-        this.serviceContext.getConnectionManager().createTable(
-            this.distributedOperation.getConnection(), tableName, this.serviceContext);
-        this.table = this.distributedOperation.getConnection().getTable(tableName);
-      } else {
-        try {
-          this.table = this.distributedOperation.getConnection().getTable(tableName);
-        } catch (IOException e) {
-          serviceContext.getConnectionManager().createTable(
-              this.distributedOperation.getConnection(), tableName, this.serviceContext);
-          this.table = this.distributedOperation.getConnection().getTable(tableName);
-        }
-      }
+      // if (!this.distributedOperation.getConnection().tableExists(tableName))
+      // {
+      // this.serviceContext.getConnectionManager().createTable(
+      // this.distributedOperation.getConnection(), tableName,
+      // this.serviceContext);
+      // this.table =
+      // this.distributedOperation.getConnection().getTable(tableName);
+      // } else {
+      // try {
+      // this.table =
+      // this.distributedOperation.getConnection().getTable(tableName);
+      // } catch (IOException e) {
+      // serviceContext.getConnectionManager().createTable(
+      // this.distributedOperation.getConnection(), tableName,
+      // this.serviceContext);
+      // this.table =
+      // this.distributedOperation.getConnection().getTable(tableName);
+      // }
+      // }
+      this.table = this.distributedOperation.getConnection().getTable(tableName);
+      if (this.table == null)
+        throw new TableNotFoundException("table '" + tableName + "' noes not exist");
+
     } catch (IOException e) {
-      throw new OperationException(e);
+      throw new TableNotFoundException(e);
     }
     return this.table;
   }

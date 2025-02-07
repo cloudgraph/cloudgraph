@@ -57,6 +57,7 @@ import org.cloudgraph.core.io.DistributedReader;
 import org.cloudgraph.core.io.EdgeReader;
 import org.cloudgraph.core.io.KeyBytes;
 import org.cloudgraph.core.io.RowReader;
+import org.cloudgraph.core.io.TableNotFoundException;
 import org.cloudgraph.core.io.TableOperation;
 import org.cloudgraph.core.io.TableReader;
 import org.cloudgraph.core.key.StatefullColumnKeyFactory;
@@ -443,7 +444,12 @@ class GraphSliceSupport {
     if (log.isDebugEnabled())
       log.debug("executing get...");
 
-    Result result = tableOperation.getTable().get(get);
+    Result result = null;
+    try {
+      result = tableOperation.getTable().get(get);
+    } catch (TableNotFoundException tnf) {
+    }
+
     if (result == null) // Note: may not have any key-values
       throw new GraphServiceException("expected result from table "
           + this.serviceContext.getClientFactory().getNamespaceQualifiedPhysicalName(
@@ -477,7 +483,12 @@ class GraphSliceSupport {
     if (log.isDebugEnabled())
       log.debug("executing " + gets.size() + " gets...");
 
-    Result[] result = tableOperation.getTable().get(gets);
+    Result[] result = null;
+    try {
+      result = tableOperation.getTable().get(gets);
+    } catch (TableNotFoundException tnf) {
+      result = new Result[0];
+    }
 
     long after = System.currentTimeMillis();
     if (log.isDebugEnabled())
@@ -535,7 +546,12 @@ class GraphSliceSupport {
     if (log.isDebugEnabled())
       log.debug("executing get...");
 
-    Result result = tableReader.getTable().get(get);
+    Result result = null;
+    try {
+      result = tableReader.getTable().get(get);
+    } catch (TableNotFoundException tnf) {
+    }
+
     if (result == null) // Note: may not have any key-values
       throw new GraphServiceException("expected result from table "
           + this.serviceContext.getClientFactory().getNamespaceQualifiedPhysicalName(
@@ -583,24 +599,26 @@ class GraphSliceSupport {
       scanner = tableReader.getTable().getScanner(scan);
     } catch (IOException e) {
       throw new GraphServiceException(e);
+    } catch (TableNotFoundException tnf) {
     }
 
     Map<Long, Long> result = new HashMap<Long, Long>();
-    for (Result row : scanner) {
-      if (log.isDebugEnabled())
-        log.debug("row: " + new String(row.getRow()));
-      for (KeyValue keyValue : row.list()) {
+    if (scanner != null)
+      for (Result row : scanner) {
         if (log.isDebugEnabled())
-          log.debug("returned " + row.size() + " columns");
-        // FIXME: no parsing here !!
-        String qual = Bytes.toString(keyValue.getQualifier());
-        if (log.isDebugEnabled())
-          log.debug("\tkey: " + qual + "\tvalue: " + Bytes.toString(keyValue.getValue()));
-        String[] sections = qual.split(graphConfig.getColumnKeySequenceDelimiter());
-        Long seq = Long.valueOf(sections[1]);
-        result.put(seq, seq);
+          log.debug("row: " + new String(row.getRow()));
+        for (KeyValue keyValue : row.list()) {
+          if (log.isDebugEnabled())
+            log.debug("returned " + row.size() + " columns");
+          // FIXME: no parsing here !!
+          String qual = Bytes.toString(keyValue.getQualifier());
+          if (log.isDebugEnabled())
+            log.debug("\tkey: " + qual + "\tvalue: " + Bytes.toString(keyValue.getValue()));
+          String[] sections = qual.split(graphConfig.getColumnKeySequenceDelimiter());
+          Long seq = Long.valueOf(sections[1]);
+          result.put(seq, seq);
+        }
       }
-    }
     return result;
   }
 
@@ -721,7 +739,12 @@ class GraphSliceSupport {
       }
 
     long before = System.currentTimeMillis();
-    Result result = rowReader.getTableReader().getTable().get(get);
+    Result result = null;
+    try {
+      result = rowReader.getTableReader().getTable().get(get);
+    } catch (TableNotFoundException tnf) {
+    }
+
     long after = System.currentTimeMillis();
 
     if (result == null) // do expect a result since a Get oper, but might
@@ -758,20 +781,22 @@ class GraphSliceSupport {
       scanner = rowReader.getTableReader().getTable().getScanner(scan);
     } catch (IOException e) {
       throw new GraphServiceException(e);
+    } catch (TableNotFoundException tnf) {
     }
-    for (Result row : scanner) {
-      if (log.isDebugEnabled())
-        log.debug("row: " + new String(row.getRow()));
-      if (log.isDebugEnabled())
-        log.debug("returned " + row.size() + " columns");
-      for (KeyValue keyValue : row.list()) {
-        rowReader.getRow().addColumn(keyValue);
-        if (log.isDebugEnabled()) {
-          String qual = Bytes.toString(keyValue.getQualifier());
-          log.debug("\tkey: " + qual + "\tvalue: " + Bytes.toString(keyValue.getValue()));
+    if (scanner != null)
+      for (Result row : scanner) {
+        if (log.isDebugEnabled())
+          log.debug("row: " + new String(row.getRow()));
+        if (log.isDebugEnabled())
+          log.debug("returned " + row.size() + " columns");
+        for (KeyValue keyValue : row.list()) {
+          rowReader.getRow().addColumn(keyValue);
+          if (log.isDebugEnabled()) {
+            String qual = Bytes.toString(keyValue.getQualifier());
+            log.debug("\tkey: " + qual + "\tvalue: " + Bytes.toString(keyValue.getValue()));
+          }
         }
       }
-    }
   }
 
   private String serializeGraph(commonj.sdo.DataGraph graph) throws IOException {
